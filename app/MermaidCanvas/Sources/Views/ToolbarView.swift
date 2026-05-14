@@ -11,95 +11,95 @@ struct ToolbarView: View {
     private var edgeMode: EdgeCreationMode { model.edgeCreationMode }
 
     var body: some View {
-        VStack(spacing: 6) {
-            HStack(spacing: 6) {
-                shapeButton(.circle, label: "Cirkel", system: "circle", color: .blue)
-                shapeButton(.rectangle, label: "Box", system: "rectangle", color: .green)
-                shapeButton(.diamond, label: "Romb", system: "diamond", color: .orange)
-            }
-            HStack(spacing: 6) {
-                edgeButton(.directional,
-                           label: edgeMode == .directional ? "Avbryt" : "Pil",
-                           system: edgeMode == .directional ? "xmark" : "arrow.right",
-                           tint: edgeMode == .directional ? .red : .purple)
-                edgeButton(.bidirectional,
-                           label: edgeMode == .bidirectional ? "Avbryt" : "Dubbel",
-                           system: edgeMode == .bidirectional ? "xmark" : "arrow.left.arrow.right",
-                           tint: edgeMode == .bidirectional ? .red : .purple)
-                Spacer(minLength: 6)
-                Button {
-                    onOpen()
-                } label: {
-                    Label("Öppna", systemImage: "folder")
-                        .labelStyle(.titleAndIcon)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 4)
-                }
-                .buttonStyle(.bordered)
-                .tint(.orange)
-                .contentShape(Rectangle())
+        HStack(spacing: 14) {
+            shapeIconButton(.circle, system: "circle")
+            shapeIconButton(.rectangle, system: "rectangle")
+            shapeIconButton(.diamond, system: "diamond")
 
-                Button {
-                    onSave()
-                } label: {
-                    Label("Spara", systemImage: "square.and.arrow.down")
-                        .labelStyle(.titleAndIcon)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 4)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.green)
-                .contentShape(Rectangle())
-            }
+            pilControl
+
+            Spacer()
+
+            iconButton(system: "folder", action: onOpen)
+            iconButton(system: "square.and.arrow.down", action: onSave, prominent: true)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
         .background(Color(.systemBackground))
+        .overlay(alignment: .bottom) {
+            Divider()
+        }
     }
 
     @ViewBuilder
-    private func shapeButton(_ type: ShapeType, label: String, system: String, color: Color) -> some View {
+    private func shapeIconButton(_ type: ShapeType, system: String) -> some View {
         Button {
             if !model.isEdgeMode {
                 model.addShape(type, at: canvasCenter)
             }
         } label: {
-            Label(label, systemImage: system)
-                .labelStyle(.titleAndIcon)
-                .padding(.horizontal, 4)
-                .padding(.vertical, 6)
+            Image(systemName: system)
+                .font(.title2)
+                .foregroundStyle(Color.primary)
+                .frame(width: 36, height: 36)
+                .contentShape(Rectangle())
         }
-        .buttonStyle(.borderedProminent)
-        .tint(color)
-        .contentShape(Rectangle())
+        .buttonStyle(.plain)
         .disabled(model.isEdgeMode)
-        .opacity(model.isEdgeMode ? 0.4 : 1)
+        .opacity(model.isEdgeMode ? 0.35 : 1)
         .draggable(type) {
-            Label(label, systemImage: system)
-                .labelStyle(.titleAndIcon)
+            Image(systemName: system)
+                .font(.title2)
                 .padding(10)
-                .background(color.opacity(0.85))
-                .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .background(.thinMaterial, in: Circle())
         }
     }
 
     @ViewBuilder
-    private func edgeButton(_ mode: EdgeCreationMode, label: String, system: String, tint: Color) -> some View {
-        Button {
-            if model.edgeCreationMode == mode {
-                onCancelEdgeMode()
-            } else {
-                onStartEdgeMode(mode)
+    private var pilControl: some View {
+        if edgeMode == .off {
+            Menu {
+                Button {
+                    onStartEdgeMode(.directional)
+                } label: {
+                    Label("Pil", systemImage: "arrow.right")
+                }
+                Button {
+                    onStartEdgeMode(.bidirectional)
+                } label: {
+                    Label("Dubbel-pil", systemImage: "arrow.left.arrow.right")
+                }
+            } label: {
+                Image(systemName: "arrow.right")
+                    .font(.title2)
+                    .foregroundStyle(Color.primary)
+                    .frame(width: 36, height: 36)
+                    .contentShape(Rectangle())
             }
-        } label: {
-            Label(label, systemImage: system)
-                .labelStyle(.titleAndIcon)
-                .padding(.horizontal, 4)
-                .padding(.vertical, 6)
+        } else {
+            Button {
+                onCancelEdgeMode()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.title2)
+                    .foregroundStyle(.red)
+                    .frame(width: 36, height: 36)
+                    .contentShape(Rectangle())
+            }
         }
-        .buttonStyle(.borderedProminent)
-        .tint(tint)
-        .contentShape(Rectangle())
+    }
+
+    @ViewBuilder
+    private func iconButton(system: String, action: @escaping () -> Void, prominent: Bool = false) -> some View {
+        Button(action: action) {
+            Image(systemName: system)
+                .font(.title3)
+                .foregroundStyle(prominent ? Color.white : Color.primary)
+                .frame(width: 38, height: 32)
+                .background(prominent ? Color.accentColor : Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }

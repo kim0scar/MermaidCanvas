@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var showImporter: Bool = false
     @State private var showExporter: Bool = false
     @State private var pendingDocument: CanvasDocument?
+    @State private var editingShapeId: UUID? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -28,16 +29,29 @@ struct ContentView: View {
                 onOpen: { showImporter = true },
                 onSave: save
             )
+
+            TextField("Rubrik", text: $model.canvasTitle)
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+                .background(Color(.systemBackground))
+            Divider()
+
             GeometryReader { geo in
-                CanvasView(model: model, onShapeTap: handleShapeTap)
-                    .onAppear {
-                        canvasCenter = CGPoint(x: geo.size.width / 2,
-                                               y: geo.size.height / 2)
-                    }
-                    .onChange(of: geo.size) { _, ns in
-                        canvasCenter = CGPoint(x: ns.width / 2, y: ns.height / 2)
-                    }
+                CanvasView(
+                    model: model,
+                    onShapeTap: handleShapeTap,
+                    onShapeEdit: { id in editingShapeId = id }
+                )
+                .onAppear {
+                    canvasCenter = CGPoint(x: geo.size.width / 2,
+                                           y: geo.size.height / 2)
+                }
+                .onChange(of: geo.size) { _, ns in
+                    canvasCenter = CGPoint(x: ns.width / 2, y: ns.height / 2)
+                }
             }
+
             Text(statusText)
                 .font(.caption)
                 .foregroundStyle(statusIsError ? .red : .secondary)
@@ -45,6 +59,20 @@ struct ContentView: View {
                 .padding(.horizontal, 12)
                 .frame(maxWidth: .infinity)
                 .background(Color(.secondarySystemBackground))
+        }
+        .sheet(isPresented: editingBinding) {
+            if let id = editingShapeId,
+               let shape = model.shapes.first(where: { $0.id == id }) {
+                EditShapeSheet(
+                    shapeId: id,
+                    initialLabel: shape.label,
+                    onSave: { newLabel in
+                        model.updateLabel(id: id, to: newLabel)
+                        editingShapeId = nil
+                    },
+                    onCancel: { editingShapeId = nil }
+                )
+            }
         }
         .fileImporter(
             isPresented: $showImporter,
@@ -63,7 +91,7 @@ struct ContentView: View {
             isPresented: $showExporter,
             document: pendingDocument,
             contentType: .plainText,
-            defaultFilename: "canvas.md"
+            defaultFilename: model.canvasTitle.isEmpty ? "canvas.md" : "\(model.canvasTitle).md"
         ) { result in
             switch result {
             case .success(let url):
@@ -80,6 +108,13 @@ struct ContentView: View {
         }
     }
 
+    private var editingBinding: Binding<Bool> {
+        Binding(
+            get: { editingShapeId != nil },
+            set: { isShown in if !isShown { editingShapeId = nil } }
+        )
+    }
+
     private func handleShapeTap(_ id: UUID) {
         let created = model.handleEdgeTap(on: id)
         if created {
@@ -87,7 +122,7 @@ struct ContentView: View {
             statusIsError = false
         } else if model.pendingEdgeFrom != nil {
             let kind = model.edgeCreationMode == .bidirectional ? "dubbel-pil" : "pil"
-            statusText = "Tryck målform för \(kind) (eller startformen igen för avbryt)"
+            statusText = "Tryck målform för \(kind)"
             statusIsError = false
         } else {
             updateIdleStatus()
@@ -113,7 +148,7 @@ struct ContentView: View {
             return
         }
         let parsed = MermaidParser.parse(content)
-        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges)
+        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges, title: parsed.title)
         statusText = "Öppnad: \(url.lastPathComponent) — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
     }
@@ -121,7 +156,7 @@ struct ContentView: View {
     private func reloadFromFile() {
         guard let content = fileManager.readCurrent() else { return }
         let parsed = MermaidParser.parse(content)
-        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges)
+        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges, title: parsed.title)
         statusText = "Uppdaterad från fil — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
     }
@@ -130,7 +165,11 @@ struct ContentView: View {
         if fileManager.hasOpenFile {
             saveToOpenFile()
         } else {
-            pendingDocument = CanvasDocument(shapes: model.shapes, edges: model.edges)
+            pendingDocument = CanvasDocument(
+                title: model.canvasTitle,
+                shapes: model.shapes,
+                edges: model.edges
+            )
             statusText = "Välj plats…"
             statusIsError = false
             showExporter = true
@@ -138,7 +177,11 @@ struct ContentView: View {
     }
 
     private func saveToOpenFile() {
-        let doc = CanvasDocument(shapes: model.shapes, edges: model.edges)
+        let doc = CanvasDocument(
+            title: model.canvasTitle,
+            shapes: model.shapes,
+            edges: model.edges
+        )
         do {
             try fileManager.write(doc.content)
             let name = fileManager.fileName ?? "fil"

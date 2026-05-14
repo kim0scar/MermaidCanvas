@@ -1,8 +1,8 @@
 import SwiftUI
 
 private enum ShapeGeometry {
-    static let width: CGFloat = 110
-    static let height: CGFloat = 78
+    static let width: CGFloat = 120
+    static let height: CGFloat = 80
     static let halfWidth: CGFloat = width / 2
     static let halfHeight: CGFloat = height / 2
     static let circleRadius: CGFloat = min(width, height) / 2
@@ -11,6 +11,7 @@ private enum ShapeGeometry {
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
     var onShapeTap: (UUID) -> Void
+    var onShapeEdit: (UUID) -> Void
 
     var body: some View {
         ZStack {
@@ -24,7 +25,8 @@ struct CanvasView: View {
                     shape: $shape,
                     edgeMode: model.isEdgeMode,
                     isPendingFrom: model.pendingEdgeFrom == shape.id,
-                    onTap: { onShapeTap(shape.id) }
+                    onTap: { onShapeTap(shape.id) },
+                    onEdit: { onShapeEdit(shape.id) }
                 )
             }
         }
@@ -42,6 +44,7 @@ struct ShapeView: View {
     let edgeMode: Bool
     let isPendingFrom: Bool
     let onTap: () -> Void
+    let onEdit: () -> Void
 
     @State private var dragOffset: CGSize = .zero
 
@@ -51,10 +54,11 @@ struct ShapeView: View {
             stroke
             highlight
             Text(shape.label)
-                .font(.caption)
+                .font(.system(size: 13, weight: .medium, design: .rounded))
                 .multilineTextAlignment(.center)
                 .lineLimit(3)
-                .padding(.horizontal, 6)
+                .minimumScaleFactor(0.6)
+                .padding(.horizontal, 8)
         }
         .frame(width: ShapeGeometry.width, height: ShapeGeometry.height)
         .contentShape(Rectangle())
@@ -63,13 +67,17 @@ struct ShapeView: View {
             y: shape.position.y + dragOffset.height
         )
         .onTapGesture {
-            if edgeMode { onTap() }
+            if edgeMode {
+                onTap()
+            } else {
+                onEdit()
+            }
         }
         .gesture(edgeMode ? nil : dragGesture)
     }
 
     private var dragGesture: some Gesture {
-        DragGesture()
+        DragGesture(minimumDistance: 10)
             .onChanged { v in dragOffset = v.translation }
             .onEnded { v in
                 shape.position.x += v.translation.width
@@ -84,7 +92,7 @@ struct ShapeView: View {
         case .circle:
             Circle().fill(Color(.systemBackground))
         case .rectangle:
-            RoundedRectangle(cornerRadius: 10).fill(Color(.systemBackground))
+            RoundedRectangle(cornerRadius: 12).fill(Color(.systemBackground))
         case .diamond:
             DiamondShape().fill(Color(.systemBackground))
         }
@@ -94,11 +102,11 @@ struct ShapeView: View {
     private var stroke: some View {
         switch shape.type {
         case .circle:
-            Circle().stroke(Color.primary, lineWidth: 2)
+            Circle().stroke(Color.primary, lineWidth: 1.5)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 10).stroke(Color.primary, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 12).stroke(Color.primary, lineWidth: 1.5)
         case .diamond:
-            DiamondShape().stroke(Color.primary, lineWidth: 2)
+            DiamondShape().stroke(Color.primary, lineWidth: 1.5)
         }
     }
 
@@ -107,11 +115,11 @@ struct ShapeView: View {
         if isPendingFrom {
             switch shape.type {
             case .circle:
-                Circle().stroke(Color.red, lineWidth: 4)
+                Circle().stroke(Color.accentColor, lineWidth: 3.5)
             case .rectangle:
-                RoundedRectangle(cornerRadius: 10).stroke(Color.red, lineWidth: 4)
+                RoundedRectangle(cornerRadius: 12).stroke(Color.accentColor, lineWidth: 3.5)
             case .diamond:
-                DiamondShape().stroke(Color.red, lineWidth: 4)
+                DiamondShape().stroke(Color.accentColor, lineWidth: 3.5)
             }
         }
     }
@@ -157,8 +165,7 @@ struct EdgesView: View {
         switch shape.type {
         case .circle:
             let r = ShapeGeometry.circleRadius
-            return CGPoint(x: center.x + r * dx / length,
-                           y: center.y + r * dy / length)
+            return CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
 
         case .rectangle:
             let absX = abs(dx)
@@ -182,7 +189,7 @@ struct EdgesView: View {
         var line = Path()
         line.move(to: from)
         line.addLine(to: to)
-        context.stroke(line, with: .color(.primary.opacity(0.55)), lineWidth: 2)
+        context.stroke(line, with: .color(.primary.opacity(0.6)), lineWidth: 1.5)
 
         let angle = atan2(to.y - from.y, to.x - from.x)
         drawArrowHead(context: context, tip: to, angle: angle)
@@ -205,6 +212,6 @@ struct EdgesView: View {
         var head = Path()
         head.move(to: tip); head.addLine(to: a1)
         head.move(to: tip); head.addLine(to: a2)
-        context.stroke(head, with: .color(.primary.opacity(0.55)), lineWidth: 2)
+        context.stroke(head, with: .color(.primary.opacity(0.6)), lineWidth: 1.5)
     }
 }

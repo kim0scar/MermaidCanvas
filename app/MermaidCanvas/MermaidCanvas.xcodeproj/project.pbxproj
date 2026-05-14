@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		169F45E3624AC8D420570915 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE73A51C83B03DD44C69184 /* ContentView.swift */; };
+		47432578C2C5B349E43399D5 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */; };
 		7437B62EA81BC3AC010D6303 /* ShapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C55EAC4AF34DD4A5003A3 /* ShapeNode.swift */; };
 		774EC58465369A580480737D /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214C9429A5A7019AFB3A5335 /* CanvasModel.swift */; };
 		A6112259B6F82F3D230BB9F3 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0B873635193E39B3DFE265 /* ToolbarView.swift */; };
@@ -27,6 +28,7 @@
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
 		5B6F079D15D4D217E25CCA7A /* MermaidCanvasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCanvasApp.swift; sourceTree = "<group>"; };
 		5CE73A51C83B03DD44C69184 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditShapeSheet.swift; sourceTree = "<group>"; };
 		6C0B873635193E39B3DFE265 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		772E436BDF9309FA34D00B75 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
 		773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidGenerator.swift; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				15A8EDAC97692F06FFD900DD /* CanvasView.swift */,
+				679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */,
 				6C0B873635193E39B3DFE265 /* ToolbarView.swift */,
 			);
 			path = Views;
@@ -167,6 +170,7 @@
 				D94270A0C928F8A7DBD007DC /* CanvasView.swift in Sources */,
 				169F45E3624AC8D420570915 /* ContentView.swift in Sources */,
 				C6D5781519E6F6C8D1E254AD /* EdgeConnection.swift in Sources */,
+				47432578C2C5B349E43399D5 /* EditShapeSheet.swift in Sources */,
 				C3D292667697648BE2110A8A /* MermaidCanvasApp.swift in Sources */,
 				D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */,
 				FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */,

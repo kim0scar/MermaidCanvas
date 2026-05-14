@@ -13,6 +13,7 @@ final class CanvasModel: ObservableObject {
     @Published var edges: [EdgeConnection] = []
     @Published var edgeCreationMode: EdgeCreationMode = .off
     @Published var pendingEdgeFrom: UUID? = nil
+    @Published var canvasTitle: String = ""
 
     var isEdgeMode: Bool { edgeCreationMode != .off }
 
@@ -26,6 +27,11 @@ final class CanvasModel: ObservableObject {
         shapes[index].position = position
     }
 
+    func updateLabel(id: UUID, to label: String) {
+        guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
+        shapes[index].label = label
+    }
+
     func startEdgeMode(_ mode: EdgeCreationMode) {
         edgeCreationMode = mode
         pendingEdgeFrom = nil
@@ -36,7 +42,6 @@ final class CanvasModel: ObservableObject {
         pendingEdgeFrom = nil
     }
 
-    /// Hantera tap i pil-mode. Returnerar true om en pil precis skapades.
     @discardableResult
     func handleEdgeTap(on shapeId: UUID) -> Bool {
         guard edgeCreationMode != .off else { return false }
@@ -55,9 +60,10 @@ final class CanvasModel: ObservableObject {
         return false
     }
 
-    func replaceAll(shapes: [ShapeNode], edges: [EdgeConnection]) {
+    func replaceAll(shapes: [ShapeNode], edges: [EdgeConnection], title: String = "") {
         self.shapes = shapes
         self.edges = edges
+        self.canvasTitle = title
         self.pendingEdgeFrom = nil
         self.edgeCreationMode = .off
     }

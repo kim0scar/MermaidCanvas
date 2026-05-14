@@ -3,15 +3,34 @@ import CoreGraphics
 
 enum MermaidParser {
     struct ParsedCanvas {
+        var title: String = ""
         var shapes: [ShapeNode] = []
         var edges: [EdgeConnection] = []
     }
 
     static func parse(_ markdown: String) -> ParsedCanvas {
+        let title = parseTitle(markdown)
+        var result: ParsedCanvas
         if let fromState = parseStateJSON(markdown) {
-            return fromState
+            result = fromState
+        } else {
+            result = parseMermaid(markdown)
         }
-        return parseMermaid(markdown)
+        result.title = title
+        return result
+    }
+
+    private static func parseTitle(_ markdown: String) -> String {
+        for line in markdown.split(separator: "\n", omittingEmptySubsequences: true) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("# ") {
+                let title = String(trimmed.dropFirst(2)).trimmingCharacters(in: .whitespaces)
+                if title == "Canvas — MermaidCanvas" { return "" }
+                return title
+            }
+            if trimmed.hasPrefix("```") { break }
+        }
+        return ""
     }
 
     // MARK: - State-JSON (autoritativ)
