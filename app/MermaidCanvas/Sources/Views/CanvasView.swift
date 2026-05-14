@@ -17,13 +17,25 @@ struct CanvasView: View {
     @ObservedObject var model: CanvasModel
     var onShapeTap: (UUID) -> Void
     var onShapeEdit: (UUID) -> Void
+    var onShapeDelete: (UUID) -> Void
+    var onEdgeDelete: (UUID) -> Void
 
     var body: some View {
         ZStack {
             Color(.systemGray6)
                 .ignoresSafeArea(edges: [.horizontal, .bottom])
 
-            EdgesView(edges: model.edges, shapes: model.shapes)
+            DotGridBackground()
+                .ignoresSafeArea(edges: [.horizontal, .bottom])
+
+            if model.specType == .ui {
+                iPhoneFrameOverlay(size: model.canvasSize)
+                    .ignoresSafeArea(edges: [.horizontal, .bottom])
+            }
+
+            EdgesView(edges: model.edges,
+                      shapes: model.shapes,
+                      onEdgeTap: onEdgeDelete)
 
             ForEach($model.shapes) { $shape in
                 ShapeView(
@@ -31,7 +43,8 @@ struct CanvasView: View {
                     edgeMode: model.isEdgeMode,
                     isPendingFrom: model.pendingEdgeFrom == shape.id,
                     onTap: { onShapeTap(shape.id) },
-                    onEdit: { onShapeEdit(shape.id) }
+                    onEdit: { onShapeEdit(shape.id) },
+                    onDelete: { onShapeDelete(shape.id) }
                 )
             }
         }
@@ -50,6 +63,7 @@ struct ShapeView: View {
     let isPendingFrom: Bool
     let onTap: () -> Void
     let onEdit: () -> Void
+    let onDelete: () -> Void
 
     @State private var dragOffset: CGSize = .zero
 
@@ -85,6 +99,18 @@ struct ShapeView: View {
             }
         }
         .gesture(edgeMode ? nil : dragGesture)
+        .contextMenu {
+            Button {
+                onEdit()
+            } label: {
+                Label("Redigera", systemImage: "pencil")
+            }
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Ta bort", systemImage: "trash")
+            }
+        }
     }
 
     private var dragGesture: some Gesture {
@@ -148,22 +174,50 @@ struct DiamondShape: Shape {
     }
 }
 
+/// Pilarna ritas i en separat ZStack-lager. Tap på pilen → delete-callback.
+/// Vi använder en gestur-overlay per edge eftersom Canvas själv inte är tappable.
 struct EdgesView: View {
     let edges: [EdgeConnection]
     let shapes: [ShapeNode]
+    var onEdgeTap: (UUID) -> Void
 
     var body: some View {
-        Canvas { context, _ in
-            for edge in edges {
-                guard let fromShape = shapes.first(where: { $0.id == edge.from }),
-                      let toShape = shapes.first(where: { $0.id == edge.to })
-                else { continue }
-                let start = edgePoint(for: fromShape, towards: toShape.position)
-                let end = edgePoint(for: toShape, towards: fromShape.position)
-                drawArrow(context: context, from: start, to: end, bidirectional: edge.bidirectional)
+        ZStack {
+            Canvas { context, _ in
+                for edge in edges {
+                    guard let fromShape = shapes.first(where: { $0.id == edge.from }),
+                          let toShape = shapes.first(where: { $0.id == edge.to })
+                    else { continue }
+                    let start = edgePoint(for: fromShape, towards: toShape.position)
+                    let end = edgePoint(for: toShape, towards: fromShape.position)
+                    drawArrow(context: context, from: start, to: end, bidirectional: edge.bidirectional)
+                }
+            }
+            .allowsHitTesting(false)
+
+            // Klickbara cirklar i mitten av varje pil — för delete
+            ForEach(edges) { edge in
+                if let fromShape = shapes.first(where: { $0.id == edge.from }),
+                   let toShape = shapes.first(where: { $0.id == edge.to }) {
+                    let mid = CGPoint(
+                        x: (fromShape.position.x + toShape.position.x) / 2,
+                        y: (fromShape.position.y + toShape.position.y) / 2
+                    )
+                    Circle()
+                        .fill(Color.clear)
+                        .frame(width: 24, height: 24)
+                        .contentShape(Circle())
+                        .position(mid)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                onEdgeTap(edge.id)
+                            } label: {
+                                Label("Ta bort pil", systemImage: "trash")
+                            }
+                        }
+                }
             }
         }
-        .allowsHitTesting(false)
     }
 
     private func edgePoint(for shape: ShapeNode, towards target: CGPoint) -> CGPoint {

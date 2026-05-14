@@ -7,10 +7,12 @@ enum MermaidParser {
         var shapes: [ShapeNode] = []
         var edges: [EdgeConnection] = []
         var canvasSize: CGSize? = nil
+        var specType: SpecType = .ui
     }
 
     static func parse(_ markdown: String) -> ParsedCanvas {
-        let title = parseTitle(markdown)
+        let frontmatter = parseFrontmatter(markdown)
+        let title = frontmatter.title ?? parseTitle(markdown)
         var result: ParsedCanvas
         if let fromState = parseStateJSON(markdown) {
             result = fromState
@@ -18,7 +20,39 @@ enum MermaidParser {
             result = parseMermaid(markdown)
         }
         result.title = title
+        if let st = frontmatter.specType {
+            result.specType = st
+        }
         return result
+    }
+
+    // MARK: - Frontmatter
+
+    private struct Frontmatter {
+        var title: String? = nil
+        var specType: SpecType? = nil
+    }
+
+    private static func parseFrontmatter(_ markdown: String) -> Frontmatter {
+        let trimmed = markdown.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.hasPrefix("---") else { return Frontmatter() }
+        let afterStart = trimmed.dropFirst(3)
+        guard let endRange = afterStart.range(of: "\n---") else { return Frontmatter() }
+        let yaml = String(afterStart[..<endRange.lowerBound])
+        var fm = Frontmatter()
+        for line in yaml.split(separator: "\n") {
+            let parts = line.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false)
+            guard parts.count == 2 else { continue }
+            let key = parts[0].trimmingCharacters(in: .whitespaces)
+            let value = parts[1].trimmingCharacters(in: .whitespaces)
+            switch key {
+            case "title": fm.title = value
+            case "spec_type":
+                if let st = SpecType(rawValue: value) { fm.specType = st }
+            default: break
+            }
+        }
+        return fm
     }
 
     private static func parseTitle(_ markdown: String) -> String {

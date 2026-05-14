@@ -9,41 +9,46 @@ struct ToolbarView: View {
     var onOpen: () -> Void
     var onSave: () -> Void
     var onSaveAs: () -> Void
+    var onUndo: () -> Void
+    var onShowCode: () -> Void
 
     private var edgeMode: EdgeCreationMode { model.edgeCreationMode }
 
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 10) {
             shapeIconButton(.circle, system: "circle")
             shapeIconButton(.rectangle, system: "rectangle")
             shapeIconButton(.diamond, system: "diamond")
 
             pilControl
 
+            Divider().frame(height: 24)
+
+            iconButton(system: "arrow.uturn.backward",
+                       action: onUndo,
+                       disabled: !model.canUndo)
+
+            iconButton(system: "curlybraces",
+                       action: onShowCode)
+
             Spacer()
 
             iconButton(system: "folder", action: onOpen)
             saveMenu
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(Color(.systemBackground))
-        .overlay(alignment: .bottom) {
-            Divider()
-        }
+        .overlay(alignment: .bottom) { Divider() }
     }
 
     @ViewBuilder
     private var saveMenu: some View {
         Menu {
-            Button {
-                onSave()
-            } label: {
+            Button { onSave() } label: {
                 Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
             }
-            Button {
-                onSaveAs()
-            } label: {
+            Button { onSaveAs() } label: {
                 Label("Spara som ny fil…", systemImage: "doc.badge.plus")
             }
         } label: {
@@ -90,14 +95,10 @@ struct ToolbarView: View {
     private var pilControl: some View {
         if edgeMode == .off {
             Menu {
-                Button {
-                    onStartEdgeMode(.directional)
-                } label: {
+                Button { onStartEdgeMode(.directional) } label: {
                     Label("Pil", systemImage: "arrow.right")
                 }
-                Button {
-                    onStartEdgeMode(.bidirectional)
-                } label: {
+                Button { onStartEdgeMode(.bidirectional) } label: {
                     Label("Dubbel-pil", systemImage: "arrow.left.arrow.right")
                 }
             } label: {
@@ -108,9 +109,7 @@ struct ToolbarView: View {
                     .contentShape(Rectangle())
             }
         } else {
-            Button {
-                onCancelEdgeMode()
-            } label: {
+            Button { onCancelEdgeMode() } label: {
                 Image(systemName: "xmark")
                     .font(.title2)
                     .foregroundStyle(.red)
@@ -121,16 +120,17 @@ struct ToolbarView: View {
     }
 
     @ViewBuilder
-    private func iconButton(system: String, action: @escaping () -> Void, prominent: Bool = false) -> some View {
+    private func iconButton(system: String,
+                            action: @escaping () -> Void,
+                            disabled: Bool = false) -> some View {
         Button(action: action) {
             Image(systemName: system)
                 .font(.title3)
-                .foregroundStyle(prominent ? Color.white : Color.primary)
-                .frame(width: 38, height: 32)
-                .background(prominent ? Color.accentColor : Color.clear)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .foregroundStyle(disabled ? Color.secondary.opacity(0.4) : Color.primary)
+                .frame(width: 36, height: 32)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .disabled(disabled)
     }
 }

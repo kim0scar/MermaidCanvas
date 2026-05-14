@@ -5,13 +5,28 @@ struct CanvasDocument: FileDocument {
     static var readableContentTypes: [UTType] { [.plainText] }
     let content: String
 
-    init(title: String, shapes: [ShapeNode], edges: [EdgeConnection], canvasSize: CGSize) {
+    init(title: String,
+         shapes: [ShapeNode],
+         edges: [EdgeConnection],
+         canvasSize: CGSize,
+         specType: SpecType) {
         let mermaid = MermaidGenerator.generate(shapes: shapes, edges: edges)
         let state = MermaidGenerator.canvasStateJSON(shapes: shapes, edges: edges, canvasSize: canvasSize)
         let timestamp = ISO8601DateFormatter().string(from: Date())
         let titleLine = title.isEmpty ? "Canvas — MermaidCanvas" : title
+        let today = String(timestamp.prefix(10))
+
+        let frontmatter = """
+        ---
+        title: \(titleLine.replacingOccurrences(of: "\n", with: " "))
+        spec_type: \(specType.rawValue)
+        last_updated: \(today)
+        ---
+
+        """
+
         self.content = """
-        # \(titleLine)
+        \(frontmatter)# \(titleLine)
 
         Genererad \(timestamp).
 

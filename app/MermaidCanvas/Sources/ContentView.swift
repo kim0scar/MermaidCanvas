@@ -13,9 +13,17 @@ struct ContentView: View {
     @State private var pendingDocument: CanvasDocument?
     @State private var editingShapeId: UUID? = nil
     @State private var justSaved: Bool = false
+    @State private var showCodeSheet: Bool = false
+    @State private var generatedCode: String = ""
 
     var body: some View {
         VStack(spacing: 0) {
+            SpecTypePicker(specType: $model.specType) { new in
+                model.setSpecType(new)
+                updateIdleStatus()
+            }
+            Divider()
+
             ToolbarView(
                 model: model,
                 canvasCenter: canvasCenter,
@@ -30,7 +38,13 @@ struct ContentView: View {
                 },
                 onOpen: { showImporter = true },
                 onSave: save,
-                onSaveAs: saveAs
+                onSaveAs: saveAs,
+                onUndo: {
+                    model.undo()
+                    statusText = "Ångrade senaste ändring"
+                    statusIsError = false
+                },
+                onShowCode: showMermaidCode
             )
 
             TextField("Rubrik", text: $model.canvasTitle)
@@ -44,7 +58,17 @@ struct ContentView: View {
                 CanvasView(
                     model: model,
                     onShapeTap: handleShapeTap,
-                    onShapeEdit: { id in editingShapeId = id }
+                    onShapeEdit: { id in editingShapeId = id },
+                    onShapeDelete: { id in
+                        model.deleteShape(id: id)
+                        statusText = "Formen borttagen"
+                        statusIsError = false
+                    },
+                    onEdgeDelete: { id in
+                        model.deleteEdge(id: id)
+                        statusText = "Pilen borttagen"
+                        statusIsError = false
+                    }
                 )
                 .onAppear {
                     canvasCenter = CGPoint(x: geo.size.width / 2,
@@ -57,24 +81,7 @@ struct ContentView: View {
                 }
             }
 
-            HStack(spacing: 8) {
-                Text(AppVersion.current)
-                    .font(.footnote.weight(.bold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color.accentColor)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                Text(statusText)
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(statusIsError ? .red : .primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.vertical, 10)
-            .padding(.horizontal, 12)
-            .frame(maxWidth: .infinity)
-            .background(statusIsError ? Color.red.opacity(0.12) : Color.green.opacity(justSaved ? 0.18 : 0.0))
-            .background(Color(.secondarySystemBackground))
+            statusBar
         }
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
@@ -88,6 +95,7 @@ struct ContentView: View {
                         note: shape.note,
                         category: shape.category
                     ),
+                    specType: model.specType,
                     onSave: { edit in
                         model.updateShape(
                             id: id,
@@ -99,8 +107,19 @@ struct ContentView: View {
                         )
                         editingShapeId = nil
                     },
-                    onCancel: { editingShapeId = nil }
+                    onCancel: { editingShapeId = nil },
+                    onDelete: {
+                        model.deleteShape(id: id)
+                        editingShapeId = nil
+                        statusText = "Formen borttagen"
+                        statusIsError = false
+                    }
                 )
+            }
+        }
+        .sheet(isPresented: $showCodeSheet) {
+            MermaidCodeSheet(code: generatedCode) {
+                showCodeSheet = false
             }
         }
         .fileImporter(
@@ -138,12 +157,37 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Substrukturer
+
+    private var statusBar: some View {
+        HStack(spacing: 8) {
+            Text(AppVersion.current)
+                .font(.footnote.weight(.bold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(Color.accentColor)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+            Text(statusText)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(statusIsError ? .red : .primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity)
+        .background(statusIsError ? Color.red.opacity(0.12) : Color.green.opacity(justSaved ? 0.18 : 0.0))
+        .background(Color(.secondarySystemBackground))
+    }
+
     private var editingBinding: Binding<Bool> {
         Binding(
             get: { editingShapeId != nil },
             set: { isShown in if !isShown { editingShapeId = nil } }
         )
     }
+
+    // MARK: - Handlers
 
     private func handleShapeTap(_ id: UUID) {
         let created = model.handleEdgeTap(on: id)
@@ -178,7 +222,10 @@ struct ContentView: View {
             return
         }
         let parsed = MermaidParser.parse(content)
-        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges, title: parsed.title)
+        model.replaceAll(shapes: parsed.shapes,
+                         edges: parsed.edges,
+                         title: parsed.title,
+                         specType: parsed.specType)
         if let size = parsed.canvasSize { model.canvasSize = size }
         statusText = "Öppnad: \(url.lastPathComponent) — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
@@ -187,7 +234,10 @@ struct ContentView: View {
     private func reloadFromFile() {
         guard let content = fileManager.readCurrent() else { return }
         let parsed = MermaidParser.parse(content)
-        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges, title: parsed.title)
+        model.replaceAll(shapes: parsed.shapes,
+                         edges: parsed.edges,
+                         title: parsed.title,
+                         specType: parsed.specType)
         if let size = parsed.canvasSize { model.canvasSize = size }
         statusText = "Uppdaterad från fil — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
@@ -206,7 +256,8 @@ struct ContentView: View {
             title: model.canvasTitle,
             shapes: model.shapes,
             edges: model.edges,
-            canvasSize: model.canvasSize
+            canvasSize: model.canvasSize,
+            specType: model.specType
         )
         statusText = "Välj plats för fil…"
         statusIsError = false
@@ -218,7 +269,8 @@ struct ContentView: View {
             title: model.canvasTitle,
             shapes: model.shapes,
             edges: model.edges,
-            canvasSize: model.canvasSize
+            canvasSize: model.canvasSize,
+            specType: model.specType
         )
         do {
             try fileManager.write(doc.content)
@@ -232,25 +284,26 @@ struct ContentView: View {
         }
     }
 
+    private func showMermaidCode() {
+        generatedCode = MermaidGenerator.generate(shapes: model.shapes, edges: model.edges)
+        showCodeSheet = true
+    }
+
     private func flashSaved() {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            justSaved = true
-        }
+        withAnimation(.easeInOut(duration: 0.2)) { justSaved = true }
         Task {
             try? await Task.sleep(nanoseconds: 1_400_000_000)
             await MainActor.run {
-                withAnimation(.easeInOut(duration: 0.5)) {
-                    justSaved = false
-                }
+                withAnimation(.easeInOut(duration: 0.5)) { justSaved = false }
             }
         }
     }
 
     private func updateIdleStatus() {
         if model.shapes.isEmpty {
-            statusText = "Tom canvas — tryck eller dra en form"
+            statusText = "Tom canvas (\(model.specType.displayName)) — tryck eller dra en form"
         } else {
-            statusText = "\(model.shapes.count) former, \(model.edges.count) pilar"
+            statusText = "\(model.shapes.count) former, \(model.edges.count) pilar — \(model.specType.displayName)"
         }
         statusIsError = false
     }

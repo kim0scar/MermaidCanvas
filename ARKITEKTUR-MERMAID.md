@@ -1,7 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v13
+# ARKITEKTUR-MERMAID — Version v14
 *Datum: 2026-05-15*
 
-> **Status (när skriven):** kod skriven, build + deploy pågår. Vid nästa session: verifiera enligt VERSIONSHANTERING.md.
+> **Status:** Stor multi-mode-release. Fyra tankelägen (UI/Roadmap/Arkitektur/Flow) i appen. Frontmatter med `spec_type`. Prickrutnät, iPhone-ram i UI-läge, ta-bort via context-menu, undo-stack, visa Mermaid-kod-modal.
 
 ## Diagram
 
@@ -10,32 +10,45 @@ flowchart TD
     Kim["👤 Kim"]
     Claude["🤖 Claude Code"]
 
-    subgraph App["📱 MermaidCanvas v13"]
-        ToolbarView["ToolbarView"]
+    subgraph App["📱 MermaidCanvas v14"]
+        SpecTypePicker["SpecTypePicker<br/>(UI / Roadmap / Arch / Flow)"]
+        ToolbarView["ToolbarView<br/>(+ undo + visa-kod)"]
         TitleField["TextField rubrik"]
-        CanvasView["CanvasView<br/>(fyll/stroke/text per kategori)"]
-        ShapeView["ShapeView"]
-        EditShapeSheet["EditShapeSheet<br/>(kategori + text + storlek + anteckning)"]
-        EdgesView["EdgesView"]
-        CanvasModel["CanvasModel<br/>(updateShape tar category)"]
-        ShapeNode["ShapeNode<br/>(+ category: ShapeCategory)"]
-        ShapeCategory["ShapeCategory<br/>(ui / zone / note / overlay)"]
+        CanvasView["CanvasView<br/>(+ delete callbacks)"]
+        DotGridBackground["DotGridBackground"]
+        iPhoneFrameOverlay["iPhoneFrameOverlay<br/>(visas i UI-läge)"]
+        ShapeView["ShapeView<br/>(.contextMenu med Ta bort)"]
+        EdgesView["EdgesView<br/>(pil-mitt har context-menu)"]
+        EditShapeSheet["EditShapeSheet<br/>(dynamiska kategorier + delete)"]
+        MermaidCodeSheet["MermaidCodeSheet<br/>(visa + kopiera mermaid)"]
+        CanvasModel["CanvasModel<br/>(+ specType + undo-stack + delete)"]
+        ShapeNode["ShapeNode<br/>(+ category)"]
+        ShapeCategory["ShapeCategory<br/>(20 kategorier över 4 lägen)"]
+        SpecType["SpecType<br/>(ui/roadmap/arch/flow/general)"]
         EdgeConnection["EdgeConnection"]
-        MermaidGenerator["MermaidGenerator<br/>(prefix + :::klass + classDef + category i JSON)"]
-        MermaidParser["MermaidParser<br/>(läser category, strippar prefix i fallback)"]
-        CanvasDocument["CanvasDocument"]
+        MermaidGenerator["MermaidGenerator<br/>(prefix + classDef + category)"]
+        MermaidParser["MermaidParser<br/>(läser frontmatter + spec_type)"]
+        CanvasDocument["CanvasDocument<br/>(skriver frontmatter)"]
         CanvasFileManager["CanvasFileManager"]
-        AppVersion["AppVersion<br/>(v13)"]
+        AppVersion["AppVersion<br/>(v14)"]
     end
 
-    File["📄 fil.md"]
+    File["📄 fil.md<br/>(med frontmatter)"]
 
+    Kim --> SpecTypePicker
+    SpecTypePicker --> CanvasModel
     Kim --> ToolbarView
     Kim -->|tap form| ShapeView
-    ShapeView -->|onEdit| EditShapeSheet
-    EditShapeSheet -->|kategori + label + storlek + note| CanvasModel
+    ShapeView -->|long-press| EditShapeSheet
+    ShapeView -->|tap| EditShapeSheet
+    EditShapeSheet --> CanvasModel
+    ToolbarView -->|visa kod| MermaidCodeSheet
+    ToolbarView -->|undo| CanvasModel
     ShapeNode --> ShapeCategory
+    ShapeCategory --> SpecType
     CanvasModel --> CanvasView
+    CanvasView --> DotGridBackground
+    CanvasView --> iPhoneFrameOverlay
     CanvasView --> ShapeView
     CanvasView --> EdgesView
     CanvasModel --> CanvasDocument
@@ -46,34 +59,42 @@ flowchart TD
     Claude -.-> File
 ```
 
-## Ändringar från v12
+## Ändringar från v13
 
-1. **Semantisk kategori per form (Lager 2 i METOD-VISUELL-DIALOG.md)**: ny `ShapeCategory`-enum (`ui` / `zone` / `note` / `overlay`) som egen fil. `ShapeNode` har nu `category: ShapeCategory` (default `.ui`).
-2. **Kategori-väljare i EditShapeSheet**: ny section "Kategori" med segmented picker + hint-text per kategori.
-3. **Färg per kategori i canvas**: `ShapeView` fyller form och stroke från `shape.category.fillColor` / `strokeColor`. Textfärg från `category.textColor`.
-4. **Mermaid-export med semantik**: `MermaidGenerator` skriver nu prefix-id (`ui_N0`, `zone_N1`), `:::klass`-suffix per nod och `classDef`-rader per använd kategori. GitHub-rendering visar färgad mermaid.
-5. **State-JSON innehåller `category`**: full round-trip av semantik. Parsern läser med default `.ui`.
-6. **Fallback-parser hanterar `:::klass`-suffix och prefix-id**: när JSON saknas härleds kategori från `:::klass` eller från id-prefix.
-7. **AppVersion bumpad till v13**: synlig som badge i status-bar.
+1. **Fyra tankelägen i appen:** ny `SpecType` enum (`ui` / `roadmap` / `architecture` / `flow` / `general`). Topp-picker styr aktuellt läge. Sparas i frontmatter som `spec_type`.
+2. **Utvidgad `ShapeCategory`:** 20 kategorier över alla fyra lägen. `ShapeCategory.available(for: specType)` returnerar relevanta kategorier per läge. `note` finns med överallt.
+3. **Frontmatter i sparad fil:** `--- title / spec_type / last_updated ---` skrivs av `CanvasDocument`. `MermaidParser` läser frontmatter och sätter spec_type på model.
+4. **Prickrutnät (`DotGridBackground.swift`):** subtila prickar för visuell alignment. Ingen export.
+5. **iPhone-ram (`iPhoneFrameOverlay.swift`):** visas bara när `specType == .ui`. Aspect-fit 393:852 (iPhone 15 Pro), notch som visuell guide.
+6. **Ta bort:** form-context-menu (long-press) → Redigera / Ta bort. Pil-mitt har context-menu → Ta bort pil. Edit-sheet har destructive delete-knapp med bekräftelse.
+7. **Undo:** `CanvasModel` har snapshot-stack (30 djup). Toolbar-knapp ångrar senaste mutation. Stacken rensas vid fil-öppning.
+8. **Visa Mermaid-kod (`MermaidCodeSheet.swift`):** bottom sheet visar genererad mermaid, copy-knapp.
+9. **Dynamiska kategorier i EditShapeSheet:** ≤4 → segmented picker, >4 → grid. Visar bara kategorier för aktuell spec_type.
+10. **AppVersion bumpad till v14.**
 
-## Komponenter — ändringar i v13
+## Komponenter — ändringar/nya filer i v14
 
-| Komponent | Fil | Ändring |
+| Komponent | Fil | Status |
 |---|---|---|
-| ShapeCategory | `Sources/Models/ShapeCategory.swift` | **NY** — enum med fyra kategorier + färger + classDef-strängar |
-| ShapeNode | `Sources/Models/ShapeNode.swift` | + `category: ShapeCategory` med default `.ui` |
-| CanvasModel | `Sources/Models/CanvasModel.swift` | `updateShape(...)` tar `category:` |
-| EditShapeSheet | `Sources/Views/EditShapeSheet.swift` | + section "Kategori" med segmented picker. `ShapeEdit` har `category`. |
-| CanvasView | `Sources/Views/CanvasView.swift` | Fyll, stroke och textfärg per `shape.category` |
-| MermaidGenerator | `Sources/Mermaid/MermaidGenerator.swift` | Prefix-id, `:::klass`, `classDef` per använd kategori, `category` i state-JSON |
-| MermaidParser | `Sources/Mermaid/MermaidParser.swift` | Läser `category` från state-JSON. Fallback härleder kategori från `:::klass` eller prefix. |
-| ContentView | `Sources/ContentView.swift` | Passar `category` mellan sheet och modell |
-| AppVersion | `Sources/AppVersion.swift` | `v12` → `v13` |
+| SpecType | `Sources/Models/SpecType.swift` | **NY** — fem tankelägen + default-kategori per läge |
+| ShapeCategory | `Sources/Models/ShapeCategory.swift` | Utvidgad: 20 kategorier över 4 lägen + färger via hex-helper + `available(for:)` |
+| CanvasModel | `Sources/Models/CanvasModel.swift` | + `@Published specType`, undo-stack, `deleteShape`, `deleteEdge`, `setSpecType` |
+| CanvasDocument | `Sources/Persistence/CanvasDocument.swift` | Skriver frontmatter med spec_type |
+| MermaidParser | `Sources/Mermaid/MermaidParser.swift` | Läser frontmatter + spec_type |
+| SpecTypePicker | `Sources/Views/SpecTypePicker.swift` | **NY** — topp-segmented picker |
+| EditShapeSheet | `Sources/Views/EditShapeSheet.swift` | Dynamiska kategorier per spec_type + delete-knapp |
+| DotGridBackground | `Sources/Views/DotGridBackground.swift` | **NY** — prickrutnät |
+| iPhoneFrameOverlay | `Sources/Views/iPhoneFrameOverlay.swift` | **NY** — iPhone-ram-overlay i UI-läge |
+| MermaidCodeSheet | `Sources/Views/MermaidCodeSheet.swift` | **NY** — kod-modal med kopiera |
+| CanvasView | `Sources/Views/CanvasView.swift` | + delete-callbacks, prickrutnät, iPhone-ram, context-menu på shape och edge |
+| ToolbarView | `Sources/Views/ToolbarView.swift` | + undo-knapp + visa-kod-knapp |
+| ContentView | `Sources/ContentView.swift` | Pipa allt nytt — SpecTypePicker, callbacks, code-sheet |
+| AppVersion | `Sources/AppVersion.swift` | `v13` → `v14` |
 
-## Planerat för v14 och framåt
+## Planerat för v15 och framåt
 
-- **MVP-3**: end-to-end-test — Kim ritar en HUD med kategorier, Claude genererar SwiftUI-komponenter från filen. **Kritisk grind** innan vi bygger mer canvas-finess.
-- **MVP-4**: iPhone-ram + UI-subtyper (knapp, panel, mätare, ikon) inom `ui`-kategorin.
-- **MVP-5**: roadmap-läge (`spec_type: roadmap`) med kategorier `feat`/`milestone`/`blocker`/`future`.
-- **MVP-6**: canvas-finess (multiselect, undo, jump-links, pan/zoom, prickrutnät).
-- **MVP-7**: arkitektur + flow-läge.
+- **MVP-3 (kritisk grind)**: end-to-end-test där Claude genererar SwiftUI från en Kim-ritad ui-spec.md.
+- **MVP-4**: UI-subtyper inom kategori `ui` (knapp, panel, mätare, ikon, textfält).
+- **MVP-5**: pan/zoom på oändlig canvas + minimap.
+- **MVP-6**: multiselect + flytta grupp, jump-links, kollaps/expand.
+- **MVP-7**: NSFilePresenter för automatisk live-reload utan re-öppna.
