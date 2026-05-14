@@ -1,8 +1,10 @@
 import Foundation
 import CoreGraphics
 
-enum ShapeType: String, Codable {
+enum ShapeType: String, Codable, CaseIterable {
     case circle
+    case rectangle
+    case diamond
 }
 
 struct ShapeNode: Identifiable, Codable {

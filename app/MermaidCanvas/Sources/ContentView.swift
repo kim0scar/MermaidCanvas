@@ -5,9 +5,10 @@ struct ContentView: View {
     @StateObject private var model = CanvasModel()
     @StateObject private var fileManager = CanvasFileManager()
 
-    @State private var statusText: String = "Tom canvas — tryck Cirkel eller Öppna"
+    @State private var statusText: String = "Tom canvas — tryck en form eller Öppna"
     @State private var statusIsError: Bool = false
-    @State private var canvasCenter: CGPoint = CGPoint(x: 200, y: 300)
+    @State private var canvasCenter: CGPoint = CGPoint(x: 200, y: 320)
+    @State private var edgeMode: Bool = false
     @State private var showImporter: Bool = false
     @State private var showExporter: Bool = false
     @State private var pendingDocument: CanvasDocument?
@@ -17,19 +18,24 @@ struct ContentView: View {
             ToolbarView(
                 model: model,
                 canvasCenter: canvasCenter,
+                edgeMode: edgeMode,
+                onToggleEdgeMode: toggleEdgeMode,
                 onOpen: { showImporter = true },
-                onSave: { save() }
+                onSave: save
             )
             GeometryReader { geo in
-                CanvasView(model: model)
-                    .onAppear {
-                        canvasCenter = CGPoint(x: geo.size.width / 2,
-                                               y: geo.size.height / 2)
-                    }
-                    .onChange(of: geo.size) { _, newSize in
-                        canvasCenter = CGPoint(x: newSize.width / 2,
-                                               y: newSize.height / 2)
-                    }
+                CanvasView(
+                    model: model,
+                    edgeMode: edgeMode,
+                    onShapeTap: handleShapeTap
+                )
+                .onAppear {
+                    canvasCenter = CGPoint(x: geo.size.width / 2,
+                                           y: geo.size.height / 2)
+                }
+                .onChange(of: geo.size) { _, ns in
+                    canvasCenter = CGPoint(x: ns.width / 2, y: ns.height / 2)
+                }
             }
             Text(statusText)
                 .font(.caption)
@@ -46,9 +52,7 @@ struct ContentView: View {
         ) { result in
             switch result {
             case .success(let urls):
-                if let url = urls.first {
-                    openFile(url)
-                }
+                if let url = urls.first { openFile(url) }
             case .failure(let err):
                 statusText = "Öppna avbruten: \(err.localizedDescription)"
                 statusIsError = true
@@ -75,23 +79,47 @@ struct ContentView: View {
         }
     }
 
+    private func toggleEdgeMode() {
+        edgeMode.toggle()
+        if !edgeMode {
+            model.cancelEdgeMode()
+            updateIdleStatus()
+        } else {
+            statusText = "Pil-mode: tryck startform"
+            statusIsError = false
+        }
+    }
+
+    private func handleShapeTap(_ id: UUID) {
+        let created = model.handleEdgeTap(on: id)
+        if created {
+            edgeMode = false
+            statusText = "Pil skapad — \(model.edges.count) total"
+        } else if model.pendingEdgeFrom != nil {
+            statusText = "Pil-mode: tryck målform (eller startformen igen för att avbryta)"
+        } else {
+            statusText = "Pil-mode: tryck startform"
+        }
+        statusIsError = false
+    }
+
     private func openFile(_ url: URL) {
         guard let content = fileManager.open(url: url) else {
             statusText = "Kunde inte läsa filen"
             statusIsError = true
             return
         }
-        let shapes = MermaidParser.parse(content)
-        model.replaceAll(with: shapes)
-        statusText = "Öppnad: \(url.lastPathComponent) — \(shapes.count) form\(shapes.count == 1 ? "" : "er")"
+        let parsed = MermaidParser.parse(content)
+        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges)
+        statusText = "Öppnad: \(url.lastPathComponent) — \(parsed.shapes.count) form\(parsed.shapes.count == 1 ? "" : "er"), \(parsed.edges.count) pil\(parsed.edges.count == 1 ? "" : "ar")"
         statusIsError = false
     }
 
     private func reloadFromFile() {
         guard let content = fileManager.readCurrent() else { return }
-        let shapes = MermaidParser.parse(content)
-        model.replaceAll(with: shapes)
-        statusText = "Uppdaterad från fil — \(shapes.count) form\(shapes.count == 1 ? "" : "er")"
+        let parsed = MermaidParser.parse(content)
+        model.replaceAll(shapes: parsed.shapes, edges: parsed.edges)
+        statusText = "Uppdaterad från fil — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
     }
 
@@ -99,7 +127,7 @@ struct ContentView: View {
         if fileManager.hasOpenFile {
             saveToOpenFile()
         } else {
-            pendingDocument = CanvasDocument(shapes: model.shapes)
+            pendingDocument = CanvasDocument(shapes: model.shapes, edges: model.edges)
             statusText = "Välj plats…"
             statusIsError = false
             showExporter = true
@@ -107,17 +135,25 @@ struct ContentView: View {
     }
 
     private func saveToOpenFile() {
-        let doc = CanvasDocument(shapes: model.shapes)
+        let doc = CanvasDocument(shapes: model.shapes, edges: model.edges)
         do {
             try fileManager.write(doc.content)
-            let count = model.shapes.count
             let name = fileManager.fileName ?? "fil"
-            statusText = "Sparad i \(name) — \(count) form\(count == 1 ? "" : "er")"
+            statusText = "Sparad i \(name) — \(model.shapes.count) former, \(model.edges.count) pilar"
             statusIsError = false
         } catch {
             statusText = "Fel: \(error.localizedDescription)"
             statusIsError = true
         }
+    }
+
+    private func updateIdleStatus() {
+        if model.shapes.isEmpty {
+            statusText = "Tom canvas — tryck en form eller Öppna"
+        } else {
+            statusText = "\(model.shapes.count) former, \(model.edges.count) pilar"
+        }
+        statusIsError = false
     }
 }
 
