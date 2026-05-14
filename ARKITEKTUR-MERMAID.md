@@ -1,4 +1,4 @@
-# ARKITEKTUR-MERMAID — Version v3
+# ARKITEKTUR-MERMAID — Version v4
 *Datum: 2026-05-14*
 
 Aktuell arkitektur för MermaidCanvas-appen. Uppdateras vid varje deploy enligt `VERSIONSHANTERING.md`.
@@ -11,19 +11,22 @@ flowchart TD
 
     subgraph App["📱 MermaidCanvas — iPhone"]
         ContentView["ContentView<br/>(huvudvy + status)"]
-        ToolbarView["ToolbarView<br/>(Cirkel blå + Spara grön)"]
+        ToolbarView["ToolbarView<br/>(Cirkel + Spara)"]
         CanvasView["CanvasView<br/>(rendering-yta)"]
-        CircleNodeView["CircleNodeView<br/>(en cirkel + drag-gest)"]
+        CircleNodeView["CircleNodeView<br/>(cirkel + drag-gest)"]
         CanvasModel["CanvasModel<br/>(@Published shapes)"]
         ShapeNode["ShapeNode<br/>(id, position, label, type)"]
         MermaidGenerator["MermaidGenerator<br/>(shapes → mermaid-kod)"]
         CanvasStore["CanvasStore<br/>(skriver canvas.md)"]
     end
 
-    File["📄 canvas.md<br/>(appens lokala Documents-mapp)"]
+    File["📄 canvas.md<br/>(Documents — synlig i Files-appen)"]
+    Files["📂 Files-appen<br/>På min iPhone → MermaidCanvas"]
 
     User -->|tap| ToolbarView
     User -->|drag| CircleNodeView
+    User -.->|öppnar| Files
+    Files -->|visar| File
     ToolbarView -->|addCircle| CanvasModel
     ToolbarView -->|onSave| ContentView
     CanvasModel -->|@Published| CanvasView
@@ -40,38 +43,33 @@ flowchart TD
 | Komponent | Fil | Ansvar |
 |---|---|---|
 | App-entry | `Sources/MermaidCanvasApp.swift` | SwiftUI App-entry. |
-| Huvudvy | `Sources/ContentView.swift` | Toolbar + canvas + status-rad. Triggar save\(\), visar omedelbar feedback. |
-| Toolbar | `Sources/Views/ToolbarView.swift` | Blå Cirkel + grön Spara, båda borderedProminent + contentShape. |
-| Canvas | `Sources/Views/CanvasView.swift` | Bakgrund + renderar varje ShapeNode. |
-| Cirkel-nod | `Sources/Views/CanvasView.swift` (CircleNodeView) | En cirkel + drag-gest. |
-| Data-modell | `Sources/Models/CanvasModel.swift` | `@MainActor` ObservableObject. addCircle\(\), updatePosition\(\). |
-| Form-data | `Sources/Models/ShapeNode.swift` | Identifiable + Codable: id, type, position, label. |
-| Mermaid-generator | `Sources/Mermaid/MermaidGenerator.swift` | shapes → flowchart-syntax enligt MERMAID-FAKTA.md. |
-| Persistens | `Sources/Persistence/CanvasStore.swift` | Skriver `canvas.md` till appens Documents. |
+| Huvudvy | `Sources/ContentView.swift` | Toolbar + canvas + status. |
+| Toolbar | `Sources/Views/ToolbarView.swift` | Cirkel + Spara, båda borderedProminent. |
+| Canvas | `Sources/Views/CanvasView.swift` | Bakgrund + renderar shapes. |
+| Cirkel-nod | `Sources/Views/CanvasView.swift` (CircleNodeView) | Cirkel + drag-gest. |
+| Data-modell | `Sources/Models/CanvasModel.swift` | `@MainActor` ObservableObject. |
+| Form-data | `Sources/Models/ShapeNode.swift` | Identifiable + Codable. |
+| Mermaid-generator | `Sources/Mermaid/MermaidGenerator.swift` | shapes → flowchart-syntax. |
+| Persistens | `Sources/Persistence/CanvasStore.swift` | Skriver `canvas.md` till Documents. |
+| Project config | `project.yml` | xcodegen-spec. Nu med UIFileSharingEnabled + LSSupportsOpeningDocumentsInPlace. |
 
-## Ändringar från v2
+## Ändringar från v3
 
-- **Tappable Spara-knapp**: båda knappar nu `borderedProminent` med olika tint (blå/grön) + `contentShape(Rectangle())` för säker tap-area.
-- **Omedelbar feedback**: status-raden visar "Sparar…" direkt när Spara trycks, sedan resultatet — så Kim ser att tappet registrerats.
-- **Layout-fix**: GeometryReader flyttad från root till runt CanvasView. Toolbar och status sitter naturligt i safe area.
-- **Status-rad bakgrund**: bytt till `secondarySystemBackground` för bättre kontrast.
+- **Files-app-access**: `UIFileSharingEnabled = YES` + `LSSupportsOpeningDocumentsInPlace = YES` i Info.plist (via xcodegen INFOPLIST_KEY_*). `canvas.md` är nu synlig i Files-appen.
 
-## Anteckningar för v3
+## Hur Kim hittar canvas.md
 
-- `canvas.md` ligger fortfarande i appens lokala Documents-mapp — inte iCloud, inte synlig i Files-appen.
-- Det är planerat för v4 (Files-app-access) eller v5 (iCloud-container).
+På iPhone:
+1. Öppna **Files**-appen
+2. **På min iPhone** → **MermaidCanvas**
+3. `canvas.md` ligger där
 
-## Planerat för v4
-
-Två alternativ — Kim väljer:
-- **Quick win**: lägg till `UIFileSharingEnabled` + `LSSupportsOpeningDocumentsInPlace` i Info.plist → `canvas.md` syns i Files-appen → På min iPhone → MermaidCanvas. Tar minuter.
-- **Riktig lösning**: iCloud Container via Apple Developer Portal → `canvas.md` syns automatiskt i iCloud Drive både på iPhone och Mac. Kräver manuellt steg i Portal.
-
-Eller båda i samma version.
+Kim kan öppna filen direkt, kopiera till iCloud Drive manuellt, eller dela till Mac via AirDrop / Mail.
 
 ## Planerat för v5+
 
-- Fyrkant + romb-former
-- Pilar mellan former
+- Fler formtyper: fyrkant, romb (beslutsruta)
+- Pilar mellan former med riktning
 - Namnge former (tap → text-input)
-- Läsa Mermaid → re-rendera canvas
+- iCloud-container (kräver Apple Developer Portal-setup)
+- Läsa Mermaid → re-rendera canvas (tvåvägs)
