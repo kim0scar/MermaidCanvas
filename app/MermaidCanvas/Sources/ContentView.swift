@@ -5,6 +5,8 @@ struct ContentView: View {
     @State private var statusText: String = "Tom canvas"
     @State private var statusIsError: Bool = false
     @State private var canvasCenter: CGPoint = CGPoint(x: 200, y: 300)
+    @State private var showExporter: Bool = false
+    @State private var pendingDocument: CanvasDocument?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,20 +31,29 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity)
                 .background(Color(.secondarySystemBackground))
         }
+        .fileExporter(
+            isPresented: $showExporter,
+            document: pendingDocument,
+            contentType: .plainText,
+            defaultFilename: "canvas.md"
+        ) { result in
+            switch result {
+            case .success(let url):
+                statusText = "Sparad: \(url.lastPathComponent)"
+                statusIsError = false
+            case .failure(let err):
+                statusText = "Avbruten eller fel: \(err.localizedDescription)"
+                statusIsError = true
+            }
+        }
     }
 
     private func save() {
-        statusText = "Sparar…"
-        statusIsError = false
         let mermaid = MermaidGenerator.generate(from: model.shapes)
-        do {
-            try CanvasStore.shared.save(mermaid: mermaid)
-            let count = model.shapes.count
-            statusText = "Sparad — \(count) form\(count == 1 ? "" : "er")"
-        } catch {
-            statusText = "Fel: \(error.localizedDescription)"
-            statusIsError = true
-        }
+        pendingDocument = CanvasDocument(mermaid: mermaid)
+        statusText = "Välj plats…"
+        statusIsError = false
+        showExporter = true
     }
 }
 
