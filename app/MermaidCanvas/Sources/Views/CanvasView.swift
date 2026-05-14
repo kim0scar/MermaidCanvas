@@ -78,23 +78,15 @@ struct ShapeView: View {
             }
     }
 
-    private var color: Color {
-        switch shape.type {
-        case .circle:    return .blue
-        case .rectangle: return .green
-        case .diamond:   return .orange
-        }
-    }
-
     @ViewBuilder
     private var background: some View {
         switch shape.type {
         case .circle:
-            Circle().fill(color.opacity(0.22))
+            Circle().fill(Color(.systemBackground))
         case .rectangle:
-            RoundedRectangle(cornerRadius: 10).fill(color.opacity(0.22))
+            RoundedRectangle(cornerRadius: 10).fill(Color(.systemBackground))
         case .diamond:
-            DiamondShape().fill(color.opacity(0.22))
+            DiamondShape().fill(Color(.systemBackground))
         }
     }
 
@@ -102,11 +94,11 @@ struct ShapeView: View {
     private var stroke: some View {
         switch shape.type {
         case .circle:
-            Circle().stroke(color, lineWidth: 2)
+            Circle().stroke(Color.primary, lineWidth: 2)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 10).stroke(color, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 10).stroke(Color.primary, lineWidth: 2)
         case .diamond:
-            DiamondShape().stroke(color, lineWidth: 2)
+            DiamondShape().stroke(Color.primary, lineWidth: 2)
         }
     }
 
