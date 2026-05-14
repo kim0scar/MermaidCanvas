@@ -12,8 +12,12 @@ struct ToolbarView: View {
             } label: {
                 Label("Cirkel", systemImage: "circle")
                     .labelStyle(.titleAndIcon)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 6)
             }
             .buttonStyle(.borderedProminent)
+            .tint(.blue)
+            .contentShape(Rectangle())
 
             Spacer()
 
@@ -22,11 +26,15 @@ struct ToolbarView: View {
             } label: {
                 Label("Spara", systemImage: "square.and.arrow.down")
                     .labelStyle(.titleAndIcon)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 6)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.borderedProminent)
+            .tint(.green)
+            .contentShape(Rectangle())
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(.thinMaterial)
+        .background(Color(.systemBackground))
     }
 }
