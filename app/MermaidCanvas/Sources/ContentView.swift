@@ -46,9 +46,11 @@ struct ContentView: View {
                 .onAppear {
                     canvasCenter = CGPoint(x: geo.size.width / 2,
                                            y: geo.size.height / 2)
+                    model.canvasSize = geo.size
                 }
                 .onChange(of: geo.size) { _, ns in
                     canvasCenter = CGPoint(x: ns.width / 2, y: ns.height / 2)
+                    model.canvasSize = ns
                 }
             }
 
@@ -160,6 +162,7 @@ struct ContentView: View {
         }
         let parsed = MermaidParser.parse(content)
         model.replaceAll(shapes: parsed.shapes, edges: parsed.edges, title: parsed.title)
+        if let size = parsed.canvasSize { model.canvasSize = size }
         statusText = "Öppnad: \(url.lastPathComponent) — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
     }
@@ -168,6 +171,7 @@ struct ContentView: View {
         guard let content = fileManager.readCurrent() else { return }
         let parsed = MermaidParser.parse(content)
         model.replaceAll(shapes: parsed.shapes, edges: parsed.edges, title: parsed.title)
+        if let size = parsed.canvasSize { model.canvasSize = size }
         statusText = "Uppdaterad från fil — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
     }
@@ -179,7 +183,8 @@ struct ContentView: View {
             pendingDocument = CanvasDocument(
                 title: model.canvasTitle,
                 shapes: model.shapes,
-                edges: model.edges
+                edges: model.edges,
+                canvasSize: model.canvasSize
             )
             statusText = "Välj plats…"
             statusIsError = false
@@ -191,7 +196,8 @@ struct ContentView: View {
         let doc = CanvasDocument(
             title: model.canvasTitle,
             shapes: model.shapes,
-            edges: model.edges
+            edges: model.edges,
+            canvasSize: model.canvasSize
         )
         do {
             try fileManager.write(doc.content)

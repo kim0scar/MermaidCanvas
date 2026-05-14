@@ -11,6 +11,7 @@ Den här tabellen är **alltid aktuell**. Uppdatera den så fort en ny sparplats
 | Vad | Var | Synkat till |
 |---|---|---|
 | **Projektkod + styrdokument** | `/Users/kim/2e Mermaid Code/` | git (lokalt) + GitHub |
+| **Metodfil: visuellt språk** | `METOD-VISUELL-DIALOG.md` (portabel — ska finnas med i alla projekt) | git |
 | **GitHub-repo (privat)** | https://github.com/kim0scar/MermaidCanvas | molnbackup, `kim0scar`-kontot |
 | **App-källkod (Swift)** | `app/MermaidCanvas/Sources/` (Models, Views, Mermaid, Persistence) | git |
 | **Xcode-projekt** | `app/MermaidCanvas/MermaidCanvas.xcodeproj/` (regenereras från `project.yml` via `xcodegen`) | git |
@@ -53,6 +54,7 @@ Användarens canvas-fil:
 8. **Språk**: svenska i kod-kommentarer (få sådana) och commit-meddelanden. Korta meningar.
 9. **Frågestil**: Kim är inte utvecklare. Gör rimliga antaganden, fråga bara vid riktiga vägval. Inget utvecklarjargong i svar.
 10. **Innan du ändrar kod**: läs `ARKITEKTUR-MERMAID.md` så du vet var saker bor.
+11. **Visuell dialog är delat språk**: när du läser eller skriver canvas-filer, följ `METOD-VISUELL-DIALOG.md` strikt. Förlustfri round-trip är icke förhandlingsbar — utan den fungerar inte hela syftet med appen.
 
 ## Filer du som Claude Code styrs av
 
@@ -61,6 +63,7 @@ Användarens canvas-fil:
 | `CLAUDE.md` | Den här filen — konstitutionen |
 | `PRODUKT.md` | VARFÖR och VAD: vision, scope, vad som hör/inte hör hemma |
 | `MERMAID-FAKTA.md` | Blueprint för Mermaid: syntax, fallgropar, rendering, parsing, best practices |
+| `METOD-VISUELL-DIALOG.md` | Protokoll för delat visuellt språk Kim ↔ Claude Code. Portabel — gäller alla projekt med visuell yta. |
 | `VERSIONSHANTERING.md` | Exakt checklista vid varje deploy / ny version |
 | `ARKITEKTUR-MERMAID.md` | Aktuell arkitektur: mermaid-diagram + fil-tabell |
 | `Start för ios appar Kim.md` | iPhone-deploy: signing, build, devicectl |

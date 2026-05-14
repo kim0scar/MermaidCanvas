@@ -6,6 +6,7 @@ enum MermaidParser {
         var title: String = ""
         var shapes: [ShapeNode] = []
         var edges: [EdgeConnection] = []
+        var canvasSize: CGSize? = nil
     }
 
     static func parse(_ markdown: String) -> ParsedCanvas {
@@ -47,6 +48,14 @@ enum MermaidParser {
 
         let nodes = (obj["nodes"] as? [[String: Any]]) ?? []
         let edges = (obj["edges"] as? [[String: Any]]) ?? []
+        var parsedCanvasSize: CGSize? = nil
+        if let canvas = obj["canvas"] as? [String: Any] {
+            let w = canvas["width"].map { numberValue($0) } ?? 0
+            let h = canvas["height"].map { numberValue($0) } ?? 0
+            if w > 0 && h > 0 {
+                parsedCanvasSize = CGSize(width: w, height: h)
+            }
+        }
 
         var idMap: [String: UUID] = [:]
         var shapes: [ShapeNode] = []
@@ -87,7 +96,7 @@ enum MermaidParser {
             edgeList.append(EdgeConnection(from: fromId, to: toId, label: label, bidirectional: bidi))
         }
 
-        return ParsedCanvas(shapes: shapes, edges: edgeList)
+        return ParsedCanvas(shapes: shapes, edges: edgeList, canvasSize: parsedCanvasSize)
     }
 
     private static func numberValue(_ value: Any) -> CGFloat {

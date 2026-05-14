@@ -14,6 +14,7 @@ final class CanvasModel: ObservableObject {
     @Published var edgeCreationMode: EdgeCreationMode = .off
     @Published var pendingEdgeFrom: UUID? = nil
     @Published var canvasTitle: String = ""
+    @Published var canvasSize: CGSize = CGSize(width: 393, height: 600)
 
     var isEdgeMode: Bool { edgeCreationMode != .off }
 

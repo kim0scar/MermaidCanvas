@@ -50,6 +50,7 @@ flowchart TD
 3. **Anteckning per form**: `ShapeNode.note: String` (default ""). Visas inte på canvasen. Sparas i state-JSON och i sheet:en. Följer med filen.
 4. **EditShapeSheet redesign**: tre sektioner — "Text i form" (toggle + textfield), "Storlek" (slider med ikoner), "Anteckning". Stöder både medium- och stora-detents.
 5. **`ShapeGeometry` är nu en exposed enum** med funktioner per shape istället för fasta konstanter.
+6. **Canvas-protokoll (delat språk)**: state-JSON innehåller nu `canvas: {width, height, shapeBaseWidth, shapeBaseHeight, unit}` så att alla läsare (även Claude Code från Mac) vet referensramen. `CanvasModel.canvasSize` håller aktuell storlek, uppdateras från GeometryReader. Reglerna för det visuella protokollet är samlade i `METOD-VISUELL-DIALOG.md`.
 
 ## Komponenter — ändringar i v12
 

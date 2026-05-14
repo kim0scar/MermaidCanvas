@@ -33,7 +33,7 @@ enum MermaidGenerator {
         return lines.joined(separator: "\n")
     }
 
-    static func canvasStateJSON(shapes: [ShapeNode], edges: [EdgeConnection]) -> String {
+    static func canvasStateJSON(shapes: [ShapeNode], edges: [EdgeConnection], canvasSize: CGSize) -> String {
         let mermaidIds: [UUID: String] = Dictionary(
             uniqueKeysWithValues: shapes.enumerated().map { ($1.id, "N\($0)") }
         )
@@ -58,7 +58,14 @@ enum MermaidGenerator {
                 "bidirectional": edge.bidirectional
             ]
         }
-        let dict: [String: Any] = ["nodes": nodes, "edges": edgeArr]
+        let canvas: [String: Any] = [
+            "width": Int(canvasSize.width.rounded()),
+            "height": Int(canvasSize.height.rounded()),
+            "shapeBaseWidth": 120,
+            "shapeBaseHeight": 80,
+            "unit": "pt"
+        ]
+        let dict: [String: Any] = ["canvas": canvas, "nodes": nodes, "edges": edgeArr]
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
               let str = String(data: data, encoding: .utf8) else { return "{}" }
         return str
