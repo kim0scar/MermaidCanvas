@@ -63,6 +63,7 @@ struct ShapeView: View {
                     .font(.system(size: 13 * shape.sizeMultiplier,
                                   weight: .medium,
                                   design: .rounded))
+                    .foregroundStyle(shape.category.textColor)
                     .multilineTextAlignment(.center)
                     .lineLimit(4)
                     .minimumScaleFactor(0.6)
@@ -100,11 +101,11 @@ struct ShapeView: View {
     private var background: some View {
         switch shape.type {
         case .circle:
-            Circle().fill(Color(.systemBackground))
+            Circle().fill(shape.category.fillColor)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 12).fill(Color(.systemBackground))
+            RoundedRectangle(cornerRadius: 12).fill(shape.category.fillColor)
         case .diamond:
-            DiamondShape().fill(Color(.systemBackground))
+            DiamondShape().fill(shape.category.fillColor)
         }
     }
 
@@ -112,11 +113,11 @@ struct ShapeView: View {
     private var stroke: some View {
         switch shape.type {
         case .circle:
-            Circle().stroke(Color.primary, lineWidth: 1.5)
+            Circle().stroke(shape.category.strokeColor, lineWidth: 1.5)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 12).stroke(Color.primary, lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: 12).stroke(shape.category.strokeColor, lineWidth: 1.5)
         case .diamond:
-            DiamondShape().stroke(Color.primary, lineWidth: 1.5)
+            DiamondShape().stroke(shape.category.strokeColor, lineWidth: 1.5)
         }
     }
 

@@ -72,13 +72,16 @@ enum MermaidParser {
             let sizeRaw = node["size"]
             let size = sizeRaw.map { numberValue($0) } ?? 1.0
             let note = (node["note"] as? String) ?? ""
+            let categoryRaw = (node["category"] as? String) ?? ShapeCategory.ui.rawValue
+            let category = ShapeCategory(rawValue: categoryRaw) ?? .ui
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
                 label: label,
                 showLabel: showLabel,
                 sizeMultiplier: max(0.3, min(3.0, size)),
-                note: note
+                note: note,
+                category: category
             )
             idMap[mid] = shape.id
             shapes.append(shape)
@@ -112,6 +115,7 @@ enum MermaidParser {
         let mermaidId: String
         let type: ShapeType
         let label: String
+        let category: ShapeCategory
     }
 
     private static func parseMermaid(_ markdown: String) -> ParsedCanvas {
@@ -121,10 +125,11 @@ enum MermaidParser {
         let block = String(markdown[start.upperBound..<end.lowerBound])
         let ns = block as NSString
 
+        // Tre former; valfritt :::klass-suffix
         let patterns: [(String, ShapeType)] = [
-            (#"(\w+)\(\(\s*\"([^\"]*?)\"\s*\)\)"#, .circle),
-            (#"(\w+)\[\s*\"([^\"]*?)\"\s*\]"#, .rectangle),
-            (#"(\w+)\{\s*\"([^\"]*?)\"\s*\}"#, .diamond)
+            (#"(\w+)\(\(\s*\"([^\"]*?)\"\s*\)\)(?::::(\w+))?"#, .circle),
+            (#"(\w+)\[\s*\"([^\"]*?)\"\s*\](?::::(\w+))?"#, .rectangle),
+            (#"(\w+)\{\s*\"([^\"]*?)\"\s*\}(?::::(\w+))?"#, .diamond)
         ]
 
         var seen = Set<String>()
@@ -139,7 +144,8 @@ enum MermaidParser {
                 let label = ns.substring(with: m.range(at: 2))
                     .replacingOccurrences(of: "#quot;", with: "\"")
                     .replacingOccurrences(of: "<br/>", with: "\n")
-                nodes.append(ParsedNode(mermaidId: id, type: type, label: label))
+                let category = categoryFor(mermaidId: id, classSuffixRange: m.range(at: 3), ns: ns)
+                nodes.append(ParsedNode(mermaidId: id, type: type, label: label, category: category))
             }
         }
 
@@ -186,7 +192,10 @@ enum MermaidParser {
         let centerY: CGFloat = 320
         if count == 1 {
             let n = nodes[0]
-            let shape = ShapeNode(type: n.type, position: CGPoint(x: centerX, y: centerY), label: n.label)
+            let shape = ShapeNode(type: n.type,
+                                  position: CGPoint(x: centerX, y: centerY),
+                                  label: n.label,
+                                  category: n.category)
             return [PositionedNode(mermaidId: n.mermaidId, shape: shape)]
         }
         let radius: CGFloat = 140
@@ -194,8 +203,24 @@ enum MermaidParser {
             let angle = (2.0 * .pi / Double(count)) * Double(i) - .pi / 2
             let x = centerX + radius * CGFloat(cos(angle))
             let y = centerY + radius * CGFloat(sin(angle))
-            let shape = ShapeNode(type: n.type, position: CGPoint(x: x, y: y), label: n.label)
+            let shape = ShapeNode(type: n.type,
+                                  position: CGPoint(x: x, y: y),
+                                  label: n.label,
+                                  category: n.category)
             return PositionedNode(mermaidId: n.mermaidId, shape: shape)
         }
+    }
+
+    /// Kategori i fallback-läge: först :::klass-suffix, annars prefix i id (ui_xxx), annars .ui.
+    private static func categoryFor(mermaidId: String, classSuffixRange: NSRange, ns: NSString) -> ShapeCategory {
+        if classSuffixRange.location != NSNotFound {
+            let raw = ns.substring(with: classSuffixRange)
+            if let cat = ShapeCategory(rawValue: raw) { return cat }
+        }
+        if let underscore = mermaidId.firstIndex(of: "_") {
+            let prefix = String(mermaidId[..<underscore])
+            if let cat = ShapeCategory(rawValue: prefix) { return cat }
+        }
+        return .ui
     }
 }

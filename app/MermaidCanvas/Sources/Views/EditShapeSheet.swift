@@ -5,6 +5,7 @@ struct ShapeEdit {
     var showLabel: Bool
     var sizeMultiplier: CGFloat
     var note: String
+    var category: ShapeCategory
 }
 
 struct EditShapeSheet: View {
@@ -30,6 +31,18 @@ struct EditShapeSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section("Kategori") {
+                    Picker("Kategori", selection: $draft.category) {
+                        ForEach(ShapeCategory.allCases) { cat in
+                            Text(cat.displayName).tag(cat)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    Text(categoryHint(draft.category))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section("Text i form") {
                     Toggle("Visa text", isOn: $draft.showLabel)
                     if draft.showLabel {
@@ -77,5 +90,14 @@ struct EditShapeSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+
+    private func categoryHint(_ cat: ShapeCategory) -> String {
+        switch cat {
+        case .ui:      return "UI-element — text syns på skärmen."
+        case .zone:    return "Layout-zon — region där UI placeras."
+        case .note:    return "Kommentar — syns aldrig som UI-text."
+        case .overlay: return "Overlay — modal, tooltip eller HUD-överlägg."
+        }
     }
 }

@@ -85,7 +85,8 @@ struct ContentView: View {
                         label: shape.label,
                         showLabel: shape.showLabel,
                         sizeMultiplier: shape.sizeMultiplier,
-                        note: shape.note
+                        note: shape.note,
+                        category: shape.category
                     ),
                     onSave: { edit in
                         model.updateShape(
@@ -93,7 +94,8 @@ struct ContentView: View {
                             label: edit.label,
                             showLabel: edit.showLabel,
                             sizeMultiplier: edit.sizeMultiplier,
-                            note: edit.note
+                            note: edit.note,
+                            category: edit.category
                         )
                         editingShapeId = nil
                     },

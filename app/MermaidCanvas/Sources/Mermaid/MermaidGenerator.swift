@@ -6,21 +6,21 @@ enum MermaidGenerator {
             return "flowchart TD\n    Tom[\"Tom canvas — lägg till en form\"]"
         }
         var lines: [String] = ["flowchart TD"]
-        let mermaidIds: [UUID: String] = Dictionary(
-            uniqueKeysWithValues: shapes.enumerated().map { ($1.id, "N\($0)") }
-        )
+        let mermaidIds = makeMermaidIds(for: shapes)
+
         for shape in shapes {
             let id = mermaidIds[shape.id]!
             let label = shape.showLabel ? (shape.label.isEmpty ? " " : shape.label) : " "
             let safe = escape(label)
-            let line: String
+            let body: String
             switch shape.type {
-            case .circle:    line = "    \(id)((\"\(safe)\"))"
-            case .rectangle: line = "    \(id)[\"\(safe)\"]"
-            case .diamond:   line = "    \(id){\"\(safe)\"}"
+            case .circle:    body = "((\"\(safe)\"))"
+            case .rectangle: body = "[\"\(safe)\"]"
+            case .diamond:   body = "{\"\(safe)\"}"
             }
-            lines.append(line)
+            lines.append("    \(id)\(body):::\(shape.category.rawValue)")
         }
+
         for edge in edges {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
             let arrow = edge.bidirectional ? "<-->" : "-->"
@@ -30,13 +30,20 @@ enum MermaidGenerator {
                 lines.append("    \(from) \(arrow)|\"\(escape(edge.label))\"| \(to)")
             }
         }
+
+        let used = Set(shapes.map { $0.category })
+        if !used.isEmpty {
+            lines.append("")
+            for cat in ShapeCategory.allCases where used.contains(cat) {
+                lines.append("    classDef \(cat.rawValue) \(cat.mermaidClassDef);")
+            }
+        }
+
         return lines.joined(separator: "\n")
     }
 
     static func canvasStateJSON(shapes: [ShapeNode], edges: [EdgeConnection], canvasSize: CGSize) -> String {
-        let mermaidIds: [UUID: String] = Dictionary(
-            uniqueKeysWithValues: shapes.enumerated().map { ($1.id, "N\($0)") }
-        )
+        let mermaidIds = makeMermaidIds(for: shapes)
         let nodes: [[String: Any]] = shapes.map { shape in
             [
                 "id": mermaidIds[shape.id]!,
@@ -44,6 +51,7 @@ enum MermaidGenerator {
                 "y": Int(shape.position.y.rounded()),
                 "label": shape.label,
                 "type": shape.type.rawValue,
+                "category": shape.category.rawValue,
                 "showLabel": shape.showLabel,
                 "size": Double(shape.sizeMultiplier),
                 "note": shape.note
@@ -69,6 +77,16 @@ enum MermaidGenerator {
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
               let str = String(data: data, encoding: .utf8) else { return "{}" }
         return str
+    }
+
+    // Genererar prefix-id per kategori. Två noder i samma kategori får olika suffix:
+    // ui_N0, ui_N1, zone_N2 osv. Index är globalt så det aldrig krockar.
+    private static func makeMermaidIds(for shapes: [ShapeNode]) -> [UUID: String] {
+        var ids: [UUID: String] = [:]
+        for (i, s) in shapes.enumerated() {
+            ids[s.id] = "\(s.category.idPrefix)_N\(i)"
+        }
+        return ids
     }
 
     private static func escape(_ text: String) -> String {

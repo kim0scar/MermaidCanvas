@@ -22,6 +22,7 @@ struct ShapeNode: Identifiable, Codable {
     var showLabel: Bool
     var sizeMultiplier: CGFloat
     var note: String
+    var category: ShapeCategory
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -29,7 +30,8 @@ struct ShapeNode: Identifiable, Codable {
          label: String = "",
          showLabel: Bool = true,
          sizeMultiplier: CGFloat = 1.0,
-         note: String = "") {
+         note: String = "",
+         category: ShapeCategory = .ui) {
         self.id = id
         self.type = type
         self.position = position
@@ -37,5 +39,6 @@ struct ShapeNode: Identifiable, Codable {
         self.showLabel = showLabel
         self.sizeMultiplier = sizeMultiplier
         self.note = note
+        self.category = category
     }
 }

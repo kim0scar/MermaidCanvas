@@ -1,7 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v12
-*Datum: 2026-05-14*
+# ARKITEKTUR-MERMAID — Version v13
+*Datum: 2026-05-15*
 
-> **Status**: kod skriven och `BUILD SUCCEEDED`. Install/launch på iPhone har **inte** körts (Kim avbröt för att säkerställa att allt sparas innan eventuell session-clear). Koden är pushad till GitHub. Vid nästa session: install + launch + verifiera enligt VERSIONSHANTERING.md.
+> **Status (när skriven):** kod skriven, build + deploy pågår. Vid nästa session: verifiera enligt VERSIONSHANTERING.md.
 
 ## Diagram
 
@@ -10,20 +10,22 @@ flowchart TD
     Kim["👤 Kim"]
     Claude["🤖 Claude Code"]
 
-    subgraph App["📱 MermaidCanvas v12"]
+    subgraph App["📱 MermaidCanvas v13"]
         ToolbarView["ToolbarView"]
         TitleField["TextField rubrik"]
-        CanvasView["CanvasView"]
-        ShapeView["ShapeView<br/>(använder shape.sizeMultiplier)"]
-        EditShapeSheet["EditShapeSheet<br/>(text + visa-toggle + storlek + anteckning)"]
-        EdgesView["EdgesView<br/>(kantpunkt per shape-storlek)"]
-        CanvasModel["CanvasModel<br/>(+ updateShape med 4 fält)"]
-        ShapeNode["ShapeNode<br/>(+ showLabel + sizeMultiplier + note)"]
+        CanvasView["CanvasView<br/>(fyll/stroke/text per kategori)"]
+        ShapeView["ShapeView"]
+        EditShapeSheet["EditShapeSheet<br/>(kategori + text + storlek + anteckning)"]
+        EdgesView["EdgesView"]
+        CanvasModel["CanvasModel<br/>(updateShape tar category)"]
+        ShapeNode["ShapeNode<br/>(+ category: ShapeCategory)"]
+        ShapeCategory["ShapeCategory<br/>(ui / zone / note / overlay)"]
         EdgeConnection["EdgeConnection"]
-        MermaidGenerator["MermaidGenerator<br/>(state-JSON innehåller showLabel/size/note)"]
-        MermaidParser["MermaidParser<br/>(läser showLabel/size/note)"]
+        MermaidGenerator["MermaidGenerator<br/>(prefix + :::klass + classDef + category i JSON)"]
+        MermaidParser["MermaidParser<br/>(läser category, strippar prefix i fallback)"]
         CanvasDocument["CanvasDocument"]
         CanvasFileManager["CanvasFileManager"]
+        AppVersion["AppVersion<br/>(v13)"]
     end
 
     File["📄 fil.md"]
@@ -31,7 +33,8 @@ flowchart TD
     Kim --> ToolbarView
     Kim -->|tap form| ShapeView
     ShapeView -->|onEdit| EditShapeSheet
-    EditShapeSheet -->|spara label/visa/storlek/anteckning| CanvasModel
+    EditShapeSheet -->|kategori + label + storlek + note| CanvasModel
+    ShapeNode --> ShapeCategory
     CanvasModel --> CanvasView
     CanvasView --> ShapeView
     CanvasView --> EdgesView
@@ -43,29 +46,34 @@ flowchart TD
     Claude -.-> File
 ```
 
-## Ändringar från v11
+## Ändringar från v12
 
-1. **Storlek per form**: `ShapeNode.sizeMultiplier: CGFloat` (default 1.0, range 0.5–2.0 i UI). ShapeView och EdgesView räknar dimensioner från `sizeMultiplier`. Pilarnas kantpunkter följer den nya storleken.
-2. **Toggle visa/dölj text**: `ShapeNode.showLabel: Bool` (default true). ShapeView ritar bara Text om `showLabel == true`. I Mermaid-koden genereras en form med ett mellanslag som etikett om text är dold (Mermaid-kompatibelt).
-3. **Anteckning per form**: `ShapeNode.note: String` (default ""). Visas inte på canvasen. Sparas i state-JSON och i sheet:en. Följer med filen.
-4. **EditShapeSheet redesign**: tre sektioner — "Text i form" (toggle + textfield), "Storlek" (slider med ikoner), "Anteckning". Stöder både medium- och stora-detents.
-5. **`ShapeGeometry` är nu en exposed enum** med funktioner per shape istället för fasta konstanter.
-6. **Canvas-protokoll (delat språk)**: state-JSON innehåller nu `canvas: {width, height, shapeBaseWidth, shapeBaseHeight, unit}` så att alla läsare (även Claude Code från Mac) vet referensramen. `CanvasModel.canvasSize` håller aktuell storlek, uppdateras från GeometryReader. Reglerna för det visuella protokollet är samlade i `METOD-VISUELL-DIALOG.md`.
+1. **Semantisk kategori per form (Lager 2 i METOD-VISUELL-DIALOG.md)**: ny `ShapeCategory`-enum (`ui` / `zone` / `note` / `overlay`) som egen fil. `ShapeNode` har nu `category: ShapeCategory` (default `.ui`).
+2. **Kategori-väljare i EditShapeSheet**: ny section "Kategori" med segmented picker + hint-text per kategori.
+3. **Färg per kategori i canvas**: `ShapeView` fyller form och stroke från `shape.category.fillColor` / `strokeColor`. Textfärg från `category.textColor`.
+4. **Mermaid-export med semantik**: `MermaidGenerator` skriver nu prefix-id (`ui_N0`, `zone_N1`), `:::klass`-suffix per nod och `classDef`-rader per använd kategori. GitHub-rendering visar färgad mermaid.
+5. **State-JSON innehåller `category`**: full round-trip av semantik. Parsern läser med default `.ui`.
+6. **Fallback-parser hanterar `:::klass`-suffix och prefix-id**: när JSON saknas härleds kategori från `:::klass` eller från id-prefix.
+7. **AppVersion bumpad till v13**: synlig som badge i status-bar.
 
-## Komponenter — ändringar i v12
+## Komponenter — ändringar i v13
 
 | Komponent | Fil | Ändring |
 |---|---|---|
-| ShapeNode | `Sources/Models/ShapeNode.swift` | + `showLabel`, `sizeMultiplier`, `note` |
-| CanvasModel | `Sources/Models/CanvasModel.swift` | `updateShape(id:label:showLabel:sizeMultiplier:note:)` ersätter `updateLabel` |
-| EditShapeSheet | `Sources/Views/EditShapeSheet.swift` | Ny `ShapeEdit`-struct. Sheet med 3 sektioner (text + toggle, storlek-slider, anteckning) |
-| CanvasView | `Sources/Views/CanvasView.swift` | `ShapeGeometry` har nu per-shape-funktioner som beaktar `sizeMultiplier`. ShapeView ritar Text bara om `showLabel`. |
-| MermaidGenerator | `Sources/Mermaid/MermaidGenerator.swift` | State-JSON innehåller `showLabel`/`size`/`note`. Genererar mellanslag i mermaid-label om `showLabel == false`. |
-| MermaidParser | `Sources/Mermaid/MermaidParser.swift` | Läser `showLabel`/`size`/`note` från state-JSON med säkra defaults. Klampar size till 0.3–3.0. |
-| ContentView | `Sources/ContentView.swift` | Skickar `ShapeEdit` till sheet och tar tillbaka uppdaterat ShapeEdit vid Klar. |
+| ShapeCategory | `Sources/Models/ShapeCategory.swift` | **NY** — enum med fyra kategorier + färger + classDef-strängar |
+| ShapeNode | `Sources/Models/ShapeNode.swift` | + `category: ShapeCategory` med default `.ui` |
+| CanvasModel | `Sources/Models/CanvasModel.swift` | `updateShape(...)` tar `category:` |
+| EditShapeSheet | `Sources/Views/EditShapeSheet.swift` | + section "Kategori" med segmented picker. `ShapeEdit` har `category`. |
+| CanvasView | `Sources/Views/CanvasView.swift` | Fyll, stroke och textfärg per `shape.category` |
+| MermaidGenerator | `Sources/Mermaid/MermaidGenerator.swift` | Prefix-id, `:::klass`, `classDef` per använd kategori, `category` i state-JSON |
+| MermaidParser | `Sources/Mermaid/MermaidParser.swift` | Läser `category` från state-JSON. Fallback härleder kategori från `:::klass` eller prefix. |
+| ContentView | `Sources/ContentView.swift` | Passar `category` mellan sheet och modell |
+| AppVersion | `Sources/AppVersion.swift` | `v12` → `v13` |
 
-## Planerat för v13 och framåt
+## Planerat för v14 och framåt
 
-- **v13**: regnbåge-knapp + färgväljare per form (Kims tidigare önskemål).
-- **v14**: Apple-snygg app-ikon (1024×1024 + AppIcon.appiconset).
-- **v15+**: NSFilePresenter för automatisk live-reload utan re-öppna, bookmark för senast öppnade fil, ta bort form/pil, pan/zoom-canvas.
+- **MVP-3**: end-to-end-test — Kim ritar en HUD med kategorier, Claude genererar SwiftUI-komponenter från filen. **Kritisk grind** innan vi bygger mer canvas-finess.
+- **MVP-4**: iPhone-ram + UI-subtyper (knapp, panel, mätare, ikon) inom `ui`-kategorin.
+- **MVP-5**: roadmap-läge (`spec_type: roadmap`) med kategorier `feat`/`milestone`/`blocker`/`future`.
+- **MVP-6**: canvas-finess (multiselect, undo, jump-links, pan/zoom, prickrutnät).
+- **MVP-7**: arkitektur + flow-läge.
