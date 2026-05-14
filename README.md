@@ -6,9 +6,11 @@ iPhone-app: visuell flödesschema-editor utan skrivande. Dra former, allt sparas
 
 Läs i denna ordning:
 1. `CLAUDE.md` — konstitutionen
-2. `VERSIONSHANTERING.md` — checklista vid varje deploy
-3. `ARKITEKTUR-MERMAID.md` — aktuell arkitektur
-4. `Start för ios appar Kim.md` — iPhone-deploy-flödet
+2. `PRODUKT.md` — vad appen är, för vem, varför (scope-ankare)
+3. `MERMAID-FAKTA.md` — blueprint för Mermaid (syntax, fallgropar, rendering)
+4. `VERSIONSHANTERING.md` — checklista vid varje deploy
+5. `ARKITEKTUR-MERMAID.md` — aktuell arkitektur
+6. `Start för ios appar Kim.md` — iPhone-deploy-flödet
 
 ## Status
 

@@ -16,19 +16,23 @@ Användarens canvas-fil:
 
 ## Regler för Claude Code (icke förhandlingsbara)
 
-1. **Versionshantering**: följ alltid `VERSIONSHANTERING.md`. Hoppa inte över steg.
-2. **Modulär kod**: små filer, en sak per fil. Hellre fler filer än en stor. Inga monolitfiler — även om det blir mer kod totalt.
-3. **Arkitektur som sanning**: efter varje deploy ska `ARKITEKTUR-MERMAID.md` uppdateras så att diagrammet alltid speglar nuvarande kod.
-4. **iOS-deploy**: följ `Start för ios appar Kim.md` för Team ID, signing och devicectl-flödet. Allt står där.
-5. **Språk**: svenska i kod-kommentarer (få sådana) och commit-meddelanden. Korta meningar.
-6. **Frågestil**: Kim är inte utvecklare. Gör rimliga antaganden, fråga bara vid riktiga vägval. Inget utvecklarjargong i svar.
-7. **Innan du ändrar kod**: läs `ARKITEKTUR-MERMAID.md` så du vet var saker bor.
+1. **Vid scope-tvivel — läs `PRODUKT.md` först.** Den definierar vad som hör/inte hör hemma i appen.
+2. **Vid Mermaid-tvivel — läs `MERMAID-FAKTA.md`.** Den är blueprinten för hur Mermaid faktiskt fungerar. Gissa aldrig syntax.
+3. **Versionshantering**: följ alltid `VERSIONSHANTERING.md`. Hoppa inte över steg.
+4. **Modulär kod**: små filer, en sak per fil. Hellre fler filer än en stor. Inga monolitfiler — även om det blir mer kod totalt.
+5. **Arkitektur som sanning**: efter varje deploy ska `ARKITEKTUR-MERMAID.md` uppdateras så att diagrammet alltid speglar nuvarande kod.
+6. **iOS-deploy**: följ `Start för ios appar Kim.md` för Team ID, signing och devicectl-flödet. Allt står där.
+7. **Språk**: svenska i kod-kommentarer (få sådana) och commit-meddelanden. Korta meningar.
+8. **Frågestil**: Kim är inte utvecklare. Gör rimliga antaganden, fråga bara vid riktiga vägval. Inget utvecklarjargong i svar.
+9. **Innan du ändrar kod**: läs `ARKITEKTUR-MERMAID.md` så du vet var saker bor.
 
 ## Filer du som Claude Code styrs av
 
 | Fil | Vad den säger |
 |---|---|
 | `CLAUDE.md` | Den här filen — konstitutionen |
+| `PRODUKT.md` | VARFÖR och VAD: vision, scope, vad som hör/inte hör hemma |
+| `MERMAID-FAKTA.md` | Blueprint för Mermaid: syntax, fallgropar, rendering, parsing, best practices |
 | `VERSIONSHANTERING.md` | Exakt checklista vid varje deploy / ny version |
 | `ARKITEKTUR-MERMAID.md` | Aktuell arkitektur: mermaid-diagram + fil-tabell |
 | `Start för ios appar Kim.md` | iPhone-deploy: signing, build, devicectl |

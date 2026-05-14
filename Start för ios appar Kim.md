@@ -4,9 +4,22 @@
 
 ---
 
+## 🤖 AI-bootstrap — gör detta FÖRST i ett nytt projekt
+
+När Kim hänvisar dig till denna fil i en ny projektmapp är ditt första steg (innan något annat):
+
+1. **Skapa `.claude/settings.local.json`** i den aktuella projektmappen med iOS-deploy-allowlistan från avsnittet "Claude Code-permissions" nedan. Detta görs *innan* du försöker köra något deploy-kommando — då slipper Kim klicka "tillåt" en enda gång under sessionen.
+2. **Läs hela detta dokument** så du har Team ID, device-ID, bundle ID-konvention och fallgropar i huvudet.
+3. **Verifiera miljön** med kommandona under "Steg 0" — tar 2 sekunder, bekräftar att Godot/Xcode/cert/iPhone fortfarande är på plats.
+4. **Bekräfta för Kim på 1 rad:** "✅ Setup klar, redo att deploya till iPhone". Sedan jobbar du autonomt — Kim ska bara skriva *vad* appen ska göra, aldrig godkänna *hur* den byggs.
+
+Det är hela mandatet. Kim klickar inget. Inga frågor om filer-på-disk, inga "tillåt detta kommando", inga Xcode-knappar. Allt körs via Bash från Claude.
+
+---
+
 ## TL;DR — Allt är redan installerat
 
-Apple Developer-konto, signing cert, parat device, alla SDK:er och Godot iOS-templates finns. Workflow är 100% scriptbar — ingen kabel behövs.
+Apple ID (**gratis Individual — INTE paid Developer Program**), signing cert, parat device, alla SDK:er och Godot iOS-templates finns. Claude Code är konfigurerad så hela deploy-flödet körs utan permission-prompts. Workflow är 100% scriptbar — ingen kabel behövs.
 
 ---
 
@@ -37,11 +50,65 @@ Apple Developer-konto, signing cert, parat device, alla SDK:er och Godot iOS-tem
 
 ---
 
+## Claude Code-permissions — så slipper Kim klicka "tillåt"
+
+Hela detta deploy-flöde körs av Claude utan att Kim behöver godkänna varje kommando. Det fungerar tack vare två lager:
+
+### Globalt (alla sessioner överallt)
+
+`~/.claude/settings.json`:
+```json
+{
+  "skipAutoPermissionPrompt": true,
+  "permissions": { "defaultMode": "auto" }
+}
+```
+
+`defaultMode: "auto"` sätter Claude i tillåtande läge från start. `skipAutoPermissionPrompt: true` hoppar över startdialogen som annars frågar om man vill aktivera det. **Redan satt — rör inte.**
+
+### Per projekt (skapa direkt vid projektstart)
+
+Skapa `<projektmapp>/.claude/settings.local.json` med iOS-deploy-allowlistan **innan** Claude börjar — då slipper Kim klicka "tillåt" första gången varje kommando råkar ut för promten:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p builds/ios)",
+      "Bash(mkdir -p build/ios)",
+      "Bash(/Applications/Godot.app/Contents/MacOS/Godot --headless *)",
+      "Bash(godot --headless *)",
+      "Bash(xcodebuild *)",
+      "Bash(xcrun devicectl *)",
+      "Bash(xcrun xctrace *)",
+      "Bash(xcrun simctl *)",
+      "Bash(security find-identity *)",
+      "Bash(security find-certificate *)",
+      "Bash(security cms *)",
+      "Bash(qlmanage -t *)",
+      "Bash(sips *)",
+      "Bash(chmod +x *deploy*.sh)",
+      "Bash(bash *deploy*.sh)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh repo *)",
+      "Bash(gh auth *)"
+    ]
+  }
+}
+```
+
+> 🔑 **Insikt:** Det är **projektmappens** `.claude/settings.local.json` som styr promptarna, inte global config. En tom mapp = ny session frågar om allt. Förfyll listan så är Claude direkt produktiv. RYMDSPEL-mappen har en längre ackumulerad lista som referens: `/Users/kim/RYMDSPEL/.claude/settings.local.json`.
+
+---
+
 ## Apple-signing — KRITISKT
 
 | | |
 |---|---|
 | Apple-konto | kim.lundqvist@gmail.com |
+| Kontotyp | **Free Apple ID (Individual)** — 7-dagars provisioning profile TTL, ingen TestFlight |
 | **Team ID** | **`SFXR8MV6MP`** ← använd detta |
 | Signing identity (cert) | `Apple Development: kim.lundqvist@gmail.com (JQ5BQY5VNU)` |
 | Cert fingerprint (SHA-1) | `11DDA959AE6B2B9BB5AC14874CD771219989597C` |
@@ -226,6 +293,15 @@ Kör efter ändringar i Godot-projektet — re-exporterar, bygger, installerar, 
 ---
 
 ## Fallgropar / lärdomar (Echowake 2026-05-10)
+
+### 🚨 Free Apple ID = 7 dagars provisioning profile TTL
+Free Individual-kontot ger `TimeToLive: 7` på varje genererad provisioning profile (paid Developer Program ger `365`). Konsekvens: appen på iPhone slutar starta efter 7 dagar tills den re-installeras med ny build. **Lösning:** kör `deploy_iphone.sh` minst en gång per vecka, eller köp $99/år Developer Program om det börjar störa. TestFlight kräver paid-kontot. Verifiera TTL med:
+```bash
+for f in ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles/*.mobileprovision; do
+  security cms -D -i "$f" 2>/dev/null | grep -A1 TimeToLive | grep integer
+done
+# → <integer>7</integer>  = free  |  <integer>365</integer> = paid
+```
 
 ### 🚨 Team ID ≠ cert-CN-suffix
 Cert-strängen "Apple Development: kim.lundqvist@gmail.com (JQ5BQY5VNU)" — `(JQ5BQY5VNU)` är **inte** Team ID, det är cert-CN-suffix. Riktiga Team ID `SFXR8MV6MP` finns i `OU=`-fältet. Verifieringskommando i avsnittet ovan.
