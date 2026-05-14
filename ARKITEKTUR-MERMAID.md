@@ -1,105 +1,68 @@
-# ARKITEKTUR-MERMAID — Version v7
+# ARKITEKTUR-MERMAID — Version v8
 *Datum: 2026-05-14*
 
 Aktuell arkitektur för MermaidCanvas-appen. Uppdateras vid varje deploy enligt `VERSIONSHANTERING.md`.
 
 ## Diagram
 
+Samma arkitektur som v7 — endast pil-rendering har förbättrats. Inga nya komponenter eller flöden.
+
 ```mermaid
 flowchart TD
     Kim["👤 Kim"]
-    Claude["🤖 Claude Code<br/>(Mac)"]
+    Claude["🤖 Claude Code (Mac)"]
 
-    subgraph App["📱 MermaidCanvas — iPhone"]
-        ContentView["ContentView<br/>(orkestrerar allt)"]
-        ToolbarView["ToolbarView<br/>(Cirkel/Box/Romb + Pil + Öppna/Spara)"]
-        CanvasView["CanvasView<br/>(rendering-yta)"]
-        ShapeView["ShapeView<br/>(cirkel/box/romb + drag eller tap)"]
-        EdgesView["EdgesView<br/>(pilar mellan former)"]
-        DiamondShape["DiamondShape<br/>(custom Shape-path)"]
-        CanvasModel["CanvasModel<br/>(shapes + edges + edge-mode)"]
-        ShapeNode["ShapeNode<br/>(circle/rectangle/diamond)"]
-        EdgeConnection["EdgeConnection<br/>(from/to/label)"]
-        MermaidGenerator["MermaidGenerator<br/>(shapes+edges → mermaid + JSON state)"]
-        MermaidParser["MermaidParser<br/>(MD → shapes+edges)"]
-        CanvasDocument["CanvasDocument<br/>(FileDocument)"]
-        CanvasFileManager["CanvasFileManager<br/>(öppen fil + polling 2s)"]
+    subgraph App["📱 MermaidCanvas v8"]
+        ToolbarView["ToolbarView"]
+        CanvasView["CanvasView<br/>(EdgesView räknar nu kantpunkter)"]
+        ShapeView["ShapeView"]
+        EdgesView["EdgesView<br/>(geometry-aware)"]
+        ShapeGeometry["ShapeGeometry<br/>(width/height/circleRadius)"]
+        CanvasModel["CanvasModel"]
+        ShapeNode["ShapeNode"]
+        EdgeConnection["EdgeConnection"]
+        MermaidGenerator["MermaidGenerator"]
+        MermaidParser["MermaidParser"]
+        CanvasDocument["CanvasDocument"]
+        CanvasFileManager["CanvasFileManager"]
     end
 
-    Picker["📂 iOS Picker"]
     File["📄 fil.md"]
 
-    Kim -->|tap form-knapp| ToolbarView
-    Kim -->|tap Pil + tap form 1 + tap form 2| ToolbarView
-    Kim -->|drag| ShapeView
-    Kim -->|välj fil| Picker
-
-    ToolbarView -->|addShape / cancelEdgeMode| CanvasModel
-    ToolbarView -->|onOpen / onSave / onToggleEdgeMode| ContentView
-    CanvasModel -->|@Published| CanvasView
+    Kim --> ToolbarView
+    Kim --> ShapeView
+    ToolbarView --> CanvasModel
+    CanvasModel --> CanvasView
     CanvasView --> ShapeView
     CanvasView --> EdgesView
-    ShapeView -->|drag uppdaterar position| CanvasModel
-    ShapeView -->|tap i pil-mode| ContentView
-    ContentView -->|handleEdgeTap| CanvasModel
-
-    ContentView -->|generera| MermaidGenerator
-    CanvasModel -->|shapes+edges| MermaidGenerator
-    MermaidGenerator -->|mermaid+state| CanvasDocument
-    ContentView -->|skriv| CanvasFileManager
-    CanvasFileManager -->|write| File
-    CanvasDocument -.->|fileExporter| Picker
-    Picker -->|skapar ny fil| File
-
-    Picker -->|välj öppna| CanvasFileManager
-    CanvasFileManager -->|läs| File
-    CanvasFileManager -->|content| ContentView
-    ContentView -->|parsa| MermaidParser
-    MermaidParser -->|shapes+edges| CanvasModel
-
+    EdgesView -.läser geometri-konstanter.-> ShapeGeometry
+    EdgesView -.räknar kantpunkt per shape-type.-> ShapeNode
     Claude -.->|skriver| File
-    CanvasFileManager -->|polling 2s| ContentView
+    CanvasFileManager -->|läser| File
 ```
 
-## Komponenter
+## Komponenter (oförändrade från v7)
 
 | Komponent | Fil | Ansvar |
 |---|---|---|
-| App-entry | `Sources/MermaidCanvasApp.swift` | SwiftUI App-entry. |
-| Huvudvy | `Sources/ContentView.swift` | Orkestrerar open/save/reload, edge-mode, shape-tap. |
-| Toolbar | `Sources/Views/ToolbarView.swift` | 3 form-knappar (Cirkel/Box/Romb), Pil-toggle, Öppna, Spara. |
-| Canvas | `Sources/Views/CanvasView.swift` | Bakgrund + EdgesView + ShapeView per form. |
-| Form-vy | `Sources/Views/CanvasView.swift` (ShapeView) | Renderar valfri ShapeType. Drag (utanför pil-mode) eller tap (i pil-mode). |
-| Diamond-path | `Sources/Views/CanvasView.swift` (DiamondShape) | Custom Shape-path för romb. |
-| Pil-rendering | `Sources/Views/CanvasView.swift` (EdgesView) | Canvas-baserad rendering av pilar mellan former. |
-| Data-modell | `Sources/Models/CanvasModel.swift` | shapes, edges, pendingEdgeFrom. `handleEdgeTap`. |
-| Form-data | `Sources/Models/ShapeNode.swift` | circle/rectangle/diamond. |
-| Pil-data | `Sources/Models/EdgeConnection.swift` | from-UUID, to-UUID, label. |
-| Mermaid-generator | `Sources/Mermaid/MermaidGenerator.swift` | shapes+edges → flowchart + canvasState-JSON. |
-| Mermaid-parser | `Sources/Mermaid/MermaidParser.swift` | MD → shapes+edges. State-JSON eller mermaid-fallback. |
-| Dokument | `Sources/Persistence/CanvasDocument.swift` | FileDocument: bygger MD. |
-| Fil-hantering | `Sources/Persistence/CanvasFileManager.swift` | Öppen URL, läs/skriv, polling 2s. |
+| Geometri-konstanter (NY i v8) | `Sources/Views/CanvasView.swift` (private ShapeGeometry) | width, height, halfWidth, halfHeight, circleRadius — delade mellan ShapeView och EdgesView. |
+| Pil-rendering | `Sources/Views/CanvasView.swift` (EdgesView) | Räknar nu **kantpunkter** per shape-typ innan ritning. |
+| Övriga komponenter | Samma som v7 | Oförändrade. |
 
-## Ändringar från v6
+## Ändringar från v7
 
-- **3 formtyper**: cirkel (blå), fyrkant (grön), romb (orange). Toolbar har en knapp per typ.
-- **Pilar mellan former**: ny `EdgeConnection`-modell + EdgesView som renderar pilar med pilhuvuden. Pilar bevaras i Mermaid-koden och i canvasState-JSON.
-- **Pil-mode**: lila "Pil"-knapp i toolbar togglar mode. När mode är aktivt: tap startform (röd ring) → tap målform → pil skapas och mode stängs av. Drag är avstängd i pil-mode.
-- **Generator + parser uppdaterade** för alla 3 shape-typer (`((...))`, `[...]`, `{...}`) och pilsyntax (`A --> B`, `A -->|label| B`).
+- **Pilar slutar vid form-kanten, inte i center**: EdgesView har nu en `edgePoint(for:towards:)`-funktion som returnerar punkten där en linje från form-center mot målpunkten skär formens periferi.
+  - **Cirkel**: punkten på cirkelns kant i riktning mot målet (radius = 39 px för 110×78-frame).
+  - **Fyrkant**: axelparallell rektangel-intersection — räknar minsta skalfaktor `t` så linjen träffar kanten.
+  - **Romb**: använder romb-ekvationen `|dx|/halfWidth + |dy|/halfHeight = 1` för att hitta intersection.
+- **Privat ShapeGeometry-enum**: delar dimensioner mellan rendering och kantberäkning.
 
-## Hur Kim använder v7
+## Vad som inte är fixat än (planerat för v9)
 
-- **Lägg till form**: tap en av Cirkel/Box/Romb → form dyker upp i canvas-mitten.
-- **Flytta form**: drag den till önskad plats.
-- **Rita pil**: tap **Pil** (lila) → tap startform (får röd ring) → tap målform → pil skapas.
-- **Avbryt pil-mode**: tap **Avbryt pil** (röd) eller tap samma form två gånger.
-- **Spara**: tap **Spara**. Om en fil är öppen → skriver direkt. Annars → välj plats i picker.
-- **Öppna**: tap **Öppna** → välj en .md-fil → canvas återställs.
+- **Drag-ut former från toolbar**: Kim vill kunna dra en form direkt från toolbar-knappen till önskad plats på canvasen, istället för att tap → placeras på center → drag.
+- **Pilriktning (en eller båda)**: Kim vill kunna välja om en pil är enkelriktad eller dubbelriktad. EdgeConnection behöver ett `bidirectional`-fält.
 
-## Planerat för v8+
+## Planerat för v9 och framåt
 
-- **Namnge former**: tap på form → text-input för att byta label.
-- **Ta bort former / pilar**: långtryck-gest eller "papperskorg"-mode.
-- **Bookmark**: kom ihåg senast öppnade fil mellan app-starter.
-- **NSFilePresenter**: ersätt polling för live-reload utan re-öppna.
-- **Pan/zoom på canvas**: när diagram blir större än skärmen.
+- v9: Drag-ut + dubbel-pil-stöd
+- v10+: Namnge former (tap → text-input), ta bort former/pilar, bookmark-persistens, NSFilePresenter för live-reload

@@ -1,5 +1,13 @@
 import SwiftUI
 
+private enum ShapeGeometry {
+    static let width: CGFloat = 110
+    static let height: CGFloat = 78
+    static let halfWidth: CGFloat = width / 2
+    static let halfHeight: CGFloat = height / 2
+    static let circleRadius: CGFloat = min(width, height) / 2
+}
+
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
     let edgeMode: Bool
@@ -43,7 +51,7 @@ struct ShapeView: View {
                 .lineLimit(3)
                 .padding(.horizontal, 6)
         }
-        .frame(width: 110, height: 78)
+        .frame(width: ShapeGeometry.width, height: ShapeGeometry.height)
         .contentShape(Rectangle())
         .position(
             x: shape.position.x + dragOffset.width,
@@ -131,13 +139,46 @@ struct EdgesView: View {
     var body: some View {
         Canvas { context, _ in
             for edge in edges {
-                guard let from = shapes.first(where: { $0.id == edge.from })?.position,
-                      let to = shapes.first(where: { $0.id == edge.to })?.position
+                guard let fromShape = shapes.first(where: { $0.id == edge.from }),
+                      let toShape = shapes.first(where: { $0.id == edge.to })
                 else { continue }
-                drawArrow(context: context, from: from, to: to)
+                let start = edgePoint(for: fromShape, towards: toShape.position)
+                let end = edgePoint(for: toShape, towards: fromShape.position)
+                drawArrow(context: context, from: start, to: end)
             }
         }
         .allowsHitTesting(false)
+    }
+
+    private func edgePoint(for shape: ShapeNode, towards target: CGPoint) -> CGPoint {
+        let center = shape.position
+        let dx = target.x - center.x
+        let dy = target.y - center.y
+        let length = sqrt(dx * dx + dy * dy)
+        guard length > 0.001 else { return center }
+
+        switch shape.type {
+        case .circle:
+            let r = ShapeGeometry.circleRadius
+            return CGPoint(x: center.x + r * dx / length,
+                           y: center.y + r * dy / length)
+
+        case .rectangle:
+            let absX = abs(dx)
+            let absY = abs(dy)
+            let tx = absX > 0.001 ? ShapeGeometry.halfWidth / absX : .greatestFiniteMagnitude
+            let ty = absY > 0.001 ? ShapeGeometry.halfHeight / absY : .greatestFiniteMagnitude
+            let t = min(tx, ty)
+            return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
+
+        case .diamond:
+            let absX = abs(dx)
+            let absY = abs(dy)
+            let denom = absX / ShapeGeometry.halfWidth + absY / ShapeGeometry.halfHeight
+            guard denom > 0.001 else { return center }
+            let t = 1.0 / denom
+            return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
+        }
     }
 
     private func drawArrow(context: GraphicsContext, from: CGPoint, to: CGPoint) {
@@ -147,7 +188,7 @@ struct EdgesView: View {
         context.stroke(line, with: .color(.primary.opacity(0.55)), lineWidth: 2)
 
         let angle = atan2(to.y - from.y, to.x - from.x)
-        let arrowLen: CGFloat = 14
+        let arrowLen: CGFloat = 12
         let spread: CGFloat = .pi / 7
         let a1 = CGPoint(
             x: to.x - arrowLen * cos(angle - spread),
