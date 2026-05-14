@@ -1,11 +1,20 @@
 import Foundation
 import SwiftUI
 
+enum EdgeCreationMode: Equatable {
+    case off
+    case directional
+    case bidirectional
+}
+
 @MainActor
 final class CanvasModel: ObservableObject {
     @Published var shapes: [ShapeNode] = []
     @Published var edges: [EdgeConnection] = []
+    @Published var edgeCreationMode: EdgeCreationMode = .off
     @Published var pendingEdgeFrom: UUID? = nil
+
+    var isEdgeMode: Bool { edgeCreationMode != .off }
 
     func addShape(_ type: ShapeType, at position: CGPoint) {
         let label = "Form \(shapes.count + 1)"
@@ -17,26 +26,39 @@ final class CanvasModel: ObservableObject {
         shapes[index].position = position
     }
 
+    func startEdgeMode(_ mode: EdgeCreationMode) {
+        edgeCreationMode = mode
+        pendingEdgeFrom = nil
+    }
+
+    func cancelEdgeMode() {
+        edgeCreationMode = .off
+        pendingEdgeFrom = nil
+    }
+
     /// Hantera tap i pil-mode. Returnerar true om en pil precis skapades.
     @discardableResult
     func handleEdgeTap(on shapeId: UUID) -> Bool {
+        guard edgeCreationMode != .off else { return false }
         if let from = pendingEdgeFrom {
             pendingEdgeFrom = nil
-            guard from != shapeId else { return false }
-            edges.append(EdgeConnection(from: from, to: shapeId))
+            guard from != shapeId else {
+                edgeCreationMode = .off
+                return false
+            }
+            let bidi = edgeCreationMode == .bidirectional
+            edges.append(EdgeConnection(from: from, to: shapeId, bidirectional: bidi))
+            edgeCreationMode = .off
             return true
         }
         pendingEdgeFrom = shapeId
         return false
     }
 
-    func cancelEdgeMode() {
-        pendingEdgeFrom = nil
-    }
-
     func replaceAll(shapes: [ShapeNode], edges: [EdgeConnection]) {
         self.shapes = shapes
         self.edges = edges
         self.pendingEdgeFrom = nil
+        self.edgeCreationMode = .off
     }
 }

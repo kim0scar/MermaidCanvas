@@ -1,68 +1,92 @@
-# ARKITEKTUR-MERMAID — Version v8
+# ARKITEKTUR-MERMAID — Version v9
 *Datum: 2026-05-14*
 
 Aktuell arkitektur för MermaidCanvas-appen. Uppdateras vid varje deploy enligt `VERSIONSHANTERING.md`.
 
 ## Diagram
 
-Samma arkitektur som v7 — endast pil-rendering har förbättrats. Inga nya komponenter eller flöden.
-
 ```mermaid
 flowchart TD
     Kim["👤 Kim"]
     Claude["🤖 Claude Code (Mac)"]
 
-    subgraph App["📱 MermaidCanvas v8"]
-        ToolbarView["ToolbarView"]
-        CanvasView["CanvasView<br/>(EdgesView räknar nu kantpunkter)"]
+    subgraph App["📱 MermaidCanvas v9"]
+        ToolbarView["ToolbarView<br/>(form-knappar .draggable + 2 pil-knappar)"]
+        CanvasView["CanvasView<br/>(.dropDestination)"]
         ShapeView["ShapeView"]
-        EdgesView["EdgesView<br/>(geometry-aware)"]
-        ShapeGeometry["ShapeGeometry<br/>(width/height/circleRadius)"]
-        CanvasModel["CanvasModel"]
-        ShapeNode["ShapeNode"]
-        EdgeConnection["EdgeConnection"]
-        MermaidGenerator["MermaidGenerator"]
-        MermaidParser["MermaidParser"]
+        EdgesView["EdgesView<br/>(pilhuvud på 1 eller 2 ändar)"]
+        CanvasModel["CanvasModel<br/>(EdgeCreationMode: off/directional/bidirectional)"]
+        ShapeNode["ShapeNode<br/>(Transferable)"]
+        EdgeConnection["EdgeConnection<br/>(bidirectional: Bool)"]
+        MermaidGenerator["MermaidGenerator<br/>(--> eller <-->)"]
+        MermaidParser["MermaidParser<br/>(parsar båda riktningarna)"]
         CanvasDocument["CanvasDocument"]
         CanvasFileManager["CanvasFileManager"]
     end
 
     File["📄 fil.md"]
 
-    Kim --> ToolbarView
-    Kim --> ShapeView
-    ToolbarView --> CanvasModel
+    Kim -->|drag form från toolbar| ToolbarView
+    Kim -->|drop på canvas-position| CanvasView
+    Kim -->|tap eller drag form på canvas| ShapeView
+    Kim -->|tap Pil/Dubbel| ToolbarView
+
+    ToolbarView -.draggable.-> CanvasView
+    CanvasView -.dropDestination addShape at location.-> CanvasModel
+
     CanvasModel --> CanvasView
     CanvasView --> ShapeView
     CanvasView --> EdgesView
-    EdgesView -.läser geometri-konstanter.-> ShapeGeometry
-    EdgesView -.räknar kantpunkt per shape-type.-> ShapeNode
+
     Claude -.->|skriver| File
-    CanvasFileManager -->|läser| File
+    CanvasFileManager -->|läs| File
 ```
 
-## Komponenter (oförändrade från v7)
+## Komponenter (endast ändringar listade)
 
-| Komponent | Fil | Ansvar |
+| Komponent | Fil | Ändring i v9 |
 |---|---|---|
-| Geometri-konstanter (NY i v8) | `Sources/Views/CanvasView.swift` (private ShapeGeometry) | width, height, halfWidth, halfHeight, circleRadius — delade mellan ShapeView och EdgesView. |
-| Pil-rendering | `Sources/Views/CanvasView.swift` (EdgesView) | Räknar nu **kantpunkter** per shape-typ innan ritning. |
-| Övriga komponenter | Samma som v7 | Oförändrade. |
+| ShapeType | `Sources/Models/ShapeNode.swift` | Nu Transferable via ProxyRepresentation av rawValue. Möjliggör drag-out. |
+| EdgeConnection | `Sources/Models/EdgeConnection.swift` | Ny `bidirectional: Bool`-flagga (default false). |
+| CanvasModel | `Sources/Models/CanvasModel.swift` | `EdgeCreationMode` enum (off/directional/bidirectional) ersätter Bool. `startEdgeMode(_:)`, `cancelEdgeMode()`. `handleEdgeTap` läser mode och sätter bidirectional på nyskapade pilar. |
+| ToolbarView | `Sources/Views/ToolbarView.swift` | Form-knappar har `.draggable(type)` med en preview. Två pil-knappar (Pil + Dubbel) toggle:as separat. |
+| CanvasView | `Sources/Views/CanvasView.swift` | `.dropDestination(for: ShapeType.self)` — när en drag släpps på canvas anropas `addShape(type, at: location)` med exakta koordinater. EdgesView ritar pilhuvud på båda ändar om `bidirectional`. |
+| MermaidGenerator | `Sources/Mermaid/MermaidGenerator.swift` | Använder `<-->` för bidirectional edges, `-->` annars. State-JSON inkluderar `bidirectional`-fält. |
+| MermaidParser | `Sources/Mermaid/MermaidParser.swift` | Regex matchar både `<-->` och `-->`. Läser `bidirectional` från state-JSON. |
 
-## Ändringar från v7
+## Ändringar från v8
 
-- **Pilar slutar vid form-kanten, inte i center**: EdgesView har nu en `edgePoint(for:towards:)`-funktion som returnerar punkten där en linje från form-center mot målpunkten skär formens periferi.
-  - **Cirkel**: punkten på cirkelns kant i riktning mot målet (radius = 39 px för 110×78-frame).
-  - **Fyrkant**: axelparallell rektangel-intersection — räknar minsta skalfaktor `t` så linjen träffar kanten.
-  - **Romb**: använder romb-ekvationen `|dx|/halfWidth + |dy|/halfHeight = 1` för att hitta intersection.
-- **Privat ShapeGeometry-enum**: delar dimensioner mellan rendering och kantberäkning.
+1. **Drag-ut former från toolbar**
+   - ShapeType conformar till `Transferable` (CoreTransferable).
+   - Form-knapparna i toolbar har `.draggable(type)` med en SwiftUI-preview som följer fingret.
+   - CanvasView har `.dropDestination(for: ShapeType.self) { items, location in ... }` som lägger till formen på exakt koordinat där den släpps.
+   - Tap fortsätter funka som tidigare (lägger till på canvas-center).
 
-## Vad som inte är fixat än (planerat för v9)
+2. **Pil i en eller båda riktningar**
+   - `EdgeConnection.bidirectional: Bool`.
+   - Två pil-knappar i toolbar: lila "Pil" (enkel) och lila "Dubbel". Var och en togglar sitt eget mode.
+   - Pil-mode visar status-text: "Pil-mode: tryck startform" eller "Dubbel-pil-mode: tryck startform".
+   - EdgesView ritar pilhuvud på båda ändar om `bidirectional == true`.
+   - Mermaid-syntax: `A <--> B` för dubbel, `A --> B` för enkel.
 
-- **Drag-ut former från toolbar**: Kim vill kunna dra en form direkt från toolbar-knappen till önskad plats på canvasen, istället för att tap → placeras på center → drag.
-- **Pilriktning (en eller båda)**: Kim vill kunna välja om en pil är enkelriktad eller dubbelriktad. EdgeConnection behöver ett `bidirectional`-fält.
+## Hur Kim använder v9
 
-## Planerat för v9 och framåt
+### Lägga till form
+- **Tap** Cirkel/Box/Romb → form på canvas-center
+- **Drag** Cirkel/Box/Romb till valfri position → form där fingret släpps
 
-- v9: Drag-ut + dubbel-pil-stöd
-- v10+: Namnge former (tap → text-input), ta bort former/pilar, bookmark-persistens, NSFilePresenter för live-reload
+### Skapa pil
+- **Enkel pil**: tap **Pil** → tap startform (röd ring) → tap målform → pil med pilhuvud på målet
+- **Dubbel pil**: tap **Dubbel** → tap startform → tap målform → pil med pilhuvud på båda ändar
+- **Avbryt**: tap samma form två gånger, eller tap **Avbryt** på pil-knappen
+
+### Spara / Öppna
+- Som tidigare. Filen behåller formdata (inklusive pilarnas bidirectional-status) via state-JSON i HTML-kommentar.
+
+## Planerat för v10+
+
+- Namnge former: tap (utanför pil-mode) → text-input för att byta label.
+- Ta bort former / pilar: långtryck-meny eller "papperskorg"-mode.
+- Bookmark: kom ihåg senast öppnade fil.
+- NSFilePresenter: live-reload utan re-öppna.
+- Pan/zoom på canvas: stort diagram kan behövas.

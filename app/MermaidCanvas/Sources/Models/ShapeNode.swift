@@ -1,10 +1,17 @@
 import Foundation
 import CoreGraphics
+import CoreTransferable
 
 enum ShapeType: String, Codable, CaseIterable {
     case circle
     case rectangle
     case diamond
+}
+
+extension ShapeType: Transferable {
+    static var transferRepresentation: some TransferRepresentation {
+        ProxyRepresentation { $0.rawValue }
+    }
 }
 
 struct ShapeNode: Identifiable, Codable {

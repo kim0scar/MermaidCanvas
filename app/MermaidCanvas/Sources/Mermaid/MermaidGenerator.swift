@@ -23,10 +23,11 @@ enum MermaidGenerator {
         }
         for edge in edges {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
+            let arrow = edge.bidirectional ? "<-->" : "-->"
             if edge.label.isEmpty {
-                lines.append("    \(from) --> \(to)")
+                lines.append("    \(from) \(arrow) \(to)")
             } else {
-                lines.append("    \(from) -->|\"\(escape(edge.label))\"| \(to)")
+                lines.append("    \(from) \(arrow)|\"\(escape(edge.label))\"| \(to)")
             }
         }
         return lines.joined(separator: "\n")
@@ -47,7 +48,12 @@ enum MermaidGenerator {
         }
         let edgeArr: [[String: Any]] = edges.compactMap { edge in
             guard let f = mermaidIds[edge.from], let t = mermaidIds[edge.to] else { return nil }
-            return ["from": f, "to": t, "label": edge.label]
+            return [
+                "from": f,
+                "to": t,
+                "label": edge.label,
+                "bidirectional": edge.bidirectional
+            ]
         }
         let dict: [String: Any] = ["nodes": nodes, "edges": edgeArr]
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),

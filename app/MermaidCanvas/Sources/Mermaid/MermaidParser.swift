@@ -53,7 +53,8 @@ enum MermaidParser {
                   let toId = idMap[toMid]
             else { continue }
             let label = (edge["label"] as? String) ?? ""
-            edgeList.append(EdgeConnection(from: fromId, to: toId, label: label))
+            let bidi = (edge["bidirectional"] as? Bool) ?? false
+            edgeList.append(EdgeConnection(from: fromId, to: toId, label: label, bidirectional: bidi))
         }
 
         return ParsedCanvas(shapes: shapes, edges: edgeList)
@@ -111,20 +112,23 @@ enum MermaidParser {
         }
 
         var edges: [EdgeConnection] = []
-        let edgePattern = #"(\w+)\s*-+->\s*(?:\|\s*\"?([^\"|]*?)\"?\s*\|\s*)?(\w+)"#
+        // Matchar A --> B, A <--> B, samt med ev. label: A -->|"x"| B
+        let edgePattern = #"(\w+)\s*(<-+->|-+->)\s*(?:\|\s*\"?([^\"|]*?)\"?\s*\|\s*)?(\w+)"#
         if let regex = try? NSRegularExpression(pattern: edgePattern) {
             let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
-            for m in matches where m.numberOfRanges >= 4 {
+            for m in matches where m.numberOfRanges >= 5 {
                 let fromMid = ns.substring(with: m.range(at: 1))
-                let toMid = ns.substring(with: m.range(at: 3))
+                let arrowStr = ns.substring(with: m.range(at: 2))
+                let toMid = ns.substring(with: m.range(at: 4))
                 let label: String
-                if m.range(at: 2).location != NSNotFound {
-                    label = ns.substring(with: m.range(at: 2))
+                if m.range(at: 3).location != NSNotFound {
+                    label = ns.substring(with: m.range(at: 3))
                 } else {
                     label = ""
                 }
                 guard let from = idMap[fromMid], let to = idMap[toMid] else { continue }
-                edges.append(EdgeConnection(from: from, to: to, label: label))
+                let bidi = arrowStr.hasPrefix("<")
+                edges.append(EdgeConnection(from: from, to: to, label: label, bidirectional: bidi))
             }
         }
 

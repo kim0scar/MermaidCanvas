@@ -3,10 +3,12 @@ import SwiftUI
 struct ToolbarView: View {
     @ObservedObject var model: CanvasModel
     let canvasCenter: CGPoint
-    let edgeMode: Bool
-    var onToggleEdgeMode: () -> Void
+    var onStartEdgeMode: (EdgeCreationMode) -> Void
+    var onCancelEdgeMode: () -> Void
     var onOpen: () -> Void
     var onSave: () -> Void
+
+    private var edgeMode: EdgeCreationMode { model.edgeCreationMode }
 
     var body: some View {
         VStack(spacing: 6) {
@@ -14,22 +16,17 @@ struct ToolbarView: View {
                 shapeButton(.circle, label: "Cirkel", system: "circle", color: .blue)
                 shapeButton(.rectangle, label: "Box", system: "rectangle", color: .green)
                 shapeButton(.diamond, label: "Romb", system: "diamond", color: .orange)
-                Spacer(minLength: 6)
-                Button {
-                    onToggleEdgeMode()
-                } label: {
-                    Label(edgeMode ? "Avbryt pil" : "Pil",
-                          systemImage: edgeMode ? "xmark" : "arrow.right")
-                        .labelStyle(.titleAndIcon)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 6)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(edgeMode ? .red : .purple)
-                .contentShape(Rectangle())
             }
-            HStack(spacing: 8) {
-                Spacer()
+            HStack(spacing: 6) {
+                edgeButton(.directional,
+                           label: edgeMode == .directional ? "Avbryt" : "Pil",
+                           system: edgeMode == .directional ? "xmark" : "arrow.right",
+                           tint: edgeMode == .directional ? .red : .purple)
+                edgeButton(.bidirectional,
+                           label: edgeMode == .bidirectional ? "Avbryt" : "Dubbel",
+                           system: edgeMode == .bidirectional ? "xmark" : "arrow.left.arrow.right",
+                           tint: edgeMode == .bidirectional ? .red : .purple)
+                Spacer(minLength: 6)
                 Button {
                     onOpen()
                 } label: {
@@ -63,16 +60,46 @@ struct ToolbarView: View {
     @ViewBuilder
     private func shapeButton(_ type: ShapeType, label: String, system: String, color: Color) -> some View {
         Button {
-            model.addShape(type, at: canvasCenter)
+            if !model.isEdgeMode {
+                model.addShape(type, at: canvasCenter)
+            }
         } label: {
             Label(label, systemImage: system)
                 .labelStyle(.titleAndIcon)
-                .padding(.horizontal, 2)
+                .padding(.horizontal, 4)
                 .padding(.vertical, 6)
         }
         .buttonStyle(.borderedProminent)
         .tint(color)
         .contentShape(Rectangle())
-        .disabled(edgeMode)
+        .disabled(model.isEdgeMode)
+        .opacity(model.isEdgeMode ? 0.4 : 1)
+        .draggable(type) {
+            Label(label, systemImage: system)
+                .labelStyle(.titleAndIcon)
+                .padding(10)
+                .background(color.opacity(0.85))
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+    }
+
+    @ViewBuilder
+    private func edgeButton(_ mode: EdgeCreationMode, label: String, system: String, tint: Color) -> some View {
+        Button {
+            if model.edgeCreationMode == mode {
+                onCancelEdgeMode()
+            } else {
+                onStartEdgeMode(mode)
+            }
+        } label: {
+            Label(label, systemImage: system)
+                .labelStyle(.titleAndIcon)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 6)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(tint)
+        .contentShape(Rectangle())
     }
 }

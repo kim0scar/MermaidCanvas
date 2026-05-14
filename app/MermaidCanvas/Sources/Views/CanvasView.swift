@@ -10,7 +10,6 @@ private enum ShapeGeometry {
 
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
-    let edgeMode: Bool
     var onShapeTap: (UUID) -> Void
 
     var body: some View {
@@ -23,11 +22,17 @@ struct CanvasView: View {
             ForEach($model.shapes) { $shape in
                 ShapeView(
                     shape: $shape,
-                    edgeMode: edgeMode,
+                    edgeMode: model.isEdgeMode,
                     isPendingFrom: model.pendingEdgeFrom == shape.id,
                     onTap: { onShapeTap(shape.id) }
                 )
             }
+        }
+        .dropDestination(for: ShapeType.self) { items, location in
+            for item in items {
+                model.addShape(item, at: location)
+            }
+            return !items.isEmpty
         }
     }
 }
@@ -144,7 +149,7 @@ struct EdgesView: View {
                 else { continue }
                 let start = edgePoint(for: fromShape, towards: toShape.position)
                 let end = edgePoint(for: toShape, towards: fromShape.position)
-                drawArrow(context: context, from: start, to: end)
+                drawArrow(context: context, from: start, to: end, bidirectional: edge.bidirectional)
             }
         }
         .allowsHitTesting(false)
@@ -181,26 +186,33 @@ struct EdgesView: View {
         }
     }
 
-    private func drawArrow(context: GraphicsContext, from: CGPoint, to: CGPoint) {
+    private func drawArrow(context: GraphicsContext, from: CGPoint, to: CGPoint, bidirectional: Bool) {
         var line = Path()
         line.move(to: from)
         line.addLine(to: to)
         context.stroke(line, with: .color(.primary.opacity(0.55)), lineWidth: 2)
 
         let angle = atan2(to.y - from.y, to.x - from.x)
-        let arrowLen: CGFloat = 12
+        drawArrowHead(context: context, tip: to, angle: angle)
+        if bidirectional {
+            drawArrowHead(context: context, tip: from, angle: angle + .pi)
+        }
+    }
+
+    private func drawArrowHead(context: GraphicsContext, tip: CGPoint, angle: CGFloat) {
+        let length: CGFloat = 12
         let spread: CGFloat = .pi / 7
         let a1 = CGPoint(
-            x: to.x - arrowLen * cos(angle - spread),
-            y: to.y - arrowLen * sin(angle - spread)
+            x: tip.x - length * cos(angle - spread),
+            y: tip.y - length * sin(angle - spread)
         )
         let a2 = CGPoint(
-            x: to.x - arrowLen * cos(angle + spread),
-            y: to.y - arrowLen * sin(angle + spread)
+            x: tip.x - length * cos(angle + spread),
+            y: tip.y - length * sin(angle + spread)
         )
         var head = Path()
-        head.move(to: to); head.addLine(to: a1)
-        head.move(to: to); head.addLine(to: a2)
+        head.move(to: tip); head.addLine(to: a1)
+        head.move(to: tip); head.addLine(to: a2)
         context.stroke(head, with: .color(.primary.opacity(0.55)), lineWidth: 2)
     }
 }
