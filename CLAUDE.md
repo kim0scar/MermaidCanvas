@@ -54,7 +54,7 @@ Användarens canvas-fil:
 8. **Språk**: svenska i kod-kommentarer (få sådana) och commit-meddelanden. Korta meningar.
 9. **Frågestil**: Kim är inte utvecklare. Gör rimliga antaganden, fråga bara vid riktiga vägval. Inget utvecklarjargong i svar.
 10. **Innan du ändrar kod**: läs `ARKITEKTUR-MERMAID.md` så du vet var saker bor.
-11. **Visuell dialog är delat språk**: när du läser eller skriver canvas-filer, följ `METOD-VISUELL-DIALOG.md` strikt. Förlustfri round-trip är icke förhandlingsbar — utan den fungerar inte hela syftet med appen.
+11. **Visuell dialog är delat språk — två lager**: när du läser eller skriver canvas-filer, följ `METOD-VISUELL-DIALOG.md` strikt. Protokollet har **två lager** som måste hållas isär: *Fidelity* (positioner, storlekar, canvas-mått — så du ser exakt det Kim ritat) och *Semantik* (kategori per nod — så du vet vad varje form *betyder*). App-lagret (zoom, multiselect, undo, etc.) är en tredje sak som aldrig får blandas in i filen. Förlustfri round-trip + korrekt semantik är icke förhandlingsbar — utan båda fungerar inte hela syftet med appen.
 
 ## Filer du som Claude Code styrs av
 
