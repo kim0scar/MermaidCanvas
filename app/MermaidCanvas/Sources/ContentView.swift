@@ -12,12 +12,14 @@ struct ContentView: View {
     @State private var showExporter: Bool = false
     @State private var pendingDocument: CanvasDocument?
     @State private var editingShapeId: UUID? = nil
+    @State private var justSaved: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
             ToolbarView(
                 model: model,
                 canvasCenter: canvasCenter,
+                hasOpenFile: fileManager.hasOpenFile,
                 onStartEdgeMode: { mode in
                     model.startEdgeMode(mode)
                     updateStatusForEdgeMode()
@@ -27,7 +29,8 @@ struct ContentView: View {
                     updateIdleStatus()
                 },
                 onOpen: { showImporter = true },
-                onSave: save
+                onSave: save,
+                onSaveAs: saveAs
             )
 
             TextField("Rubrik", text: $model.canvasTitle)
@@ -55,11 +58,12 @@ struct ContentView: View {
             }
 
             Text(statusText)
-                .font(.caption)
-                .foregroundStyle(statusIsError ? .red : .secondary)
-                .padding(.vertical, 8)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(statusIsError ? .red : .primary)
+                .padding(.vertical, 10)
                 .padding(.horizontal, 12)
                 .frame(maxWidth: .infinity)
+                .background(statusIsError ? Color.red.opacity(0.12) : Color.green.opacity(justSaved ? 0.18 : 0.0))
                 .background(Color(.secondarySystemBackground))
         }
         .sheet(isPresented: editingBinding) {
@@ -108,9 +112,10 @@ struct ContentView: View {
         ) { result in
             switch result {
             case .success(let url):
-                statusText = "Sparad: \(url.lastPathComponent)"
+                statusText = "✓ Sparad: \(url.lastPathComponent)"
                 statusIsError = false
                 _ = fileManager.open(url: url)
+                flashSaved()
             case .failure(let err):
                 statusText = "Spar avbruten: \(err.localizedDescription)"
                 statusIsError = true
@@ -180,16 +185,20 @@ struct ContentView: View {
         if fileManager.hasOpenFile {
             saveToOpenFile()
         } else {
-            pendingDocument = CanvasDocument(
-                title: model.canvasTitle,
-                shapes: model.shapes,
-                edges: model.edges,
-                canvasSize: model.canvasSize
-            )
-            statusText = "Välj plats…"
-            statusIsError = false
-            showExporter = true
+            saveAs()
         }
+    }
+
+    private func saveAs() {
+        pendingDocument = CanvasDocument(
+            title: model.canvasTitle,
+            shapes: model.shapes,
+            edges: model.edges,
+            canvasSize: model.canvasSize
+        )
+        statusText = "Välj plats för fil…"
+        statusIsError = false
+        showExporter = true
     }
 
     private func saveToOpenFile() {
@@ -202,11 +211,26 @@ struct ContentView: View {
         do {
             try fileManager.write(doc.content)
             let name = fileManager.fileName ?? "fil"
-            statusText = "Sparad i \(name) — \(model.shapes.count) former, \(model.edges.count) pilar"
+            statusText = "✓ Sparad i \(name) — \(model.shapes.count) former, \(model.edges.count) pilar"
             statusIsError = false
+            flashSaved()
         } catch {
-            statusText = "Fel: \(error.localizedDescription)"
+            statusText = "Fel vid sparning: \(error.localizedDescription)"
             statusIsError = true
+        }
+    }
+
+    private func flashSaved() {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            justSaved = true
+        }
+        Task {
+            try? await Task.sleep(nanoseconds: 1_400_000_000)
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    justSaved = false
+                }
+            }
         }
     }
 

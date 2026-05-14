@@ -3,10 +3,12 @@ import SwiftUI
 struct ToolbarView: View {
     @ObservedObject var model: CanvasModel
     let canvasCenter: CGPoint
+    var hasOpenFile: Bool
     var onStartEdgeMode: (EdgeCreationMode) -> Void
     var onCancelEdgeMode: () -> Void
     var onOpen: () -> Void
     var onSave: () -> Void
+    var onSaveAs: () -> Void
 
     private var edgeMode: EdgeCreationMode { model.edgeCreationMode }
 
@@ -21,13 +23,42 @@ struct ToolbarView: View {
             Spacer()
 
             iconButton(system: "folder", action: onOpen)
-            iconButton(system: "square.and.arrow.down", action: onSave, prominent: true)
+            saveMenu
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(Color(.systemBackground))
         .overlay(alignment: .bottom) {
             Divider()
+        }
+    }
+
+    @ViewBuilder
+    private var saveMenu: some View {
+        Menu {
+            Button {
+                onSave()
+            } label: {
+                Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
+            }
+            Button {
+                onSaveAs()
+            } label: {
+                Label("Spara som ny fil…", systemImage: "doc.badge.plus")
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "internaldrive")
+                    .font(.body.weight(.semibold))
+                Text("Spara")
+                    .font(.body.weight(.semibold))
+            }
+            .foregroundStyle(Color.white)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.accentColor)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .contentShape(Rectangle())
         }
     }
 
