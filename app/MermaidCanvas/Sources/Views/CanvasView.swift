@@ -1,11 +1,16 @@
 import SwiftUI
 
-private enum ShapeGeometry {
-    static let width: CGFloat = 120
-    static let height: CGFloat = 80
-    static let halfWidth: CGFloat = width / 2
-    static let halfHeight: CGFloat = height / 2
-    static let circleRadius: CGFloat = min(width, height) / 2
+enum ShapeGeometry {
+    static let baseWidth: CGFloat = 120
+    static let baseHeight: CGFloat = 80
+
+    static func width(for shape: ShapeNode) -> CGFloat { baseWidth * shape.sizeMultiplier }
+    static func height(for shape: ShapeNode) -> CGFloat { baseHeight * shape.sizeMultiplier }
+    static func halfWidth(for shape: ShapeNode) -> CGFloat { width(for: shape) / 2 }
+    static func halfHeight(for shape: ShapeNode) -> CGFloat { height(for: shape) / 2 }
+    static func circleRadius(for shape: ShapeNode) -> CGFloat {
+        min(width(for: shape), height(for: shape)) / 2
+    }
 }
 
 struct CanvasView: View {
@@ -53,14 +58,19 @@ struct ShapeView: View {
             background
             stroke
             highlight
-            Text(shape.label)
-                .font(.system(size: 13, weight: .medium, design: .rounded))
-                .multilineTextAlignment(.center)
-                .lineLimit(3)
-                .minimumScaleFactor(0.6)
-                .padding(.horizontal, 8)
+            if shape.showLabel {
+                Text(shape.label)
+                    .font(.system(size: 13 * shape.sizeMultiplier,
+                                  weight: .medium,
+                                  design: .rounded))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(4)
+                    .minimumScaleFactor(0.6)
+                    .padding(.horizontal, 8)
+            }
         }
-        .frame(width: ShapeGeometry.width, height: ShapeGeometry.height)
+        .frame(width: ShapeGeometry.width(for: shape),
+               height: ShapeGeometry.height(for: shape))
         .contentShape(Rectangle())
         .position(
             x: shape.position.x + dragOffset.width,
@@ -164,21 +174,25 @@ struct EdgesView: View {
 
         switch shape.type {
         case .circle:
-            let r = ShapeGeometry.circleRadius
+            let r = ShapeGeometry.circleRadius(for: shape)
             return CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
 
         case .rectangle:
             let absX = abs(dx)
             let absY = abs(dy)
-            let tx = absX > 0.001 ? ShapeGeometry.halfWidth / absX : .greatestFiniteMagnitude
-            let ty = absY > 0.001 ? ShapeGeometry.halfHeight / absY : .greatestFiniteMagnitude
+            let hw = ShapeGeometry.halfWidth(for: shape)
+            let hh = ShapeGeometry.halfHeight(for: shape)
+            let tx = absX > 0.001 ? hw / absX : .greatestFiniteMagnitude
+            let ty = absY > 0.001 ? hh / absY : .greatestFiniteMagnitude
             let t = min(tx, ty)
             return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
 
         case .diamond:
             let absX = abs(dx)
             let absY = abs(dy)
-            let denom = absX / ShapeGeometry.halfWidth + absY / ShapeGeometry.halfHeight
+            let hw = ShapeGeometry.halfWidth(for: shape)
+            let hh = ShapeGeometry.halfHeight(for: shape)
+            let denom = absX / hw + absY / hh
             guard denom > 0.001 else { return center }
             let t = 1.0 / denom
             return CGPoint(x: center.x + t * dx, y: center.y + t * dy)

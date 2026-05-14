@@ -65,9 +65,20 @@ struct ContentView: View {
                let shape = model.shapes.first(where: { $0.id == id }) {
                 EditShapeSheet(
                     shapeId: id,
-                    initialLabel: shape.label,
-                    onSave: { newLabel in
-                        model.updateLabel(id: id, to: newLabel)
+                    initial: ShapeEdit(
+                        label: shape.label,
+                        showLabel: shape.showLabel,
+                        sizeMultiplier: shape.sizeMultiplier,
+                        note: shape.note
+                    ),
+                    onSave: { edit in
+                        model.updateShape(
+                            id: id,
+                            label: edit.label,
+                            showLabel: edit.showLabel,
+                            sizeMultiplier: edit.sizeMultiplier,
+                            note: edit.note
+                        )
                         editingShapeId = nil
                     },
                     onCancel: { editingShapeId = nil }

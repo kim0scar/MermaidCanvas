@@ -59,7 +59,18 @@ enum MermaidParser {
             let label = (node["label"] as? String) ?? "Form"
             let typeRaw = (node["type"] as? String) ?? ShapeType.circle.rawValue
             let type = ShapeType(rawValue: typeRaw) ?? .circle
-            let shape = ShapeNode(type: type, position: CGPoint(x: x, y: y), label: label)
+            let showLabel = (node["showLabel"] as? Bool) ?? true
+            let sizeRaw = node["size"]
+            let size = sizeRaw.map { numberValue($0) } ?? 1.0
+            let note = (node["note"] as? String) ?? ""
+            let shape = ShapeNode(
+                type: type,
+                position: CGPoint(x: x, y: y),
+                label: label,
+                showLabel: showLabel,
+                sizeMultiplier: max(0.3, min(3.0, size)),
+                note: note
+            )
             idMap[mid] = shape.id
             shapes.append(shape)
         }

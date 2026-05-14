@@ -19,11 +19,23 @@ struct ShapeNode: Identifiable, Codable {
     var type: ShapeType
     var position: CGPoint
     var label: String
+    var showLabel: Bool
+    var sizeMultiplier: CGFloat
+    var note: String
 
-    init(id: UUID = UUID(), type: ShapeType, position: CGPoint, label: String = "") {
+    init(id: UUID = UUID(),
+         type: ShapeType,
+         position: CGPoint,
+         label: String = "",
+         showLabel: Bool = true,
+         sizeMultiplier: CGFloat = 1.0,
+         note: String = "") {
         self.id = id
         self.type = type
         self.position = position
         self.label = label
+        self.showLabel = showLabel
+        self.sizeMultiplier = sizeMultiplier
+        self.note = note
     }
 }

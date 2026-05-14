@@ -27,9 +27,12 @@ final class CanvasModel: ObservableObject {
         shapes[index].position = position
     }
 
-    func updateLabel(id: UUID, to label: String) {
+    func updateShape(id: UUID, label: String, showLabel: Bool, sizeMultiplier: CGFloat, note: String) {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         shapes[index].label = label
+        shapes[index].showLabel = showLabel
+        shapes[index].sizeMultiplier = sizeMultiplier
+        shapes[index].note = note
     }
 
     func startEdgeMode(_ mode: EdgeCreationMode) {

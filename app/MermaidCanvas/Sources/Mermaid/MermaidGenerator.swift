@@ -11,7 +11,7 @@ enum MermaidGenerator {
         )
         for shape in shapes {
             let id = mermaidIds[shape.id]!
-            let label = shape.label.isEmpty ? id : shape.label
+            let label = shape.showLabel ? (shape.label.isEmpty ? " " : shape.label) : " "
             let safe = escape(label)
             let line: String
             switch shape.type {
@@ -43,7 +43,10 @@ enum MermaidGenerator {
                 "x": Int(shape.position.x.rounded()),
                 "y": Int(shape.position.y.rounded()),
                 "label": shape.label,
-                "type": shape.type.rawValue
+                "type": shape.type.rawValue,
+                "showLabel": shape.showLabel,
+                "size": Double(shape.sizeMultiplier),
+                "note": shape.note
             ]
         }
         let edgeArr: [[String: Any]] = edges.compactMap { edge in
