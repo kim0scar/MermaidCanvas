@@ -5,7 +5,9 @@ struct CanvasDocument: FileDocument {
     static var readableContentTypes: [UTType] { [.plainText] }
     let content: String
 
-    init(mermaid: String) {
+    init(shapes: [ShapeNode]) {
+        let mermaid = MermaidGenerator.generate(from: shapes)
+        let state = MermaidGenerator.canvasStateJSON(from: shapes)
         let timestamp = ISO8601DateFormatter().string(from: Date())
         self.content = """
         # Canvas — MermaidCanvas
@@ -15,6 +17,10 @@ struct CanvasDocument: FileDocument {
         ```mermaid
         \(mermaid)
         ```
+
+        <!-- mermaidcanvas-state
+        \(state)
+        -->
         """
     }
 

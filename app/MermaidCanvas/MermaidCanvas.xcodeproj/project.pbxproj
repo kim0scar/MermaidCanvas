@@ -12,21 +12,25 @@
 		774EC58465369A580480737D /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214C9429A5A7019AFB3A5335 /* CanvasModel.swift */; };
 		A6112259B6F82F3D230BB9F3 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0B873635193E39B3DFE265 /* ToolbarView.swift */; };
 		B5A50CAED84230A37DF40B17 /* CanvasDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20521F32F9E57397B2DE618B /* CanvasDocument.swift */; };
+		BCA63851BA4296D3609DF04B /* CanvasFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C1E249608A6B60BB047C6C /* CanvasFileManager.swift */; };
 		C3D292667697648BE2110A8A /* MermaidCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6F079D15D4D217E25CCA7A /* MermaidCanvasApp.swift */; };
 		D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */; };
 		D94270A0C928F8A7DBD007DC /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A8EDAC97692F06FFD900DD /* CanvasView.swift */; };
+		FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		15A8EDAC97692F06FFD900DD /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		20521F32F9E57397B2DE618B /* CanvasDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDocument.swift; sourceTree = "<group>"; };
 		214C9429A5A7019AFB3A5335 /* CanvasModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasModel.swift; sourceTree = "<group>"; };
+		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
 		5B6F079D15D4D217E25CCA7A /* MermaidCanvasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCanvasApp.swift; sourceTree = "<group>"; };
 		5CE73A51C83B03DD44C69184 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6C0B873635193E39B3DFE265 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidGenerator.swift; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC6C55EAC4AF34DD4A5003A3 /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
+		D4C1E249608A6B60BB047C6C /* CanvasFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -81,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */,
+				4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */,
 			);
 			path = Mermaid;
 			sourceTree = "<group>";
@@ -89,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				20521F32F9E57397B2DE618B /* CanvasDocument.swift */,
+				D4C1E249608A6B60BB047C6C /* CanvasFileManager.swift */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
@@ -153,11 +159,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5A50CAED84230A37DF40B17 /* CanvasDocument.swift in Sources */,
+				BCA63851BA4296D3609DF04B /* CanvasFileManager.swift in Sources */,
 				774EC58465369A580480737D /* CanvasModel.swift in Sources */,
 				D94270A0C928F8A7DBD007DC /* CanvasView.swift in Sources */,
 				169F45E3624AC8D420570915 /* ContentView.swift in Sources */,
 				C3D292667697648BE2110A8A /* MermaidCanvasApp.swift in Sources */,
 				D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */,
+				FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */,
 				7437B62EA81BC3AC010D6303 /* ShapeNode.swift in Sources */,
 				A6112259B6F82F3D230BB9F3 /* ToolbarView.swift in Sources */,
 			);

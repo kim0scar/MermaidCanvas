@@ -14,4 +14,8 @@ final class CanvasModel: ObservableObject {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         shapes[index].position = position
     }
+
+    func replaceAll(with newShapes: [ShapeNode]) {
+        shapes = newShapes
+    }
 }

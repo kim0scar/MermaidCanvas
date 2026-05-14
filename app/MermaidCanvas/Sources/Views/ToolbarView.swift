@@ -3,10 +3,11 @@ import SwiftUI
 struct ToolbarView: View {
     @ObservedObject var model: CanvasModel
     let canvasCenter: CGPoint
+    var onOpen: () -> Void
     var onSave: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Button {
                 model.addCircle(at: canvasCenter)
             } label: {
@@ -20,6 +21,18 @@ struct ToolbarView: View {
             .contentShape(Rectangle())
 
             Spacer()
+
+            Button {
+                onOpen()
+            } label: {
+                Label("Öppna", systemImage: "folder")
+                    .labelStyle(.titleAndIcon)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 6)
+            }
+            .buttonStyle(.bordered)
+            .tint(.orange)
+            .contentShape(Rectangle())
 
             Button {
                 onSave()
