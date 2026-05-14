@@ -21,18 +21,28 @@ git status
 
 Allt ska vara stagat eller commitat innan deploy startar.
 
+### 1b. Bumpa versionsnumret
+
+Öppna `app/MermaidCanvas/Sources/AppVersion.swift`.
+Höj `AppVersion.current` till nästa `vN`. **Detta är enda stället versionsnumret bor.**
+
+Statusen i appen visar denna sträng. Om den inte uppdateras vet inte Kim om han kör nya eller gamla bygget.
+
 ### 2. Bygg och deploya till iPhone
 
 Följ `Start för ios appar Kim.md` (Steg 1A → Steg 2 → Steg 3 för native Swift, eller motsvarande för Godot).
 Verifiera att appen faktiskt **startar** på iPhone innan du går vidare.
 
-### 3. Arkivera nuvarande arkitektur
+### 3. Arkivera föregående arkitektur
 
-Hitta nästa versionsnummer `N` (titta i `arkiv/` för senast använda + 1).
+Innan du skriver om `ARKITEKTUR-MERMAID.md`: ta en kopia av den **föregående** versionen och lägg den i `arkiv/`. Föregående version är den som var live *innan* denna deploy — alltså `vN-1`.
 
 ```bash
-mv ARKITEKTUR-MERMAID.md "arkiv/ARKITEKTUR-MERMAID-v$N.md"
+# Exempel om du just bumpat till v13: ARKITEKTUR-MERMAID.md beskrev v12 → snapshot:
+cp ARKITEKTUR-MERMAID.md "arkiv/ARKITEKTUR-MERMAID-v12.md"
 ```
+
+Detta säkerställer att varje deployad version har en frusen snapshot i `arkiv/`.
 
 ### 4. Skapa ny ARKITEKTUR-MERMAID.md
 

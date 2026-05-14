@@ -57,14 +57,24 @@ struct ContentView: View {
                 }
             }
 
-            Text(statusText)
-                .font(.footnote.weight(.medium))
-                .foregroundStyle(statusIsError ? .red : .primary)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 12)
-                .frame(maxWidth: .infinity)
-                .background(statusIsError ? Color.red.opacity(0.12) : Color.green.opacity(justSaved ? 0.18 : 0.0))
-                .background(Color(.secondarySystemBackground))
+            HStack(spacing: 8) {
+                Text(AppVersion.current)
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                Text(statusText)
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(statusIsError ? .red : .primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity)
+            .background(statusIsError ? Color.red.opacity(0.12) : Color.green.opacity(justSaved ? 0.18 : 0.0))
+            .background(Color(.secondarySystemBackground))
         }
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,

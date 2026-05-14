@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		169F45E3624AC8D420570915 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE73A51C83B03DD44C69184 /* ContentView.swift */; };
+		17E380B0E167F357D6AB1E19 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B72E7A9186EF104EB84B64D /* AppVersion.swift */; };
 		47432578C2C5B349E43399D5 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */; };
 		7437B62EA81BC3AC010D6303 /* ShapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C55EAC4AF34DD4A5003A3 /* ShapeNode.swift */; };
 		774EC58465369A580480737D /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214C9429A5A7019AFB3A5335 /* CanvasModel.swift */; };
@@ -25,6 +26,7 @@
 		15A8EDAC97692F06FFD900DD /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		20521F32F9E57397B2DE618B /* CanvasDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDocument.swift; sourceTree = "<group>"; };
 		214C9429A5A7019AFB3A5335 /* CanvasModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasModel.swift; sourceTree = "<group>"; };
+		3B72E7A9186EF104EB84B64D /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
 		5B6F079D15D4D217E25CCA7A /* MermaidCanvasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCanvasApp.swift; sourceTree = "<group>"; };
 		5CE73A51C83B03DD44C69184 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 		660D91CE59927312F56CDC86 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				3B72E7A9186EF104EB84B64D /* AppVersion.swift */,
 				5CE73A51C83B03DD44C69184 /* ContentView.swift */,
 				5B6F079D15D4D217E25CCA7A /* MermaidCanvasApp.swift */,
 				7FC76266063536257C1D33CF /* Mermaid */,
@@ -164,6 +167,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17E380B0E167F357D6AB1E19 /* AppVersion.swift in Sources */,
 				B5A50CAED84230A37DF40B17 /* CanvasDocument.swift in Sources */,
 				BCA63851BA4296D3609DF04B /* CanvasFileManager.swift in Sources */,
 				774EC58465369A580480737D /* CanvasModel.swift in Sources */,
