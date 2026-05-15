@@ -7,6 +7,8 @@ enum ShapeType: String, Codable, CaseIterable {
     case rectangle
     case diamond
     case text
+    case table
+    case link
 }
 
 extension ShapeType: Transferable {
@@ -24,7 +26,11 @@ struct ShapeNode: Identifiable, Codable {
     var sizeMultiplier: CGFloat
     var note: String
     var category: ShapeCategory
-    var rotation: CGFloat   // grader, -180...180; 0 = ingen rotation
+    var rotation: CGFloat
+    /// v19: överskrid kategori-färg per form. Hex-sträng "#rrggbb" eller nil = använd kategori.
+    var colorOverride: String?
+    /// v19: jump-link parnummer. nil för icke-link-former.
+    var linkNumber: Int?
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -34,7 +40,9 @@ struct ShapeNode: Identifiable, Codable {
          sizeMultiplier: CGFloat = 1.0,
          note: String = "",
          category: ShapeCategory = .ui,
-         rotation: CGFloat = 0) {
+         rotation: CGFloat = 0,
+         colorOverride: String? = nil,
+         linkNumber: Int? = nil) {
         self.id = id
         self.type = type
         self.position = position
@@ -44,5 +52,7 @@ struct ShapeNode: Identifiable, Codable {
         self.note = note
         self.category = category
         self.rotation = rotation
+        self.colorOverride = colorOverride
+        self.linkNumber = linkNumber
     }
 }

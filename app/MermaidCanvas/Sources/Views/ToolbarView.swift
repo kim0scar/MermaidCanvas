@@ -17,26 +17,38 @@ struct ToolbarView: View {
     var onUndo: () -> Void
     var onShowCode: () -> Void
     var onShowPreview: () -> Void
+    var onToggleMarker: () -> Void
+    var onShowColor: () -> Void
+    var onAddTable: () -> Void
+    var onAddJumpLink: () -> Void
+    var onNewCanvas: () -> Void
 
     private var edgeMode: EdgeCreationMode { model.edgeCreationMode }
     private let tapTarget: CGFloat = 44
 
     var body: some View {
-        HStack(spacing: 4) {
-            shapeIconButton(.circle, system: "circle")
-            shapeIconButton(.rectangle, system: "rectangle")
-            shapeIconButton(.diamond, system: "diamond")
-            shapeIconButton(.text, system: "textformat")
+        HStack(spacing: 6) {
+            // Vänster: shape-skapande (scrollbar om för brett)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 2) {
+                    shapeIconButton(.circle, system: "circle")
+                    shapeIconButton(.rectangle, system: "rectangle")
+                    shapeIconButton(.diamond, system: "diamond")
+                    shapeIconButton(.text, system: "textformat")
+                    SpecialShapesMenu(onAddTable: onAddTable, onAddJumpLink: onAddJumpLink)
+                    pilControl
+                    markerButton
+                }
+                .padding(.horizontal, 4)
+            }
+            .frame(maxWidth: .infinity)
 
-            pilControl
-
-            Spacer(minLength: 6)
-
+            // Höger: alltid fasta utility-knappar
             undoButton
             moreMenu
             saveMenu
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(Color(.systemBackground))
         .overlay(alignment: .bottom) { Divider() }
@@ -97,6 +109,20 @@ struct ToolbarView: View {
     }
 
     @ViewBuilder
+    private var markerButton: some View {
+        Button(action: onToggleMarker) {
+            Image(systemName: model.markerMode ? "rectangle.dashed.badge.record" : "rectangle.dashed")
+                .font(.title3)
+                .foregroundStyle(model.markerMode ? Color.white : Color.primary)
+                .frame(width: tapTarget, height: tapTarget)
+                .background(model.markerMode ? Color.accentColor : Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
     private var undoButton: some View {
         Button(action: onUndo) {
             Image(systemName: "arrow.uturn.backward")
@@ -114,6 +140,13 @@ struct ToolbarView: View {
     @ViewBuilder
     private var moreMenu: some View {
         Menu {
+            Button {
+                onShowColor()
+            } label: {
+                Label("Färg på vald form", systemImage: "paintpalette")
+            }
+            .disabled(model.selectedShapeId == nil)
+            Divider()
             Button { onShowPreview() } label: {
                 Label("Preview (simulerad app)", systemImage: "eye")
             }
@@ -121,6 +154,9 @@ struct ToolbarView: View {
                 Label("Visa filinnehåll", systemImage: "curlybraces")
             }
             Divider()
+            Button { onNewCanvas() } label: {
+                Label("Ny tom canvas", systemImage: "doc.badge.plus")
+            }
             Button { onOpen() } label: {
                 Label("Öppna fil…", systemImage: "folder")
             }

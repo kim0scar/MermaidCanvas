@@ -21,14 +21,56 @@ final class CanvasModel: ObservableObject {
     @Published var edgeCreationMode: EdgeCreationMode = .off
     @Published var pendingEdgeFrom: UUID? = nil
     @Published var canvasTitle: String = ""
-    @Published var canvasSize: CGSize = CGSize(width: 393, height: 600)
+    @Published var canvasSize: CGSize = CGSize(width: 3000, height: 3000)
     @Published var specType: SpecType = .ui
+
+    // v19: pan/zoom-state — bara UI, sparas INTE i fil
+    @Published var canvasOffset: CGSize = .zero
+    @Published var canvasScale: CGFloat = 1.0
+
+    // v19: selection-state — bara UI
+    @Published var selectedShapeId: UUID? = nil
+    @Published var multiSelection: Set<UUID> = []
+    @Published var markerMode: Bool = false
+    @Published var collapsedIds: Set<UUID> = []
+
+    // v19: konstant stor canvas-yta
+    static let contentSize = CGSize(width: 3000, height: 3000)
 
     private var undoStack: [CanvasSnapshot] = []
     private let undoLimit = 30
 
     var isEdgeMode: Bool { edgeCreationMode != .off }
     var canUndo: Bool { !undoStack.isEmpty }
+
+    /// Noder som ska döljas pga någon av deras "föräldrar" är kollapsad.
+    /// BFS från varje collapsed-nod via edges; collapsed noden själv visas alltid.
+    var hiddenShapeIds: Set<UUID> {
+        var hidden: Set<UUID> = []
+        for cid in collapsedIds {
+            var queue: [UUID] = []
+            // Direct neighbors via edges (where collapsed is the source)
+            for e in edges {
+                if e.from == cid { queue.append(e.to) }
+            }
+            var visited: Set<UUID> = [cid]
+            while let cur = queue.first {
+                queue.removeFirst()
+                if visited.contains(cur) { continue }
+                visited.insert(cur)
+                hidden.insert(cur)
+                for e in edges where e.from == cur {
+                    if !visited.contains(e.to) { queue.append(e.to) }
+                }
+            }
+        }
+        return hidden
+    }
+
+    /// Räkna outgoing edges för en form — används för att avgöra om collapse-badge ska visas.
+    func hasOutgoingEdges(id: UUID) -> Bool {
+        edges.contains { $0.from == id }
+    }
 
     // MARK: - Snapshot för undo
 
@@ -60,6 +102,91 @@ final class CanvasModel: ObservableObject {
         let cat = specType.defaultCategory
         let label = cat.emptyLabelHint
         shapes.append(ShapeNode(type: type, position: position, label: label, category: cat))
+    }
+
+    /// Lägg en tabell-form (3×3) på canvas-mitten.
+    func addTable(at position: CGPoint) {
+        snapshotForUndo()
+        shapes.append(ShapeNode(
+            type: .table,
+            position: position,
+            label: "",
+            sizeMultiplier: 1.5,
+            category: specType.defaultCategory
+        ))
+    }
+
+    /// Lägg ett par jump-länkar med samma nummer.
+    func addJumpLinkPair(near position: CGPoint) {
+        snapshotForUndo()
+        let usedNumbers = Set(shapes.compactMap { $0.linkNumber })
+        var next = 1
+        while usedNumbers.contains(next) { next += 1 }
+        let a = ShapeNode(type: .link,
+                          position: CGPoint(x: position.x - 100, y: position.y),
+                          label: "",
+                          sizeMultiplier: 0.7,
+                          category: .note,
+                          linkNumber: next)
+        let b = ShapeNode(type: .link,
+                          position: CGPoint(x: position.x + 100, y: position.y),
+                          label: "",
+                          sizeMultiplier: 0.7,
+                          category: .note,
+                          linkNumber: next)
+        shapes.append(a)
+        shapes.append(b)
+    }
+
+    /// Ny tom canvas (kallas efter spara-prompt).
+    func clearCanvas() {
+        snapshotForUndo()
+        shapes.removeAll()
+        edges.removeAll()
+        selectedShapeId = nil
+        multiSelection.removeAll()
+        collapsedIds.removeAll()
+        canvasTitle = ""
+        canvasOffset = .zero
+        canvasScale = 1.0
+    }
+
+    /// Beräkna alla noder som "hänger ihop" från en startnod (BFS via edges).
+    /// Används vid kollaps.
+    func descendantsFromBranch(startId: UUID, throughEdge edgeId: UUID) -> Set<UUID> {
+        guard let edge = edges.first(where: { $0.id == edgeId }) else { return [] }
+        let firstTarget = edge.from == startId ? edge.to : edge.from
+        var visited: Set<UUID> = [startId]
+        var queue: [UUID] = [firstTarget]
+        var result: Set<UUID> = []
+        while let cur = queue.first {
+            queue.removeFirst()
+            if visited.contains(cur) { continue }
+            visited.insert(cur)
+            result.insert(cur)
+            for e in edges {
+                if e.from == cur && !visited.contains(e.to) { queue.append(e.to) }
+                if e.to == cur && !visited.contains(e.from) { queue.append(e.from) }
+            }
+        }
+        return result
+    }
+
+    /// Toggle kollaps/expand för en form. Om expanderad: alla connected hide:as.
+    func toggleCollapse(id: UUID) {
+        snapshotForUndo()
+        if collapsedIds.contains(id) {
+            collapsedIds.remove(id)
+        } else {
+            collapsedIds.insert(id)
+        }
+    }
+
+    /// Hitta partner-länken (samma linkNumber, annan id).
+    func partnerLink(for id: UUID) -> ShapeNode? {
+        guard let me = shapes.first(where: { $0.id == id }),
+              let num = me.linkNumber else { return nil }
+        return shapes.first { $0.id != id && $0.linkNumber == num && $0.type == .link }
     }
 
     func updatePosition(id: UUID, to position: CGPoint) {
@@ -95,6 +222,23 @@ final class CanvasModel: ObservableObject {
     func deleteEdge(id: UUID) {
         snapshotForUndo()
         edges.removeAll { $0.id == id }
+    }
+
+    func selectShape(_ id: UUID) {
+        selectedShapeId = id
+        multiSelection.removeAll()
+    }
+
+    func deselect() {
+        selectedShapeId = nil
+        multiSelection.removeAll()
+    }
+
+    func toggleMarkerMode() {
+        markerMode.toggle()
+        if markerMode {
+            selectedShapeId = nil
+        }
     }
 
     func setSpecType(_ new: SpecType) {

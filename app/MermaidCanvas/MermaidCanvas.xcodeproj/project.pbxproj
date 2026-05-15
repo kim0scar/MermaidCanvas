@@ -7,14 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0106686D777FFFF9D69DC89C /* MarkerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAE246C24004E85BACBB134 /* MarkerOverlay.swift */; };
 		169F45E3624AC8D420570915 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE73A51C83B03DD44C69184 /* ContentView.swift */; };
 		17E380B0E167F357D6AB1E19 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B72E7A9186EF104EB84B64D /* AppVersion.swift */; };
 		280AD6F6F4DA4BCBBB279178 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04B2EA192B2B6098F37515 /* iPhoneFrameOverlay.swift */; };
+		327A5ABE5012EA9D636D38A6 /* NoteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157316A32085744ED83F21B1 /* NoteBadge.swift */; };
 		368727EBEC1349DCE39208BC /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0EE155E45B86DD3BA4F3EC /* RoadmapRenderer.swift */; };
 		422AFB1F4FFAB770EDA3AB83 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A38CC988797D527794A5E12 /* iPhoneFrameMath.swift */; };
 		46E5113F9F44EF2E47008BF8 /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBA32E9EE21CC93560D21D9 /* SpecType.swift */; };
 		47432578C2C5B349E43399D5 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */; };
 		550C7F93B7C1B462BDBE182F /* PreviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA778DD18F8C69B4EBB4E665 /* PreviewSheet.swift */; };
+		5A0924A8E179E943AE569925 /* CollapseBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A1B0B3383152BC71230968 /* CollapseBadge.swift */; };
 		5C118A49347D8C65FA5F5EE1 /* MermaidCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACBAEF360A6118E07BB4428 /* MermaidCodeSheet.swift */; };
 		6A15550F9E76856972709591 /* UIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D540AE0DFC8B748CA38B42 /* UIRenderer.swift */; };
 		7437B62EA81BC3AC010D6303 /* ShapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C55EAC4AF34DD4A5003A3 /* ShapeNode.swift */; };
@@ -25,6 +28,8 @@
 		A6112259B6F82F3D230BB9F3 /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0B873635193E39B3DFE265 /* ToolbarView.swift */; };
 		B5A50CAED84230A37DF40B17 /* CanvasDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20521F32F9E57397B2DE618B /* CanvasDocument.swift */; };
 		BCA63851BA4296D3609DF04B /* CanvasFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C1E249608A6B60BB047C6C /* CanvasFileManager.swift */; };
+		BDE34071F09F124EE05E8BC7 /* SpecialShapesMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9BBA61E24BC7DACC5B40DB /* SpecialShapesMenu.swift */; };
+		BE6206740C93702F54C853D6 /* SelectionHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD54D175CDE188E929CBCFF0 /* SelectionHandles.swift */; };
 		C3D292667697648BE2110A8A /* MermaidCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6F079D15D4D217E25CCA7A /* MermaidCanvasApp.swift */; };
 		C6D5781519E6F6C8D1E254AD /* EdgeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772E436BDF9309FA34D00B75 /* EdgeConnection.swift */; };
 		CD700493FBC2700C87964F5A /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B59F0772F48D2E992981C75D /* ArchitectureRenderer.swift */; };
@@ -33,9 +38,11 @@
 		D94270A0C928F8A7DBD007DC /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A8EDAC97692F06FFD900DD /* CanvasView.swift */; };
 		F924F6E6A24F68A0E6D09C34 /* SpecTypePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D1C7C0F03506DB8028EF55 /* SpecTypePicker.swift */; };
 		FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */; };
+		FE084A5D5C3C9079E11FF5EF /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48465A1F613BBD68E26CD870 /* ColorPickerPopover.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		157316A32085744ED83F21B1 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
 		15A8EDAC97692F06FFD900DD /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		194511A274EBDFF34B92704A /* UIScreenRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScreenRenderer.swift; sourceTree = "<group>"; };
 		20521F32F9E57397B2DE618B /* CanvasDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDocument.swift; sourceTree = "<group>"; };
@@ -43,11 +50,13 @@
 		27D540AE0DFC8B748CA38B42 /* UIRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIRenderer.swift; sourceTree = "<group>"; };
 		3B72E7A9186EF104EB84B64D /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		46D1C7C0F03506DB8028EF55 /* SpecTypePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecTypePicker.swift; sourceTree = "<group>"; };
+		48465A1F613BBD68E26CD870 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
 		5B6F079D15D4D217E25CCA7A /* MermaidCanvasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCanvasApp.swift; sourceTree = "<group>"; };
 		5CE73A51C83B03DD44C69184 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		64EF62965178F51889E1F471 /* FlowRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowRenderer.swift; sourceTree = "<group>"; };
 		679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditShapeSheet.swift; sourceTree = "<group>"; };
+		6B9BBA61E24BC7DACC5B40DB /* SpecialShapesMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialShapesMenu.swift; sourceTree = "<group>"; };
 		6C0B873635193E39B3DFE265 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		772E436BDF9309FA34D00B75 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
 		773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidGenerator.swift; sourceTree = "<group>"; };
@@ -56,9 +65,12 @@
 		AA778DD18F8C69B4EBB4E665 /* PreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSheet.swift; sourceTree = "<group>"; };
 		AACBAEF360A6118E07BB4428 /* MermaidCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCodeSheet.swift; sourceTree = "<group>"; };
 		AD21FA8F5DC5FD6CF6C21717 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
+		AD54D175CDE188E929CBCFF0 /* SelectionHandles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionHandles.swift; sourceTree = "<group>"; };
 		AF04B2EA192B2B6098F37515 /* iPhoneFrameOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneFrameOverlay.swift; sourceTree = "<group>"; };
 		B59F0772F48D2E992981C75D /* ArchitectureRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitectureRenderer.swift; sourceTree = "<group>"; };
+		B5A1B0B3383152BC71230968 /* CollapseBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapseBadge.swift; sourceTree = "<group>"; };
 		BC6C55EAC4AF34DD4A5003A3 /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
+		BCAE246C24004E85BACBB134 /* MarkerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerOverlay.swift; sourceTree = "<group>"; };
 		CCBA32E9EE21CC93560D21D9 /* SpecType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecType.swift; sourceTree = "<group>"; };
 		D4C1E249608A6B60BB047C6C /* CanvasFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileManager.swift; sourceTree = "<group>"; };
 		FD52D3CE9BC39876E2E62058 /* DotGridBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotGridBackground.swift; sourceTree = "<group>"; };
@@ -91,13 +103,19 @@
 			isa = PBXGroup;
 			children = (
 				15A8EDAC97692F06FFD900DD /* CanvasView.swift */,
+				B5A1B0B3383152BC71230968 /* CollapseBadge.swift */,
+				48465A1F613BBD68E26CD870 /* ColorPickerPopover.swift */,
 				FD52D3CE9BC39876E2E62058 /* DotGridBackground.swift */,
 				679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */,
 				AF04B2EA192B2B6098F37515 /* iPhoneFrameOverlay.swift */,
+				BCAE246C24004E85BACBB134 /* MarkerOverlay.swift */,
 				AACBAEF360A6118E07BB4428 /* MermaidCodeSheet.swift */,
+				157316A32085744ED83F21B1 /* NoteBadge.swift */,
 				AA778DD18F8C69B4EBB4E665 /* PreviewSheet.swift */,
+				6B9BBA61E24BC7DACC5B40DB /* SpecialShapesMenu.swift */,
 				46D1C7C0F03506DB8028EF55 /* SpecTypePicker.swift */,
 				6C0B873635193E39B3DFE265 /* ToolbarView.swift */,
+				75D2EB75DCCCF2B2D4A3E2ED /* Handles */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -115,6 +133,14 @@
 				530D6F6567761002C0688F9A /* Views */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		75D2EB75DCCCF2B2D4A3E2ED /* Handles */ = {
+			isa = PBXGroup;
+			children = (
+				AD54D175CDE188E929CBCFF0 /* SelectionHandles.swift */,
+			);
+			path = Handles;
 			sourceTree = "<group>";
 		};
 		78CD20FCFFFAFA27623030C3 /* Products */ = {
@@ -220,21 +246,27 @@
 				BCA63851BA4296D3609DF04B /* CanvasFileManager.swift in Sources */,
 				774EC58465369A580480737D /* CanvasModel.swift in Sources */,
 				D94270A0C928F8A7DBD007DC /* CanvasView.swift in Sources */,
+				5A0924A8E179E943AE569925 /* CollapseBadge.swift in Sources */,
+				FE084A5D5C3C9079E11FF5EF /* ColorPickerPopover.swift in Sources */,
 				169F45E3624AC8D420570915 /* ContentView.swift in Sources */,
 				91D5939D222D1EE1D8D9B513 /* DotGridBackground.swift in Sources */,
 				C6D5781519E6F6C8D1E254AD /* EdgeConnection.swift in Sources */,
 				47432578C2C5B349E43399D5 /* EditShapeSheet.swift in Sources */,
 				A473B7C70296839A9CC9B68A /* FlowRenderer.swift in Sources */,
+				0106686D777FFFF9D69DC89C /* MarkerOverlay.swift in Sources */,
 				C3D292667697648BE2110A8A /* MermaidCanvasApp.swift in Sources */,
 				5C118A49347D8C65FA5F5EE1 /* MermaidCodeSheet.swift in Sources */,
 				D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */,
 				FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */,
+				327A5ABE5012EA9D636D38A6 /* NoteBadge.swift in Sources */,
 				550C7F93B7C1B462BDBE182F /* PreviewSheet.swift in Sources */,
 				368727EBEC1349DCE39208BC /* RoadmapRenderer.swift in Sources */,
+				BE6206740C93702F54C853D6 /* SelectionHandles.swift in Sources */,
 				D27F4CE48C4D343A37930592 /* ShapeCategory.swift in Sources */,
 				7437B62EA81BC3AC010D6303 /* ShapeNode.swift in Sources */,
 				46E5113F9F44EF2E47008BF8 /* SpecType.swift in Sources */,
 				F924F6E6A24F68A0E6D09C34 /* SpecTypePicker.swift in Sources */,
+				BDE34071F09F124EE05E8BC7 /* SpecialShapesMenu.swift in Sources */,
 				A6112259B6F82F3D230BB9F3 /* ToolbarView.swift in Sources */,
 				6A15550F9E76856972709591 /* UIRenderer.swift in Sources */,
 				9908CFE06D700CBADF9FC0A2 /* UIScreenRenderer.swift in Sources */,

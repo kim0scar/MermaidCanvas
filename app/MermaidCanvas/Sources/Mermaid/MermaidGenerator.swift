@@ -4,7 +4,8 @@ enum MermaidGenerator {
     static func generate(shapes: [ShapeNode],
                          edges: [EdgeConnection],
                          canvasSize: CGSize = .zero,
-                         specType: SpecType = .ui) -> String {
+                         specType: SpecType = .ui,
+                         collapsedIds: Set<UUID> = []) -> String {
         guard !shapes.isEmpty else {
             return "flowchart TD\n    Tom[\"Tom canvas — lägg till en form\"]"
         }
@@ -42,17 +43,33 @@ enum MermaidGenerator {
             if !shape.showLabel {
                 lines.append("\(indent)%% \(id) hidden-label")
             }
+            if let color = shape.colorOverride {
+                lines.append("\(indent)%% \(id) color: \(color)")
+            }
+            if let link = shape.linkNumber {
+                lines.append("\(indent)%% \(id) link: \(link)")
+            }
+            if shape.type == .table {
+                lines.append("\(indent)%% \(id) table: 3×3")
+            }
+            if collapsedIds.contains(shape.id) {
+                lines.append("\(indent)%% \(id) collapsed")
+            }
             lines.append("\(indent)%% \(id) pos: \(Int(shape.position.x.rounded())),\(Int(shape.position.y.rounded()))")
         }
 
         // Edges
-        for edge in edges {
+        for (i, edge) in edges.enumerated() {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
             let arrow = edge.bidirectional ? "<-->" : "-->"
             if edge.label.isEmpty {
                 lines.append("\(indent)\(from) \(arrow) \(to)")
             } else {
                 lines.append("\(indent)\(from) \(arrow)|\"\(escape(edge.label))\"| \(to)")
+            }
+            // Waypoints som synliga kommentarer
+            for wp in edge.waypoints {
+                lines.append("\(indent)%% e\(i) waypoint: \(Int(wp.x.rounded())),\(Int(wp.y.rounded()))")
             }
         }
 
@@ -81,10 +98,11 @@ enum MermaidGenerator {
     static func canvasStateJSON(shapes: [ShapeNode],
                                 edges: [EdgeConnection],
                                 canvasSize: CGSize,
-                                specType: SpecType = .ui) -> String {
+                                specType: SpecType = .ui,
+                                collapsedIds: Set<UUID> = []) -> String {
         let mermaidIds = makeMermaidIds(for: shapes)
         let nodes: [[String: Any]] = shapes.map { shape in
-            [
+            var n: [String: Any] = [
                 "id": mermaidIds[shape.id]!,
                 "x": Int(shape.position.x.rounded()),
                 "y": Int(shape.position.y.rounded()),
@@ -96,16 +114,24 @@ enum MermaidGenerator {
                 "rotation": Double(shape.rotation),
                 "note": shape.note
             ]
+            if let color = shape.colorOverride { n["color"] = color }
+            if let link = shape.linkNumber { n["linkNumber"] = link }
+            return n
         }
         let edgeArr: [[String: Any]] = edges.compactMap { edge in
             guard let f = mermaidIds[edge.from], let t = mermaidIds[edge.to] else { return nil }
-            return [
+            var e: [String: Any] = [
                 "from": f,
                 "to": t,
                 "label": edge.label,
                 "bidirectional": edge.bidirectional
             ]
+            if !edge.waypoints.isEmpty {
+                e["waypoints"] = edge.waypoints.map { ["x": $0.x, "y": $0.y] }
+            }
+            return e
         }
+        let collapsedMermaidIds = collapsedIds.compactMap { mermaidIds[$0] }
 
         // iPhone-frame inom canvasen — så Claude exakt kan översätta
         // canvas-position till iPhone-screen-position.
@@ -127,12 +153,15 @@ enum MermaidGenerator {
             "unit": "pt",
             "iphoneFrame": iphone
         ]
-        let dict: [String: Any] = [
+        var dict: [String: Any] = [
             "canvas": canvas,
             "specType": specType.rawValue,
             "nodes": nodes,
             "edges": edgeArr
         ]
+        if !collapsedMermaidIds.isEmpty {
+            dict["collapsed"] = collapsedMermaidIds
+        }
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
               let str = String(data: data, encoding: .utf8) else { return "{}" }
         return str
@@ -154,6 +183,8 @@ enum MermaidGenerator {
         case .rectangle: return "[\"\(label)\"]"
         case .diamond:   return "{\"\(label)\"}"
         case .text:      return "[\"\(label)\"]"
+        case .table:     return "[\"\(label)\"]"   // tabell-data skrivs som %% kommentar
+        case .link:      return "((\"\(label)\"))" // länk-nummer skrivs som %% kommentar
         }
     }
 

@@ -110,6 +110,8 @@ enum MermaidParser {
             let category = ShapeCategory(rawValue: categoryRaw) ?? .ui
             let rotationRaw = node["rotation"]
             let rotation = rotationRaw.map { numberValue($0) } ?? 0
+            let colorOverride = node["color"] as? String
+            let linkNumber = node["linkNumber"] as? Int
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
@@ -118,7 +120,9 @@ enum MermaidParser {
                 sizeMultiplier: max(0.3, min(3.0, size)),
                 note: note,
                 category: category,
-                rotation: max(-360, min(360, rotation))
+                rotation: max(-360, min(360, rotation)),
+                colorOverride: colorOverride,
+                linkNumber: linkNumber
             )
             idMap[mid] = shape.id
             shapes.append(shape)
@@ -133,7 +137,15 @@ enum MermaidParser {
             else { continue }
             let label = (edge["label"] as? String) ?? ""
             let bidi = (edge["bidirectional"] as? Bool) ?? false
-            edgeList.append(EdgeConnection(from: fromId, to: toId, label: label, bidirectional: bidi))
+            var waypoints: [EdgeWaypoint] = []
+            if let wpArr = edge["waypoints"] as? [[String: Any]] {
+                for wp in wpArr {
+                    let wx = wp["x"].map { numberValue($0) } ?? 0
+                    let wy = wp["y"].map { numberValue($0) } ?? 0
+                    waypoints.append(EdgeWaypoint(x: Double(wx), y: Double(wy)))
+                }
+            }
+            edgeList.append(EdgeConnection(from: fromId, to: toId, label: label, bidirectional: bidi, waypoints: waypoints))
         }
 
         return ParsedCanvas(shapes: shapes, edges: edgeList, canvasSize: parsedCanvasSize)

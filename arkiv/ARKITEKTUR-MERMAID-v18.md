@@ -1,75 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v19
+# ARKITEKTUR-MERMAID — Version v18
 *Datum: 2026-05-15*
 
-> **Status:** v19 = STOR major release. Lucidchart-grade canvas: pan/zoom på 3000×3000, direkt-manipulation via selection-handtag, multi-select drag-rectangle, edge waypoints, färgväljare, tabell + jump-link, expand/collapse, ny canvas-prompt. Allt round-trippas i mermaid + state-JSON.
-
-## Ändringar från v18 — v19 STORA RELEASE
-
-**Block A — Canvas-grund:**
-- 3000×3000pt fast canvas, prickrutnät över hela
-- Pan via en-finger-drag på tom area
-- Pinch-zoom (MagnificationGesture)
-- Dubbeltap = växla 1× ↔ 1.5× zoom
-- iPhone-ram (UI-mode) som canvas-overlay med fast 393×852 centrerad
-
-**Block B — Direkt-manipulation:**
-- Tap = select (visar handtag), dubbeltap = öppna edit-sheet
-- 4 hörn-handtag för resize (drag hörn = ändra size)
-- 1 topp-knopp för rotation (drag = snurra)
-- Handtag-storlek minst 24pt (HIG) oavsett zoom
-
-**Block C — Multi-select:**
-- Marker-mode-knapp i toolbar (rectangle.dashed)
-- Drag-rectangle markerar alla former inom
-- Markerings-ringar runt selected former
-- I marker-mode: shapes dimmas till 0.6 opacity (visuell feedback)
-
-**Block D — Edge waypoints:**
-- EdgeConnection får `waypoints: [EdgeWaypoint]`
-- Liten cirkel-handtag på edge-mitt (visas i color om waypoint finns)
-- Drag → skapar L-formad path
-- Context-menu på handle: "Räta ut" eller "Ta bort pil"
-
-**Block E — Färg + note-badge:**
-- ShapeNode.colorOverride: String? (hex)
-- ColorPickerPopover med 8 palette-färger + "återställ till kategori"
-- NoteBadge (gul med "note.text"-ikon) visas i topp-höger när shape.note inte är tom
-- Tap på badge → öppnar edit-sheet (där note finns)
-
-**Block F — Special-former:**
-- ShapeType.table — 3×3 grid med streckade celler
-- ShapeType.link — cirkel med länk-ikon + nummer
-- SpecialShapesMenu (+ -knapp i toolbar) → tabell / jump-link
-- Jump-link-par: två länkar med samma nummer skapas samtidigt; tap på en panar vyn till partner med spring-animation
-
-**Block G — Canvas-management:**
-- Ny canvas-knapp i ⋯-meny → confirmation-dialog "Spara först eller förkasta?"
-- CollapseBadge (+/- indigo-knapp) visas i botten-höger på former med outgoing edges
-- Tap på +/- kollapsar BFS-set av downstream-shapes
-- collapsedIds: Set<UUID> i CanvasModel; sparas i state-JSON som `collapsed: [ids]`
-
-**Block H — Mermaid + state-JSON utvidgning:**
-- `%% NX color: #hex` i mermaid-block
-- `%% NX link: N` för jump-link-nummer
-- `%% NX table: 3×3` för tabeller
-- `%% NX collapsed` för kollapsade
-- `%% eN waypoint: x,y` för edge-mid-punkter
-- State-JSON nodes: `color`, `linkNumber`
-- State-JSON edges: `waypoints: [{x, y}]`
-- State-JSON root: `collapsed: [mermaidIds]`
-
-**Block I — Toolbar v19:**
-- Vänster del scrollbar: 4 shapes (drag) + SpecialMenu + pil + marker
-- Höger del fast: undo + ⋯ + Spara
-- Tap-targets 44pt (HIG)
-- ⋯-menyn: Färg (om selected), Preview, Visa filinnehåll, Ny canvas, Öppna fil
-
-**Block J — Sub-agent-validerade fixar:**
-- Sub-agent #1 (gesture-konflikt): markerMode disabler shape-gestures, gestures dispatchas korrekt
-- Sub-agent #2 (toolbar-bredd): ScrollView wrapping shape-knappar, fasta knappar höger
-- Sub-agent #3 (final UX): min tap-target 24pt på handles, badges 20pt, dimning i marker-mode
-
-
+> **Status:** v18 stänger två sub-agent-auditerade gap: **rotation** (helt nytt fält) och **iPhone-frame-koordinater** (sparas nu i canvas-meta så Claude vet var ramen ligger).
 
 ## Ändringar från v17
 

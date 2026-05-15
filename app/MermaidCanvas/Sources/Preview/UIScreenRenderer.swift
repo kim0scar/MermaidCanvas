@@ -73,8 +73,8 @@ struct UIScreenRenderer: View {
     }
 
     private func phoneFrame(in container: CGSize) -> CGSize {
-        // Använd samma matte som canvasen och state-JSON
-        iPhoneFrameMath.frame(in: container).size
+        // Aspect-fit för preview (skiljt från canvasens fasta storlek)
+        iPhoneFrameMath.previewFrame(in: container).size
     }
 
     // MARK: - Komponent-mapping

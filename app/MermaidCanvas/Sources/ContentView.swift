@@ -16,6 +16,8 @@ struct ContentView: View {
     @State private var showCodeSheet: Bool = false
     @State private var generatedCode: String = ""
     @State private var showPreviewSheet: Bool = false
+    @State private var showColorSheet: Bool = false
+    @State private var showNewCanvasPrompt: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -46,7 +48,34 @@ struct ContentView: View {
                     statusIsError = false
                 },
                 onShowCode: showMermaidCode,
-                onShowPreview: { showPreviewSheet = true }
+                onShowPreview: { showPreviewSheet = true },
+                onToggleMarker: {
+                    model.toggleMarkerMode()
+                    statusText = model.markerMode
+                        ? "Markeringsläge — dra en rektangel för att välja flera"
+                        : "Markeringsläge av"
+                    statusIsError = false
+                },
+                onShowColor: { showColorSheet = true },
+                onAddTable: {
+                    model.addTable(at: canvasCenter)
+                    statusText = "Tabell tillagd"
+                    statusIsError = false
+                },
+                onAddJumpLink: {
+                    model.addJumpLinkPair(near: canvasCenter)
+                    statusText = "Jump-link-par tillagt"
+                    statusIsError = false
+                },
+                onNewCanvas: {
+                    if model.shapes.isEmpty {
+                        model.clearCanvas()
+                        statusText = "Ny canvas"
+                        statusIsError = false
+                    } else {
+                        showNewCanvasPrompt = true
+                    }
+                }
             )
 
             TextField("Rubrik", text: $model.canvasTitle)
@@ -59,7 +88,7 @@ struct ContentView: View {
             GeometryReader { geo in
                 CanvasView(
                     model: model,
-                    onShapeTap: handleShapeTap,
+                    onShapeEdgeTap: handleShapeTap,
                     onShapeEdit: { id in editingShapeId = id },
                     onShapeDelete: { id in
                         model.deleteShape(id: id)
@@ -70,16 +99,36 @@ struct ContentView: View {
                         model.deleteEdge(id: id)
                         statusText = "Pilen borttagen"
                         statusIsError = false
+                    },
+                    onShapeSelect: { id in
+                        if let shape = model.shapes.first(where: { $0.id == id }),
+                           shape.type == .link,
+                           let partner = model.partnerLink(for: id) {
+                            // Jump-link: panorera till partner
+                            jumpToPartner(partner: partner, viewportSize: geo.size)
+                            statusText = "Hoppade till länk #\(partner.linkNumber ?? 0)"
+                            statusIsError = false
+                        } else {
+                            model.selectShape(id)
+                            statusText = "Form vald — dra hörn för storlek, topp för rotation, dubbeltap för meny"
+                            statusIsError = false
+                        }
                     }
                 )
                 .onAppear {
-                    canvasCenter = CGPoint(x: geo.size.width / 2,
-                                           y: geo.size.height / 2)
-                    model.canvasSize = geo.size
+                    // canvasCenter ges i CANVAS-koordinater (inte viewport).
+                    // Vi väljer mitten av canvasen som default-placering.
+                    canvasCenter = CGPoint(
+                        x: CanvasModel.contentSize.width / 2,
+                        y: CanvasModel.contentSize.height / 2
+                    )
+                    centerViewOnCanvasCenter(viewportSize: geo.size)
                 }
                 .onChange(of: geo.size) { _, ns in
-                    canvasCenter = CGPoint(x: ns.width / 2, y: ns.height / 2)
-                    model.canvasSize = ns
+                    // Viewport ändrades — håll vyn centrerad på canvas-mitten om inte panad
+                    if model.canvasOffset == .zero && model.canvasScale == 1.0 {
+                        centerViewOnCanvasCenter(viewportSize: ns)
+                    }
                 }
             }
 
@@ -126,6 +175,26 @@ struct ContentView: View {
                 showCodeSheet = false
             }
         }
+        .sheet(isPresented: $showColorSheet) {
+            if let id = model.selectedShapeId,
+               let idx = model.shapes.firstIndex(where: { $0.id == id }) {
+                ColorPickerPopover(
+                    selectedHex: model.shapes[idx].colorOverride,
+                    onPick: { hex in
+                        model.shapes[idx].colorOverride = hex
+                        showColorSheet = false
+                    }
+                )
+                .presentationDetents([.height(360)])
+            } else {
+                VStack {
+                    Text("Välj en form först (tap för att markera)")
+                        .padding()
+                    Button("Stäng") { showColorSheet = false }
+                }
+                .presentationDetents([.height(180)])
+            }
+        }
         .sheet(isPresented: $showPreviewSheet) {
             PreviewSheet(
                 shapes: model.shapes,
@@ -167,6 +236,24 @@ struct ContentView: View {
         }
         .onChange(of: fileManager.reloadTick) { _, _ in
             reloadFromFile()
+        }
+        .confirmationDialog("Spara nuvarande canvas först?",
+                            isPresented: $showNewCanvasPrompt,
+                            titleVisibility: .visible) {
+            Button("Spara först") {
+                save()
+                model.clearCanvas()
+                statusText = "Ny canvas (föregående sparad)"
+                statusIsError = false
+            }
+            Button("Förkasta och börja om", role: .destructive) {
+                model.clearCanvas()
+                statusText = "Ny canvas"
+                statusIsError = false
+            }
+            Button("Avbryt", role: .cancel) {}
+        } message: {
+            Text("Du håller på att rensa canvasen. Vill du spara först?")
         }
     }
 
@@ -270,7 +357,8 @@ struct ContentView: View {
             shapes: model.shapes,
             edges: model.edges,
             canvasSize: model.canvasSize,
-            specType: model.specType
+            specType: model.specType,
+            collapsedIds: model.collapsedIds
         )
         statusText = "Välj plats för fil…"
         statusIsError = false
@@ -283,7 +371,8 @@ struct ContentView: View {
             shapes: model.shapes,
             edges: model.edges,
             canvasSize: model.canvasSize,
-            specType: model.specType
+            specType: model.specType,
+            collapsedIds: model.collapsedIds
         )
         do {
             try fileManager.write(doc.content)
@@ -298,14 +387,13 @@ struct ContentView: View {
     }
 
     private func showMermaidCode() {
-        // Visa hela filen — frontmatter + mermaid + state-JSON — så Kim ser ALLT
-        // som sparas i .md-filen. Inte bara mermaid-blocket.
         let doc = CanvasDocument(
             title: model.canvasTitle,
             shapes: model.shapes,
             edges: model.edges,
             canvasSize: model.canvasSize,
-            specType: model.specType
+            specType: model.specType,
+            collapsedIds: model.collapsedIds
         )
         generatedCode = doc.content
         showCodeSheet = true
@@ -318,6 +406,39 @@ struct ContentView: View {
             await MainActor.run {
                 withAnimation(.easeInOut(duration: 0.5)) { justSaved = false }
             }
+        }
+    }
+
+    /// Centrera viewport på canvas-mitten. Vid UI-läge: centrera på iPhone-ramen istället
+    /// (så användaren ser ramen direkt vid start).
+    private func centerViewOnCanvasCenter(viewportSize: CGSize) {
+        let canvasCenter: CGPoint
+        if model.specType == .ui {
+            let frame = iPhoneFrameMath.canvasFrame(in: CanvasModel.contentSize)
+            canvasCenter = CGPoint(x: frame.midX, y: frame.midY)
+        } else {
+            canvasCenter = CGPoint(
+                x: CanvasModel.contentSize.width / 2,
+                y: CanvasModel.contentSize.height / 2
+            )
+        }
+        let scale: CGFloat = 1.0
+        model.canvasScale = scale
+        model.canvasOffset = CGSize(
+            width: viewportSize.width / 2 - canvasCenter.x * scale,
+            height: viewportSize.height / 2 - canvasCenter.y * scale
+        )
+    }
+
+    /// Animera vyn till en partner-jump-link.
+    private func jumpToPartner(partner: ShapeNode, viewportSize: CGSize) {
+        let scale = model.canvasScale
+        let newOffset = CGSize(
+            width: viewportSize.width / 2 - partner.position.x * scale,
+            height: viewportSize.height / 2 - partner.position.y * scale
+        )
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.85)) {
+            model.canvasOffset = newOffset
         }
     }
 
