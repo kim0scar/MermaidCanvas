@@ -11,6 +11,7 @@ struct ToolbarView: View {
     var onSaveAs: () -> Void
     var onUndo: () -> Void
     var onShowCode: () -> Void
+    var onShowPreview: () -> Void
 
     private var edgeMode: EdgeCreationMode { model.edgeCreationMode }
 
@@ -31,6 +32,9 @@ struct ToolbarView: View {
 
             iconButton(system: "curlybraces",
                        action: onShowCode)
+
+            iconButton(system: "eye",
+                       action: onShowPreview)
 
             Spacer()
 

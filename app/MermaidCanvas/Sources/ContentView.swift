@@ -15,6 +15,7 @@ struct ContentView: View {
     @State private var justSaved: Bool = false
     @State private var showCodeSheet: Bool = false
     @State private var generatedCode: String = ""
+    @State private var showPreviewSheet: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,7 +45,8 @@ struct ContentView: View {
                     statusText = "Ångrade senaste ändring"
                     statusIsError = false
                 },
-                onShowCode: showMermaidCode
+                onShowCode: showMermaidCode,
+                onShowPreview: { showPreviewSheet = true }
             )
 
             TextField("Rubrik", text: $model.canvasTitle)
@@ -121,6 +123,15 @@ struct ContentView: View {
             MermaidCodeSheet(code: generatedCode) {
                 showCodeSheet = false
             }
+        }
+        .sheet(isPresented: $showPreviewSheet) {
+            PreviewSheet(
+                shapes: model.shapes,
+                edges: model.edges,
+                canvasSize: model.canvasSize,
+                specType: model.specType,
+                onClose: { showPreviewSheet = false }
+            )
         }
         .fileImporter(
             isPresented: $showImporter,

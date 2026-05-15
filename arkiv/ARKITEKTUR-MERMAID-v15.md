@@ -1,22 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v16
+# ARKITEKTUR-MERMAID — Version v15
 *Datum: 2026-05-15*
 
-> **Status:** v16 lägger till **Preview-fliken** — Claudes översättnings-kontrakt körs i appen.
-> Kim ser sin canvas + öppnar Preview → ser hur kategorierna översätts till faktisk SwiftUI-vy
-> (iPhone-simulering i UI-läge, listsektioner i Roadmap, filträd i Arkitektur, numrerad pipeline i Flow).
-> Om Preview ser fel ut: justera översättningsreglerna i `Sources/Preview/`.
-
-## Ändringar från v15
-
-1. **Preview-flik (eye-ikon i toolbar)** — öppnar en sheet med UIRenderer.
-2. **UIRenderer** (dispatcher) väljer renderer per spec_type.
-3. **UIScreenRenderer** (UI-mode) — iPhone-chassi med Dynamic Island, komponenter positioneras proportionellt. Inferens från label: knapp/mätare/textfält/titel/ikon → motsvarande SwiftUI-komponent. zone = streckad container, overlay = material-chip, note = filtreras bort (kommentar, inte UI).
-4. **RoadmapRenderer** — listsektioner: Milestones → Features → Blockers → Future → Notes.
-5. **ArchitectureRenderer** — folder/file-träd via närhets-heuristik + module/service/data som kort.
-6. **FlowRenderer** — numrerad pipeline i ordning input → router → agent → tool → memory → output.
-7. **PreviewSheet** — sheet-wrapper med stäng-knapp.
-
-
+> **Status:** v15 stänger gapen Kim hittade i v14: text-objekt, notes i mermaid, iPhone-ram som subgraph i mermaid, kod-modal visar hela filen.
 
 ## Ändringar från v14
 
