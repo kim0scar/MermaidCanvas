@@ -1,18 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v17
+# ARKITEKTUR-MERMAID — Version v16
 *Datum: 2026-05-15*
 
-> **Status:** v17 fixar tre brister Kim hittade i v16:
-> 1. Mermaid-koden syntes inte i modalen (SwiftUI tolkade triple-backticks som markdown) — fix: `Text(verbatim:)`
-> 2. Toolbar overflowade ~60% (~629pt på 393pt iPhone) — fix: ...-meny för sekundära actions, 44pt tap-targets
-> 3. Preview-komponenter hamnade fel — fix: korrekt centrerings-matematik mot phone-origin
-
-## Ändringar från v16
-
-1. **MermaidCodeSheet — `Text(verbatim: code)`:** SwiftUI tolkade triple-backticks och `#`-rubriker som markdown vilket dolde mermaid-blocket. Verbatim stoppar all markdown-parsing.
-2. **Toolbar redesignad — primary + ...-meny:** synligt: 4 shapes, pil, undo, ..., spara. ...-meny innehåller Preview, Visa filinnehåll, Öppna fil. Tap-targets ökade från 36 till 44pt (HIG).
-3. **UIScreenRenderer — korrekt positionering:** `position(x: phoneOriginX + phone.width * relX, ...)` istället för broken offset-trick. Komponenter hamnar nu inom iPhone-ramen istället för i hörnet.
-
-
+> **Status:** v16 lägger till **Preview-fliken** — Claudes översättnings-kontrakt körs i appen.
 > Kim ser sin canvas + öppnar Preview → ser hur kategorierna översätts till faktisk SwiftUI-vy
 > (iPhone-simulering i UI-läge, listsektioner i Roadmap, filträd i Arkitektur, numrerad pipeline i Flow).
 > Om Preview ser fel ut: justera översättningsreglerna i `Sources/Preview/`.

@@ -20,8 +20,11 @@ struct UIScreenRenderer: View {
     var body: some View {
         GeometryReader { geo in
             let phone = phoneFrame(in: geo.size)
-            ZStack {
-                // iPhone-chassi
+            let phoneOriginX = (geo.size.width - phone.width) / 2
+            let phoneOriginY = (geo.size.height - phone.height) / 2
+
+            ZStack(alignment: .topLeading) {
+                // iPhone-chassi (centrerat)
                 RoundedRectangle(cornerRadius: 42, style: .continuous)
                     .fill(Color(.systemBackground))
                     .overlay(
@@ -29,25 +32,25 @@ struct UIScreenRenderer: View {
                             .stroke(Color.primary.opacity(0.5), lineWidth: 3)
                     )
                     .frame(width: phone.width, height: phone.height)
+                    .offset(x: phoneOriginX, y: phoneOriginY)
 
                 // Dynamic Island
                 Capsule()
                     .fill(Color.black)
                     .frame(width: 100, height: 28)
-                    .offset(y: -phone.height / 2 + 22)
+                    .offset(x: phoneOriginX + phone.width / 2 - 50,
+                            y: phoneOriginY + 14)
 
-                // Komponenter
+                // Komponenter — positioneras inom telefonramen efter (relX, relY)
                 ForEach(visibleShapes) { shape in
                     componentView(for: shape)
                         .position(
-                            x: phone.width * relX(shape) ,
-                            y: phone.height * relY(shape)
+                            x: phoneOriginX + phone.width * relX(shape),
+                            y: phoneOriginY + phone.height * relY(shape)
                         )
-                        .offset(x: -phone.width / 2, y: -phone.height / 2)
                 }
             }
             .frame(width: geo.size.width, height: geo.size.height)
-            .position(x: geo.size.width / 2, y: geo.size.height / 2)
         }
         .background(Color(.systemGray5))
     }

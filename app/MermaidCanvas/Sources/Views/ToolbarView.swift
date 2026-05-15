@@ -1,5 +1,10 @@
 import SwiftUI
 
+/// Toolbar v17 — Apple-design: primary actions synliga, sekundära i ...-meny.
+/// Tap-targets minst 44×44 enligt HIG.
+///
+/// Primary (alltid synliga): 4 shape-knappar, pil, undo, spara
+/// Secondary (i ...-meny): Visa kod, Preview, Öppna fil
 struct ToolbarView: View {
     @ObservedObject var model: CanvasModel
     let canvasCenter: CGPoint
@@ -14,9 +19,10 @@ struct ToolbarView: View {
     var onShowPreview: () -> Void
 
     private var edgeMode: EdgeCreationMode { model.edgeCreationMode }
+    private let tapTarget: CGFloat = 44
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 4) {
             shapeIconButton(.circle, system: "circle")
             shapeIconButton(.rectangle, system: "rectangle")
             shapeIconButton(.diamond, system: "diamond")
@@ -24,53 +30,19 @@ struct ToolbarView: View {
 
             pilControl
 
-            Divider().frame(height: 24)
+            Spacer(minLength: 6)
 
-            iconButton(system: "arrow.uturn.backward",
-                       action: onUndo,
-                       disabled: !model.canUndo)
-
-            iconButton(system: "curlybraces",
-                       action: onShowCode)
-
-            iconButton(system: "eye",
-                       action: onShowPreview)
-
-            Spacer()
-
-            iconButton(system: "folder", action: onOpen)
+            undoButton
+            moreMenu
             saveMenu
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .background(Color(.systemBackground))
         .overlay(alignment: .bottom) { Divider() }
     }
 
-    @ViewBuilder
-    private var saveMenu: some View {
-        Menu {
-            Button { onSave() } label: {
-                Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
-            }
-            Button { onSaveAs() } label: {
-                Label("Spara som ny fil…", systemImage: "doc.badge.plus")
-            }
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "internaldrive")
-                    .font(.body.weight(.semibold))
-                Text("Spara")
-                    .font(.body.weight(.semibold))
-            }
-            .foregroundStyle(Color.white)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(Color.accentColor)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .contentShape(Rectangle())
-        }
-    }
+    // MARK: - Primary
 
     @ViewBuilder
     private func shapeIconButton(_ type: ShapeType, system: String) -> some View {
@@ -80,9 +52,9 @@ struct ToolbarView: View {
             }
         } label: {
             Image(systemName: system)
-                .font(.title2)
+                .font(.title3)
                 .foregroundStyle(Color.primary)
-                .frame(width: 36, height: 36)
+                .frame(width: tapTarget, height: tapTarget)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -108,34 +80,84 @@ struct ToolbarView: View {
                 }
             } label: {
                 Image(systemName: "arrow.right")
-                    .font(.title2)
+                    .font(.title3)
                     .foregroundStyle(Color.primary)
-                    .frame(width: 36, height: 36)
+                    .frame(width: tapTarget, height: tapTarget)
                     .contentShape(Rectangle())
             }
         } else {
             Button { onCancelEdgeMode() } label: {
                 Image(systemName: "xmark")
-                    .font(.title2)
+                    .font(.title3)
                     .foregroundStyle(.red)
-                    .frame(width: 36, height: 36)
+                    .frame(width: tapTarget, height: tapTarget)
                     .contentShape(Rectangle())
             }
         }
     }
 
     @ViewBuilder
-    private func iconButton(system: String,
-                            action: @escaping () -> Void,
-                            disabled: Bool = false) -> some View {
-        Button(action: action) {
-            Image(systemName: system)
+    private var undoButton: some View {
+        Button(action: onUndo) {
+            Image(systemName: "arrow.uturn.backward")
                 .font(.title3)
-                .foregroundStyle(disabled ? Color.secondary.opacity(0.4) : Color.primary)
-                .frame(width: 36, height: 32)
+                .foregroundStyle(model.canUndo ? Color.primary : Color.secondary.opacity(0.4))
+                .frame(width: tapTarget, height: tapTarget)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .disabled(disabled)
+        .disabled(!model.canUndo)
+    }
+
+    // MARK: - Secondary (...-meny)
+
+    @ViewBuilder
+    private var moreMenu: some View {
+        Menu {
+            Button { onShowPreview() } label: {
+                Label("Preview (simulerad app)", systemImage: "eye")
+            }
+            Button { onShowCode() } label: {
+                Label("Visa filinnehåll", systemImage: "curlybraces")
+            }
+            Divider()
+            Button { onOpen() } label: {
+                Label("Öppna fil…", systemImage: "folder")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.title3)
+                .foregroundStyle(Color.primary)
+                .frame(width: tapTarget, height: tapTarget)
+                .contentShape(Rectangle())
+        }
+    }
+
+    // MARK: - Primary save
+
+    @ViewBuilder
+    private var saveMenu: some View {
+        Menu {
+            Button { onSave() } label: {
+                Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
+            }
+            Button { onSaveAs() } label: {
+                Label("Spara som ny fil…", systemImage: "doc.badge.plus")
+            }
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: "internaldrive")
+                    .font(.body.weight(.semibold))
+                Text("Spara")
+                    .font(.body.weight(.semibold))
+            }
+            .foregroundStyle(Color.white)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(minHeight: tapTarget)
+            .background(Color.accentColor)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .contentShape(Rectangle())
+        }
     }
 }

@@ -10,8 +10,9 @@ struct MermaidCodeSheet: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                Text(code)
+            ScrollView(.vertical, showsIndicators: true) {
+                // verbatim: stoppar SwiftUI från att tolka triple-backticks och # som markdown
+                Text(verbatim: code)
                     .font(.system(.footnote, design: .monospaced))
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
