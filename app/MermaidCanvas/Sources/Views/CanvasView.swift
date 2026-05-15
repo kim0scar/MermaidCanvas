@@ -11,19 +11,49 @@ enum ShapeGeometry {
     static func circleRadius(for shape: ShapeNode) -> CGFloat {
         min(width(for: shape), height(for: shape)) / 2
     }
+
+    /// Hitta vilken form (om någon) som ligger under en canvas-punkt.
+    static func hitTest(_ point: CGPoint, shapes: [ShapeNode], excludingId: UUID? = nil) -> ShapeNode? {
+        for shape in shapes.reversed() {
+            if let exc = excludingId, shape.id == exc { continue }
+            let hw = halfWidth(for: shape)
+            let hh = halfHeight(for: shape)
+            if point.x >= shape.position.x - hw && point.x <= shape.position.x + hw &&
+               point.y >= shape.position.y - hh && point.y <= shape.position.y + hh {
+                return shape
+            }
+        }
+        return nil
+    }
+}
+
+/// v25: aktiv connection-drag (rubber band från shape till finger-position).
+struct ConnectionDrag: Equatable {
+    let fromShapeId: UUID
+    var currentCanvasLocation: CGPoint
 }
 
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
-    var onShapeEdgeTap: (UUID) -> Void  // tap i edge-mode
+    var onShapeEdgeTap: (UUID) -> Void
     var onShapeEdit: (UUID) -> Void
     var onShapeDelete: (UUID) -> Void
     var onEdgeDelete: (UUID) -> Void
     var onShapeSelect: (UUID) -> Void
+    var onShapeDuplicate: (UUID) -> Void
+    var onShapeShowNote: (UUID) -> Void
 
-    // Pan/zoom-state (interna gestures)
+    /// v25: rapporterar zoom-procent uppåt till toolbar
+    @Binding var zoomPercent: Int
+    /// v25: trigger för Reset-zoom från toolbar (incrementeras → onChange → reset)
+    var resetZoomTrigger: Int
+
+    @State var canvasOffset: CGSize = .zero
+    @State var canvasScale: CGFloat = 1.0
     @State private var panStartOffset: CGSize? = nil
     @State private var pinchStartScale: CGFloat? = nil
+    @State private var connectionDrag: ConnectionDrag? = nil
+    @State private var lastViewport: CGSize = .zero
 
     private let minScale: CGFloat = 0.25
     private let maxScale: CGFloat = 3.0
@@ -31,26 +61,26 @@ struct CanvasView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
-                // Viewport-bakgrund — pan/zoom-gestures sitter här
                 Color(.systemGray5)
                     .frame(width: geo.size.width, height: geo.size.height)
-                    .contentShape(Rectangle())
-                    .gesture(panGesture)
-                    .gesture(zoomGesture)
-                    .onTapGesture(count: 2) { handleDoubleTap() }
-                    .onTapGesture(count: 1) { model.deselect() }
+                    .allowsHitTesting(false)
 
-                // Canvas-innehåll i fixed 3000×3000 ram, transformerat
                 canvasContent
                     .frame(width: CanvasModel.contentSize.width,
                            height: CanvasModel.contentSize.height,
                            alignment: .topLeading)
                     .coordinateSpace(name: "canvas")
-                    .scaleEffect(model.canvasScale, anchor: .topLeading)
-                    .offset(x: model.canvasOffset.width, y: model.canvasOffset.height)
-                    .allowsHitTesting(true)
+                    .scaleEffect(canvasScale, anchor: .topLeading)
+                    .offset(x: canvasOffset.width, y: canvasOffset.height)
             }
             .frame(width: geo.size.width, height: geo.size.height)
+            .contentShape(Rectangle())
+            .gesture(panGesture)
+            .simultaneousGesture(zoomGesture)
+            .onTapGesture(count: 2) { handleDoubleTap() }
+            .onTapGesture(count: 1) {
+                if !model.markerMode { model.deselect() }
+            }
             .clipped()
             .dropDestination(for: ShapeType.self) { items, location in
                 let canvasLoc = screenToCanvas(location)
@@ -59,41 +89,107 @@ struct CanvasView: View {
                 }
                 return !items.isEmpty
             }
+            .onAppear {
+                lastViewport = geo.size
+                centerOnInitial(viewport: geo.size)
+            }
+            .onChange(of: geo.size) { _, ns in
+                lastViewport = ns
+                if canvasOffset == .zero && canvasScale == 1.0 {
+                    centerOnInitial(viewport: ns)
+                }
+            }
+            .onChange(of: canvasScale) { _, ns in
+                zoomPercent = Int((ns * 100).rounded())
+            }
+            .onChange(of: resetZoomTrigger) { _, _ in
+                resetZoomAnimated()
+            }
         }
     }
 
-    // MARK: - Canvas-content (3000×3000)
+    private func centerOnInitial(viewport: CGSize) {
+        let center: CGPoint
+        if model.specType == .ui {
+            let frame = iPhoneFrameMath.canvasFrame(in: CanvasModel.contentSize)
+            center = CGPoint(x: frame.midX, y: frame.midY)
+        } else {
+            center = CGPoint(x: CanvasModel.contentSize.width / 2,
+                             y: CanvasModel.contentSize.height / 2)
+        }
+        canvasScale = 1.0
+        canvasOffset = CGSize(
+            width: viewport.width / 2 - center.x,
+            height: viewport.height / 2 - center.y
+        )
+        zoomPercent = 100
+    }
+
+    private func resetZoomAnimated() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+            centerOnInitial(viewport: lastViewport)
+        }
+    }
+
+    private func handleShapeSelect(id: UUID) {
+        if let shape = model.shapes.first(where: { $0.id == id }),
+           shape.type == .link,
+           let partner = model.partnerLink(for: id) {
+            #if canImport(UIKit)
+            let viewport = UIScreen.main.bounds.size
+            #else
+            let viewport = CGSize(width: 400, height: 800)
+            #endif
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.85)) {
+                canvasOffset = CGSize(
+                    width: viewport.width / 2 - partner.position.x * canvasScale,
+                    height: viewport.height / 2 - partner.position.y * canvasScale
+                )
+            }
+        } else {
+            onShapeSelect(id)
+        }
+    }
+
+    // MARK: - Canvas-content
 
     private var canvasContent: some View {
         ZStack(alignment: .topLeading) {
-            // Vit canvas-yta
             Color(.systemGray6)
                 .frame(width: CanvasModel.contentSize.width,
                        height: CanvasModel.contentSize.height)
+                .allowsHitTesting(false)
 
-            // Prickrutnät över hela canvas
             DotGridBackground()
                 .frame(width: CanvasModel.contentSize.width,
                        height: CanvasModel.contentSize.height)
+                .allowsHitTesting(false)
 
-            // iPhone-ram i UI-läge (fast 393×852 centrerad i canvasen)
             if model.specType == .ui {
                 iPhoneFrameOverlay(canvasContentSize: CanvasModel.contentSize)
                     .frame(width: CanvasModel.contentSize.width,
                            height: CanvasModel.contentSize.height)
             }
 
-            // Pilar — visa bara om båda ändarna är synliga
             let hiddenForEdges = model.hiddenShapeIds
             EdgesView(edges: $model.edges,
                       shapes: model.shapes,
-                      canvasScale: model.canvasScale,
+                      canvasScale: canvasScale,
                       hiddenShapeIds: hiddenForEdges,
-                      onEdgeTap: onEdgeDelete)
+                      onEdgeDelete: onEdgeDelete,
+                      onEdgeReverse: { id in model.reverseEdge(id: id) },
+                      onEdgeSetBidi: { id, v in model.setEdgeBidirectional(id: id, v) })
                 .frame(width: CanvasModel.contentSize.width,
                        height: CanvasModel.contentSize.height)
 
-            // Former (filtrera bort kollapsade descendants)
+            // Rubber-band-linje under aktiv connection-drag
+            if let drag = connectionDrag,
+               let fromShape = model.shapes.first(where: { $0.id == drag.fromShapeId }) {
+                ConnectionRubberBand(from: fromShape.position,
+                                     to: drag.currentCanvasLocation)
+                    .allowsHitTesting(false)
+            }
+
             let hidden = model.hiddenShapeIds
             ForEach($model.shapes) { $shape in
                 if !hidden.contains(shape.id) {
@@ -101,43 +197,59 @@ struct CanvasView: View {
                         shape: $shape,
                         edgeMode: model.isEdgeMode,
                         markerMode: model.markerMode,
-                        canvasScale: model.canvasScale,
+                        canvasScale: canvasScale,
                         isCollapsed: model.collapsedIds.contains(shape.id),
                         showCollapseBadge: model.hasOutgoingEdges(id: shape.id),
                         isPendingFrom: model.pendingEdgeFrom == shape.id,
                         onEdgeTap: { onShapeEdgeTap(shape.id) },
-                        onSelect: { onShapeSelect(shape.id) },
+                        onSelect: { handleShapeSelect(id: shape.id) },
                         onEdit: { onShapeEdit(shape.id) },
                         onDelete: { onShapeDelete(shape.id) },
-                        onShowNote: { onShapeEdit(shape.id) },
+                        onDuplicate: { onShapeDuplicate(shape.id) },
+                        onShowNote: { onShapeShowNote(shape.id) },
                         onToggleCollapse: { model.toggleCollapse(id: shape.id) }
                     )
                 }
             }
 
-            // Multi-selection markeringsringar
             ForEach(model.shapes.filter { model.multiSelection.contains($0.id) }) { s in
                 Rectangle()
                     .stroke(Color.accentColor,
-                            style: StrokeStyle(lineWidth: 2 / model.canvasScale,
-                                               dash: [5 / model.canvasScale, 4 / model.canvasScale]))
+                            style: StrokeStyle(lineWidth: 2 / canvasScale,
+                                               dash: [5 / canvasScale, 4 / canvasScale]))
                     .frame(width: ShapeGeometry.width(for: s) + 8,
                            height: ShapeGeometry.height(for: s) + 8)
                     .position(s.position)
                     .allowsHitTesting(false)
             }
 
-            // Selection-handtag på vald form (bara om EJ multi-selection)
+            // Connection-handtag + selection-handtag på vald form
             if model.multiSelection.isEmpty,
                let selectedId = model.selectedShapeId,
                let idx = model.shapes.firstIndex(where: { $0.id == selectedId }) {
+                let s = model.shapes[idx]
                 SelectionHandles(
                     shape: $model.shapes[idx],
-                    canvasScale: model.canvasScale
+                    canvasScale: canvasScale
+                )
+                ConnectionHandles(
+                    shape: s,
+                    canvasScale: canvasScale,
+                    onDragChanged: { canvasPoint in
+                        connectionDrag = ConnectionDrag(fromShapeId: s.id,
+                                                       currentCanvasLocation: canvasPoint)
+                    },
+                    onDragEnded: { canvasPoint in
+                        if let target = ShapeGeometry.hitTest(canvasPoint,
+                                                              shapes: model.shapes,
+                                                              excludingId: s.id) {
+                            model.addEdge(from: s.id, to: target.id)
+                        }
+                        connectionDrag = nil
+                    }
                 )
             }
 
-            // Marker-mode-overlay (drag-rectangle)
             if model.markerMode {
                 MarkerOverlay(model: model, canvasContentSize: CanvasModel.contentSize)
             }
@@ -147,13 +259,13 @@ struct CanvasView: View {
     // MARK: - Gestures
 
     private var panGesture: some Gesture {
-        DragGesture()
+        DragGesture(minimumDistance: 5)
             .onChanged { value in
                 if panStartOffset == nil {
-                    panStartOffset = model.canvasOffset
+                    panStartOffset = canvasOffset
                 }
                 let start = panStartOffset ?? .zero
-                model.canvasOffset = CGSize(
+                canvasOffset = CGSize(
                     width: start.width + value.translation.width,
                     height: start.height + value.translation.height
                 )
@@ -167,10 +279,13 @@ struct CanvasView: View {
         MagnificationGesture()
             .onChanged { value in
                 if pinchStartScale == nil {
-                    pinchStartScale = model.canvasScale
+                    pinchStartScale = canvasScale
                 }
                 let start = pinchStartScale ?? 1
-                model.canvasScale = clamp(start * value, minScale, maxScale)
+                // v25: ÄNNU mildare zoom — pow(value, 0.2) ger ~1/5 känslighet
+                let dampened = pow(value, 0.2)
+                let newScale = clamp(start * dampened, minScale, maxScale)
+                canvasScale = newScale
             }
             .onEnded { _ in
                 pinchStartScale = nil
@@ -179,10 +294,10 @@ struct CanvasView: View {
 
     private func handleDoubleTap() {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-            if model.canvasScale < 1.25 {
-                model.canvasScale = 1.5
+            if canvasScale < 1.25 {
+                canvasScale = 1.5
             } else {
-                model.canvasScale = 1.0
+                canvasScale = 1.0
             }
         }
     }
@@ -191,13 +306,80 @@ struct CanvasView: View {
 
     private func screenToCanvas(_ p: CGPoint) -> CGPoint {
         CGPoint(
-            x: (p.x - model.canvasOffset.width) / model.canvasScale,
-            y: (p.y - model.canvasOffset.height) / model.canvasScale
+            x: (p.x - canvasOffset.width) / canvasScale,
+            y: (p.y - canvasOffset.height) / canvasScale
         )
     }
 
     private func clamp<T: Comparable>(_ v: T, _ lo: T, _ hi: T) -> T {
         min(max(v, lo), hi)
+    }
+}
+
+// MARK: - ConnectionRubberBand
+
+struct ConnectionRubberBand: View {
+    let from: CGPoint
+    let to: CGPoint
+
+    var body: some View {
+        ZStack {
+            Path { p in
+                p.move(to: from)
+                p.addLine(to: to)
+            }
+            .stroke(Color.accentColor.opacity(0.85),
+                    style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
+            // Mål-prick
+            Circle()
+                .fill(Color.accentColor)
+                .frame(width: 10, height: 10)
+                .position(to)
+        }
+    }
+}
+
+// MARK: - ConnectionHandles
+
+/// v25: 4 små handtag som syns på vald form. Drag drar en pil till annan form.
+struct ConnectionHandles: View {
+    let shape: ShapeNode
+    let canvasScale: CGFloat
+    let onDragChanged: (CGPoint) -> Void
+    let onDragEnded: (CGPoint) -> Void
+
+    var body: some View {
+        let w = ShapeGeometry.width(for: shape)
+        let h = ShapeGeometry.height(for: shape)
+        let size: CGFloat = max(16, 18 / canvasScale)
+        ZStack {
+            handle(offset: CGPoint(x: 0,     y: -h/2 - size/2 - 4 / canvasScale), size: size)
+            handle(offset: CGPoint(x: w/2 + size/2 + 4 / canvasScale, y: 0),       size: size)
+            handle(offset: CGPoint(x: 0,     y:  h/2 + size/2 + 4 / canvasScale),  size: size)
+            handle(offset: CGPoint(x: -w/2 - size/2 - 4 / canvasScale, y: 0),      size: size)
+        }
+        .frame(width: w, height: h)
+        .position(shape.position)
+        .rotationEffect(.degrees(shape.rotation))
+    }
+
+    @ViewBuilder
+    private func handle(offset: CGPoint, size: CGFloat) -> some View {
+        ZStack {
+            Circle().fill(Color.accentColor)
+            Image(systemName: "arrow.up.right")
+                .font(.system(size: size * 0.45, weight: .bold))
+                .foregroundStyle(Color.white)
+        }
+        .frame(width: size, height: size)
+        .overlay(Circle().stroke(Color.white, lineWidth: max(1.0, 1.5 / canvasScale)))
+        .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
+        .offset(x: offset.x, y: offset.y)
+        .gesture(
+            DragGesture(coordinateSpace: .named("canvas"))
+                .onChanged { v in onDragChanged(v.location) }
+                .onEnded { v in onDragEnded(v.location) }
+        )
     }
 }
 
@@ -215,23 +397,18 @@ struct ShapeView: View {
     let onSelect: () -> Void
     let onEdit: () -> Void
     let onDelete: () -> Void
+    let onDuplicate: () -> Void
     let onShowNote: () -> Void
     let onToggleCollapse: () -> Void
 
     @State private var dragOffset: CGSize = .zero
 
-    /// Effektiv fyllfärg: colorOverride om satt, annars kategori-färg.
-    private var effectiveFill: Color {
-        if let hex = shape.colorOverride {
-            return Color(hex: parseHex(hex))
-        }
-        return shape.category.fillColor
+    private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
+    private var effectiveFill: Color { pack.fillColor }
+    private var effectiveStroke: Color {
+        shape.colorPackId == nil ? Color.accentColor : pack.strokeColor
     }
-
-    private func parseHex(_ hex: String) -> UInt32 {
-        let cleaned = hex.replacingOccurrences(of: "#", with: "")
-        return UInt32(cleaned, radix: 16) ?? 0
-    }
+    private var effectiveTextColor: Color { pack.textColor }
 
     var body: some View {
         ZStack {
@@ -240,10 +417,10 @@ struct ShapeView: View {
             highlight
             if shape.showLabel {
                 Text(shape.label)
-                    .font(.system(size: 13 * shape.sizeMultiplier,
-                                  weight: shape.type == .text ? .semibold : .medium,
+                    .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
+                                  weight: shape.textStyle.fontWeight,
                                   design: .rounded))
-                    .foregroundStyle(shape.type == .text ? Color.primary : shape.category.textColor)
+                    .foregroundStyle(effectiveTextColor)
                     .multilineTextAlignment(.center)
                     .lineLimit(6)
                     .minimumScaleFactor(0.6)
@@ -289,6 +466,12 @@ struct ShapeView: View {
         .gesture((edgeMode || markerMode) ? nil : dragGesture)
         .contextMenu {
             Button { onEdit() } label: { Label("Redigera", systemImage: "pencil") }
+            Button { onDuplicate() } label: { Label("Duplicera", systemImage: "plus.square.on.square") }
+            Button { onShowNote() } label: {
+                Label(shape.note.isEmpty ? "Lägg till anteckning" : "Visa anteckning",
+                      systemImage: "note.text")
+            }
+            Divider()
             Button(role: .destructive) { onDelete() } label: { Label("Ta bort", systemImage: "trash") }
         }
     }
@@ -307,18 +490,24 @@ struct ShapeView: View {
     private var background: some View {
         switch shape.type {
         case .circle:
-            Circle().fill(effectiveFill)
+            Circle()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 12).fill(effectiveFill)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .diamond:
-            DiamondShape().fill(effectiveFill)
+            DiamondShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .text:
             EmptyView()
         case .table:
             TableShapeBackground(rows: shape.tableRows ?? 3,
                                  cols: shape.tableCols ?? 3,
                                  fill: effectiveFill,
-                                 stroke: shape.category.strokeColor)
+                                 stroke: effectiveStroke)
         case .link:
             JumpLinkShapeBackground(number: shape.linkNumber ?? 0, fill: effectiveFill)
         }
@@ -328,11 +517,11 @@ struct ShapeView: View {
     private var stroke: some View {
         switch shape.type {
         case .circle:
-            Circle().stroke(shape.category.strokeColor, lineWidth: 1.5)
+            Circle().stroke(effectiveStroke, lineWidth: 1.5)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 12).stroke(shape.category.strokeColor, lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(effectiveStroke, lineWidth: 1.5)
         case .diamond:
-            DiamondShape().stroke(shape.category.strokeColor, lineWidth: 1.5)
+            DiamondShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .text, .table, .link:
             EmptyView()
         }
@@ -345,7 +534,7 @@ struct ShapeView: View {
             case .circle:
                 Circle().stroke(Color.accentColor, lineWidth: 3.5)
             case .rectangle, .table:
-                RoundedRectangle(cornerRadius: 12).stroke(Color.accentColor, lineWidth: 3.5)
+                RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .diamond:
                 DiamondShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .text:
@@ -376,7 +565,6 @@ private struct TableShapeBackground: View {
                         RoundedRectangle(cornerRadius: 6, style: .continuous)
                             .stroke(stroke, lineWidth: 1.5)
                     )
-                // Grid-linjer
                 Path { p in
                     for r in 1..<rows {
                         let y = cellH * CGFloat(r)
@@ -434,7 +622,9 @@ struct EdgesView: View {
     let shapes: [ShapeNode]
     let canvasScale: CGFloat
     let hiddenShapeIds: Set<UUID>
-    var onEdgeTap: (UUID) -> Void
+    var onEdgeDelete: (UUID) -> Void
+    var onEdgeReverse: (UUID) -> Void
+    var onEdgeSetBidi: (UUID, Bool) -> Void
 
     private func isVisible(_ edge: EdgeConnection) -> Bool {
         !hiddenShapeIds.contains(edge.from) && !hiddenShapeIds.contains(edge.to)
@@ -442,7 +632,6 @@ struct EdgesView: View {
 
     var body: some View {
         ZStack {
-            // Linjer
             Canvas { context, _ in
                 for edge in edges where isVisible(edge) {
                     guard let fromShape = shapes.first(where: { $0.id == edge.from }),
@@ -453,7 +642,6 @@ struct EdgesView: View {
             }
             .allowsHitTesting(false)
 
-            // Mid-punkt-handtag (klickbara cirklar)
             ForEach($edges) { $edge in
                 if isVisible(edge),
                    let fromShape = shapes.first(where: { $0.id == edge.from }),
@@ -464,13 +652,12 @@ struct EdgesView: View {
         }
     }
 
-    // MARK: - Mid-punkt-handtag
-
     @ViewBuilder
     private func midpointHandle(edge: Binding<EdgeConnection>,
                                 fromShape: ShapeNode,
                                 toShape: ShapeNode) -> some View {
         let hasWaypoint = !edge.wrappedValue.waypoints.isEmpty
+        let isBidi = edge.wrappedValue.bidirectional
         let mid: CGPoint = {
             if hasWaypoint { return edge.wrappedValue.waypoints[0].point }
             return CGPoint(
@@ -485,11 +672,31 @@ struct EdgesView: View {
                 .overlay(Circle().stroke(Color.accentColor,
                                          lineWidth: max(1.0, 1.5 / canvasScale)))
                 .frame(width: size, height: size)
+            Image(systemName: isBidi ? "arrow.left.arrow.right" : "arrow.right")
+                .font(.system(size: size * 0.45, weight: .bold))
+                .foregroundStyle(hasWaypoint ? Color.white : Color.accentColor)
         }
         .contentShape(Circle().inset(by: -size * 0.5))
         .position(mid)
-        .gesture(midpointGesture(edge: edge, fromShape: fromShape, toShape: toShape))
+        .gesture(midpointGesture(edge: edge))
         .contextMenu {
+            // v25: pil-riktning
+            Button {
+                onEdgeSetBidi(edge.wrappedValue.id, false)
+            } label: {
+                Label("Pil åt ett håll →", systemImage: "arrow.right")
+            }
+            Button {
+                onEdgeReverse(edge.wrappedValue.id)
+            } label: {
+                Label("Byt riktning ←", systemImage: "arrow.uturn.left")
+            }
+            Button {
+                onEdgeSetBidi(edge.wrappedValue.id, true)
+            } label: {
+                Label("Båda hållen ↔", systemImage: "arrow.left.arrow.right")
+            }
+            Divider()
             if hasWaypoint {
                 Button {
                     edge.wrappedValue.waypoints = []
@@ -498,16 +705,14 @@ struct EdgesView: View {
                 }
             }
             Button(role: .destructive) {
-                onEdgeTap(edge.wrappedValue.id)
+                onEdgeDelete(edge.wrappedValue.id)
             } label: {
                 Label("Ta bort pil", systemImage: "trash")
             }
         }
     }
 
-    private func midpointGesture(edge: Binding<EdgeConnection>,
-                                 fromShape: ShapeNode,
-                                 toShape: ShapeNode) -> some Gesture {
+    private func midpointGesture(edge: Binding<EdgeConnection>) -> some Gesture {
         DragGesture(coordinateSpace: .named("canvas"))
             .onChanged { v in
                 let newPoint = v.location
@@ -526,7 +731,6 @@ struct EdgesView: View {
                           fromShape: ShapeNode,
                           toShape: ShapeNode) {
         if let wp = edge.waypoints.first {
-            // L-form: from → waypoint → to
             let firstSeg = edgePoint(for: fromShape, towards: wp.point)
             let lastSeg = edgePoint(for: toShape, towards: wp.point)
 
@@ -543,7 +747,6 @@ struct EdgesView: View {
                 drawArrowHead(context: context, tip: firstSeg, angle: startAngle)
             }
         } else {
-            // Rak linje
             let start = edgePoint(for: fromShape, towards: toShape.position)
             let end = edgePoint(for: toShape, towards: fromShape.position)
             drawArrow(context: context, from: start, to: end, bidirectional: edge.bidirectional)

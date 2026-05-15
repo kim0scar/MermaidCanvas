@@ -3,6 +3,7 @@
 
 # Xcode
 DerivedData/
+DerivedData-sim/
 *.xcuserstate
 *.xcodeproj/xcuserdata/
 *.xcodeproj/project.xcworkspace/xcuserdata/

@@ -57,6 +57,13 @@ enum MermaidGenerator {
             if collapsedIds.contains(shape.id) {
                 lines.append("\(indent)%% \(id) collapsed")
             }
+            // v23: textstil + färg-paket
+            if shape.textStyle != .body {
+                lines.append("\(indent)%% \(id) style: \(shape.textStyle.rawValue)")
+            }
+            if let packId = shape.colorPackId {
+                lines.append("\(indent)%% \(id) pack: \(packId)")
+            }
             lines.append("\(indent)%% \(id) pos: \(Int(shape.position.x.rounded())),\(Int(shape.position.y.rounded()))")
         }
 
@@ -121,6 +128,13 @@ enum MermaidGenerator {
             if shape.type == .table {
                 n["tableRows"] = shape.tableRows ?? 3
                 n["tableCols"] = shape.tableCols ?? 3
+            }
+            // v23: textstil + färg-paket
+            if shape.textStyle != .body {
+                n["textStyle"] = shape.textStyle.rawValue
+            }
+            if let packId = shape.colorPackId {
+                n["colorPackId"] = packId
             }
             return n
         }

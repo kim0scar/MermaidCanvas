@@ -1,22 +1,25 @@
 import SwiftUI
 
-/// Liten badge som visas på formens överhörn när det finns text i note-fältet.
-/// Tap → onTap-callback (öppnar mini-note-sheet eller hela edit-sheet).
+/// Gul prick i topphögra hörnet på formen — visas när shape.note != "".
+/// Tap → öppna NoteMiniSheet (bara anteckningen, inte hela edit-sheet).
 struct NoteBadge: View {
     var canvasScale: CGFloat
     var onTap: () -> Void
 
     var body: some View {
-        let size: CGFloat = max(20, 22 / canvasScale)
+        let visual: CGFloat = max(12, 14 / canvasScale)
+        let hit: CGFloat = max(28, 32 / canvasScale)
         Button(action: onTap) {
-            Image(systemName: "note.text")
-                .font(.system(size: size * 0.6, weight: .semibold))
-                .foregroundStyle(Color.white)
-                .frame(width: size, height: size)
-                .background(Color.yellow)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color.black.opacity(0.15), lineWidth: 0.5))
+            ZStack {
+                Color.clear.frame(width: hit, height: hit) // utvidgad tap-target
+                Circle()
+                    .fill(Color(hex: 0xFFCC00))
+                    .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                    .shadow(color: .black.opacity(0.15), radius: 1.5, y: 0.5)
+                    .frame(width: visual, height: visual)
+            }
         }
         .buttonStyle(.plain)
+        .contentShape(Circle().inset(by: -(hit - visual) / 2))
     }
 }

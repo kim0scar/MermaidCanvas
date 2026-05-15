@@ -32,6 +32,16 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
     case memory
     case output
 
+    // Godot-läge — kategorier matchar Godot UI-noder
+    case godot_scene       // .tscn scene-root (motsvarar "Screen")
+    case godot_control     // generisk Control-nod
+    case godot_container   // VBox/HBox/Margin/PanelContainer
+    case godot_panel       // Panel (yta, kort)
+    case godot_button      // Button (action)
+    case godot_label       // Label (text)
+    case godot_signal      // signal-koppling (för flow)
+    case godot_script      // GDScript-fil
+
     var id: String { rawValue }
 
     var displayName: String {
@@ -55,6 +65,14 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .router: return "Router"
         case .memory: return "Memory"
         case .output: return "Output"
+        case .godot_scene:     return "Scene"
+        case .godot_control:   return "Control"
+        case .godot_container: return "Container"
+        case .godot_panel:     return "Panel"
+        case .godot_button:    return "Button"
+        case .godot_label:     return "Label"
+        case .godot_signal:    return "Signal"
+        case .godot_script:    return "Script"
         }
     }
 
@@ -65,6 +83,8 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .feat, .milestone, .blocker, .future: return .roadmap
         case .folder, .file, .module, .service, .data: return .architecture
         case .input, .agent, .tool, .router, .memory, .output: return .flow
+        case .godot_scene, .godot_control, .godot_container, .godot_panel,
+             .godot_button, .godot_label, .godot_signal, .godot_script: return .godot
         case .note: return .ui // note är gemensam men hör hem i UI som default
         }
     }
@@ -85,6 +105,9 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
             core = [.folder, .file, .module, .service, .data]
         case .flow:
             core = [.input, .agent, .tool, .router, .memory, .output]
+        case .godot:
+            core = [.godot_scene, .godot_control, .godot_container, .godot_panel,
+                    .godot_button, .godot_label, .godot_signal, .godot_script]
         case .general:
             return ShapeCategory.allCases
         }
@@ -118,6 +141,15 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .router:   return Color(hex: 0xeab308) // gul
         case .memory:   return Color(hex: 0x8b5cf6) // violett
         case .output:   return Color(hex: 0xef4444) // ljusröd
+        // Godot — Godot brand-blå för scene, annars matchat-tema
+        case .godot_scene:     return Color(hex: 0x478CBF) // Godot blå
+        case .godot_control:   return Color(hex: 0x6B7280) // grå (generisk)
+        case .godot_container: return Color(hex: 0xA479D3) // lila (layout)
+        case .godot_panel:     return Color(hex: 0xE9ECEF) // beige (yta)
+        case .godot_button:    return Color(hex: 0xFFA94D) // orange (action)
+        case .godot_label:     return Color(hex: 0xF1F3F5) // ljus (text)
+        case .godot_signal:    return Color(hex: 0xFCD34D) // gul (signal)
+        case .godot_script:    return Color(hex: 0x4ADE80) // grön (kod)
         }
     }
 
@@ -142,6 +174,15 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .router:   return Color(hex: 0xa16207)
         case .memory:   return Color(hex: 0x6d28d9)
         case .output:   return Color(hex: 0xb91c1c)
+        // Godot strokes
+        case .godot_scene:     return Color(hex: 0x215378)
+        case .godot_control:   return Color(hex: 0x374151)
+        case .godot_container: return Color(hex: 0x7c3aed)
+        case .godot_panel:     return Color(hex: 0xadb5bd)
+        case .godot_button:    return Color(hex: 0xea580c)
+        case .godot_label:     return Color(hex: 0xd1d5db)
+        case .godot_signal:    return Color(hex: 0xca8a04)
+        case .godot_script:    return Color(hex: 0x16a34a)
         }
     }
 
@@ -150,11 +191,17 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         // Mörka fyllningar → ljus text
         case .ui, .overlay, .feat, .milestone, .blocker, .future,
              .module, .service, .data, .input, .agent, .tool,
-             .router, .memory, .output:
+             .router, .memory, .output,
+             .godot_scene, .godot_control, .godot_container:
             return Color(hex: 0xf9fafb)
         // Ljusa fyllningar → mörk text
-        case .zone, .folder, .file:
+        case .zone, .folder, .file,
+             .godot_panel, .godot_label, .godot_signal:
             return Color(hex: 0x111827)
+        case .godot_button:
+            return Color(hex: 0x111827) // mörk text på orange
+        case .godot_script:
+            return Color(hex: 0x064e3b) // mörk grön på ljus grön
         case .note:
             return Color(hex: 0x166534)
         }
@@ -190,6 +237,14 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .router: return "Router"
         case .memory: return "Memory"
         case .output: return "Output"
+        case .godot_scene:     return "Scene"
+        case .godot_control:   return "Control"
+        case .godot_container: return "Container"
+        case .godot_panel:     return "Panel"
+        case .godot_button:    return "Button"
+        case .godot_label:     return "Label"
+        case .godot_signal:    return "Signal"
+        case .godot_script:    return "Script"
         }
     }
 
@@ -214,6 +269,14 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .router: return "Villkorad routing eller beslutspunkt."
         case .memory: return "Minne eller kontext mellan steg."
         case .output: return "Slutpunkt eller resultat."
+        case .godot_scene:     return "Scene-root (.tscn) — motsvarar en skärm."
+        case .godot_control:   return "Control-nod — generisk UI-bas."
+        case .godot_container: return "Layout-container — VBox/HBox/MarginContainer."
+        case .godot_panel:     return "Panel — yta/kort/bakgrund."
+        case .godot_button:    return "Button — action."
+        case .godot_label:     return "Label — text-element."
+        case .godot_signal:    return "Signal-koppling (för Flow-mode kopplingar)."
+        case .godot_script:    return "GDScript-fil med logik."
         }
     }
 }

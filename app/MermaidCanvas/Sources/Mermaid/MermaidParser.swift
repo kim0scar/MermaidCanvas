@@ -115,6 +115,10 @@ enum MermaidParser {
             let linkNumber = node["linkNumber"] as? Int
             let tableRows = node["tableRows"] as? Int
             let tableCols = node["tableCols"] as? Int
+            // v23: textstil + färg-paket (optional för bakåtkompatibilitet)
+            let textStyleRaw = (node["textStyle"] as? String) ?? TextStyle.body.rawValue
+            let textStyle = TextStyle(rawValue: textStyleRaw) ?? .body
+            let colorPackId = node["colorPackId"] as? String
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
@@ -127,7 +131,9 @@ enum MermaidParser {
                 colorOverride: colorOverride,
                 linkNumber: linkNumber,
                 tableRows: tableRows,
-                tableCols: tableCols
+                tableCols: tableCols,
+                textStyle: textStyle,
+                colorPackId: colorPackId
             )
             idMap[mid] = shape.id
             shapes.append(shape)

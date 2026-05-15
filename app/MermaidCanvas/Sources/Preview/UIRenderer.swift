@@ -19,6 +19,8 @@ struct UIRenderer: View {
             ArchitectureRenderer(shapes: shapes)
         case .flow:
             FlowRenderer(shapes: shapes, edges: edges)
+        case .godot:
+            GodotPreviewRenderer(shapes: shapes, edges: edges)
         case .general:
             VStack(spacing: 12) {
                 Text("Allmänt läge — ingen översättning ännu.")

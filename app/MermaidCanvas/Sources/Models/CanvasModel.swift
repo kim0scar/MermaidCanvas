@@ -24,9 +24,8 @@ final class CanvasModel: ObservableObject {
     @Published var canvasSize: CGSize = CGSize(width: 3000, height: 3000)
     @Published var specType: SpecType = .ui
 
-    // v19: pan/zoom-state — bara UI, sparas INTE i fil
-    @Published var canvasOffset: CGSize = .zero
-    @Published var canvasScale: CGFloat = 1.0
+    // v23: pan/zoom-state hanteras nu som @State i CanvasView för perf
+    // (60Hz @Published triggade hela hierarkin att rerendera)
 
     // v19: selection-state — bara UI
     @Published var selectedShapeId: UUID? = nil
@@ -100,8 +99,8 @@ final class CanvasModel: ObservableObject {
     func addShape(_ type: ShapeType, at position: CGPoint) {
         snapshotForUndo()
         let cat = specType.defaultCategory
-        let label = cat.emptyLabelHint
-        shapes.append(ShapeNode(type: type, position: position, label: label, category: cat))
+        // v23: tom label från start — Kim vill skriva själv
+        shapes.append(ShapeNode(type: type, position: position, label: "", category: cat))
     }
 
     /// Lägg en tabell-form (3×3) på canvas-mitten.
@@ -149,8 +148,31 @@ final class CanvasModel: ObservableObject {
         multiSelection.removeAll()
         collapsedIds.removeAll()
         canvasTitle = ""
-        canvasOffset = .zero
-        canvasScale = 1.0
+    }
+
+    /// Duplicera en form med offset (+24, +24).
+    @discardableResult
+    func duplicateShape(id: UUID) -> UUID? {
+        guard let o = shapes.first(where: { $0.id == id }) else { return nil }
+        snapshotForUndo()
+        let copy = ShapeNode(
+            type: o.type,
+            position: CGPoint(x: o.position.x + 24, y: o.position.y + 24),
+            label: o.label,
+            showLabel: o.showLabel,
+            sizeMultiplier: o.sizeMultiplier,
+            note: o.note,
+            category: o.category,
+            rotation: o.rotation,
+            colorOverride: o.colorOverride,
+            linkNumber: nil, // jump-link ska INTE dupliceras (skulle bli orphan-länk)
+            tableRows: o.tableRows,
+            tableCols: o.tableCols,
+            textStyle: o.textStyle,
+            colorPackId: o.colorPackId
+        )
+        shapes.append(copy)
+        return copy.id
     }
 
     /// Beräkna alla noder som "hänger ihop" från en startnod (BFS via edges).
@@ -200,18 +222,14 @@ final class CanvasModel: ObservableObject {
     func updateShape(id: UUID,
                      label: String,
                      showLabel: Bool,
-                     sizeMultiplier: CGFloat,
                      note: String,
-                     category: ShapeCategory,
-                     rotation: CGFloat) {
+                     textStyle: TextStyle) {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         snapshotForUndo()
         shapes[index].label = label
         shapes[index].showLabel = showLabel
-        shapes[index].sizeMultiplier = sizeMultiplier
         shapes[index].note = note
-        shapes[index].category = category
-        shapes[index].rotation = rotation
+        shapes[index].textStyle = textStyle
     }
 
     func deleteShape(id: UUID) {
@@ -259,6 +277,32 @@ final class CanvasModel: ObservableObject {
     func cancelEdgeMode() {
         edgeCreationMode = .off
         pendingEdgeFrom = nil
+    }
+
+    /// v25: lägg pil direkt från drag-handtag (ej via tap-flow).
+    func addEdge(from: UUID, to: UUID, bidirectional: Bool = false) {
+        guard from != to else { return }
+        // Förhindra dubbletter åt samma håll
+        if edges.contains(where: { $0.from == from && $0.to == to }) { return }
+        snapshotForUndo()
+        edges.append(EdgeConnection(from: from, to: to, bidirectional: bidirectional))
+    }
+
+    /// v25: byt riktning på en pil.
+    func reverseEdge(id: UUID) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        let old = edges[idx]
+        edges[idx].from = old.to
+        edges[idx].to = old.from
+    }
+
+    /// v25: sätt pil till en/båda riktningar utan att ändra ändpunkter.
+    func setEdgeBidirectional(id: UUID, _ value: Bool) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        guard edges[idx].bidirectional != value else { return }
+        snapshotForUndo()
+        edges[idx].bidirectional = value
     }
 
     @discardableResult

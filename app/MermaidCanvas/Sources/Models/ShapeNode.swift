@@ -35,6 +35,10 @@ struct ShapeNode: Identifiable, Codable {
     var tableRows: Int?
     /// v19: tabell-kolumner (för type=.table). nil = default 3.
     var tableCols: Int?
+    /// v23: textstil för label (Rubrik 1/2/3 eller brödtext).
+    var textStyle: TextStyle
+    /// v23: färg-paket-id (ColorPack.id) eller nil = ingen färg = vit + kategori-ram.
+    var colorPackId: String?
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -48,7 +52,9 @@ struct ShapeNode: Identifiable, Codable {
          colorOverride: String? = nil,
          linkNumber: Int? = nil,
          tableRows: Int? = nil,
-         tableCols: Int? = nil) {
+         tableCols: Int? = nil,
+         textStyle: TextStyle = .body,
+         colorPackId: String? = nil) {
         self.id = id
         self.type = type
         self.position = position
@@ -62,5 +68,7 @@ struct ShapeNode: Identifiable, Codable {
         self.linkNumber = linkNumber
         self.tableRows = tableRows
         self.tableCols = tableCols
+        self.textStyle = textStyle
+        self.colorPackId = colorPackId
     }
 }

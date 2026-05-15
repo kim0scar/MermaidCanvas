@@ -8,9 +8,10 @@ struct DotGridBackground: View {
     var color: Color = Color(.tertiaryLabel)
 
     var body: some View {
-        Canvas { ctx, size in
+        Canvas(rendersAsynchronously: false) { ctx, size in
             let cols = Int(size.width / spacing) + 1
             let rows = Int(size.height / spacing) + 1
+            let shading = GraphicsContext.Shading.color(color.opacity(0.6))
             for r in 0..<rows {
                 for c in 0..<cols {
                     let x = CGFloat(c) * spacing
@@ -19,10 +20,11 @@ struct DotGridBackground: View {
                                       y: y - dotSize / 2,
                                       width: dotSize,
                                       height: dotSize)
-                    ctx.fill(Path(ellipseIn: rect), with: .color(color.opacity(0.6)))
+                    ctx.fill(Path(ellipseIn: rect), with: shading)
                 }
             }
         }
+        .drawingGroup() // Flatten:as till en Metal-texture — pan/zoom blir smooth
         .allowsHitTesting(false)
     }
 }

@@ -7,6 +7,7 @@ enum SpecType: String, Codable, CaseIterable, Identifiable {
     case roadmap
     case architecture
     case flow
+    case godot
     case general
 
     var id: String { rawValue }
@@ -17,12 +18,13 @@ enum SpecType: String, Codable, CaseIterable, Identifiable {
         case .roadmap:      return "Roadmap"
         case .architecture: return "Arkitektur"
         case .flow:         return "Flow"
+        case .godot:        return "Godot"
         case .general:      return "Allmänt"
         }
     }
 
     /// Visas i topp-pickern. .general döljs (auto-fallback om fil saknar frontmatter).
-    static var pickable: [SpecType] { [.ui, .roadmap, .architecture, .flow] }
+    static var pickable: [SpecType] { [.ui, .roadmap, .architecture, .flow, .godot] }
 
     var defaultCategory: ShapeCategory {
         switch self {
@@ -30,6 +32,7 @@ enum SpecType: String, Codable, CaseIterable, Identifiable {
         case .roadmap:      return .feat
         case .architecture: return .module
         case .flow:         return .agent
+        case .godot:        return .godot_control
         case .general:      return .ui
         }
     }
@@ -41,6 +44,7 @@ enum SpecType: String, Codable, CaseIterable, Identifiable {
         case .roadmap:      return "map"
         case .architecture: return "rectangle.3.group"
         case .flow:         return "arrow.triangle.branch"
+        case .godot:        return "gamecontroller"
         case .general:      return "square.grid.2x2"
         }
     }

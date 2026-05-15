@@ -38,6 +38,17 @@ final class CanvasFileManager: ObservableObject {
         lastModificationDate = modificationDate(for: url)
     }
 
+    /// v25: Skriv en sidecar `<basename>-regler.md` bredvid canvas-filen.
+    /// Innehåller plattform-reglerna så Claude Code direkt har dem när
+    /// Kim refererar till canvasen från Mac:en.
+    func writeRulesSidecar(rulesText: String) {
+        guard let url = currentFileURL else { return }
+        let base = url.deletingPathExtension().lastPathComponent
+        let sidecarName = "\(base)-regler.md"
+        let sidecarURL = url.deletingLastPathComponent().appendingPathComponent(sidecarName)
+        try? rulesText.write(to: sidecarURL, atomically: true, encoding: .utf8)
+    }
+
     /// Hämta nuvarande innehåll i den öppna filen.
     func readCurrent() -> String? {
         guard let url = currentFileURL else { return nil }
