@@ -86,6 +86,7 @@ struct ShapeView: View {
         }
         .frame(width: ShapeGeometry.width(for: shape),
                height: ShapeGeometry.height(for: shape))
+        .rotationEffect(.degrees(shape.rotation))
         .contentShape(Rectangle())
         .position(
             x: shape.position.x + dragOffset.width,

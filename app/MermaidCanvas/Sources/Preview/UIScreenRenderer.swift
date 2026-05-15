@@ -73,11 +73,8 @@ struct UIScreenRenderer: View {
     }
 
     private func phoneFrame(in container: CGSize) -> CGSize {
-        let aspect: CGFloat = 393.0 / 852.0
-        let availW = max(0, container.width - 24)
-        let availH = max(0, container.height - 40)
-        let byW = CGSize(width: availW, height: availW / aspect)
-        return byW.height <= availH ? byW : CGSize(width: availH * aspect, height: availH)
+        // Använd samma matte som canvasen och state-JSON
+        iPhoneFrameMath.frame(in: container).size
     }
 
     // MARK: - Komponent-mapping

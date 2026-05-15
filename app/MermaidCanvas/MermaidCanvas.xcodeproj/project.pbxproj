@@ -11,6 +11,7 @@
 		17E380B0E167F357D6AB1E19 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B72E7A9186EF104EB84B64D /* AppVersion.swift */; };
 		280AD6F6F4DA4BCBBB279178 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04B2EA192B2B6098F37515 /* iPhoneFrameOverlay.swift */; };
 		368727EBEC1349DCE39208BC /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0EE155E45B86DD3BA4F3EC /* RoadmapRenderer.swift */; };
+		422AFB1F4FFAB770EDA3AB83 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A38CC988797D527794A5E12 /* iPhoneFrameMath.swift */; };
 		46E5113F9F44EF2E47008BF8 /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBA32E9EE21CC93560D21D9 /* SpecType.swift */; };
 		47432578C2C5B349E43399D5 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */; };
 		550C7F93B7C1B462BDBE182F /* PreviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA778DD18F8C69B4EBB4E665 /* PreviewSheet.swift */; };
@@ -50,6 +51,7 @@
 		6C0B873635193E39B3DFE265 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		772E436BDF9309FA34D00B75 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
 		773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidGenerator.swift; sourceTree = "<group>"; };
+		9A38CC988797D527794A5E12 /* iPhoneFrameMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneFrameMath.swift; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA778DD18F8C69B4EBB4E665 /* PreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSheet.swift; sourceTree = "<group>"; };
 		AACBAEF360A6118E07BB4428 /* MermaidCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCodeSheet.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 			children = (
 				214C9429A5A7019AFB3A5335 /* CanvasModel.swift */,
 				772E436BDF9309FA34D00B75 /* EdgeConnection.swift */,
+				9A38CC988797D527794A5E12 /* iPhoneFrameMath.swift */,
 				AD21FA8F5DC5FD6CF6C21717 /* ShapeCategory.swift */,
 				BC6C55EAC4AF34DD4A5003A3 /* ShapeNode.swift */,
 				CCBA32E9EE21CC93560D21D9 /* SpecType.swift */,
@@ -235,6 +238,7 @@
 				A6112259B6F82F3D230BB9F3 /* ToolbarView.swift in Sources */,
 				6A15550F9E76856972709591 /* UIRenderer.swift in Sources */,
 				9908CFE06D700CBADF9FC0A2 /* UIScreenRenderer.swift in Sources */,
+				422AFB1F4FFAB770EDA3AB83 /* iPhoneFrameMath.swift in Sources */,
 				280AD6F6F4DA4BCBBB279178 /* iPhoneFrameOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

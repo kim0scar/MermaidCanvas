@@ -73,7 +73,8 @@ final class CanvasModel: ObservableObject {
                      showLabel: Bool,
                      sizeMultiplier: CGFloat,
                      note: String,
-                     category: ShapeCategory) {
+                     category: ShapeCategory,
+                     rotation: CGFloat) {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         snapshotForUndo()
         shapes[index].label = label
@@ -81,6 +82,7 @@ final class CanvasModel: ObservableObject {
         shapes[index].sizeMultiplier = sizeMultiplier
         shapes[index].note = note
         shapes[index].category = category
+        shapes[index].rotation = rotation
     }
 
     func deleteShape(id: UUID) {

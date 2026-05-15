@@ -36,6 +36,12 @@ enum MermaidGenerator {
             if abs(shape.sizeMultiplier - 1.0) > 0.01 {
                 lines.append("\(indent)%% \(id) size: \(String(format: "%.1f", shape.sizeMultiplier))")
             }
+            if abs(shape.rotation) > 0.5 {
+                lines.append("\(indent)%% \(id) rot: \(Int(shape.rotation.rounded()))°")
+            }
+            if !shape.showLabel {
+                lines.append("\(indent)%% \(id) hidden-label")
+            }
             lines.append("\(indent)%% \(id) pos: \(Int(shape.position.x.rounded())),\(Int(shape.position.y.rounded()))")
         }
 
@@ -72,7 +78,10 @@ enum MermaidGenerator {
         return lines.joined(separator: "\n")
     }
 
-    static func canvasStateJSON(shapes: [ShapeNode], edges: [EdgeConnection], canvasSize: CGSize) -> String {
+    static func canvasStateJSON(shapes: [ShapeNode],
+                                edges: [EdgeConnection],
+                                canvasSize: CGSize,
+                                specType: SpecType = .ui) -> String {
         let mermaidIds = makeMermaidIds(for: shapes)
         let nodes: [[String: Any]] = shapes.map { shape in
             [
@@ -84,6 +93,7 @@ enum MermaidGenerator {
                 "category": shape.category.rawValue,
                 "showLabel": shape.showLabel,
                 "size": Double(shape.sizeMultiplier),
+                "rotation": Double(shape.rotation),
                 "note": shape.note
             ]
         }
@@ -96,14 +106,33 @@ enum MermaidGenerator {
                 "bidirectional": edge.bidirectional
             ]
         }
+
+        // iPhone-frame inom canvasen — så Claude exakt kan översätta
+        // canvas-position till iPhone-screen-position.
+        let iphoneRect = iPhoneFrameMath.frame(in: canvasSize)
+        let iphone: [String: Any] = [
+            "x": Int(iphoneRect.origin.x.rounded()),
+            "y": Int(iphoneRect.origin.y.rounded()),
+            "width": Int(iphoneRect.width.rounded()),
+            "height": Int(iphoneRect.height.rounded()),
+            "designWidth": Int(iPhoneFrameMath.designSize.width),
+            "designHeight": Int(iPhoneFrameMath.designSize.height)
+        ]
+
         let canvas: [String: Any] = [
             "width": Int(canvasSize.width.rounded()),
             "height": Int(canvasSize.height.rounded()),
             "shapeBaseWidth": 120,
             "shapeBaseHeight": 80,
-            "unit": "pt"
+            "unit": "pt",
+            "iphoneFrame": iphone
         ]
-        let dict: [String: Any] = ["canvas": canvas, "nodes": nodes, "edges": edgeArr]
+        let dict: [String: Any] = [
+            "canvas": canvas,
+            "specType": specType.rawValue,
+            "nodes": nodes,
+            "edges": edgeArr
+        ]
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
               let str = String(data: data, encoding: .utf8) else { return "{}" }
         return str

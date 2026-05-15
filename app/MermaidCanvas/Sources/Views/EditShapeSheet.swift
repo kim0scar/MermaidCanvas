@@ -6,6 +6,7 @@ struct ShapeEdit {
     var sizeMultiplier: CGFloat
     var note: String
     var category: ShapeCategory
+    var rotation: CGFloat
 }
 
 struct EditShapeSheet: View {
@@ -80,6 +81,23 @@ struct EditShapeSheet: View {
                     Text(String(format: "%.1fx", draft.sizeMultiplier))
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                }
+
+                Section("Rotation") {
+                    HStack {
+                        Image(systemName: "rotate.left").foregroundStyle(.secondary)
+                        Slider(value: $draft.rotation, in: -180...180, step: 5)
+                        Image(systemName: "rotate.right").foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Text("\(Int(draft.rotation))°")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Återställ") { draft.rotation = 0 }
+                            .font(.caption)
+                            .disabled(draft.rotation == 0)
+                    }
                 }
 
                 Section("Anteckning (osynlig på canvasen)") {

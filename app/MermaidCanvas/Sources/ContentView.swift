@@ -95,7 +95,8 @@ struct ContentView: View {
                         showLabel: shape.showLabel,
                         sizeMultiplier: shape.sizeMultiplier,
                         note: shape.note,
-                        category: shape.category
+                        category: shape.category,
+                        rotation: shape.rotation
                     ),
                     specType: model.specType,
                     onSave: { edit in
@@ -105,7 +106,8 @@ struct ContentView: View {
                             showLabel: edit.showLabel,
                             sizeMultiplier: edit.sizeMultiplier,
                             note: edit.note,
-                            category: edit.category
+                            category: edit.category,
+                            rotation: edit.rotation
                         )
                         editingShapeId = nil
                     },

@@ -1,17 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v18
+# ARKITEKTUR-MERMAID — Version v17
 *Datum: 2026-05-15*
 
-> **Status:** v18 stänger två sub-agent-auditerade gap: **rotation** (helt nytt fält) och **iPhone-frame-koordinater** (sparas nu i canvas-meta så Claude vet var ramen ligger).
-
-## Ändringar från v17
-
-1. **Rotation per form:** nytt `rotation: CGFloat`-fält på ShapeNode (-180...180°). EditShapeSheet får rotation-slider med step 5°, Återställ-knapp. ShapeView applicerar `.rotationEffect`. Round-trippar i state-JSON och visas som `%% NX rot: 45°` i mermaid-blocket.
-2. **iPhone-frame i canvas-meta:** ny `iphoneFrame: {x, y, width, height, designWidth, designHeight}` i state-JSON. Detta är iPhone-ramens **absoluta koordinater inom canvasens koordinatsystem** — så Claude kan exakt avgöra om en form ligger inom skärmen och beräkna iPhone-screen-relativa koordinater.
-3. **Shared iPhone-matte (`iPhoneFrameMath.swift`):** en sanningskälla för aspect-fit-beräkningen, används av iPhoneFrameOverlay, UIScreenRenderer och MermaidGenerator. Tidigare hade var och en sin egen kopia som kunde drifta isär.
-4. **showLabel synligt i mermaid:** `%% NX hidden-label` när text är dold.
-5. **specType även i state-JSON:** dubbel-sanning så även filer utan korrekt frontmatter kan tolkas.
-
-
+> **Status:** v17 fixar tre brister Kim hittade i v16:
 > 1. Mermaid-koden syntes inte i modalen (SwiftUI tolkade triple-backticks som markdown) — fix: `Text(verbatim:)`
 > 2. Toolbar overflowade ~60% (~629pt på 393pt iPhone) — fix: ...-meny för sekundära actions, 44pt tap-targets
 > 3. Preview-komponenter hamnade fel — fix: korrekt centrerings-matematik mot phone-origin

@@ -108,6 +108,8 @@ enum MermaidParser {
             let note = (node["note"] as? String) ?? ""
             let categoryRaw = (node["category"] as? String) ?? ShapeCategory.ui.rawValue
             let category = ShapeCategory(rawValue: categoryRaw) ?? .ui
+            let rotationRaw = node["rotation"]
+            let rotation = rotationRaw.map { numberValue($0) } ?? 0
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
@@ -115,7 +117,8 @@ enum MermaidParser {
                 showLabel: showLabel,
                 sizeMultiplier: max(0.3, min(3.0, size)),
                 note: note,
-                category: category
+                category: category,
+                rotation: max(-360, min(360, rotation))
             )
             idMap[mid] = shape.id
             shapes.append(shape)

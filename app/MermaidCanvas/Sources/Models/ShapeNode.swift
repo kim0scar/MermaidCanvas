@@ -24,6 +24,7 @@ struct ShapeNode: Identifiable, Codable {
     var sizeMultiplier: CGFloat
     var note: String
     var category: ShapeCategory
+    var rotation: CGFloat   // grader, -180...180; 0 = ingen rotation
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -32,7 +33,8 @@ struct ShapeNode: Identifiable, Codable {
          showLabel: Bool = true,
          sizeMultiplier: CGFloat = 1.0,
          note: String = "",
-         category: ShapeCategory = .ui) {
+         category: ShapeCategory = .ui,
+         rotation: CGFloat = 0) {
         self.id = id
         self.type = type
         self.position = position
@@ -41,5 +43,6 @@ struct ShapeNode: Identifiable, Codable {
         self.sizeMultiplier = sizeMultiplier
         self.note = note
         self.category = category
+        self.rotation = rotation
     }
 }
