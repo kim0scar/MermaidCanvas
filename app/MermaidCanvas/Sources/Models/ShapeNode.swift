@@ -6,6 +6,7 @@ enum ShapeType: String, Codable, CaseIterable {
     case circle
     case rectangle
     case diamond
+    case text
 }
 
 extension ShapeType: Transferable {

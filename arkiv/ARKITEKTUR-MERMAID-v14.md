@@ -1,17 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v15
+# ARKITEKTUR-MERMAID — Version v14
 *Datum: 2026-05-15*
 
-> **Status:** v15 stänger gapen Kim hittade i v14: text-objekt, notes i mermaid, iPhone-ram som subgraph i mermaid, kod-modal visar hela filen.
-
-## Ändringar från v14
-
-1. **ShapeType.text:** nya transparent text-objekt utan kant/fyllning. Drag-källa i toolbar (`textformat`-ikon).
-2. **Anteckningar synliga i mermaid:** per-form `note`-fält skrivs som `%% NX note: ...` i mermaid-blocket. Storlek och position skrivs också som `%%`-kommentarer.
-3. **iPhone-ram som subgraph:** när `specType == .ui` wrappas alla noder i `subgraph iphone["iPhone 393×852"]` så ramen är data i filen, inte bara visuell overlay.
-4. **Kod-modal visar HELA filen:** frontmatter + mermaid + state-JSON — så Kim ser exakt vad som sparas och Claude läser.
-5. **MermaidGenerator.generate(...)** tar nu också canvasSize och specType för korrekt ram + dimensioner.
-
-
+> **Status:** Stor multi-mode-release. Fyra tankelägen (UI/Roadmap/Arkitektur/Flow) i appen. Frontmatter med `spec_type`. Prickrutnät, iPhone-ram i UI-läge, ta-bort via context-menu, undo-stack, visa Mermaid-kod-modal.
 
 ## Diagram
 

@@ -19,6 +19,7 @@ struct ToolbarView: View {
             shapeIconButton(.circle, system: "circle")
             shapeIconButton(.rectangle, system: "rectangle")
             shapeIconButton(.diamond, system: "diamond")
+            shapeIconButton(.text, system: "textformat")
 
             pilControl
 

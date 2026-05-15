@@ -285,7 +285,16 @@ struct ContentView: View {
     }
 
     private func showMermaidCode() {
-        generatedCode = MermaidGenerator.generate(shapes: model.shapes, edges: model.edges)
+        // Visa hela filen — frontmatter + mermaid + state-JSON — så Kim ser ALLT
+        // som sparas i .md-filen. Inte bara mermaid-blocket.
+        let doc = CanvasDocument(
+            title: model.canvasTitle,
+            shapes: model.shapes,
+            edges: model.edges,
+            canvasSize: model.canvasSize,
+            specType: model.specType
+        )
+        generatedCode = doc.content
         showCodeSheet = true
     }
 

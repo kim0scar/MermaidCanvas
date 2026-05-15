@@ -18,7 +18,7 @@ struct MermaidCodeSheet: View {
                     .padding(16)
             }
             .background(Color(.secondarySystemBackground))
-            .navigationTitle("Mermaid-kod")
+            .navigationTitle("Filinnehåll")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

@@ -1,42 +1,72 @@
 import Foundation
 
 enum MermaidGenerator {
-    static func generate(shapes: [ShapeNode], edges: [EdgeConnection]) -> String {
+    static func generate(shapes: [ShapeNode],
+                         edges: [EdgeConnection],
+                         canvasSize: CGSize = .zero,
+                         specType: SpecType = .ui) -> String {
         guard !shapes.isEmpty else {
             return "flowchart TD\n    Tom[\"Tom canvas — lägg till en form\"]"
         }
         var lines: [String] = ["flowchart TD"]
         let mermaidIds = makeMermaidIds(for: shapes)
 
+        // Per-mode "ram"-wrapper. UI-läge får iPhone-subgraph; övriga utan wrapper.
+        let needsFrame = (specType == .ui)
+        let indent = needsFrame ? "        " : "    "
+
+        if needsFrame {
+            let w = canvasSize.width > 0 ? Int(canvasSize.width.rounded()) : 393
+            let h = canvasSize.height > 0 ? Int(canvasSize.height.rounded()) : 852
+            lines.append("    subgraph iphone[\"iPhone \(w)×\(h)\"]")
+            lines.append("        direction TB")
+        }
+
+        // Nodes
         for shape in shapes {
             let id = mermaidIds[shape.id]!
             let label = shape.showLabel ? (shape.label.isEmpty ? " " : shape.label) : " "
             let safe = escape(label)
-            let body: String
-            switch shape.type {
-            case .circle:    body = "((\"\(safe)\"))"
-            case .rectangle: body = "[\"\(safe)\"]"
-            case .diamond:   body = "{\"\(safe)\"}"
+            let body = shapeBody(for: shape.type, label: safe)
+            lines.append("\(indent)\(id)\(body):::\(shape.category.rawValue)")
+            // Synliga metadata-kommentarer för Claude och människor:
+            if !shape.note.isEmpty {
+                lines.append("\(indent)%% \(id) note: \(oneLine(shape.note))")
             }
-            lines.append("    \(id)\(body):::\(shape.category.rawValue)")
+            if abs(shape.sizeMultiplier - 1.0) > 0.01 {
+                lines.append("\(indent)%% \(id) size: \(String(format: "%.1f", shape.sizeMultiplier))")
+            }
+            lines.append("\(indent)%% \(id) pos: \(Int(shape.position.x.rounded())),\(Int(shape.position.y.rounded()))")
         }
 
+        // Edges
         for edge in edges {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
             let arrow = edge.bidirectional ? "<-->" : "-->"
             if edge.label.isEmpty {
-                lines.append("    \(from) \(arrow) \(to)")
+                lines.append("\(indent)\(from) \(arrow) \(to)")
             } else {
-                lines.append("    \(from) \(arrow)|\"\(escape(edge.label))\"| \(to)")
+                lines.append("\(indent)\(from) \(arrow)|\"\(escape(edge.label))\"| \(to)")
             }
         }
 
+        if needsFrame {
+            lines.append("    end")
+        }
+
+        // classDef per använd kategori + text-class + frame-class.
         let used = Set(shapes.map { $0.category })
-        if !used.isEmpty {
-            lines.append("")
-            for cat in ShapeCategory.allCases where used.contains(cat) {
-                lines.append("    classDef \(cat.rawValue) \(cat.mermaidClassDef);")
-            }
+        lines.append("")
+        for cat in ShapeCategory.allCases where used.contains(cat) {
+            lines.append("    classDef \(cat.rawValue) \(cat.mermaidClassDef);")
+        }
+        // Transparent klass för text-shapes så de inte ärver fyllning.
+        if shapes.contains(where: { $0.type == .text }) {
+            lines.append("    classDef textOnly fill:transparent,stroke:transparent,color:#111827;")
+        }
+        if needsFrame {
+            lines.append("    classDef iphone fill:#f8fafc,stroke:#0f172a,stroke-width:2px,color:#0f172a;")
+            lines.append("    class iphone iphone;")
         }
 
         return lines.joined(separator: "\n")
@@ -79,8 +109,8 @@ enum MermaidGenerator {
         return str
     }
 
-    // Genererar prefix-id per kategori. Två noder i samma kategori får olika suffix:
-    // ui_N0, ui_N1, zone_N2 osv. Index är globalt så det aldrig krockar.
+    // MARK: - Privata helpers
+
     private static func makeMermaidIds(for shapes: [ShapeNode]) -> [UUID: String] {
         var ids: [UUID: String] = [:]
         for (i, s) in shapes.enumerated() {
@@ -89,9 +119,23 @@ enum MermaidGenerator {
         return ids
     }
 
+    private static func shapeBody(for type: ShapeType, label: String) -> String {
+        switch type {
+        case .circle:    return "((\"\(label)\"))"
+        case .rectangle: return "[\"\(label)\"]"
+        case .diamond:   return "{\"\(label)\"}"
+        case .text:      return "[\"\(label)\"]"
+        }
+    }
+
     private static func escape(_ text: String) -> String {
         text
             .replacingOccurrences(of: "\"", with: "#quot;")
             .replacingOccurrences(of: "\n", with: "<br/>")
+    }
+
+    private static func oneLine(_ text: String) -> String {
+        text.replacingOccurrences(of: "\n", with: " ⏎ ")
+            .replacingOccurrences(of: "%%", with: "%-%")
     }
 }

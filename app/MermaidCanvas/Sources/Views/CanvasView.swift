@@ -75,13 +75,13 @@ struct ShapeView: View {
             if shape.showLabel {
                 Text(shape.label)
                     .font(.system(size: 13 * shape.sizeMultiplier,
-                                  weight: .medium,
+                                  weight: shape.type == .text ? .semibold : .medium,
                                   design: .rounded))
-                    .foregroundStyle(shape.category.textColor)
+                    .foregroundStyle(shape.type == .text ? Color.primary : shape.category.textColor)
                     .multilineTextAlignment(.center)
-                    .lineLimit(4)
+                    .lineLimit(6)
                     .minimumScaleFactor(0.6)
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, shape.type == .text ? 2 : 8)
             }
         }
         .frame(width: ShapeGeometry.width(for: shape),
@@ -132,6 +132,8 @@ struct ShapeView: View {
             RoundedRectangle(cornerRadius: 12).fill(shape.category.fillColor)
         case .diamond:
             DiamondShape().fill(shape.category.fillColor)
+        case .text:
+            EmptyView()
         }
     }
 
@@ -144,6 +146,8 @@ struct ShapeView: View {
             RoundedRectangle(cornerRadius: 12).stroke(shape.category.strokeColor, lineWidth: 1.5)
         case .diamond:
             DiamondShape().stroke(shape.category.strokeColor, lineWidth: 1.5)
+        case .text:
+            EmptyView()
         }
     }
 
@@ -157,6 +161,8 @@ struct ShapeView: View {
                 RoundedRectangle(cornerRadius: 12).stroke(Color.accentColor, lineWidth: 3.5)
             case .diamond:
                 DiamondShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .text:
+                RoundedRectangle(cornerRadius: 8).stroke(Color.accentColor, lineWidth: 3.5)
             }
         }
     }
@@ -250,6 +256,17 @@ struct EdgesView: View {
             let denom = absX / hw + absY / hh
             guard denom > 0.001 else { return center }
             let t = 1.0 / denom
+            return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
+
+        case .text:
+            // Text-shape använder rektangulär hit-box som anslutningspunkt
+            let absX = abs(dx)
+            let absY = abs(dy)
+            let hw = ShapeGeometry.halfWidth(for: shape)
+            let hh = ShapeGeometry.halfHeight(for: shape)
+            let tx = absX > 0.001 ? hw / absX : .greatestFiniteMagnitude
+            let ty = absY > 0.001 ? hh / absY : .greatestFiniteMagnitude
+            let t = min(tx, ty)
             return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
         }
     }

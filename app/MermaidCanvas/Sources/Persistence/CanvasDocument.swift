@@ -10,7 +10,7 @@ struct CanvasDocument: FileDocument {
          edges: [EdgeConnection],
          canvasSize: CGSize,
          specType: SpecType) {
-        let mermaid = MermaidGenerator.generate(shapes: shapes, edges: edges)
+        let mermaid = MermaidGenerator.generate(shapes: shapes, edges: edges, canvasSize: canvasSize, specType: specType)
         let state = MermaidGenerator.canvasStateJSON(shapes: shapes, edges: edges, canvasSize: canvasSize)
         let timestamp = ISO8601DateFormatter().string(from: Date())
         let titleLine = title.isEmpty ? "Canvas — MermaidCanvas" : title
