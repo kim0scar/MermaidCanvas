@@ -325,7 +325,8 @@ struct ContentView: View {
         model.replaceAll(shapes: parsed.shapes,
                          edges: parsed.edges,
                          title: parsed.title,
-                         specType: parsed.specType)
+                         specType: parsed.specType,
+                         collapsedIds: parsed.collapsedIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
         statusText = "Öppnad: \(url.lastPathComponent) — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false
@@ -337,7 +338,8 @@ struct ContentView: View {
         model.replaceAll(shapes: parsed.shapes,
                          edges: parsed.edges,
                          title: parsed.title,
-                         specType: parsed.specType)
+                         specType: parsed.specType,
+                         collapsedIds: parsed.collapsedIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
         statusText = "Uppdaterad från fil — \(parsed.shapes.count) former, \(parsed.edges.count) pilar"
         statusIsError = false

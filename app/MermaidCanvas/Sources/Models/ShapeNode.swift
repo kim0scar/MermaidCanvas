@@ -31,6 +31,10 @@ struct ShapeNode: Identifiable, Codable {
     var colorOverride: String?
     /// v19: jump-link parnummer. nil för icke-link-former.
     var linkNumber: Int?
+    /// v19: tabell-rader (för type=.table). nil = default 3.
+    var tableRows: Int?
+    /// v19: tabell-kolumner (för type=.table). nil = default 3.
+    var tableCols: Int?
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -42,7 +46,9 @@ struct ShapeNode: Identifiable, Codable {
          category: ShapeCategory = .ui,
          rotation: CGFloat = 0,
          colorOverride: String? = nil,
-         linkNumber: Int? = nil) {
+         linkNumber: Int? = nil,
+         tableRows: Int? = nil,
+         tableCols: Int? = nil) {
         self.id = id
         self.type = type
         self.position = position
@@ -54,5 +60,7 @@ struct ShapeNode: Identifiable, Codable {
         self.rotation = rotation
         self.colorOverride = colorOverride
         self.linkNumber = linkNumber
+        self.tableRows = tableRows
+        self.tableCols = tableCols
     }
 }

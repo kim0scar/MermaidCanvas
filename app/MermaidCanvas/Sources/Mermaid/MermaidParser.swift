@@ -8,6 +8,7 @@ enum MermaidParser {
         var edges: [EdgeConnection] = []
         var canvasSize: CGSize? = nil
         var specType: SpecType = .ui
+        var collapsedIds: Set<UUID> = []
     }
 
     static func parse(_ markdown: String) -> ParsedCanvas {
@@ -112,6 +113,8 @@ enum MermaidParser {
             let rotation = rotationRaw.map { numberValue($0) } ?? 0
             let colorOverride = node["color"] as? String
             let linkNumber = node["linkNumber"] as? Int
+            let tableRows = node["tableRows"] as? Int
+            let tableCols = node["tableCols"] as? Int
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
@@ -122,7 +125,9 @@ enum MermaidParser {
                 category: category,
                 rotation: max(-360, min(360, rotation)),
                 colorOverride: colorOverride,
-                linkNumber: linkNumber
+                linkNumber: linkNumber,
+                tableRows: tableRows,
+                tableCols: tableCols
             )
             idMap[mid] = shape.id
             shapes.append(shape)
@@ -148,7 +153,18 @@ enum MermaidParser {
             edgeList.append(EdgeConnection(from: fromId, to: toId, label: label, bidirectional: bidi, waypoints: waypoints))
         }
 
-        return ParsedCanvas(shapes: shapes, edges: edgeList, canvasSize: parsedCanvasSize)
+        // Parse collapsed-array (mermaidIds → UUIDs via idMap)
+        var collapsedSet: Set<UUID> = []
+        if let collapsedRaw = obj["collapsed"] as? [String] {
+            for mid in collapsedRaw {
+                if let uuid = idMap[mid] { collapsedSet.insert(uuid) }
+            }
+        }
+
+        return ParsedCanvas(shapes: shapes,
+                            edges: edgeList,
+                            canvasSize: parsedCanvasSize,
+                            collapsedIds: collapsedSet)
     }
 
     private static func numberValue(_ value: Any) -> CGFloat {

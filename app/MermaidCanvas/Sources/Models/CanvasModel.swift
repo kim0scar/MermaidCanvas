@@ -105,14 +105,16 @@ final class CanvasModel: ObservableObject {
     }
 
     /// Lägg en tabell-form (3×3) på canvas-mitten.
-    func addTable(at position: CGPoint) {
+    func addTable(at position: CGPoint, rows: Int = 3, cols: Int = 3) {
         snapshotForUndo()
         shapes.append(ShapeNode(
             type: .table,
             position: position,
             label: "",
             sizeMultiplier: 1.5,
-            category: specType.defaultCategory
+            category: specType.defaultCategory,
+            tableRows: rows,
+            tableCols: cols
         ))
     }
 
@@ -283,13 +285,18 @@ final class CanvasModel: ObservableObject {
     func replaceAll(shapes: [ShapeNode],
                     edges: [EdgeConnection],
                     title: String = "",
-                    specType: SpecType = .ui) {
+                    specType: SpecType = .ui,
+                    collapsedIds: Set<UUID> = []) {
         self.shapes = shapes
         self.edges = edges
         self.canvasTitle = title
         self.specType = specType
+        self.collapsedIds = collapsedIds
         self.pendingEdgeFrom = nil
         self.edgeCreationMode = .off
+        self.selectedShapeId = nil
+        self.multiSelection.removeAll()
+        self.markerMode = false
         self.undoStack.removeAll()
     }
 }

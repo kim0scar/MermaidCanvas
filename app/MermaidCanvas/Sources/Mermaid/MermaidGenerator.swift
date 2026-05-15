@@ -50,7 +50,9 @@ enum MermaidGenerator {
                 lines.append("\(indent)%% \(id) link: \(link)")
             }
             if shape.type == .table {
-                lines.append("\(indent)%% \(id) table: 3×3")
+                let r = shape.tableRows ?? 3
+                let c = shape.tableCols ?? 3
+                lines.append("\(indent)%% \(id) table: \(r)×\(c)")
             }
             if collapsedIds.contains(shape.id) {
                 lines.append("\(indent)%% \(id) collapsed")
@@ -116,6 +118,10 @@ enum MermaidGenerator {
             ]
             if let color = shape.colorOverride { n["color"] = color }
             if let link = shape.linkNumber { n["linkNumber"] = link }
+            if shape.type == .table {
+                n["tableRows"] = shape.tableRows ?? 3
+                n["tableCols"] = shape.tableCols ?? 3
+            }
             return n
         }
         let edgeArr: [[String: Any]] = edges.compactMap { edge in

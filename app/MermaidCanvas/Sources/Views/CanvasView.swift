@@ -315,7 +315,9 @@ struct ShapeView: View {
         case .text:
             EmptyView()
         case .table:
-            TableShapeBackground(rows: 3, cols: 3, fill: effectiveFill,
+            TableShapeBackground(rows: shape.tableRows ?? 3,
+                                 cols: shape.tableCols ?? 3,
+                                 fill: effectiveFill,
                                  stroke: shape.category.strokeColor)
         case .link:
             JumpLinkShapeBackground(number: shape.linkNumber ?? 0, fill: effectiveFill)
