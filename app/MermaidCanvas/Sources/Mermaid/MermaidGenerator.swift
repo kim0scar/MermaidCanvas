@@ -70,7 +70,14 @@ enum MermaidGenerator {
         // Edges
         for (i, edge) in edges.enumerated() {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
-            let arrow = edge.bidirectional ? "<-->" : "-->"
+            // v27: linje-stil + riktning round-trip
+            let arrow: String
+            switch (edge.style, edge.bidirectional) {
+            case (.solid, false):  arrow = "-->"
+            case (.solid, true):   arrow = "<-->"
+            case (.dashed, false): arrow = "-.->"
+            case (.dashed, true):  arrow = "<-.->"
+            }
             if edge.label.isEmpty {
                 lines.append("\(indent)\(from) \(arrow) \(to)")
             } else {
@@ -108,6 +115,8 @@ enum MermaidGenerator {
                                 edges: [EdgeConnection],
                                 canvasSize: CGSize,
                                 specType: SpecType = .ui,
+                                platform: Platform = .blank,
+                                activeShapePacks: Set<ShapePack> = [.basic],
                                 collapsedIds: Set<UUID> = []) -> String {
         let mermaidIds = makeMermaidIds(for: shapes)
         let nodes: [[String: Any]] = shapes.map { shape in
@@ -144,7 +153,8 @@ enum MermaidGenerator {
                 "from": f,
                 "to": t,
                 "label": edge.label,
-                "bidirectional": edge.bidirectional
+                "bidirectional": edge.bidirectional,
+                "style": edge.style.rawValue
             ]
             if !edge.waypoints.isEmpty {
                 e["waypoints"] = edge.waypoints.map { ["x": $0.x, "y": $0.y] }
@@ -173,9 +183,14 @@ enum MermaidGenerator {
             "unit": "pt",
             "iphoneFrame": iphone
         ]
+        let packsArr = ShapePack.allCases
+            .filter { activeShapePacks.contains($0) }
+            .map { $0.rawValue }
         var dict: [String: Any] = [
             "canvas": canvas,
             "specType": specType.rawValue,
+            "platform": platform.rawValue,
+            "shapePacks": packsArr,
             "nodes": nodes,
             "edges": edgeArr
         ]

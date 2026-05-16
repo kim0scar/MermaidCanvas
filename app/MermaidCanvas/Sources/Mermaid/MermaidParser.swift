@@ -7,7 +7,9 @@ enum MermaidParser {
         var shapes: [ShapeNode] = []
         var edges: [EdgeConnection] = []
         var canvasSize: CGSize? = nil
-        var specType: SpecType = .ui
+        var specType: SpecType = .general
+        var platform: Platform? = nil  // v27 — nil = härleds från specType vid replaceAll
+        var activeShapePacks: Set<ShapePack>? = nil  // v27 — nil = härleds från specType
         var collapsedIds: Set<UUID> = []
     }
 
@@ -24,6 +26,12 @@ enum MermaidParser {
         if let st = frontmatter.specType {
             result.specType = st
         }
+        if let p = frontmatter.platform {
+            result.platform = p
+        }
+        if let packs = frontmatter.shapePacks {
+            result.activeShapePacks = packs
+        }
         return result
     }
 
@@ -32,6 +40,8 @@ enum MermaidParser {
     private struct Frontmatter {
         var title: String? = nil
         var specType: SpecType? = nil
+        var platform: Platform? = nil
+        var shapePacks: Set<ShapePack>? = nil
     }
 
     private static func parseFrontmatter(_ markdown: String) -> Frontmatter {
@@ -50,6 +60,12 @@ enum MermaidParser {
             case "title": fm.title = value
             case "spec_type":
                 if let st = SpecType(rawValue: value) { fm.specType = st }
+            case "platform":
+                if let p = Platform(rawValue: value) { fm.platform = p }
+            case "shape_packs":
+                let packs = value.split(separator: ",")
+                    .compactMap { ShapePack(rawValue: $0.trimmingCharacters(in: .whitespaces)) }
+                if !packs.isEmpty { fm.shapePacks = Set(packs) }
             default: break
             }
         }
@@ -148,6 +164,8 @@ enum MermaidParser {
             else { continue }
             let label = (edge["label"] as? String) ?? ""
             let bidi = (edge["bidirectional"] as? Bool) ?? false
+            let styleRaw = (edge["style"] as? String) ?? EdgeStyle.solid.rawValue
+            let style = EdgeStyle(rawValue: styleRaw) ?? .solid
             var waypoints: [EdgeWaypoint] = []
             if let wpArr = edge["waypoints"] as? [[String: Any]] {
                 for wp in wpArr {
@@ -156,7 +174,9 @@ enum MermaidParser {
                     waypoints.append(EdgeWaypoint(x: Double(wx), y: Double(wy)))
                 }
             }
-            edgeList.append(EdgeConnection(from: fromId, to: toId, label: label, bidirectional: bidi, waypoints: waypoints))
+            edgeList.append(EdgeConnection(from: fromId, to: toId, label: label,
+                                            bidirectional: bidi, style: style,
+                                            waypoints: waypoints))
         }
 
         // Parse collapsed-array (mermaidIds → UUIDs via idMap)
@@ -167,10 +187,25 @@ enum MermaidParser {
             }
         }
 
-        return ParsedCanvas(shapes: shapes,
-                            edges: edgeList,
-                            canvasSize: parsedCanvasSize,
-                            collapsedIds: collapsedSet)
+        // v27: Platform + form-paketer från JSON (om finns)
+        var parsedPlatform: Platform? = nil
+        if let platRaw = obj["platform"] as? String,
+           let p = Platform(rawValue: platRaw) {
+            parsedPlatform = p
+        }
+        var parsedPacks: Set<ShapePack>? = nil
+        if let packsArr = obj["shapePacks"] as? [String] {
+            let packs = packsArr.compactMap { ShapePack(rawValue: $0) }
+            if !packs.isEmpty { parsedPacks = Set(packs) }
+        }
+
+        var result = ParsedCanvas(shapes: shapes,
+                                  edges: edgeList,
+                                  canvasSize: parsedCanvasSize,
+                                  collapsedIds: collapsedSet)
+        result.platform = parsedPlatform
+        result.activeShapePacks = parsedPacks
+        return result
     }
 
     private static func numberValue(_ value: Any) -> CGFloat {
@@ -228,8 +263,8 @@ enum MermaidParser {
         }
 
         var edges: [EdgeConnection] = []
-        // Matchar A --> B, A <--> B, samt med ev. label: A -->|"x"| B
-        let edgePattern = #"(\w+)\s*(<-+->|-+->)\s*(?:\|\s*\"?([^\"|]*?)\"?\s*\|\s*)?(\w+)"#
+        // v27: Matchar A --> B, A <--> B, A -.-> B, A <-.-> B + med ev. label: A -->|"x"| B
+        let edgePattern = #"(\w+)\s*(<-+\.->|-+\.->|<-+->|-+->)\s*(?:\|\s*\"?([^\"|]*?)\"?\s*\|\s*)?(\w+)"#
         if let regex = try? NSRegularExpression(pattern: edgePattern) {
             let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
             for m in matches where m.numberOfRanges >= 5 {
@@ -244,7 +279,10 @@ enum MermaidParser {
                 }
                 guard let from = idMap[fromMid], let to = idMap[toMid] else { continue }
                 let bidi = arrowStr.hasPrefix("<")
-                edges.append(EdgeConnection(from: from, to: to, label: label, bidirectional: bidi))
+                let dashed = arrowStr.contains(".")
+                edges.append(EdgeConnection(from: from, to: to, label: label,
+                                             bidirectional: bidi,
+                                             style: dashed ? .dashed : .solid))
             }
         }
 

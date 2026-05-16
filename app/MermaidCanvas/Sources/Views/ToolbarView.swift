@@ -163,25 +163,35 @@ struct ToolbarView: View {
     @ViewBuilder
     private var shapesSecondary: some View {
         HStack(spacing: 10) {
-            shapeChip(.circle,    "circle",            accId: "chip.circle")
-            shapeChip(.rectangle, "rectangle",         accId: "chip.rectangle")
-            shapeChip(.diamond,   "diamond",           accId: "chip.diamond")
-            shapeChip(.text,      "character.textbox", accId: "chip.text")
-            specialChip("tablecells", accId: "chip.table", action: onAddTable)
-            specialChip("link",        accId: "chip.link",  action: onAddJumpLink)
+            shapeChip(.circle,    "circle",            accId: "chip.circle") {
+                model.addShape(.circle, at: canvasCenter)
+            }
+            shapeChip(.rectangle, "rectangle",         accId: "chip.rectangle") {
+                model.addShape(.rectangle, at: canvasCenter)
+            }
+            shapeChip(.diamond,   "diamond",           accId: "chip.diamond") {
+                model.addShape(.diamond, at: canvasCenter)
+            }
+            shapeChip(.text,      "character.textbox", accId: "chip.text") {
+                model.addShape(.text, at: canvasCenter)
+            }
+            shapeChip(.table,     "tablecells",        accId: "chip.table",  onTap: onAddTable)
+            shapeChip(.link,      "link",              accId: "chip.link",   onTap: onAddJumpLink)
         }
         .padding(.horizontal, 2)
     }
 
-    /// v26: chip har separata gestures: .onTapGesture för tap (XCUITest-vänligt),
-    /// .gesture(DragGesture(minimumDistance:8)) för drag-out.
+    /// v27: shapeChip är nu generaliserad — alla 6 form-typer använder samma mönster
+    /// (tap + drag-out). Tap-aktionen injiceras så special-fallen (.table / .link)
+    /// kan kalla model.addTable / model.addJumpLinkPair istället för addShape.
     @ViewBuilder
-    private func shapeChip(_ type: ShapeType, _ system: String, accId: String) -> some View {
+    private func shapeChip(_ type: ShapeType,
+                           _ system: String,
+                           accId: String,
+                           onTap: @escaping () -> Void) -> some View {
         ChipFace(systemImage: system)
             .contentShape(Circle())
-            .onTapGesture {
-                model.addShape(type, at: canvasCenter)
-            }
+            .onTapGesture { onTap() }
             .highPriorityGesture(dragOutGesture(type: type))
             .accessibilityElement(children: .ignore)
             .accessibilityAddTraits(.isButton)
@@ -203,17 +213,6 @@ struct ToolbarView: View {
                 }
                 dragController.activeType = nil
             }
-    }
-
-    @ViewBuilder
-    private func specialChip(_ system: String, accId: String, action: @escaping () -> Void) -> some View {
-        Button {
-            action()
-        } label: {
-            ChipFace(systemImage: system)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier(accId)
     }
 
 

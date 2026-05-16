@@ -67,8 +67,8 @@ struct CanvasView: View {
                     .allowsHitTesting(false)
 
                 canvasContent
-                    .frame(width: CanvasModel.contentSize.width,
-                           height: CanvasModel.contentSize.height,
+                    .frame(width: model.contentSize.width,
+                           height: model.contentSize.height,
                            alignment: .topLeading)
                     .coordinateSpace(name: "canvas")
                     .scaleEffect(canvasScale, anchor: .topLeading)
@@ -117,17 +117,38 @@ struct CanvasView: View {
             .onChange(of: resetZoomTrigger) { _, _ in
                 resetZoomAnimated()
             }
+            .onChange(of: geo.size) { _, ns in
+                dragController.viewportSize = ns
+            }
+            .onAppear {
+                dragController.viewportSize = geo.size
+            }
+            .onChange(of: dragController.requestedCenterPoint) { _, new in
+                if let p = new {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                        canvasOffset = CGSize(
+                            width: lastViewport.width / 2 - p.x * canvasScale,
+                            height: lastViewport.height / 2 - p.y * canvasScale
+                        )
+                    }
+                    // Nollställ så ny tap registreras (även till samma punkt)
+                    Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 100_000_000)
+                        dragController.requestedCenterPoint = nil
+                    }
+                }
+            }
         }
     }
 
     private func centerOnInitial(viewport: CGSize) {
         let center: CGPoint
         if model.specType == .ui {
-            let frame = iPhoneFrameMath.canvasFrame(in: CanvasModel.contentSize)
+            let frame = iPhoneFrameMath.canvasFrame(in: model.contentSize)
             center = CGPoint(x: frame.midX, y: frame.midY)
         } else {
-            center = CGPoint(x: CanvasModel.contentSize.width / 2,
-                             y: CanvasModel.contentSize.height / 2)
+            center = CGPoint(x: model.contentSize.width / 2,
+                             y: model.contentSize.height / 2)
         }
         canvasScale = 1.0
         canvasOffset = CGSize(
@@ -168,19 +189,19 @@ struct CanvasView: View {
     private var canvasContent: some View {
         ZStack(alignment: .topLeading) {
             Color(.systemGray6)
-                .frame(width: CanvasModel.contentSize.width,
-                       height: CanvasModel.contentSize.height)
+                .frame(width: model.contentSize.width,
+                       height: model.contentSize.height)
                 .allowsHitTesting(false)
 
             DotGridBackground()
-                .frame(width: CanvasModel.contentSize.width,
-                       height: CanvasModel.contentSize.height)
+                .frame(width: model.contentSize.width,
+                       height: model.contentSize.height)
                 .allowsHitTesting(false)
 
             if model.specType == .ui {
-                iPhoneFrameOverlay(canvasContentSize: CanvasModel.contentSize)
-                    .frame(width: CanvasModel.contentSize.width,
-                           height: CanvasModel.contentSize.height)
+                iPhoneFrameOverlay(canvasContentSize: model.contentSize)
+                    .frame(width: model.contentSize.width,
+                           height: model.contentSize.height)
             }
 
             let hiddenForEdges = model.hiddenShapeIds
@@ -190,9 +211,10 @@ struct CanvasView: View {
                       hiddenShapeIds: hiddenForEdges,
                       onEdgeDelete: onEdgeDelete,
                       onEdgeReverse: { id in model.reverseEdge(id: id) },
-                      onEdgeSetBidi: { id, v in model.setEdgeBidirectional(id: id, v) })
-                .frame(width: CanvasModel.contentSize.width,
-                       height: CanvasModel.contentSize.height)
+                      onEdgeSetBidi: { id, v in model.setEdgeBidirectional(id: id, v) },
+                      onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) })
+                .frame(width: model.contentSize.width,
+                       height: model.contentSize.height)
 
             // Rubber-band-linje under aktiv connection-drag
             if let drag = connectionDrag,
@@ -263,7 +285,7 @@ struct CanvasView: View {
             }
 
             if model.markerMode {
-                MarkerOverlay(model: model, canvasContentSize: CanvasModel.contentSize)
+                MarkerOverlay(model: model, canvasContentSize: model.contentSize)
             }
         }
     }
@@ -638,6 +660,7 @@ struct EdgesView: View {
     var onEdgeDelete: (UUID) -> Void
     var onEdgeReverse: (UUID) -> Void
     var onEdgeSetBidi: (UUID, Bool) -> Void
+    var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
 
     private func isVisible(_ edge: EdgeConnection) -> Bool {
         !hiddenShapeIds.contains(edge.from) && !hiddenShapeIds.contains(edge.to)
@@ -710,6 +733,18 @@ struct EdgesView: View {
                 Label("Båda hållen ↔", systemImage: "arrow.left.arrow.right")
             }
             Divider()
+            // v27: linje-stil
+            Button {
+                onEdgeSetStyle(edge.wrappedValue.id, .solid)
+            } label: {
+                Label("Hel linje", systemImage: "minus")
+            }
+            Button {
+                onEdgeSetStyle(edge.wrappedValue.id, .dashed)
+            } label: {
+                Label("Streckad linje", systemImage: "ellipsis")
+            }
+            Divider()
             if hasWaypoint {
                 Button {
                     edge.wrappedValue.waypoints = []
@@ -743,6 +778,7 @@ struct EdgesView: View {
                           edge: EdgeConnection,
                           fromShape: ShapeNode,
                           toShape: ShapeNode) {
+        let strokeStyle = Self.strokeStyle(for: edge.style)
         if let wp = edge.waypoints.first {
             let firstSeg = edgePoint(for: fromShape, towards: wp.point)
             let lastSeg = edgePoint(for: toShape, towards: wp.point)
@@ -751,7 +787,7 @@ struct EdgesView: View {
             line.move(to: firstSeg)
             line.addLine(to: wp.point)
             line.addLine(to: lastSeg)
-            context.stroke(line, with: .color(.primary.opacity(0.6)), lineWidth: 1.5)
+            context.stroke(line, with: .color(.primary.opacity(0.7)), style: strokeStyle)
 
             let angle = atan2(lastSeg.y - wp.point.y, lastSeg.x - wp.point.x)
             drawArrowHead(context: context, tip: lastSeg, angle: angle)
@@ -762,7 +798,16 @@ struct EdgesView: View {
         } else {
             let start = edgePoint(for: fromShape, towards: toShape.position)
             let end = edgePoint(for: toShape, towards: fromShape.position)
-            drawArrow(context: context, from: start, to: end, bidirectional: edge.bidirectional)
+            drawArrow(context: context, from: start, to: end,
+                      bidirectional: edge.bidirectional, style: strokeStyle)
+        }
+    }
+
+    /// v27: hel eller streckad — tjockare pilar (2.5pt) för bättre läsbarhet på iPhone.
+    private static func strokeStyle(for edgeStyle: EdgeStyle) -> StrokeStyle {
+        switch edgeStyle {
+        case .solid:  return StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round)
+        case .dashed: return StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round, dash: [8, 6])
         }
     }
 
@@ -807,11 +852,15 @@ struct EdgesView: View {
         return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
     }
 
-    private func drawArrow(context: GraphicsContext, from: CGPoint, to: CGPoint, bidirectional: Bool) {
+    private func drawArrow(context: GraphicsContext,
+                           from: CGPoint,
+                           to: CGPoint,
+                           bidirectional: Bool,
+                           style: StrokeStyle) {
         var line = Path()
         line.move(to: from)
         line.addLine(to: to)
-        context.stroke(line, with: .color(.primary.opacity(0.6)), lineWidth: 1.5)
+        context.stroke(line, with: .color(.primary.opacity(0.7)), style: style)
 
         let angle = atan2(to.y - from.y, to.x - from.x)
         drawArrowHead(context: context, tip: to, angle: angle)
@@ -820,8 +869,10 @@ struct EdgesView: View {
         }
     }
 
+    /// v27: pilhuvuden ritas alltid med hel linje (även för streckad pil) +
+    /// fylld triangel för tydlighet på iPhone.
     private func drawArrowHead(context: GraphicsContext, tip: CGPoint, angle: CGFloat) {
-        let length: CGFloat = 12
+        let length: CGFloat = 14
         let spread: CGFloat = .pi / 7
         let a1 = CGPoint(
             x: tip.x - length * cos(angle - spread),
@@ -832,8 +883,10 @@ struct EdgesView: View {
             y: tip.y - length * sin(angle + spread)
         )
         var head = Path()
-        head.move(to: tip); head.addLine(to: a1)
-        head.move(to: tip); head.addLine(to: a2)
-        context.stroke(head, with: .color(.primary.opacity(0.6)), lineWidth: 1.5)
+        head.move(to: tip)
+        head.addLine(to: a1)
+        head.addLine(to: a2)
+        head.closeSubpath()
+        context.fill(head, with: .color(.primary.opacity(0.75)))
     }
 }

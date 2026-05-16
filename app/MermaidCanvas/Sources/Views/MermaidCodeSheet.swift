@@ -20,7 +20,7 @@ struct MermaidCodeSheet: View {
                     .accessibilityIdentifier("sheet.codeContent")
             }
             .background(Color(.secondarySystemBackground))
-            .navigationTitle("Filinnehåll")
+            .navigationTitle("Mermaid-kod")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

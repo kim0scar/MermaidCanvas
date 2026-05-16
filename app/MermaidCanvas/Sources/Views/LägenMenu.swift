@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// "Lägen"-menyn — INTE plattform-byte (det görs vid Ny canvas).
-/// Visar aktuell plattform + filhantering + visa regler + version.
+/// v27 "Lägen"-menyn.
+/// Plattform = info (Blank/Godot, låses per canvas).
+/// Form-paketer = togglar för UI/Roadmap/Arkitektur/Flow (oberoende av platform).
 struct LägenMenu: View {
     @ObservedObject var model: CanvasModel
     var hasOpenFile: Bool
@@ -16,12 +17,34 @@ struct LägenMenu: View {
     var body: some View {
         Menu {
             // Aktuell plattform — INFO, inte picker (låses vid Ny canvas)
-            Section(header: Text("Aktuell plattform")) {
-                Label("\(model.specType.displayName) (låst för denna canvas)",
-                      systemImage: model.specType.badgeSystemImage)
+            Section(header: Text("Plattform")) {
+                Label("\(model.platform.displayName) (låst för denna canvas)",
+                      systemImage: model.platform.badgeSystemImage)
                     .disabled(true)
-                Button(action: onShowRules) {
-                    Label("Visa regler för \(model.specType.displayName)", systemImage: "book")
+                if model.platform == .godot {
+                    Button(action: onShowRules) {
+                        Label("Visa regler för Godot", systemImage: "book")
+                    }
+                }
+            }
+            // Form-paketer — togglar
+            Section(header: Text("Form-paketer")) {
+                ForEach(ShapePack.allCases) { pack in
+                    if pack == .basic {
+                        Label("Basformer (alltid på)", systemImage: pack.systemImage)
+                            .disabled(true)
+                    } else {
+                        Button {
+                            model.toggleShapePack(pack)
+                        } label: {
+                            if model.activeShapePacks.contains(pack) {
+                                Label("\(pack.displayName) ✓", systemImage: pack.systemImage)
+                            } else {
+                                Label(pack.displayName, systemImage: pack.systemImage)
+                            }
+                        }
+                        .accessibilityIdentifier("pack.\(pack.rawValue)")
+                    }
                 }
             }
             Divider()
@@ -38,11 +61,13 @@ struct LägenMenu: View {
                 Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
             }
             Divider()
-            Button { onShowPreview() } label: {
-                Label("Preview (simulerad app)", systemImage: "eye")
+            if model.platform == .godot {
+                Button { onShowPreview() } label: {
+                    Label("Preview (simulerad app)", systemImage: "eye")
+                }
             }
             Button { onShowCode() } label: {
-                Label("Visa filinnehåll", systemImage: "curlybraces")
+                Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")
             }
             .accessibilityIdentifier("menu.showCode")
             Divider()

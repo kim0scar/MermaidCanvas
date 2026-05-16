@@ -1,53 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v27
+# ARKITEKTUR-MERMAID — Version v26
 *Datum: 2026-05-16*
 
-> **Status:** v27 är en stor uppgradering med 5 etapper: drag-ut för Tabell+Länk fixad, pilar tjockare + streckad-stil med round-trip, plattform-refactor (Blank/Godot + form-paketer), expand-canvas + minikarta, meny-cleanup. 11/11 XCUITester gröna.
-
----
-
-## Ändringar från v26 — v27
-
-**Etapp 1 — Drag-ut för Tabell + Länk:**
-- `specialChip` var en `Button` utan `DragGesture` → drag-ut fungerade inte för Tabell/Länk.
-- **Fix:** Generaliserade `shapeChip` med en injicerad `onTap`-closure så alla 6 form-typer (cirkel, rektangel, diamant, text, tabell, länk) använder samma mönster: tap + highPriorityGesture(DragGesture).
-- Tabell drag-ut → `model.addTable(at: canvasPoint)`. Länk → `model.addJumpLinkPair(near: canvasPoint)` (skapar par).
-
-**Etapp 2 — Pilar tjockare + streckad-stil + utökad in-context-meny:**
-- `lineWidth: 1.5 → 2.5` för alla pil-linjer.
-- Pilhuvuden ritas nu som **fyllda trianglar** (closed path + fill) för tydlighet.
-- `EdgeStyle.solid / .dashed` på `EdgeConnection`. Streckad = `StrokeStyle(lineWidth: 2.5, dash: [8, 6])`.
-- Context-menyn på midpoint-handle utökad med 2 nya val: **Hel linje** / **Streckad linje**.
-- `CanvasModel.setEdgeStyle(id:_:)` är ny.
-- **Mermaid round-trip:** export + import för `-->`, `<-->`, `-.->`, `<-.->`. Parser-regex utökad.
-
-**Etapp 3 — Plattform-refactor + Form-paketer:**
-- Nytt koncept: **Plattform** (regelstyrt mål) vs **Form-paketer** (Kims egna uppsättningar).
-- Nya filer: `Sources/Models/Platform.swift` + `Sources/Models/ShapePack.swift`.
-- `Platform = .blank | .godot`. `ShapePack = .basic | .ui | .roadmap | .architecture | .flow` (.basic alltid på).
-- `CanvasModel.platform` + `CanvasModel.activeShapePacks: Set<ShapePack>`.
-- `NewCanvasSheet` förenklad: bara 2 val (Blank / Godot).
-- `LägenMenu` har ny sektion "Form-paketer" med toggles + sektion "Plattform" (info, låst).
-- `PlatformRules.sidecarMarkdown(for: platform)` returnerar `String?` — bara Godot ger sidecar; Blank ger `nil`.
-- **Bakåtkompatibilitet:** gamla canvas-filer med `spec_type: ui|roadmap|architecture|flow|godot|general` mappas automatiskt vid load (`replaceAll`) → motsvarande pack auto-aktiverat.
-- Mermaid-frontmatter har två nya fält: `platform: <blank|godot>` + `shape_packs: <comma-separated>`. JSON-state har `platform` + `shapePacks`-array. Båda är optionella för bakåtkomp.
-- `SpecType` behålls internt (för iPhone-frame, default-kategori, ColorPack, etc) men är inte längre exponerad i UI.
-
-**Etapp 4 — Canvas expand vid kant + minikarta:**
-- `CanvasModel.contentSize` är nu en `@Published var` (instance) istället för `static let`. Default startar på **2000×2000**.
-- `CanvasModel.expandCanvasIfNeeded(near:margin:expandBy:)` utökar canvas med 1000pt i en kant om en form placerats inom 200pt från den. Anropas från `addShape`, `addTable`, `addJumpLinkPair`, `updatePosition`.
-- **Minikarta:** Ny `MinimapView` i `Sources/Views/MinimapView.swift`. Knapp uppe till höger på canvas-området (`toolbar.minimap`). Toggle-bart. Visar mini-canvas + alla shapes som färgade prickar + röd ram för aktuell viewport. Tap på minikartan = canvas hoppar dit (via `dragController.requestedCenterPoint`).
-- `ShapeDragController.viewportSize` + `ShapeDragController.requestedCenterPoint` är nya.
-
-**Etapp 5 — Meny-cleanup ("Visa Mermaid-kod"):**
-- LägenMenu: "Visa filinnehåll" → **"Visa Mermaid-kod"**. Ikon `curlybraces` → `chevron.left.forwardslash.chevron.right`.
-- `MermaidCodeSheet` navigationsTitel: "Filinnehåll" → "Mermaid-kod".
-- Preview-knappen visas bara om `platform == .godot` (övriga plattformar har ingen preview-renderer).
-- "Visa regler för X" visas bara om `platform == .godot`.
-
-**Etapp 6 — Tester:**
-- Befintliga 5 `DragOutTests` passerar fortfarande (cirkel/rektangel/text/etc).
-- Ny `V27FeatureTests.swift` med 6 tester: tap+drag för chip.table och chip.link, form-paketer-toggles i Lägen-menyn, minikarta-knapp.
-- **Totalt 11/11 XCUITester gröna** i iOS Simulator (iPhone 17, `A658C63E-...`) innan deploy.
+> **Status:** v26 löser drag-out på riktigt + verifierat via XCUITest (5/5 gröna i iOS Simulator innan deploy).
 
 ---
 

@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var showRulesSheet: Bool = false
     @State private var zoomPercent: Int = 100
     @State private var resetZoomTrigger: Int = 0
+    @State private var showMinimap: Bool = false
 
     var body: some View {
         ZStack {
@@ -71,20 +72,20 @@ struct ContentView: View {
             // (UI-läge: vi vill helst lägga former inom iPhone-frame, men canvas-mitten räcker)
             .onAppear {
                 if model.specType == .ui {
-                    let frame = iPhoneFrameMath.canvasFrame(in: CanvasModel.contentSize)
+                    let frame = iPhoneFrameMath.canvasFrame(in: model.contentSize)
                     canvasCenter = CGPoint(x: frame.midX, y: frame.midY)
                 } else {
-                    canvasCenter = CGPoint(x: CanvasModel.contentSize.width / 2,
-                                           y: CanvasModel.contentSize.height / 2)
+                    canvasCenter = CGPoint(x: model.contentSize.width / 2,
+                                           y: model.contentSize.height / 2)
                 }
             }
             .onChange(of: model.specType) { _, new in
                 if new == .ui {
-                    let frame = iPhoneFrameMath.canvasFrame(in: CanvasModel.contentSize)
+                    let frame = iPhoneFrameMath.canvasFrame(in: model.contentSize)
                     canvasCenter = CGPoint(x: frame.midX, y: frame.midY)
                 } else {
-                    canvasCenter = CGPoint(x: CanvasModel.contentSize.width / 2,
-                                           y: CanvasModel.contentSize.height / 2)
+                    canvasCenter = CGPoint(x: model.contentSize.width / 2,
+                                           y: model.contentSize.height / 2)
                 }
             }
             }
@@ -98,6 +99,50 @@ struct ContentView: View {
                     .transition(.identity)
                     .zIndex(999)
             }
+
+            // v27: minikarta-knapp + overlay (övre högra hörnet av canvas-området)
+            VStack {
+                HStack {
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 8) {
+                        Button {
+                            withAnimation(.spring(response: 0.3)) { showMinimap.toggle() }
+                        } label: {
+                            Image(systemName: "map")
+                                .font(.title3)
+                                .foregroundStyle(showMinimap ? Color.white : Color.primary)
+                                .frame(width: 44, height: 44)
+                                .background(
+                                    Circle()
+                                        .fill(showMinimap ? Color.accentColor : Color(.systemBackground).opacity(0.9))
+                                )
+                                .overlay(Circle().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
+                                .shadow(radius: 2)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("toolbar.minimap")
+
+                        if showMinimap {
+                            MinimapView(
+                                model: model,
+                                viewportRect: currentViewportRect(),
+                                canvasScale: dragController.canvasScale,
+                                onTapPoint: { canvasPoint in
+                                    dragController.requestedCenterPoint = canvasPoint
+                                },
+                                onClose: {
+                                    withAnimation(.spring(response: 0.3)) { showMinimap = false }
+                                }
+                            )
+                        }
+                    }
+                    .padding(.trailing, 12)
+                    .padding(.top, 100) // under toolbar
+                }
+                Spacer()
+            }
+            .allowsHitTesting(true)
+            .ignoresSafeArea(.keyboard)
         }
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
@@ -144,16 +189,15 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showNewCanvasSheet) {
             NewCanvasSheet(
-                onCreate: { st in
-                    model.clearCanvas()
-                    model.specType = st
+                onCreate: { platform in
+                    model.clearCanvas(platform: platform)
                     showNewCanvasSheet = false
                 },
                 onCancel: { showNewCanvasSheet = false }
             )
         }
         .sheet(isPresented: $showRulesSheet) {
-            PlatformRulesSheet(specType: model.specType,
+            PlatformRulesSheet(platform: model.platform,
                                onClose: { showRulesSheet = false })
         }
         .sheet(isPresented: $showPreviewSheet) {
@@ -186,8 +230,9 @@ struct ContentView: View {
             case .success(let url):
                 _ = fileManager.open(url: url)
                 // v25: skriv sidecar bredvid den nya filen
-                let sidecar = PlatformRules.sidecarMarkdown(for: model.specType)
-                fileManager.writeRulesSidecar(rulesText: sidecar)
+                if let sidecar = PlatformRules.sidecarMarkdown(for: model.platform) {
+                    fileManager.writeRulesSidecar(rulesText: sidecar)
+                }
             case .failure: break
             }
         }
@@ -235,6 +280,8 @@ struct ContentView: View {
                          edges: parsed.edges,
                          title: parsed.title,
                          specType: parsed.specType,
+                         platform: parsed.platform,
+                         activeShapePacks: parsed.activeShapePacks,
                          collapsedIds: parsed.collapsedIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
     }
@@ -246,6 +293,8 @@ struct ContentView: View {
                          edges: parsed.edges,
                          title: parsed.title,
                          specType: parsed.specType,
+                         platform: parsed.platform,
+                         activeShapePacks: parsed.activeShapePacks,
                          collapsedIds: parsed.collapsedIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
     }
@@ -266,9 +315,10 @@ struct ContentView: View {
     private func saveToOpenFile() {
         let doc = makeDocument()
         try? fileManager.write(doc.content)
-        // v25: skriv sidecar med regler bredvid canvas-filen
-        let sidecar = PlatformRules.sidecarMarkdown(for: model.specType)
-        fileManager.writeRulesSidecar(rulesText: sidecar)
+        // v27: skriv sidecar med regler bredvid canvas-filen — bara om Godot
+        if let sidecar = PlatformRules.sidecarMarkdown(for: model.platform) {
+            fileManager.writeRulesSidecar(rulesText: sidecar)
+        }
     }
 
     private func makeDocument() -> CanvasDocument {
@@ -278,6 +328,8 @@ struct ContentView: View {
             edges: model.edges,
             canvasSize: model.canvasSize,
             specType: model.specType,
+            platform: model.platform,
+            activeShapePacks: model.activeShapePacks,
             collapsedIds: model.collapsedIds
         )
     }
@@ -301,6 +353,18 @@ struct ContentView: View {
         default:
             model.addShape(type, at: canvasPoint)
         }
+    }
+
+    /// v27: räkna ut den synliga delen av canvas (i canvas-koord) från drag-controllerns
+    /// pan/zoom + viewport.
+    private func currentViewportRect() -> CGRect {
+        let scale = max(0.0001, dragController.canvasScale)
+        let viewport = dragController.viewportSize
+        let x = -dragController.canvasOffset.width / scale
+        let y = -dragController.canvasOffset.height / scale
+        let w = viewport.width / scale
+        let h = viewport.height / scale
+        return CGRect(x: x, y: y, width: w, height: h)
     }
 
     static func chipSystemImage(for type: ShapeType) -> String {

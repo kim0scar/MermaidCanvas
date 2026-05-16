@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// Sheet som visas när användaren skapar en ny canvas — kräver plattformsval först.
-/// Plattformen LÅSES när canvas skapas och kan inte bytas mitt i.
+/// v27: Sheet vid Ny canvas — bara TVÅ val: Blank canvas (default) eller Godot.
+/// Form-paketer aktiveras efter via Lägen-menyn.
 struct NewCanvasSheet: View {
-    var onCreate: (SpecType) -> Void
+    var onCreate: (Platform) -> Void
     var onCancel: () -> Void
 
-    @State private var selected: SpecType = .ui
+    @State private var selected: Platform = .blank
 
     var body: some View {
         NavigationStack {
@@ -14,13 +14,13 @@ struct NewCanvasSheet: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Plattform")
                         .font(.headline)
-                    Text("Plattformen styr vilka regler och kategorier som gäller. Den låses till canvasen och kan inte bytas mitt i — börja om med ny canvas om du vill byta.")
+                    Text("Plattform = regelstyrt mål (t.ex. Godot). För eget ritande, välj Blank canvas. Form-paketer (UI/Roadmap/Arkitektur/Flow) aktiveras sen i Lägen-menyn — oberoende av plattform.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
 
                     VStack(spacing: 10) {
-                        ForEach(SpecType.pickable) { st in
-                            platformCard(st)
+                        ForEach(Platform.allCases) { p in
+                            platformCard(p)
                         }
                     }
                     .padding(.top, 8)
@@ -42,28 +42,28 @@ struct NewCanvasSheet: View {
     }
 
     @ViewBuilder
-    private func platformCard(_ st: SpecType) -> some View {
+    private func platformCard(_ p: Platform) -> some View {
         Button {
-            selected = st
+            selected = p
         } label: {
             HStack(spacing: 14) {
-                Image(systemName: st.badgeSystemImage)
+                Image(systemName: p.badgeSystemImage)
                     .font(.title2)
-                    .foregroundStyle(selected == st ? Color.white : Color.accentColor)
+                    .foregroundStyle(selected == p ? Color.white : Color.accentColor)
                     .frame(width: 44, height: 44)
-                    .background(selected == st ? Color.accentColor : Color.accentColor.opacity(0.12))
+                    .background(selected == p ? Color.accentColor : Color.accentColor.opacity(0.12))
                     .clipShape(Circle())
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(st.displayName)
+                    Text(p.displayName)
                         .font(.body.weight(.semibold))
                         .foregroundStyle(Color.primary)
-                    Text(platformHint(st))
+                    Text(p.hint)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.leading)
                 }
                 Spacer()
-                if selected == st {
+                if selected == p {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(Color.accentColor)
                 }
@@ -73,20 +73,9 @@ struct NewCanvasSheet: View {
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(selected == st ? Color.accentColor : Color.clear, lineWidth: 2)
+                    .stroke(selected == p ? Color.accentColor : Color.clear, lineWidth: 2)
             )
         }
         .buttonStyle(.plain)
-    }
-
-    private func platformHint(_ st: SpecType) -> String {
-        switch st {
-        case .ui:           return "UI för iPhone-app. Skärmar, knappar, zoner. iPhone-ram visas på canvas."
-        case .roadmap:      return "Plan för funktioner över tid. Now/Next/Later, milstolpar, blockers."
-        case .architecture: return "Kodstruktur. Mappar, filer, moduler, services."
-        case .flow:         return "Process eller AI-flöde. Input → agent → tool → memory → output."
-        case .godot:        return "Godot-spel-scener (.tscn). Control-noder, signaler, GDScript."
-        case .general:      return "Generell canvas utan specifika regler."
-        }
     }
 }

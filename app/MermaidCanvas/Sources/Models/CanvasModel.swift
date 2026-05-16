@@ -12,6 +12,8 @@ private struct CanvasSnapshot {
     let edges: [EdgeConnection]
     let title: String
     let specType: SpecType
+    let platform: Platform
+    let activeShapePacks: Set<ShapePack>
 }
 
 @MainActor
@@ -22,7 +24,11 @@ final class CanvasModel: ObservableObject {
     @Published var pendingEdgeFrom: UUID? = nil
     @Published var canvasTitle: String = ""
     @Published var canvasSize: CGSize = CGSize(width: 3000, height: 3000)
-    @Published var specType: SpecType = .ui
+    @Published var specType: SpecType = .general
+    /// v27: Platform = regelstyrt mål (Blank/Godot). Låses per canvas.
+    @Published var platform: Platform = .blank
+    /// v27: Form-paketer = oberoende av platform, kan toggle:as i farten.
+    @Published var activeShapePacks: Set<ShapePack> = [.basic]
 
     // v23: pan/zoom-state hanteras nu som @State i CanvasView för perf
     // (60Hz @Published triggade hela hierarkin att rerendera)
@@ -33,8 +39,28 @@ final class CanvasModel: ObservableObject {
     @Published var markerMode: Bool = false
     @Published var collapsedIds: Set<UUID> = []
 
-    // v19: konstant stor canvas-yta
+    // v27: canvas startar på 2000×2000 och expanderar dynamiskt när noder placeras nära en kant.
+    // Statisk fallback för bakåtkomp — använd `model.contentSize` (instance) i nya kod.
     static let contentSize = CGSize(width: 3000, height: 3000)
+    @Published var contentSize: CGSize = CGSize(width: 2000, height: 2000)
+
+    /// v27: utöka canvasen om en form placerats inom `margin` pt från en kant.
+    func expandCanvasIfNeeded(near point: CGPoint, margin: CGFloat = 200, expandBy: CGFloat = 1000) {
+        var size = contentSize
+        var changed = false
+        if point.x > size.width - margin {
+            size.width += expandBy
+            changed = true
+        }
+        if point.y > size.height - margin {
+            size.height += expandBy
+            changed = true
+        }
+        // v27: vi expanderar inte i negativ riktning eftersom canvas-origo är (0,0).
+        if changed {
+            contentSize = size
+        }
+    }
 
     private var undoStack: [CanvasSnapshot] = []
     private let undoLimit = 30
@@ -78,7 +104,9 @@ final class CanvasModel: ObservableObject {
             shapes: shapes,
             edges: edges,
             title: canvasTitle,
-            specType: specType
+            specType: specType,
+            platform: platform,
+            activeShapePacks: activeShapePacks
         )
         undoStack.append(snap)
         if undoStack.count > undoLimit { undoStack.removeFirst() }
@@ -90,8 +118,47 @@ final class CanvasModel: ObservableObject {
         edges = last.edges
         canvasTitle = last.title
         specType = last.specType
+        platform = last.platform
+        activeShapePacks = last.activeShapePacks
         pendingEdgeFrom = nil
         edgeCreationMode = .off
+    }
+
+    // MARK: - v27 Platform + form-paketer
+
+    /// Sätt platform vid skapande av ny canvas. Synkar specType för bakåtkomp.
+    func setPlatform(_ new: Platform) {
+        guard new != platform else { return }
+        snapshotForUndo()
+        platform = new
+        specType = new.legacySpecType
+    }
+
+    /// Toggle form-paket. Basic kan inte stängas av.
+    func toggleShapePack(_ pack: ShapePack) {
+        guard pack != .basic else { return }
+        snapshotForUndo()
+        if activeShapePacks.contains(pack) {
+            activeShapePacks.remove(pack)
+        } else {
+            activeShapePacks.insert(pack)
+        }
+    }
+
+    /// Alla kategorier tillgängliga för formgivning baserat på aktiva paketer.
+    var availableCategories: [ShapeCategory] {
+        var cats: [ShapeCategory] = []
+        // Godot-platform: visa Godot-kategorier oavsett packs
+        if platform == .godot {
+            cats.append(contentsOf: [.godot_scene, .godot_control, .godot_container,
+                                      .godot_panel, .godot_button, .godot_label,
+                                      .godot_signal, .godot_script])
+        }
+        for pack in ShapePack.allCases where activeShapePacks.contains(pack) {
+            cats.append(contentsOf: pack.categories)
+        }
+        if !cats.contains(.note) { cats.append(.note) }
+        return cats
     }
 
     // MARK: - Mutationer
@@ -101,6 +168,7 @@ final class CanvasModel: ObservableObject {
         let cat = specType.defaultCategory
         // v23: tom label från start — Kim vill skriva själv
         shapes.append(ShapeNode(type: type, position: position, label: "", category: cat))
+        expandCanvasIfNeeded(near: position)
     }
 
     /// Lägg en tabell-form (3×3) på canvas-mitten.
@@ -115,6 +183,7 @@ final class CanvasModel: ObservableObject {
             tableRows: rows,
             tableCols: cols
         ))
+        expandCanvasIfNeeded(near: position)
     }
 
     /// Lägg ett par jump-länkar med samma nummer.
@@ -137,6 +206,7 @@ final class CanvasModel: ObservableObject {
                           linkNumber: next)
         shapes.append(a)
         shapes.append(b)
+        expandCanvasIfNeeded(near: b.position)
     }
 
     /// Ny tom canvas (kallas efter spara-prompt).
@@ -217,6 +287,7 @@ final class CanvasModel: ObservableObject {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         snapshotForUndo()
         shapes[index].position = position
+        expandCanvasIfNeeded(near: position)
     }
 
     func updateShape(id: UUID,
@@ -305,6 +376,14 @@ final class CanvasModel: ObservableObject {
         edges[idx].bidirectional = value
     }
 
+    /// v27: hel eller streckad linje.
+    func setEdgeStyle(id: UUID, _ style: EdgeStyle) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        guard edges[idx].style != style else { return }
+        snapshotForUndo()
+        edges[idx].style = style
+    }
+
     @discardableResult
     func handleEdgeTap(on shapeId: UUID) -> Bool {
         guard edgeCreationMode != .off else { return false }
@@ -329,12 +408,30 @@ final class CanvasModel: ObservableObject {
     func replaceAll(shapes: [ShapeNode],
                     edges: [EdgeConnection],
                     title: String = "",
-                    specType: SpecType = .ui,
+                    specType: SpecType = .general,
+                    platform: Platform? = nil,
+                    activeShapePacks: Set<ShapePack>? = nil,
                     collapsedIds: Set<UUID> = []) {
         self.shapes = shapes
         self.edges = edges
         self.canvasTitle = title
         self.specType = specType
+        // v27: härled platform + packs från fil, eller härled från legacy specType.
+        if let p = platform {
+            self.platform = p
+        } else {
+            self.platform = (specType == .godot) ? .godot : .blank
+        }
+        if let packs = activeShapePacks {
+            self.activeShapePacks = packs
+        } else {
+            // Legacy migration: gamla spec_type → motsvarande pack auto-aktiverat
+            var packs: Set<ShapePack> = [.basic]
+            if let pack = ShapePack.from(legacySpecType: specType) {
+                packs.insert(pack)
+            }
+            self.activeShapePacks = packs
+        }
         self.collapsedIds = collapsedIds
         self.pendingEdgeFrom = nil
         self.edgeCreationMode = .off
@@ -342,5 +439,21 @@ final class CanvasModel: ObservableObject {
         self.multiSelection.removeAll()
         self.markerMode = false
         self.undoStack.removeAll()
+    }
+
+    /// v27: nollställ till en specifik plattform (vid Ny canvas).
+    func clearCanvas(platform: Platform) {
+        snapshotForUndo()
+        shapes.removeAll()
+        edges.removeAll()
+        collapsedIds.removeAll()
+        canvasTitle = ""
+        self.platform = platform
+        self.specType = platform.legacySpecType
+        self.activeShapePacks = [.basic]
+        selectedShapeId = nil
+        multiSelection.removeAll()
+        pendingEdgeFrom = nil
+        edgeCreationMode = .off
     }
 }
