@@ -1,26 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v26
+# ARKITEKTUR-MERMAID — Version v25
 *Datum: 2026-05-16*
 
-> **Status:** v26 löser drag-out på riktigt + verifierat via XCUITest (5/5 gröna i iOS Simulator innan deploy).
-
----
-
-## Ändringar från v25 — v26
-
-**Drag-out fix (root cause: ScrollView-konflikt):**
-- ToolbarView's shape-chips låg i `ScrollView(.horizontal)`. På iOS 17+/26 äter ScrollView's interna `UIPanGestureRecognizer` touch-eventet innan child `DragGesture` hinner fyra (känd bug FB14688465).
-- **Fix:** Ta bort ScrollView för shape-chips (6 à 44pt + spacing får plats utan scroll). Byt `.gesture` → `.highPriorityGesture` för extra säkerhet.
-- **Egen drag-controller** (`Sources/Models/ShapeDragController.swift`) ersätter Apple's Transferable/.draggable/.dropDestination som var opålitlig.
-- Chips: `.onTapGesture` (tap = lägg form i mitten) + `.highPriorityGesture(DragGesture(minimumDistance:8, coordinateSpace:.global))` (drag = drop på canvas).
-- CanvasView rapporterar sin globala frame via `PreferenceKey` så ContentView kan konvertera global→canvas-koordinat vid drop.
-
-**XCUITest-target (för verifiering utan att Kim testar):**
-- Ny target `MermaidCanvasUITests` i `project.yml`.
-- `UITests/DragOutTests.swift` med 5 test-cases: tap-add, all-six-chips, drag-rectangle, drag-circle, debug-tree-dump.
-- Accessibility-ID:er på toolbar-knappar, chips, canvas, lägen-meny och code-sheet.
-- `toolbar.zoom.accessibilityValue = "shapeCount=N"` exponerar model.shapes.count för diagnos.
-
-**Resultat:** Alla 5 tester gröna i iOS Simulator (iPhone 17) före deploy till Kim's iPhone.
+> **Status:** v25 fixar dragout-bugg, sänker zoom ännu mer, lägger till **connection-handtag** på sidor av former för att dra pilar, **edge-riktningsmeny** via long-press på midpoint, samt **auto-skriver en `<namn>-regler.md`-sidecar** bredvid varje canvas-fil när Kim sparar — så Claude Code direkt har plattformens regler när han läser canvasen från Mac:en.
 
 ---
 

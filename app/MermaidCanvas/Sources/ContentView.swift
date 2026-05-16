@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @StateObject private var model = CanvasModel()
     @StateObject private var fileManager = CanvasFileManager()
+    @StateObject private var dragController = ShapeDragController()
 
     @State private var canvasCenter: CGPoint = CGPoint(x: 1500, y: 1500)
     @State private var showImporter: Bool = false
@@ -21,46 +22,50 @@ struct ContentView: View {
     @State private var resetZoomTrigger: Int = 0
 
     var body: some View {
-        VStack(spacing: 0) {
-            ToolbarView(
-                model: model,
-                canvasCenter: canvasCenter,
-                zoomPercent: zoomPercent,
-                hasOpenFile: fileManager.hasOpenFile,
-                onStartEdgeMode: { model.startEdgeMode($0) },
-                onCancelEdgeMode: { model.cancelEdgeMode() },
-                onOpen: { showImporter = true },
-                onSave: save,
-                onSaveAs: saveAs,
-                onUndo: { model.undo() },
-                onShowCode: showMermaidCode,
-                onShowPreview: { showPreviewSheet = true },
-                onShowRules: { showRulesSheet = true },
-                onToggleMarker: { model.toggleMarkerMode() },
-                onAddTable: { model.addTable(at: canvasCenter) },
-                onAddJumpLink: { model.addJumpLinkPair(near: canvasCenter) },
-                onNewCanvas: {
-                    if model.shapes.isEmpty {
-                        showNewCanvasSheet = true
-                    } else {
-                        showNewCanvasPrompt = true
-                    }
-                },
-                onResetZoom: { resetZoomTrigger &+= 1 }
-            )
+        ZStack {
+            VStack(spacing: 0) {
+                ToolbarView(
+                    model: model,
+                    dragController: dragController,
+                    canvasCenter: canvasCenter,
+                    zoomPercent: zoomPercent,
+                    hasOpenFile: fileManager.hasOpenFile,
+                    onStartEdgeMode: { model.startEdgeMode($0) },
+                    onCancelEdgeMode: { model.cancelEdgeMode() },
+                    onOpen: { showImporter = true },
+                    onSave: save,
+                    onSaveAs: saveAs,
+                    onUndo: { model.undo() },
+                    onShowCode: showMermaidCode,
+                    onShowPreview: { showPreviewSheet = true },
+                    onShowRules: { showRulesSheet = true },
+                    onToggleMarker: { model.toggleMarkerMode() },
+                    onAddTable: { model.addTable(at: canvasCenter) },
+                    onAddJumpLink: { model.addJumpLinkPair(near: canvasCenter) },
+                    onNewCanvas: {
+                        if model.shapes.isEmpty {
+                            showNewCanvasSheet = true
+                        } else {
+                            showNewCanvasPrompt = true
+                        }
+                    },
+                    onResetZoom: { resetZoomTrigger &+= 1 },
+                    onDropShape: handleDrop
+                )
 
-            CanvasView(
-                model: model,
-                onShapeEdgeTap: { id in _ = model.handleEdgeTap(on: id) },
-                onShapeEdit: { id in editingShapeId = id },
-                onShapeDelete: { id in model.deleteShape(id: id) },
-                onEdgeDelete: { id in model.deleteEdge(id: id) },
-                onShapeSelect: { id in model.selectShape(id) },
-                onShapeDuplicate: { id in model.duplicateShape(id: id) },
-                onShapeShowNote: { id in notingShapeId = id },
-                zoomPercent: $zoomPercent,
-                resetZoomTrigger: resetZoomTrigger
-            )
+                CanvasView(
+                    model: model,
+                    dragController: dragController,
+                    onShapeEdgeTap: { id in _ = model.handleEdgeTap(on: id) },
+                    onShapeEdit: { id in editingShapeId = id },
+                    onShapeDelete: { id in model.deleteShape(id: id) },
+                    onEdgeDelete: { id in model.deleteEdge(id: id) },
+                    onShapeSelect: { id in model.selectShape(id) },
+                    onShapeDuplicate: { id in model.duplicateShape(id: id) },
+                    onShapeShowNote: { id in notingShapeId = id },
+                    zoomPercent: $zoomPercent,
+                    resetZoomTrigger: resetZoomTrigger
+                )
 
             // canvasCenter pekas på canvas-mitten — används vid "lägg till form från meny"
             // (UI-läge: vi vill helst lägga former inom iPhone-frame, men canvas-mitten räcker)
@@ -81,6 +86,17 @@ struct ContentView: View {
                     canvasCenter = CGPoint(x: CanvasModel.contentSize.width / 2,
                                            y: CanvasModel.contentSize.height / 2)
                 }
+            }
+            }
+
+            // v26: floating chip-preview under drag-out
+            if let type = dragController.activeType {
+                ChipFace(systemImage: ContentView.chipSystemImage(for: type), larger: true)
+                    .position(dragController.globalLocation)
+                    .allowsHitTesting(false)
+                    .ignoresSafeArea()
+                    .transition(.identity)
+                    .zIndex(999)
             }
         }
         .sheet(isPresented: editingBinding) {
@@ -270,6 +286,32 @@ struct ContentView: View {
         let doc = makeDocument()
         generatedCode = doc.content
         showCodeSheet = true
+    }
+
+    // MARK: - Drag-out drop-handler (v26)
+
+    private func handleDrop(_ type: ShapeType, _ globalLocation: CGPoint) {
+        guard dragController.isInsideCanvas(globalLocation) else { return }
+        let canvasPoint = dragController.canvasPoint(forGlobal: globalLocation)
+        switch type {
+        case .table:
+            model.addTable(at: canvasPoint)
+        case .link:
+            model.addJumpLinkPair(near: canvasPoint)
+        default:
+            model.addShape(type, at: canvasPoint)
+        }
+    }
+
+    static func chipSystemImage(for type: ShapeType) -> String {
+        switch type {
+        case .circle: return "circle"
+        case .rectangle: return "rectangle"
+        case .diamond: return "diamond"
+        case .text: return "character.textbox"
+        case .table: return "tablecells"
+        case .link: return "link"
+        }
     }
 }
 

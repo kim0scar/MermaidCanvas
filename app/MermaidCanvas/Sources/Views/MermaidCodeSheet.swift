@@ -17,6 +17,7 @@ struct MermaidCodeSheet: View {
                     .textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
+                    .accessibilityIdentifier("sheet.codeContent")
             }
             .background(Color(.secondarySystemBackground))
             .navigationTitle("Filinnehåll")

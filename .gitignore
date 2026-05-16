@@ -20,3 +20,6 @@ Package.resolved
 *.swp
 *.swo
 *~
+
+# Claude Code lokal-data
+.claude/

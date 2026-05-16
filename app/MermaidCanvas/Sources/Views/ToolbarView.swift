@@ -1,9 +1,8 @@
 import SwiftUI
 
-/// v25 Toolbar — primary rad (glas-bubblor) + sekundär rad som poppar upp UNDER
-/// när Former / Pilar / Färg / Aa trycks. Blixtsnabbt, ingen animation.
-/// FIX v25: Shape-chips är Button (inte Image+onTapGesture) — annars äter
-/// .draggable upp tap-eventet i en ScrollView på iPhone.
+/// v26 Toolbar — egen drag-controller istället för Apple's draggable/dropDestination.
+/// Shape-chip-gesture är en manuell DragGesture(coordinateSpace: .global)
+/// med tap-vs-drag-distinktion (translation-magnitude < 8pt = tap).
 
 enum SecondaryToolbarRow: Equatable {
     case shapes
@@ -14,6 +13,7 @@ enum SecondaryToolbarRow: Equatable {
 
 struct ToolbarView: View {
     @ObservedObject var model: CanvasModel
+    @ObservedObject var dragController: ShapeDragController
     let canvasCenter: CGPoint
     let zoomPercent: Int
     var hasOpenFile: Bool
@@ -31,6 +31,8 @@ struct ToolbarView: View {
     var onAddJumpLink: () -> Void
     var onNewCanvas: () -> Void
     var onResetZoom: () -> Void
+    /// Drop-handler: anropas vid drag-end om global-punkten ligger inom canvas.
+    var onDropShape: (ShapeType, CGPoint) -> Void
 
     @State private var secondaryRow: SecondaryToolbarRow? = nil
 
@@ -51,10 +53,10 @@ struct ToolbarView: View {
     @ViewBuilder
     private var primaryRow: some View {
         HStack(spacing: 6) {
-            toggleButton("square.on.circle", row: .shapes)
-            toggleButton("arrow.right", row: .arrows, disabled: model.isEdgeMode)
-            toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil)
-            toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil)
+            toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
+            toggleButton("arrow.right", row: .arrows, disabled: model.isEdgeMode, accId: "toolbar.arrows")
+            toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
+            toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
             markerButton
             Spacer(minLength: 0)
             zoomBadge
@@ -78,7 +80,8 @@ struct ToolbarView: View {
     @ViewBuilder
     private func toggleButton(_ systemImage: String,
                               row: SecondaryToolbarRow,
-                              disabled: Bool = false) -> some View {
+                              disabled: Bool = false,
+                              accId: String) -> some View {
         Button {
             if secondaryRow == row {
                 secondaryRow = nil
@@ -92,6 +95,7 @@ struct ToolbarView: View {
         .buttonStyle(.plain)
         .disabled(disabled)
         .opacity(disabled ? 0.35 : 1)
+        .accessibilityIdentifier(accId)
     }
 
     @ViewBuilder
@@ -101,6 +105,7 @@ struct ToolbarView: View {
                               isActive: model.markerMode)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("toolbar.marker")
     }
 
     @ViewBuilder
@@ -112,9 +117,9 @@ struct ToolbarView: View {
         }
         .buttonStyle(.plain)
         .disabled(!model.canUndo)
+        .accessibilityIdentifier("toolbar.undo")
     }
 
-    /// v25: Visa zoom-procent så Kim ser att zoom svarar.
     @ViewBuilder
     private var zoomBadge: some View {
         Button(action: onResetZoom) {
@@ -127,6 +132,8 @@ struct ToolbarView: View {
                 .overlay(Capsule().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("toolbar.zoom")
+        .accessibilityValue("shapeCount=\(model.shapes.count)")
     }
 
     // MARK: - Sekundär rad
@@ -148,57 +155,67 @@ struct ToolbarView: View {
         .background(Color(.secondarySystemBackground))
     }
 
-    // MARK: - Former-rad (tap + drag-out)
+    // MARK: - Former-rad (tap + drag-out via egen controller)
 
+    /// v26: INGEN ScrollView — ScrollView's pan-gesture åt drag-eventen.
+    /// Ingen acc-id på HStack heller — annars ärver special-chips (Button)
+    /// den och täcker sin egen accessibilityIdentifier.
     @ViewBuilder
     private var shapesSecondary: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                shapeChip(.circle,   "circle")
-                shapeChip(.rectangle, "rectangle")
-                shapeChip(.diamond,   "diamond")
-                shapeChip(.text,      "character.textbox")
-                tableChip
-                linkChip
-            }
-            .padding(.horizontal, 2)
+        HStack(spacing: 10) {
+            shapeChip(.circle,    "circle",            accId: "chip.circle")
+            shapeChip(.rectangle, "rectangle",         accId: "chip.rectangle")
+            shapeChip(.diamond,   "diamond",           accId: "chip.diamond")
+            shapeChip(.text,      "character.textbox", accId: "chip.text")
+            specialChip("tablecells", accId: "chip.table", action: onAddTable)
+            specialChip("link",        accId: "chip.link",  action: onAddJumpLink)
         }
+        .padding(.horizontal, 2)
     }
 
-    /// v25 fix: Button istället för Image+onTapGesture så tap fungerar
-    /// tillsammans med .draggable i ScrollView på iPhone.
+    /// v26: chip har separata gestures: .onTapGesture för tap (XCUITest-vänligt),
+    /// .gesture(DragGesture(minimumDistance:8)) för drag-out.
     @ViewBuilder
-    private func shapeChip(_ type: ShapeType, _ system: String) -> some View {
+    private func shapeChip(_ type: ShapeType, _ system: String, accId: String) -> some View {
+        ChipFace(systemImage: system)
+            .contentShape(Circle())
+            .onTapGesture {
+                model.addShape(type, at: canvasCenter)
+            }
+            .highPriorityGesture(dragOutGesture(type: type))
+            .accessibilityElement(children: .ignore)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(Text(accId))
+            .accessibilityIdentifier(accId)
+    }
+
+    private func dragOutGesture(type: ShapeType) -> some Gesture {
+        DragGesture(minimumDistance: 8, coordinateSpace: .global)
+            .onChanged { value in
+                if dragController.activeType != type {
+                    dragController.activeType = type
+                }
+                dragController.globalLocation = value.location
+            }
+            .onEnded { value in
+                if dragController.activeType != nil {
+                    onDropShape(type, value.location)
+                }
+                dragController.activeType = nil
+            }
+    }
+
+    @ViewBuilder
+    private func specialChip(_ system: String, accId: String, action: @escaping () -> Void) -> some View {
         Button {
-            model.addShape(type, at: canvasCenter)
+            action()
         } label: {
             ChipFace(systemImage: system)
         }
         .buttonStyle(.plain)
-        .draggable(type) {
-            ChipFace(systemImage: system, larger: true)
-        }
+        .accessibilityIdentifier(accId)
     }
 
-    @ViewBuilder
-    private var tableChip: some View {
-        Button {
-            onAddTable()
-        } label: {
-            ChipFace(systemImage: "tablecells")
-        }
-        .buttonStyle(.plain)
-    }
-
-    @ViewBuilder
-    private var linkChip: some View {
-        Button {
-            onAddJumpLink()
-        } label: {
-            ChipFace(systemImage: "link")
-        }
-        .buttonStyle(.plain)
-    }
 
     // MARK: - Pilar-rad
 
@@ -250,7 +267,7 @@ struct ToolbarView: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - Färg-rad (7 paket inline)
+    // MARK: - Färg-rad
 
     @ViewBuilder
     private var colorsSecondary: some View {
@@ -298,7 +315,7 @@ struct ToolbarView: View {
         model.shapes[idx].colorPackId = pack.id == "none" ? nil : pack.id
     }
 
-    // MARK: - Textstil-rad (R1/R2/R3/Brödtext)
+    // MARK: - Textstil-rad
 
     @ViewBuilder
     private var textStylesSecondary: some View {

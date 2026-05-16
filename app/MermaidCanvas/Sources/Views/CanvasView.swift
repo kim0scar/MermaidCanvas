@@ -35,6 +35,7 @@ struct ConnectionDrag: Equatable {
 
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
+    @ObservedObject var dragController: ShapeDragController
     var onShapeEdgeTap: (UUID) -> Void
     var onShapeEdit: (UUID) -> Void
     var onShapeDelete: (UUID) -> Void
@@ -82,13 +83,20 @@ struct CanvasView: View {
                 if !model.markerMode { model.deselect() }
             }
             .clipped()
-            .dropDestination(for: ShapeType.self) { items, location in
-                let canvasLoc = screenToCanvas(location)
-                for item in items {
-                    model.addShape(item, at: canvasLoc)
+            // v26: rapportera global frame upp till ShapeDragController
+            .background(
+                GeometryReader { proxy in
+                    Color.clear
+                        .preference(key: CanvasGlobalFramePreferenceKey.self,
+                                    value: proxy.frame(in: .global))
                 }
-                return !items.isEmpty
+            )
+            .onPreferenceChange(CanvasGlobalFramePreferenceKey.self) { frame in
+                Task { @MainActor in
+                    dragController.canvasGlobalFrame = frame
+                }
             }
+            .accessibilityIdentifier("canvas")
             .onAppear {
                 lastViewport = geo.size
                 centerOnInitial(viewport: geo.size)
@@ -101,6 +109,10 @@ struct CanvasView: View {
             }
             .onChange(of: canvasScale) { _, ns in
                 zoomPercent = Int((ns * 100).rounded())
+                dragController.canvasScale = ns
+            }
+            .onChange(of: canvasOffset) { _, ns in
+                dragController.canvasOffset = ns
             }
             .onChange(of: resetZoomTrigger) { _, _ in
                 resetZoomAnimated()
@@ -448,6 +460,7 @@ struct ShapeView: View {
             }
         }
         .contentShape(Rectangle())
+        .accessibilityIdentifier("shape.\(shape.type.rawValue)")
         .position(
             x: shape.position.x + dragOffset.width,
             y: shape.position.y + dragOffset.height

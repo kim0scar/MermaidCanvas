@@ -44,6 +44,7 @@ struct LägenMenu: View {
             Button { onShowCode() } label: {
                 Label("Visa filinnehåll", systemImage: "curlybraces")
             }
+            .accessibilityIdentifier("menu.showCode")
             Divider()
             Button(action: {}) {
                 Label(AppVersion.current, systemImage: "info.circle")
@@ -52,6 +53,7 @@ struct LägenMenu: View {
         } label: {
             ToolbarIconButton(systemImage: "slider.horizontal.3", isActive: false)
         }
+        .accessibilityIdentifier("toolbar.modes")
     }
 }
 

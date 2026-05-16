@@ -16,6 +16,7 @@
 		2E3DC7876D51363893954FD0 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 20AE18D1DED0352F159D204F /* claude-canvas-protocol.md */; };
 		327A5ABE5012EA9D636D38A6 /* NoteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157316A32085744ED83F21B1 /* NoteBadge.swift */; };
 		368727EBEC1349DCE39208BC /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0EE155E45B86DD3BA4F3EC /* RoadmapRenderer.swift */; };
+		414054BE34E93776285A75C4 /* DragOutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */; };
 		422AFB1F4FFAB770EDA3AB83 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A38CC988797D527794A5E12 /* iPhoneFrameMath.swift */; };
 		46E5113F9F44EF2E47008BF8 /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBA32E9EE21CC93560D21D9 /* SpecType.swift */; };
 		47432578C2C5B349E43399D5 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */; };
@@ -29,6 +30,7 @@
 		7F14C97D62F50432C52E2CA8 /* LägenMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531D10A75F4B0121BEA81C74 /* LägenMenu.swift */; };
 		81C7C7D02CA80E96DBA4A2A5 /* ColorPackPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3CF180A21E88673D6D36EB /* ColorPackPopover.swift */; };
 		865036BAB51B892958D20816 /* PlatformRulesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BEC1ED8107294A0C6082A7 /* PlatformRulesSheet.swift */; };
+		90E765583DE44EE61B07616A /* ShapeDragController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723DF3832BB072CBDA3F2D5C /* ShapeDragController.swift */; };
 		91D5939D222D1EE1D8D9B513 /* DotGridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD52D3CE9BC39876E2E62058 /* DotGridBackground.swift */; };
 		9908CFE06D700CBADF9FC0A2 /* UIScreenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194511A274EBDFF34B92704A /* UIScreenRenderer.swift */; };
 		A473B7C70296839A9CC9B68A /* FlowRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EF62965178F51889E1F471 /* FlowRenderer.swift */; };
@@ -51,6 +53,16 @@
 		FE084A5D5C3C9079E11FF5EF /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48465A1F613BBD68E26CD870 /* ColorPickerPopover.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		14DEA19DA3413B42C1EC169D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D5E6C3DA22FF8DB06D25532C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 928846310326DCCC8D417F46;
+			remoteInfo = MermaidCanvas;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		157316A32085744ED83F21B1 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
 		15A8EDAC97692F06FFD900DD /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
@@ -60,6 +72,7 @@
 		20AE18D1DED0352F159D204F /* claude-canvas-protocol.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "claude-canvas-protocol.md"; sourceTree = "<group>"; };
 		214C9429A5A7019AFB3A5335 /* CanvasModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasModel.swift; sourceTree = "<group>"; };
 		27D540AE0DFC8B748CA38B42 /* UIRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIRenderer.swift; sourceTree = "<group>"; };
+		37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B72E7A9186EF104EB84B64D /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		48465A1F613BBD68E26CD870 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
@@ -70,6 +83,7 @@
 		679289B3F55CF3B29F59BA94 /* EditShapeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditShapeSheet.swift; sourceTree = "<group>"; };
 		6C0B873635193E39B3DFE265 /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		702058D8FCE9CFF9580F5FC3 /* GodotPreviewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GodotPreviewRenderer.swift; sourceTree = "<group>"; };
+		723DF3832BB072CBDA3F2D5C /* ShapeDragController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeDragController.swift; sourceTree = "<group>"; };
 		772E436BDF9309FA34D00B75 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
 		773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidGenerator.swift; sourceTree = "<group>"; };
 		7A9C783267A99A4CC3A9C9E7 /* godot-lexicon.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "godot-lexicon.md"; sourceTree = "<group>"; };
@@ -90,6 +104,7 @@
 		CCBA32E9EE21CC93560D21D9 /* SpecType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecType.swift; sourceTree = "<group>"; };
 		D0BEC1ED8107294A0C6082A7 /* PlatformRulesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRulesSheet.swift; sourceTree = "<group>"; };
 		D4C1E249608A6B60BB047C6C /* CanvasFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileManager.swift; sourceTree = "<group>"; };
+		EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragOutTests.swift; sourceTree = "<group>"; };
 		FAA8086C7F1F3FE0FD37593F /* NewCanvasSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCanvasSheet.swift; sourceTree = "<group>"; };
 		FC1E6F9A7D6E0861E95C5ACB /* NoteMiniSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMiniSheet.swift; sourceTree = "<group>"; };
 		FD52D3CE9BC39876E2E62058 /* DotGridBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotGridBackground.swift; sourceTree = "<group>"; };
@@ -107,6 +122,7 @@
 				9A38CC988797D527794A5E12 /* iPhoneFrameMath.swift */,
 				B671D7DACB3C7A13042A8EA9 /* PlatformRules.swift */,
 				AD21FA8F5DC5FD6CF6C21717 /* ShapeCategory.swift */,
+				723DF3832BB072CBDA3F2D5C /* ShapeDragController.swift */,
 				BC6C55EAC4AF34DD4A5003A3 /* ShapeNode.swift */,
 				CCBA32E9EE21CC93560D21D9 /* SpecType.swift */,
 				C55A7336C4F775E5298B26ED /* TextStyle.swift */,
@@ -129,6 +145,7 @@
 			children = (
 				3A3BC9C085033B21CE4FBA3E /* Resources */,
 				660D91CE59927312F56CDC86 /* Sources */,
+				E3D18F6332B423EFA76528CE /* UITests */,
 				78CD20FCFFFAFA27623030C3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -184,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */,
+				37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -219,9 +237,35 @@
 			path = Preview;
 			sourceTree = "<group>";
 		};
+		E3D18F6332B423EFA76528CE /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */,
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4A0EED9766A7F01541647364 /* MermaidCanvasUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 749F8DD1CC5BF3C68A147363 /* Build configuration list for PBXNativeTarget "MermaidCanvasUITests" */;
+			buildPhases = (
+				D43DC79253ED64554D4EA23F /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DF23872F9FF9CFA614B3620B /* PBXTargetDependency */,
+			);
+			name = MermaidCanvasUITests;
+			packageProductDependencies = (
+			);
+			productName = MermaidCanvasUITests;
+			productReference = 37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		928846310326DCCC8D417F46 /* MermaidCanvas */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2E0D5929DCCA552A2B1FF907 /* Build configuration list for PBXNativeTarget "MermaidCanvas" */;
@@ -249,6 +293,11 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					4A0EED9766A7F01541647364 = {
+						DevelopmentTeam = SFXR8MV6MP;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 928846310326DCCC8D417F46;
+					};
 					928846310326DCCC8D417F46 = {
 						DevelopmentTeam = SFXR8MV6MP;
 						ProvisioningStyle = Automatic;
@@ -270,6 +319,7 @@
 			projectRoot = "";
 			targets = (
 				928846310326DCCC8D417F46 /* MermaidCanvas */,
+				4A0EED9766A7F01541647364 /* MermaidCanvasUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -323,6 +373,7 @@
 				368727EBEC1349DCE39208BC /* RoadmapRenderer.swift in Sources */,
 				BE6206740C93702F54C853D6 /* SelectionHandles.swift in Sources */,
 				D27F4CE48C4D343A37930592 /* ShapeCategory.swift in Sources */,
+				90E765583DE44EE61B07616A /* ShapeDragController.swift in Sources */,
 				7437B62EA81BC3AC010D6303 /* ShapeNode.swift in Sources */,
 				46E5113F9F44EF2E47008BF8 /* SpecType.swift in Sources */,
 				FBDD122BD833570A5ECF3D67 /* TextStyle.swift in Sources */,
@@ -334,9 +385,44 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D43DC79253ED64554D4EA23F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				414054BE34E93776285A75C4 /* DragOutTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		DF23872F9FF9CFA614B3620B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 928846310326DCCC8D417F46 /* MermaidCanvas */;
+			targetProxy = 14DEA19DA3413B42C1EC169D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		12865679A95096D74808D9D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SFXR8MV6MP;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kimlundqvist.mermaidcanvas.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = MermaidCanvas;
+			};
+			name = Release;
+		};
 		42292B4B2F0F8805125EE1A1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -384,6 +470,25 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kimlundqvist.mermaidcanvas;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		9E03EB025E417F8FD609EA50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = SFXR8MV6MP;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kimlundqvist.mermaidcanvas.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = MermaidCanvas;
 			};
 			name = Debug;
 		};
@@ -522,6 +627,15 @@
 			buildConfigurations = (
 				54485E35E5F1281D88431891 /* Debug */,
 				42292B4B2F0F8805125EE1A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		749F8DD1CC5BF3C68A147363 /* Build configuration list for PBXNativeTarget "MermaidCanvasUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E03EB025E417F8FD609EA50 /* Debug */,
+				12865679A95096D74808D9D5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
