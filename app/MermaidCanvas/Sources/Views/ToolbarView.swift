@@ -207,10 +207,11 @@ struct ToolbarView: View {
             .accessibilityIdentifier(accId)
     }
 
-    /// v28: deterministisk drag — `.onEnded` använder den CACHADE
-    /// `dragController.globalLocation` (= sista renderade preview-position) istället för
-    /// `value.location` (som kan vara "predicted" på iPhone och avvika från preview).
-    /// Detta garanterar att formen landar exakt där fingret/preview-ikonen senast syntes.
+    /// v28 (rev): tillbaka till `value.location` i onEnded — på iPhone kan
+    /// @Published-cached globalLocation vara fördröjd och bryta drag helt.
+    /// value.location är alltid SwiftUI:s auktoritativa slutposition för gesten.
+    /// För preview-konsistens uppdaterar vi även dragController.globalLocation
+    /// med samma värde direkt innan vi anropar onDropShape, så preview hinner flytta dit.
     private func dragOutGesture(type: ShapeType) -> some Gesture {
         DragGesture(minimumDistance: 8, coordinateSpace: .global)
             .onChanged { value in
@@ -220,12 +221,13 @@ struct ToolbarView: View {
                 }
                 dragController.globalLocation = value.location
             }
-            .onEnded { _ in
-                let dropLocation = dragController.globalLocation
+            .onEnded { value in
                 let frameStr = "frame=(\(Int(dragController.canvasGlobalFrame.minX)),\(Int(dragController.canvasGlobalFrame.minY)),\(Int(dragController.canvasGlobalFrame.width)),\(Int(dragController.canvasGlobalFrame.height)))"
                 if dragController.activeType != nil {
-                    dragLog.info("drag-end type=\(type.rawValue) drop=(\(dropLocation.x),\(dropLocation.y)) \(frameStr)")
-                    onDropShape(type, dropLocation)
+                    // Synka preview till slutposition så formens landningspunkt visuellt = preview-pos
+                    dragController.globalLocation = value.location
+                    dragLog.info("drag-end type=\(type.rawValue) drop=(\(value.location.x),\(value.location.y)) \(frameStr)")
+                    onDropShape(type, value.location)
                 } else {
                     dragLog.error("drag-end men activeType=nil — drag aldrig startade!")
                 }
