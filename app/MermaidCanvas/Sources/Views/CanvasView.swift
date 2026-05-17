@@ -173,7 +173,8 @@ struct CanvasView: View {
 
     private var canvasContent: some View {
         ZStack(alignment: .topLeading) {
-            Color(.systemGray6)
+            // v27: vit pappersyta (var systemGray6 — för otydlig mot grå bakgrund)
+            Color.white
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
                 .allowsHitTesting(false)
