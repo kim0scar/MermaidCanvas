@@ -1,4 +1,9 @@
 import SwiftUI
+import os
+
+/// v27: OSLog-kategori för drag-out-diagnostik. Läs på Mac med:
+/// xcrun devicectl device log --device F271CF8E-... --predicate 'subsystem == "com.kimlundqvist.mermaidcanvas" AND category == "drag"'
+let dragLog = Logger(subsystem: "com.kimlundqvist.mermaidcanvas", category: "drag")
 
 /// v26: Egen drag-controller — ersätter Apple's Transferable/.draggable/.dropDestination
 /// som visade sig opålitlig på iPhone (gesture-konflikter mellan pan/zoom/draggable).

@@ -213,13 +213,18 @@ struct ToolbarView: View {
         DragGesture(minimumDistance: 8, coordinateSpace: .global)
             .onChanged { value in
                 if dragController.activeType != type {
+                    dragLog.info("drag-start type=\(type.rawValue) at=(\(value.location.x),\(value.location.y))")
                     dragController.activeType = type
                 }
                 dragController.globalLocation = value.location
             }
             .onEnded { value in
+                let frameStr = "frame=(\(Int(dragController.canvasGlobalFrame.minX)),\(Int(dragController.canvasGlobalFrame.minY)),\(Int(dragController.canvasGlobalFrame.width)),\(Int(dragController.canvasGlobalFrame.height)))"
                 if dragController.activeType != nil {
+                    dragLog.info("drag-end type=\(type.rawValue) at=(\(value.location.x),\(value.location.y)) \(frameStr) — kallar onDropShape")
                     onDropShape(type, value.location)
+                } else {
+                    dragLog.error("drag-end men activeType=nil — drag aldrig startade!")
                 }
                 dragController.activeType = nil
             }

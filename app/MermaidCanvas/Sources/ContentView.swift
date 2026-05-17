@@ -298,8 +298,14 @@ struct ContentView: View {
     // MARK: - Drag-out drop-handler (v26)
 
     private func handleDrop(_ type: ShapeType, _ globalLocation: CGPoint) {
-        guard dragController.isInsideCanvas(globalLocation) else { return }
+        let inside = dragController.isInsideCanvas(globalLocation)
+        dragLog.info("handleDrop type=\(type.rawValue) global=(\(globalLocation.x),\(globalLocation.y)) inside=\(inside)")
+        guard inside else {
+            dragLog.error("DROP AVVISAD — punkt utanför canvas. frame=\(String(describing: dragController.canvasGlobalFrame))")
+            return
+        }
         let canvasPoint = dragController.canvasPoint(forGlobal: globalLocation)
+        dragLog.info("handleDrop canvasPoint=(\(canvasPoint.x),\(canvasPoint.y)) — skapar form")
         switch type {
         case .table:
             model.addTable(at: canvasPoint)
