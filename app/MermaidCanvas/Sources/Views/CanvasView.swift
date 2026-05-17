@@ -98,9 +98,9 @@ struct CanvasView: View {
                 }
             )
             .onPreferenceChange(CanvasGlobalFramePreferenceKey.self) { frame in
-                Task { @MainActor in
-                    dragController.canvasGlobalFrame = frame
-                }
+                // v27 FIX: synkron uppdatering (utan Task hop) — på iPhone kan
+                // async Task komma EFTER drag-end → drag avvisas pga .zero-frame.
+                dragController.canvasGlobalFrame = frame
             }
             .accessibilityIdentifier("canvas")
             .onAppear {

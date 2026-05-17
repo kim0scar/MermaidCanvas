@@ -24,11 +24,14 @@ final class ShapeDragController: ObservableObject {
     @Published var canvasScale: CGFloat = 1.0
 
     /// Översätt en global skärm-punkt till canvas-koordinatsystemet.
-    /// Förutsätter att `canvasGlobalFrame` har rapporterats av CanvasView.
+    /// v27: om frame är .zero (race-condition vid första render) använd lokal = global
+    /// så drop:n inte tappas helt — bättre att lägga form i fel position än att tappa den.
     func canvasPoint(forGlobal global: CGPoint) -> CGPoint {
+        let originX = canvasGlobalFrame != .zero ? canvasGlobalFrame.minX : 0
+        let originY = canvasGlobalFrame != .zero ? canvasGlobalFrame.minY : 0
         let local = CGPoint(
-            x: global.x - canvasGlobalFrame.minX,
-            y: global.y - canvasGlobalFrame.minY
+            x: global.x - originX,
+            y: global.y - originY
         )
         return CGPoint(
             x: (local.x - canvasOffset.width) / canvasScale,
@@ -37,8 +40,11 @@ final class ShapeDragController: ObservableObject {
     }
 
     /// Sant om global-punkten är inom canvasen.
+    /// v27: om frame är .zero (race vid första render) returnera true — annars blockerar
+    /// vi drag-end:s som råkar köras innan PreferenceKey hunnit propagera.
     func isInsideCanvas(_ global: CGPoint) -> Bool {
-        canvasGlobalFrame.contains(global)
+        if canvasGlobalFrame == .zero { return true }
+        return canvasGlobalFrame.contains(global)
     }
 }
 
