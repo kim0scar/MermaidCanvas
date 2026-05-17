@@ -70,6 +70,12 @@ struct CanvasView: View {
                     .frame(width: model.contentSize.width,
                            height: model.contentSize.height,
                            alignment: .topLeading)
+                    .background(Color.white)
+                    .overlay(
+                        Rectangle()
+                            .stroke(Color.primary.opacity(0.15), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.18), radius: 8, x: 0, y: 4)
                     .coordinateSpace(name: "canvas")
                     .scaleEffect(canvasScale, anchor: .topLeading)
                     .offset(x: canvasOffset.width, y: canvasOffset.height)

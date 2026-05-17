@@ -39,13 +39,14 @@ final class CanvasModel: ObservableObject {
     @Published var markerMode: Bool = false
     @Published var collapsedIds: Set<UUID> = []
 
-    // v27: canvas startar på 2000×2000 och expanderar dynamiskt när noder placeras nära en kant.
+    // v27: canvas startar som ett litet vitt "papper" (600×800, ung. iPhone-format)
+    // och expanderar dynamiskt med 800pt åt vald kant när en form placeras inom 150pt.
     // Statisk fallback för bakåtkomp — använd `model.contentSize` (instance) i nya kod.
     static let contentSize = CGSize(width: 3000, height: 3000)
-    @Published var contentSize: CGSize = CGSize(width: 2000, height: 2000)
+    @Published var contentSize: CGSize = CGSize(width: 600, height: 800)
 
     /// v27: utöka canvasen om en form placerats inom `margin` pt från en kant.
-    func expandCanvasIfNeeded(near point: CGPoint, margin: CGFloat = 200, expandBy: CGFloat = 1000) {
+    func expandCanvasIfNeeded(near point: CGPoint, margin: CGFloat = 150, expandBy: CGFloat = 800) {
         var size = contentSize
         var changed = false
         if point.x > size.width - margin {

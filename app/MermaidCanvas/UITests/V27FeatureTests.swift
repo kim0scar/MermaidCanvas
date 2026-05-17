@@ -134,12 +134,11 @@ final class V27FeatureTests: XCTestCase {
             XCTFail("Kunde inte läsa senaste shape-position")
             return
         }
-        // Canvas-mitten i canvas-koordinater = ungefär (1000, 1000) eftersom
-        // canvas startar på 2000×2000 och centeringen vid start placerar
-        // (1000,1000) på skärmens mitt. Marginal: 200pt för att täcka olika
-        // viewport-storlekar och centerOnInitial-logik.
-        XCTAssertLessThan(abs(pos.x - 1000), 250, "Cirkel landade för långt från drop-punkt X (pos=\(pos))")
-        XCTAssertLessThan(abs(pos.y - 1000), 250, "Cirkel landade för långt från drop-punkt Y (pos=\(pos))")
+        // v27: canvas startar 600×800 → mitten i canvas-koord ≈ (300, 400).
+        // centerOnInitial placerar mitten på skärm-mitten, så drop på skärm-mitten
+        // ska ge canvas-koord nära (300, 400). Marginal: 150pt för viewport-variation.
+        XCTAssertLessThan(abs(pos.x - 300), 200, "Cirkel landade för långt från drop-punkt X (pos=\(pos))")
+        XCTAssertLessThan(abs(pos.y - 400), 200, "Cirkel landade för långt från drop-punkt Y (pos=\(pos))")
     }
 
     /// Verifiera att en cirkel som dras nära kanten landar långt från mitten —
@@ -164,10 +163,9 @@ final class V27FeatureTests: XCTestCase {
             XCTFail("Kunde inte läsa senaste shape-position")
             return
         }
-        // Position ska INTE vara nära canvas-mitten (1000,1000) — den ska vara
-        // tydligt åt vänster/upp eftersom vi dropp:ade där.
-        let distFromCenter = abs(pos.x - 1000) + abs(pos.y - 1000)
-        XCTAssertGreaterThan(distFromCenter, 150,
+        // v27: canvas-mitten ≈ (300, 400). Drop i hörnet ska INTE vara där.
+        let distFromCenter = abs(pos.x - 300) + abs(pos.y - 400)
+        XCTAssertGreaterThan(distFromCenter, 100,
                              "Drop i hörnet hade samma position som mitten — drag flyttar inte (pos=\(pos))")
     }
 

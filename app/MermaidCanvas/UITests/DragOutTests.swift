@@ -38,14 +38,16 @@ final class DragOutTests: XCTestCase {
             .reduce(0, +)
     }
 
-    /// Läs ut model.shapes.count via toolbar.zoom's accessibilityValue ("shapeCount=N")
+    /// Läs ut model.shapes.count via toolbar.zoom's accessibilityValue
+    /// (formatet är "shapeCount=N" eller "shapeCount=N;lastX=..;lastY=..").
     @MainActor
     private func modelShapeCount(_ app: XCUIApplication) -> Int {
         let badge = app.buttons["toolbar.zoom"]
         guard badge.exists, let v = badge.value as? String else { return -1 }
         if let range = v.range(of: "shapeCount=") {
-            let num = v[range.upperBound...]
-            return Int(num) ?? -1
+            let tail = v[range.upperBound...]
+            let numStr = tail.split(separator: ";").first.map(String.init) ?? String(tail)
+            return Int(numStr) ?? -1
         }
         return -1
     }
