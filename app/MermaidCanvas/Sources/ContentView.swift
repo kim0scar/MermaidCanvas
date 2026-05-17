@@ -99,50 +99,44 @@ struct ContentView: View {
                     .transition(.identity)
                     .zIndex(999)
             }
-
-            // v27: minikarta-knapp + overlay (övre högra hörnet av canvas-området)
-            VStack {
-                HStack {
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 8) {
-                        Button {
-                            withAnimation(.spring(response: 0.3)) { showMinimap.toggle() }
-                        } label: {
-                            Image(systemName: "map")
-                                .font(.title3)
-                                .foregroundStyle(showMinimap ? Color.white : Color.primary)
-                                .frame(width: 44, height: 44)
-                                .background(
-                                    Circle()
-                                        .fill(showMinimap ? Color.accentColor : Color(.systemBackground).opacity(0.9))
-                                )
-                                .overlay(Circle().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
-                                .shadow(radius: 2)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("toolbar.minimap")
-
-                        if showMinimap {
-                            MinimapView(
-                                model: model,
-                                viewportRect: currentViewportRect(),
-                                canvasScale: dragController.canvasScale,
-                                onTapPoint: { canvasPoint in
-                                    dragController.requestedCenterPoint = canvasPoint
-                                },
-                                onClose: {
-                                    withAnimation(.spring(response: 0.3)) { showMinimap = false }
-                                }
-                            )
-                        }
-                    }
-                    .padding(.trailing, 12)
-                    .padding(.top, 100) // under toolbar
+        }
+        // v27 FIX: minikarta som .overlay på root-ZStack — då skapas INGEN ny full-screen layer
+        // som blockerar drag-touches på canvas. Justering: .topTrailing-alignment + ingen Spacer.
+        .overlay(alignment: .topTrailing) {
+            VStack(alignment: .trailing, spacing: 8) {
+                Button {
+                    withAnimation(.spring(response: 0.3)) { showMinimap.toggle() }
+                } label: {
+                    Image(systemName: "map")
+                        .font(.title3)
+                        .foregroundStyle(showMinimap ? Color.white : Color.primary)
+                        .frame(width: 44, height: 44)
+                        .background(
+                            Circle()
+                                .fill(showMinimap ? Color.accentColor : Color(.systemBackground).opacity(0.9))
+                        )
+                        .overlay(Circle().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
+                        .shadow(radius: 2)
                 }
-                Spacer()
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("toolbar.minimap")
+
+                if showMinimap {
+                    MinimapView(
+                        model: model,
+                        viewportRect: currentViewportRect(),
+                        canvasScale: dragController.canvasScale,
+                        onTapPoint: { canvasPoint in
+                            dragController.requestedCenterPoint = canvasPoint
+                        },
+                        onClose: {
+                            withAnimation(.spring(response: 0.3)) { showMinimap = false }
+                        }
+                    )
+                }
             }
-            .allowsHitTesting(true)
-            .ignoresSafeArea(.keyboard)
+            .padding(.trailing, 12)
+            .padding(.top, 120) // under toolbar
         }
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
