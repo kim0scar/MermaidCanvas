@@ -22,11 +22,6 @@ final class ShapeDragController: ObservableObject {
     /// global → canvas-koordinat utan att läsa CanvasView's private state.
     @Published var canvasOffset: CGSize = .zero
     @Published var canvasScale: CGFloat = 1.0
-    /// v27: viewport-storlek (pt) — fylls från CanvasView. Används av minikartan.
-    @Published var viewportSize: CGSize = .zero
-    /// v27: trigger för CanvasView att centrera på en specifik canvas-punkt
-    /// (incrementeras → onChange → animera dit). Värdet är canvas-koordinat.
-    @Published var requestedCenterPoint: CGPoint? = nil
 
     /// Översätt en global skärm-punkt till canvas-koordinatsystemet.
     /// Förutsätter att `canvasGlobalFrame` har rapporterats av CanvasView.

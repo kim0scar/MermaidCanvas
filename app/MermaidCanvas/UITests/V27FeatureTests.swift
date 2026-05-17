@@ -191,23 +191,4 @@ final class V27FeatureTests: XCTestCase {
         XCTAssertTrue(roadmapPack.exists, "pack.roadmap ska finnas")
     }
 
-    // MARK: - Etapp 4: Minikarta
-
-    /// Minikarta-knapp ska finnas, klick togglar minikartans synlighet.
-    @MainActor
-    func testMinimapButtonExistsAndToggles() throws {
-        let app = launchApp()
-        let mapBtn = app.buttons["toolbar.minimap"]
-        XCTAssertTrue(mapBtn.waitForExistence(timeout: 4), "toolbar.minimap-knapp saknas")
-        mapBtn.tap()
-        sleep(1)
-        // Efter tap ska minikartan finnas
-        let canvasMap = app.otherElements["minimap.canvas"]
-        XCTAssertTrue(canvasMap.waitForExistence(timeout: 2), "minimap.canvas ska synas efter klick")
-
-        // Klick igen → minikartan försvinner
-        mapBtn.tap()
-        sleep(1)
-        XCTAssertFalse(canvasMap.exists, "minikartan ska försvinna vid andra klick")
-    }
 }

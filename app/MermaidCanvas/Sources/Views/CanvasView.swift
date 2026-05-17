@@ -123,27 +123,6 @@ struct CanvasView: View {
             .onChange(of: resetZoomTrigger) { _, _ in
                 resetZoomAnimated()
             }
-            .onChange(of: geo.size) { _, ns in
-                dragController.viewportSize = ns
-            }
-            .onAppear {
-                dragController.viewportSize = geo.size
-            }
-            .onChange(of: dragController.requestedCenterPoint) { _, new in
-                if let p = new {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                        canvasOffset = CGSize(
-                            width: lastViewport.width / 2 - p.x * canvasScale,
-                            height: lastViewport.height / 2 - p.y * canvasScale
-                        )
-                    }
-                    // Nollställ så ny tap registreras (även till samma punkt)
-                    Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 100_000_000)
-                        dragController.requestedCenterPoint = nil
-                    }
-                }
-            }
         }
     }
 
