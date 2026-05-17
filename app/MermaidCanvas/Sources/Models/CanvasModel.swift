@@ -39,11 +39,12 @@ final class CanvasModel: ObservableObject {
     @Published var markerMode: Bool = false
     @Published var collapsedIds: Set<UUID> = []
 
-    // v27: canvas startar som ett litet vitt "papper" (400×600) så HELA syns på en
-    // iPhone-skärm vid scale 1.0 — vit yta + grå "skrivbord" runt om syns tydligt.
+    // v28: canvas startar som ett kvadratiskt vitt papper (800×800) — dubbelt så stort
+    // som v27 efter Kim's feedback. Vid scale 1.0 sticker bredden ut på iPhone-skärmen
+    // men det är OK — Kim kan panorera och zooma.
     // Expanderar dynamiskt med 600pt åt vald kant när en form placeras inom 100pt.
     static let contentSize = CGSize(width: 3000, height: 3000)
-    @Published var contentSize: CGSize = CGSize(width: 400, height: 600)
+    @Published var contentSize: CGSize = CGSize(width: 800, height: 800)
 
     /// v27: utöka canvasen om en form placerats inom `margin` pt från en kant.
     func expandCanvasIfNeeded(near point: CGPoint, margin: CGFloat = 100, expandBy: CGFloat = 600) {

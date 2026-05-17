@@ -62,8 +62,10 @@ struct CanvasView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
+                // v28 safe-area-fix: bakgrund täcker även under home-indicator
+                // så vit rand inte syns nedanför canvas-arean.
                 Color(.systemGray5)
-                    .frame(width: geo.size.width, height: geo.size.height)
+                    .ignoresSafeArea()
                     .allowsHitTesting(false)
 
                 canvasContent
@@ -72,9 +74,10 @@ struct CanvasView: View {
                            alignment: .topLeading)
                     .background(Color.white)
                     .overlay(
-                        Rectangle()
-                            .stroke(Color.primary.opacity(0.15), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.primary.opacity(0.18), lineWidth: 1)
                     )
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .shadow(color: Color.black.opacity(0.18), radius: 8, x: 0, y: 4)
                     .coordinateSpace(name: "canvas")
                     .scaleEffect(canvasScale, anchor: .topLeading)
@@ -84,9 +87,12 @@ struct CanvasView: View {
             .contentShape(Rectangle())
             .gesture(panGesture)
             .simultaneousGesture(zoomGesture)
+            // v28 Etapp 10: dubbeltap på bakgrunden = återställ zoom (gammalt beteende)
             .onTapGesture(count: 2) { handleDoubleTap() }
+            // v28 Etapp 8: tap utanför avmarkerar ALLTID (även i marker-mode)
             .onTapGesture(count: 1) {
-                if !model.markerMode { model.deselect() }
+                model.deselect()
+                if model.isEdgeMode { model.cancelEdgeMode() }
             }
             .clipped()
             // v26: rapportera global frame upp till ShapeDragController
@@ -123,6 +129,25 @@ struct CanvasView: View {
             .onChange(of: resetZoomTrigger) { _, _ in
                 resetZoomAnimated()
             }
+            .onChange(of: geo.size) { _, ns in
+                dragController.viewportSize = ns
+            }
+            .onAppear {
+                dragController.viewportSize = geo.size
+            }
+            .onChange(of: dragController.requestedCenterPoint) { _, new in
+                guard let p = new else { return }
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                    canvasOffset = CGSize(
+                        width: lastViewport.width / 2 - p.x * canvasScale,
+                        height: lastViewport.height / 2 - p.y * canvasScale
+                    )
+                }
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    dragController.requestedCenterPoint = nil
+                }
+            }
         }
     }
 
@@ -135,12 +160,15 @@ struct CanvasView: View {
             center = CGPoint(x: model.contentSize.width / 2,
                              y: model.contentSize.height / 2)
         }
-        canvasScale = 1.0
+        // v28: vid 800×800 canvas startar vi på scale 0.5 så hela ryms i viewporten.
+        // För .ui-spec (med iPhone-frame) behåll 1.0.
+        let initialScale: CGFloat = (model.specType == .ui) ? 1.0 : 0.5
+        canvasScale = initialScale
         canvasOffset = CGSize(
-            width: viewport.width / 2 - center.x,
-            height: viewport.height / 2 - center.y
+            width: viewport.width / 2 - center.x * canvasScale,
+            height: viewport.height / 2 - center.y * canvasScale
         )
-        zoomPercent = 100
+        zoomPercent = Int((canvasScale * 100).rounded())
     }
 
     private func resetZoomAnimated() {
@@ -302,8 +330,8 @@ struct CanvasView: View {
                     pinchStartScale = canvasScale
                 }
                 let start = pinchStartScale ?? 1
-                // v25: ÄNNU mildare zoom — pow(value, 0.2) ger ~1/5 känslighet
-                let dampened = pow(value, 0.2)
+                // v28: 2× snabbare än v27 (pow 0.2 → 0.4) — Kim ville mer responsivt
+                let dampened = pow(value, 0.4)
                 let newScale = clamp(start * dampened, minScale, maxScale)
                 canvasScale = newScale
             }
@@ -383,12 +411,13 @@ struct ConnectionHandles: View {
         .rotationEffect(.degrees(shape.rotation))
     }
 
+    /// v28: stilren beroendepil-ikon (link) istället för arrow.up.right.
     @ViewBuilder
     private func handle(offset: CGPoint, size: CGFloat) -> some View {
         ZStack {
             Circle().fill(Color.accentColor)
-            Image(systemName: "arrow.up.right")
-                .font(.system(size: size * 0.45, weight: .bold))
+            Image(systemName: "link")
+                .font(.system(size: size * 0.42, weight: .semibold))
                 .foregroundStyle(Color.white)
         }
         .frame(width: size, height: size)
@@ -425,9 +454,8 @@ struct ShapeView: View {
 
     private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
     private var effectiveFill: Color { pack.fillColor }
-    private var effectiveStroke: Color {
-        shape.colorPackId == nil ? Color.accentColor : pack.strokeColor
-    }
+    // v28: alla former får svart/primary stroke. Kim vill konsekvent färg, inte blå accent.
+    private var effectiveStroke: Color { Color.primary }
     private var effectiveTextColor: Color { pack.textColor }
 
     var body: some View {
@@ -473,8 +501,9 @@ struct ShapeView: View {
             x: shape.position.x + dragOffset.width,
             y: shape.position.y + dragOffset.height
         )
+        // v28 Etapp 10: dubbeltap startar ALLTID edit (Kim's krav).
         .onTapGesture(count: 2) {
-            if !edgeMode && !markerMode { onEdit() }
+            onEdit()
         }
         .onTapGesture(count: 1) {
             if markerMode { return }
@@ -624,15 +653,49 @@ private struct JumpLinkShapeBackground: View {
     }
 }
 
+/// v28: rundad diamant — mjuka hörn istället för vassa spetsar.
+/// Använder addQuadCurve mellan hörnpunkter med en inset på `cornerRadius`.
 struct DiamondShape: Shape {
+    var cornerRadius: CGFloat = 8
+
     func path(in rect: CGRect) -> Path {
+        let top = CGPoint(x: rect.midX, y: rect.minY)
+        let right = CGPoint(x: rect.maxX, y: rect.midY)
+        let bottom = CGPoint(x: rect.midX, y: rect.maxY)
+        let left = CGPoint(x: rect.minX, y: rect.midY)
+
+        let r = min(cornerRadius, min(rect.width, rect.height) / 4)
+        // För varje hörn: gå r-pt åt vardera håll längs kanten innan hörnet
+        // och rita en quad-curve runt själva hörnet.
+        let topToRightDir = unitVector(from: top, to: right)
+        let rightToBottomDir = unitVector(from: right, to: bottom)
+        let bottomToLeftDir = unitVector(from: bottom, to: left)
+        let leftToTopDir = unitVector(from: left, to: top)
+
         var p = Path()
-        p.move(to: CGPoint(x: rect.midX, y: rect.minY))
-        p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-        p.addLine(to: CGPoint(x: rect.minX, y: rect.midY))
+        p.move(to: offset(top, by: topToRightDir, amount: r))
+        p.addLine(to: offset(right, by: topToRightDir, amount: -r))
+        p.addQuadCurve(to: offset(right, by: rightToBottomDir, amount: r), control: right)
+        p.addLine(to: offset(bottom, by: rightToBottomDir, amount: -r))
+        p.addQuadCurve(to: offset(bottom, by: bottomToLeftDir, amount: r), control: bottom)
+        p.addLine(to: offset(left, by: bottomToLeftDir, amount: -r))
+        p.addQuadCurve(to: offset(left, by: leftToTopDir, amount: r), control: left)
+        p.addLine(to: offset(top, by: leftToTopDir, amount: -r))
+        p.addQuadCurve(to: offset(top, by: topToRightDir, amount: r), control: top)
         p.closeSubpath()
         return p
+    }
+
+    private func unitVector(from a: CGPoint, to b: CGPoint) -> CGVector {
+        let dx = b.x - a.x
+        let dy = b.y - a.y
+        let len = sqrt(dx * dx + dy * dy)
+        guard len > 0.001 else { return CGVector(dx: 0, dy: 0) }
+        return CGVector(dx: dx / len, dy: dy / len)
+    }
+
+    private func offset(_ p: CGPoint, by v: CGVector, amount: CGFloat) -> CGPoint {
+        CGPoint(x: p.x + v.dx * amount, y: p.y + v.dy * amount)
     }
 }
 
@@ -855,8 +918,8 @@ struct EdgesView: View {
         }
     }
 
-    /// v27: pilhuvuden ritas alltid med hel linje (även för streckad pil) +
-    /// fylld triangel för tydlighet på iPhone.
+    /// v28: pilhuvuden med rundade hörn — stroke + fyllning med lineJoin: .round
+    /// så även spetsen är mjuk istället för vass.
     private func drawArrowHead(context: GraphicsContext, tip: CGPoint, angle: CGFloat) {
         let length: CGFloat = 14
         let spread: CGFloat = .pi / 7
@@ -873,6 +936,9 @@ struct EdgesView: View {
         head.addLine(to: a1)
         head.addLine(to: a2)
         head.closeSubpath()
-        context.fill(head, with: .color(.primary.opacity(0.75)))
+        context.fill(head, with: .color(.primary.opacity(0.78)))
+        // Rita också en stroke runt huvudet med rundade join för att mjuka spetsarna
+        context.stroke(head, with: .color(.primary.opacity(0.78)),
+                       style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
     }
 }

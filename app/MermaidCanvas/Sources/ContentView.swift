@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var showRulesSheet: Bool = false
     @State private var zoomPercent: Int = 100
     @State private var resetZoomTrigger: Int = 0
+    @State private var showMinimap: Bool = false
 
     var body: some View {
         ZStack {
@@ -98,6 +99,43 @@ struct ContentView: View {
                     .transition(.identity)
                     .zIndex(999)
             }
+        }
+        // v28: Minikarta-knapp + overlay som .overlay(alignment:) på root-ZStack.
+        // Detta skapar INTE en full-screen layer som blockerar touches (det var v27-buggen).
+        .overlay(alignment: .topTrailing) {
+            VStack(alignment: .trailing, spacing: 8) {
+                Button {
+                    withAnimation(.spring(response: 0.3)) { showMinimap.toggle() }
+                } label: {
+                    Image(systemName: "map")
+                        .font(.title3)
+                        .foregroundStyle(showMinimap ? Color.white : Color.primary)
+                        .frame(width: 40, height: 40)
+                        .background(
+                            Circle()
+                                .fill(showMinimap ? Color.accentColor : Color(.systemBackground).opacity(0.9))
+                        )
+                        .overlay(Circle().stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
+                        .shadow(radius: 2)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("toolbar.minimap")
+
+                if showMinimap {
+                    MinimapView(
+                        model: model,
+                        viewportRect: currentViewportRect(),
+                        onTapPoint: { canvasPoint in
+                            dragController.requestedCenterPoint = canvasPoint
+                        },
+                        onClose: {
+                            withAnimation(.spring(response: 0.3)) { showMinimap = false }
+                        }
+                    )
+                }
+            }
+            .padding(.trailing, 10)
+            .padding(.top, 110)
         }
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
@@ -314,6 +352,17 @@ struct ContentView: View {
         default:
             model.addShape(type, at: canvasPoint)
         }
+    }
+
+    /// v28: räkna ut den synliga delen av canvas (i canvas-koord) från pan/zoom + viewport.
+    private func currentViewportRect() -> CGRect {
+        let scale = max(0.0001, dragController.canvasScale)
+        let viewport = dragController.viewportSize
+        let x = -dragController.canvasOffset.width / scale
+        let y = -dragController.canvasOffset.height / scale
+        let w = viewport.width / scale
+        let h = viewport.height / scale
+        return CGRect(x: x, y: y, width: w, height: h)
     }
 
     static func chipSystemImage(for type: ShapeType) -> String {

@@ -43,7 +43,6 @@ struct ToolbarView: View {
                 secondaryRowView(row)
                     .transition(.identity)
             }
-            Divider()
         }
         .background(Color(.systemBackground))
     }
@@ -73,7 +72,7 @@ struct ToolbarView: View {
                 onShowRules: onShowRules
             )
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 14)
         .padding(.vertical, 8)
     }
 
@@ -150,7 +149,6 @@ struct ToolbarView: View {
 
     @ViewBuilder
     private func secondaryRowView(_ row: SecondaryToolbarRow) -> some View {
-        Divider()
         HStack(spacing: 8) {
             switch row {
             case .shapes:    shapesSecondary
@@ -209,6 +207,10 @@ struct ToolbarView: View {
             .accessibilityIdentifier(accId)
     }
 
+    /// v28: deterministisk drag — `.onEnded` använder den CACHADE
+    /// `dragController.globalLocation` (= sista renderade preview-position) istället för
+    /// `value.location` (som kan vara "predicted" på iPhone och avvika från preview).
+    /// Detta garanterar att formen landar exakt där fingret/preview-ikonen senast syntes.
     private func dragOutGesture(type: ShapeType) -> some Gesture {
         DragGesture(minimumDistance: 8, coordinateSpace: .global)
             .onChanged { value in
@@ -218,11 +220,12 @@ struct ToolbarView: View {
                 }
                 dragController.globalLocation = value.location
             }
-            .onEnded { value in
+            .onEnded { _ in
+                let dropLocation = dragController.globalLocation
                 let frameStr = "frame=(\(Int(dragController.canvasGlobalFrame.minX)),\(Int(dragController.canvasGlobalFrame.minY)),\(Int(dragController.canvasGlobalFrame.width)),\(Int(dragController.canvasGlobalFrame.height)))"
                 if dragController.activeType != nil {
-                    dragLog.info("drag-end type=\(type.rawValue) at=(\(value.location.x),\(value.location.y)) \(frameStr) — kallar onDropShape")
-                    onDropShape(type, value.location)
+                    dragLog.info("drag-end type=\(type.rawValue) drop=(\(dropLocation.x),\(dropLocation.y)) \(frameStr)")
+                    onDropShape(type, dropLocation)
                 } else {
                     dragLog.error("drag-end men activeType=nil — drag aldrig startade!")
                 }
