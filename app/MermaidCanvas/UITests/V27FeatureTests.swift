@@ -27,9 +27,27 @@ final class V27FeatureTests: XCTestCase {
         let badge = app.buttons["toolbar.zoom"]
         guard badge.exists, let v = badge.value as? String else { return -1 }
         if let range = v.range(of: "shapeCount=") {
-            return Int(v[range.upperBound...]) ?? -1
+            // shapeCount=N eller shapeCount=N;lastX=...
+            let tail = v[range.upperBound...]
+            let numStr = tail.split(separator: ";").first.map(String.init) ?? String(tail)
+            return Int(numStr) ?? -1
         }
         return -1
+    }
+
+    /// v27: läs ut senaste form-position från toolbar.zoom.accessibilityValue.
+    @MainActor
+    private func lastShapePosition(_ app: XCUIApplication) -> CGPoint? {
+        let badge = app.buttons["toolbar.zoom"]
+        guard badge.exists, let v = badge.value as? String else { return nil }
+        guard let xRange = v.range(of: "lastX="),
+              let yRange = v.range(of: "lastY=") else { return nil }
+        let xTail = v[xRange.upperBound...]
+        let xStr = xTail.split(separator: ";").first.map(String.init) ?? String(xTail)
+        let yTail = v[yRange.upperBound...]
+        let yStr = yTail.split(separator: ";").first.map(String.init) ?? String(yTail)
+        guard let x = Double(xStr), let y = Double(yStr) else { return nil }
+        return CGPoint(x: x, y: y)
     }
 
     // MARK: - Etapp 1: Drag-ut för Tabell + Länk
@@ -91,6 +109,66 @@ final class V27FeatureTests: XCTestCase {
         chipCoord.press(forDuration: 0.3, thenDragTo: target)
         sleep(2)
         XCTAssertEqual(modelShapeCount(app), 2, "Drag av chip.link ska ge 2 former (par)")
+    }
+
+    // MARK: - Position-verifiering: drag landar nära drop-punkten
+
+    /// Verifiera att en cirkel som dras ut till canvas-mitten faktiskt landar
+    /// nära canvas-mitten (inom rimligt avstånd från där fingret släpptes).
+    @MainActor
+    func testCircleLandsNearDropPoint() throws {
+        let app = launchApp()
+        openShapesRow(app)
+        let chip = app.buttons["chip.circle"]
+        XCTAssertTrue(chip.waitForExistence(timeout: 4))
+        let canvas = app.otherElements["canvas"]
+        XCTAssertTrue(canvas.waitForExistence(timeout: 4))
+
+        let chipCoord = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        let target = canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        chipCoord.press(forDuration: 0.3, thenDragTo: target)
+        sleep(2)
+
+        XCTAssertEqual(modelShapeCount(app), 1)
+        guard let pos = lastShapePosition(app) else {
+            XCTFail("Kunde inte läsa senaste shape-position")
+            return
+        }
+        // Canvas-mitten i canvas-koordinater = ungefär (1000, 1000) eftersom
+        // canvas startar på 2000×2000 och centeringen vid start placerar
+        // (1000,1000) på skärmens mitt. Marginal: 200pt för att täcka olika
+        // viewport-storlekar och centerOnInitial-logik.
+        XCTAssertLessThan(abs(pos.x - 1000), 250, "Cirkel landade för långt från drop-punkt X (pos=\(pos))")
+        XCTAssertLessThan(abs(pos.y - 1000), 250, "Cirkel landade för långt från drop-punkt Y (pos=\(pos))")
+    }
+
+    /// Verifiera att en cirkel som dras nära kanten landar långt från mitten —
+    /// detta bevisar att position varierar med drop-punkt (inte alltid mitten).
+    @MainActor
+    func testCircleLandsNearCanvasEdge() throws {
+        let app = launchApp()
+        openShapesRow(app)
+        let chip = app.buttons["chip.circle"]
+        XCTAssertTrue(chip.waitForExistence(timeout: 4))
+        let canvas = app.otherElements["canvas"]
+        XCTAssertTrue(canvas.waitForExistence(timeout: 4))
+
+        // Drop till vänster överkant
+        let chipCoord = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        let target = canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.25))
+        chipCoord.press(forDuration: 0.3, thenDragTo: target)
+        sleep(2)
+
+        XCTAssertEqual(modelShapeCount(app), 1)
+        guard let pos = lastShapePosition(app) else {
+            XCTFail("Kunde inte läsa senaste shape-position")
+            return
+        }
+        // Position ska INTE vara nära canvas-mitten (1000,1000) — den ska vara
+        // tydligt åt vänster/upp eftersom vi dropp:ade där.
+        let distFromCenter = abs(pos.x - 1000) + abs(pos.y - 1000)
+        XCTAssertGreaterThan(distFromCenter, 150,
+                             "Drop i hörnet hade samma position som mitten — drag flyttar inte (pos=\(pos))")
     }
 
     // MARK: - Etapp 3: Plattform + form-paketer

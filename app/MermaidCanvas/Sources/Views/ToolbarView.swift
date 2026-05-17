@@ -133,7 +133,17 @@ struct ToolbarView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("toolbar.zoom")
-        .accessibilityValue("shapeCount=\(model.shapes.count)")
+        .accessibilityValue(diagnosticsValue)
+    }
+
+    /// v27: testdiagnostik — rapporterar shape-count + position på senaste form
+    /// så XCUITest kan verifiera att drag-ut placerar formen exakt rätt.
+    private var diagnosticsValue: String {
+        let count = model.shapes.count
+        if let last = model.shapes.last {
+            return "shapeCount=\(count);lastX=\(Int(last.position.x));lastY=\(Int(last.position.y))"
+        }
+        return "shapeCount=\(count)"
     }
 
     // MARK: - Sekundär rad
