@@ -80,8 +80,15 @@ struct CanvasView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .shadow(color: Color.black.opacity(0.18), radius: 8, x: 0, y: 4)
                     .coordinateSpace(name: "canvas")
-                    .scaleEffect(canvasScale, anchor: .topLeading)
-                    .offset(x: canvasOffset.width, y: canvasOffset.height)
+                    // v33 A10: transformEffect istället för scaleEffect+offset.
+                    // På iOS 18 / iPhone 17 Pro applicerar SwiftUI scaleEffect+offset i
+                    // fel ordning så drop-koordinater hamnar fel. CGAffineTransform binder
+                    // scale och translation till EN matris som SwiftUI applicerar atomiskt.
+                    .transformEffect(
+                        CGAffineTransform(scaleX: canvasScale, y: canvasScale)
+                            .concatenating(CGAffineTransform(translationX: canvasOffset.width,
+                                                              y: canvasOffset.height))
+                    )
             }
             .frame(width: geo.size.width, height: geo.size.height)
             .contentShape(Rectangle())
@@ -144,12 +151,15 @@ struct CanvasView: View {
             }
             .onChange(of: dragController.requestedCenterPoint) { _, new in
                 guard let p = new else { return }
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                    canvasOffset = CGSize(
-                        width: lastViewport.width / 2 - p.x * canvasScale,
-                        height: lastViewport.height / 2 - p.y * canvasScale
-                    )
-                }
+                // v33 A10: TOG BORT withAnimation — animering gav mid-transition
+                // transform som inte matchade CGRect-beräkningar för drop-target.
+                let proposed = CGSize(
+                    width: lastViewport.width / 2 - p.x * canvasScale,
+                    height: lastViewport.height / 2 - p.y * canvasScale
+                )
+                let clamped = clampedOffset(proposed, scale: canvasScale, viewport: lastViewport)
+                canvasOffset = clamped
+                dragController.canvasOffset = clamped
                 Task { @MainActor in
                     try? await Task.sleep(nanoseconds: 100_000_000)
                     dragController.requestedCenterPoint = nil
@@ -332,7 +342,11 @@ struct CanvasView: View {
                     height: start.height + value.translation.height
                 )
                 // v31: clamp så vita papperet aldrig kan lämna viewport helt
-                canvasOffset = clampedOffset(proposed, scale: canvasScale, viewport: lastViewport)
+                let clamped = clampedOffset(proposed, scale: canvasScale, viewport: lastViewport)
+                canvasOffset = clamped
+                // v33 root-cause: synka dragController SYNKRONT (inte via .onChange)
+                // — annars läser drop-end ev. stale värde och form landar fel.
+                dragController.canvasOffset = clamped
             }
             .onEnded { _ in
                 panStartOffset = nil
@@ -364,8 +378,13 @@ struct CanvasView: View {
                     width: pinchView.x - pinchInCanvas.x * newScale,
                     height: pinchView.y - pinchInCanvas.y * newScale
                 )
+                let clamped = clampedOffset(proposed, scale: newScale, viewport: lastViewport)
                 canvasScale = newScale
-                canvasOffset = clampedOffset(proposed, scale: newScale, viewport: lastViewport)
+                canvasOffset = clamped
+                // v33 root-cause: synka dragController SYNKRONT så drop-end läser samma
+                // värde som rendering precis renderade.
+                dragController.canvasScale = newScale
+                dragController.canvasOffset = clamped
             }
             .onEnded { _ in
                 pinchStartScale = nil
