@@ -4,8 +4,8 @@ enum ShapeGeometry {
     static let baseWidth: CGFloat = 120
     static let baseHeight: CGFloat = 80
 
-    static func width(for shape: ShapeNode) -> CGFloat { baseWidth * shape.sizeMultiplier }
-    static func height(for shape: ShapeNode) -> CGFloat { baseHeight * shape.sizeMultiplier }
+    static func width(for shape: ShapeNode) -> CGFloat { baseWidth * shape.effectiveWidth }
+    static func height(for shape: ShapeNode) -> CGFloat { baseHeight * shape.effectiveHeight }
     static func halfWidth(for shape: ShapeNode) -> CGFloat { width(for: shape) / 2 }
     static func halfHeight(for shape: ShapeNode) -> CGFloat { height(for: shape) / 2 }
     static func circleRadius(for shape: ShapeNode) -> CGFloat {
@@ -85,15 +85,22 @@ struct CanvasView: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
             .contentShape(Rectangle())
-            .gesture(panGesture)
+            // v29: stäng AV pan-gesture när drag-ut är aktivt — annars stjäl
+            // panGesture finger-rörelsen från chip-DragGesture och canvasen
+            // panorerar istället för att formen landar.
+            .gesture((dragController.activeType == nil) ? panGesture : nil)
             .simultaneousGesture(zoomGesture)
-            // v28 Etapp 10: dubbeltap på bakgrunden = återställ zoom (gammalt beteende)
-            .onTapGesture(count: 2) { handleDoubleTap() }
-            // v28 Etapp 8: tap utanför avmarkerar ALLTID (även i marker-mode)
-            .onTapGesture(count: 1) {
-                model.deselect()
-                if model.isEdgeMode { model.cancelEdgeMode() }
-            }
+            // v30: TOG BORT canvas' dubbeltap-zoom-reset — den krockade med ShapeView's
+            // dubbeltap-edit. Zoom-reset finns redan via toolbar.zoom-knappen.
+            // v30: deselect via simultaneousGesture istället för onTapGesture — pan-gesture
+            // (minDist 5) konkurrerade om tap-events; simultaneousGesture säkrar att tap
+            // alltid registreras parallellt med pan.
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    model.deselect()
+                    if model.isEdgeMode { model.cancelEdgeMode() }
+                }
+            )
             .clipped()
             // v26: rapportera global frame upp till ShapeDragController
             .background(
@@ -160,15 +167,22 @@ struct CanvasView: View {
             center = CGPoint(x: model.contentSize.width / 2,
                              y: model.contentSize.height / 2)
         }
-        // v28: vid 800×800 canvas startar vi på scale 0.5 så hela ryms i viewporten.
-        // För .ui-spec (med iPhone-frame) behåll 1.0.
-        let initialScale: CGFloat = (model.specType == .ui) ? 1.0 : 0.5
+        // v31: startzoom 100% (scale 1.0) för alla — Kim panorerar i 1600×1600-canvasen
+        // istället för att se hela på en gång.
+        let initialScale: CGFloat = 1.0
         canvasScale = initialScale
-        canvasOffset = CGSize(
+        let proposedOffset = CGSize(
             width: viewport.width / 2 - center.x * canvasScale,
             height: viewport.height / 2 - center.y * canvasScale
         )
+        // v31: applicera pan-clamp på initial-offset också
+        let newOffset = clampedOffset(proposedOffset, scale: initialScale, viewport: viewport)
+        canvasOffset = newOffset
         zoomPercent = Int((canvasScale * 100).rounded())
+        // v29: synka dragController direkt — INTE via .onChange (async, kan komma
+        // efter första drag-end och göra canvasPoint(forGlobal:) räkna med .zero offset).
+        dragController.canvasOffset = newOffset
+        dragController.canvasScale = initialScale
     }
 
     private func resetZoomAnimated() {
@@ -313,31 +327,70 @@ struct CanvasView: View {
                     panStartOffset = canvasOffset
                 }
                 let start = panStartOffset ?? .zero
-                canvasOffset = CGSize(
+                let proposed = CGSize(
                     width: start.width + value.translation.width,
                     height: start.height + value.translation.height
                 )
+                // v31: clamp så vita papperet aldrig kan lämna viewport helt
+                canvasOffset = clampedOffset(proposed, scale: canvasScale, viewport: lastViewport)
             }
             .onEnded { _ in
                 panStartOffset = nil
             }
     }
 
+    /// v31: MagnifyGesture med zoom-mot-finger. SwiftUI ger .value.startAnchor (UnitPoint)
+    /// och vi multiplicerar canvasOffset så pinch-centret stannar visuellt fast.
     private var zoomGesture: some Gesture {
-        MagnificationGesture()
+        MagnifyGesture()
             .onChanged { value in
                 if pinchStartScale == nil {
                     pinchStartScale = canvasScale
                 }
                 let start = pinchStartScale ?? 1
-                // v28: 2× snabbare än v27 (pow 0.2 → 0.4) — Kim ville mer responsivt
-                let dampened = pow(value, 0.4)
+                let dampened = pow(value.magnification, 0.4)
                 let newScale = clamp(start * dampened, minScale, maxScale)
+                guard abs(newScale - canvasScale) > 0.0001 else { return }
+                // v31: pinch-center i view-koord (startLocation är pinch-centrum vid start)
+                let pinchView = value.startLocation
+                // Punkt i canvas-koord innan zoom: (pinchView - oldOffset) / oldScale
+                let oldScale = canvasScale
+                let pinchInCanvas = CGPoint(
+                    x: (pinchView.x - canvasOffset.width) / oldScale,
+                    y: (pinchView.y - canvasOffset.height) / oldScale
+                )
+                // Ny offset så samma canvas-punkt fortfarande är under pinchView efter scale
+                let proposed = CGSize(
+                    width: pinchView.x - pinchInCanvas.x * newScale,
+                    height: pinchView.y - pinchInCanvas.y * newScale
+                )
                 canvasScale = newScale
+                canvasOffset = clampedOffset(proposed, scale: newScale, viewport: lastViewport)
             }
             .onEnded { _ in
                 pinchStartScale = nil
             }
+    }
+
+    /// v31: pan-clamp så vita papperet alltid syns inom viewport.
+    /// - Om scaledContent ≥ viewport: offset ∈ [viewport - scaled, 0] (papper täcker viewport)
+    /// - Om scaledContent < viewport: offset låses till centrerat värde (papper får inte panoreras ut)
+    private func clampedOffset(_ proposed: CGSize, scale: CGFloat, viewport: CGSize) -> CGSize {
+        let scaledW = model.contentSize.width * scale
+        let scaledH = model.contentSize.height * scale
+        let newX: CGFloat
+        let newY: CGFloat
+        if scaledW >= viewport.width {
+            newX = clamp(proposed.width, viewport.width - scaledW, 0)
+        } else {
+            newX = (viewport.width - scaledW) / 2
+        }
+        if scaledH >= viewport.height {
+            newY = clamp(proposed.height, viewport.height - scaledH, 0)
+        } else {
+            newY = (viewport.height - scaledH) / 2
+        }
+        return CGSize(width: newX, height: newY)
     }
 
     private func handleDoubleTap() {
@@ -551,6 +604,10 @@ struct ShapeView: View {
             DiamondShape()
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
+        case .pill:
+            Capsule(style: .continuous)
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .text:
             EmptyView()
         case .table:
@@ -560,6 +617,9 @@ struct ShapeView: View {
                                  stroke: effectiveStroke)
         case .link:
             JumpLinkShapeBackground(number: shape.linkNumber ?? 0, fill: effectiveFill)
+        case .line, .arrow:
+            // v31: lös linje/pil renderas separat via FreeLineShape (utanför background)
+            EmptyView()
         }
     }
 
@@ -572,7 +632,9 @@ struct ShapeView: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(effectiveStroke, lineWidth: 1.5)
         case .diamond:
             DiamondShape().stroke(effectiveStroke, lineWidth: 1.5)
-        case .text, .table, .link:
+        case .pill:
+            Capsule(style: .continuous).stroke(effectiveStroke, lineWidth: 1.5)
+        case .text, .table, .link, .line, .arrow:
             EmptyView()
         }
     }
@@ -587,10 +649,14 @@ struct ShapeView: View {
                 RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .diamond:
                 DiamondShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .pill:
+                Capsule(style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .text:
                 RoundedRectangle(cornerRadius: 8).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
                 Circle().stroke(Color.accentColor, lineWidth: 3.5)
+            case .line, .arrow:
+                EmptyView()
             }
         }
     }
@@ -882,11 +948,14 @@ struct EdgesView: View {
             guard denom > 0.001 else { return center }
             let t = 1.0 / denom
             return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
-        case .text, .table:
+        case .text, .table, .pill:
             return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
         case .link:
             let r = ShapeGeometry.circleRadius(for: shape)
             return CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
+        case .line, .arrow:
+            // v31: lösa linjer/pilar är inte normala edge-targets — använd center.
+            return center
         }
     }
 

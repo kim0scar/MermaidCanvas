@@ -9,6 +9,8 @@ enum SecondaryToolbarRow: Equatable {
     case arrows
     case colors
     case textStyles
+    /// v31: form-paket-rad (visar UI-pack + Prompt-Process-pack-toggles)
+    case packs
 }
 
 struct ToolbarView: View {
@@ -33,6 +35,8 @@ struct ToolbarView: View {
     var onResetZoom: () -> Void
     /// Drop-handler: anropas vid drag-end om global-punkten ligger inom canvas.
     var onDropShape: (ShapeType, CGPoint) -> Void
+    /// v31: visa anteckning-popup-sheet med all canvas-text.
+    var onShowNotePopup: () -> Void
 
     @State private var secondaryRow: SecondaryToolbarRow? = nil
 
@@ -54,6 +58,7 @@ struct ToolbarView: View {
         HStack(spacing: 6) {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
             toggleButton("arrow.right", row: .arrows, disabled: model.isEdgeMode, accId: "toolbar.arrows")
+            toggleButton("brain.head.profile", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
             markerButton
@@ -155,6 +160,7 @@ struct ToolbarView: View {
             case .arrows:    arrowsSecondary
             case .colors:    colorsSecondary
             case .textStyles: textStylesSecondary
+            case .packs:     packsSecondary
             }
         }
         .padding(.horizontal, 10)
@@ -165,28 +171,101 @@ struct ToolbarView: View {
 
     // MARK: - Former-rad (tap + drag-out via egen controller)
 
-    /// v26: INGEN ScrollView — ScrollView's pan-gesture åt drag-eventen.
-    /// Ingen acc-id på HStack heller — annars ärver special-chips (Button)
-    /// den och täcker sin egen accessibilityIdentifier.
+    /// v31: två rader — basformer + special-symboler.
+    /// Rad A: circle, rectangle, diamond, pill (ny avlång capsule)
+    /// Rad B: table, link, text, line (ny lös streck), arrow (ny lös pil), note-popup
+    /// HStack (INTE ScrollView) eftersom ScrollView konsumerar tap-events på iPhone (v29-lärdom).
     @ViewBuilder
     private var shapesSecondary: some View {
-        HStack(spacing: 10) {
-            shapeChip(.circle,    "circle",            accId: "chip.circle") {
-                model.addShape(.circle, at: canvasCenter)
+        VStack(spacing: 8) {
+            // Rad A — basformer
+            HStack(spacing: 8) {
+                shapeChip(.circle,    "circle",   accId: "chip.circle") {
+                    model.addShape(.circle, at: canvasCenter)
+                }
+                shapeChip(.rectangle, "rectangle", accId: "chip.rectangle") {
+                    model.addShape(.rectangle, at: canvasCenter)
+                }
+                shapeChip(.diamond,   "diamond",  accId: "chip.diamond") {
+                    model.addShape(.diamond, at: canvasCenter)
+                }
+                shapeChip(.pill,      "capsule",  accId: "chip.pill") {
+                    model.addShape(.pill, at: canvasCenter)
+                }
             }
-            shapeChip(.rectangle, "rectangle",         accId: "chip.rectangle") {
-                model.addShape(.rectangle, at: canvasCenter)
+            // Rad B — special
+            HStack(spacing: 8) {
+                shapeChip(.text,  "character.textbox", accId: "chip.text") {
+                    model.addShape(.text, at: canvasCenter)
+                }
+                shapeChip(.table, "tablecells",        accId: "chip.table",  onTap: onAddTable)
+                shapeChip(.link,  "link",              accId: "chip.link",   onTap: onAddJumpLink)
+                shapeChip(.line,  "minus",             accId: "chip.line") {
+                    model.addFreeLine(at: canvasCenter, withArrow: false)
+                }
+                shapeChip(.arrow, "arrow.right",       accId: "chip.arrow") {
+                    model.addFreeLine(at: canvasCenter, withArrow: true)
+                }
+                Button {
+                    onShowNotePopup()
+                } label: {
+                    ChipFace(systemImage: "bubble.left.and.text.bubble.right")
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("chip.notepopup")
             }
-            shapeChip(.diamond,   "diamond",           accId: "chip.diamond") {
-                model.addShape(.diamond, at: canvasCenter)
-            }
-            shapeChip(.text,      "character.textbox", accId: "chip.text") {
-                model.addShape(.text, at: canvasCenter)
-            }
-            shapeChip(.table,     "tablecells",        accId: "chip.table",  onTap: onAddTable)
-            shapeChip(.link,      "link",              accId: "chip.link",   onTap: onAddJumpLink)
         }
         .padding(.horizontal, 2)
+    }
+
+    /// v29: pack-chip — tap lägger rektangel med pack:s default-kategori.
+    /// Stödjer inte drag-ut (drag är för basformer); pack-chips är ett snabbsätt
+    /// att lägga form med rätt kategori vid canvas-mitten.
+    @ViewBuilder
+    private func packChip(pack: ShapePack, category: ShapeCategory) -> some View {
+        Button {
+            model.addShape(.rectangle, at: canvasCenter, category: category)
+        } label: {
+            ChipFace(systemImage: pack.systemImage)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("chip.pack.\(pack.rawValue)")
+    }
+
+    /// v31: Form-paket-rad — togglar för UI och Prompt-Process.
+    @ViewBuilder
+    private var packsSecondary: some View {
+        HStack(spacing: 10) {
+            ForEach(ShapePack.userToggleable, id: \.self) { pack in
+                packToggle(pack)
+            }
+        }
+        .padding(.horizontal, 2)
+    }
+
+    @ViewBuilder
+    private func packToggle(_ pack: ShapePack) -> some View {
+        let isActive = model.activeShapePacks.contains(pack)
+        Button {
+            model.toggleShapePack(pack)
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: pack.systemImage).font(.subheadline)
+                Text(pack.displayName).font(.subheadline.weight(.medium))
+                if isActive {
+                    Image(systemName: "checkmark").font(.caption.weight(.bold))
+                }
+            }
+            .foregroundStyle(isActive ? Color.white : Color.primary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                Capsule().fill(isActive ? Color.accentColor : Color(.systemBackground))
+            )
+            .overlay(Capsule().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("toggle.pack.\(pack.rawValue)")
     }
 
     /// v27: shapeChip är nu generaliserad — alla 6 form-typer använder samma mönster
@@ -392,7 +471,7 @@ struct ChipFace: View {
         Image(systemName: systemImage)
             .font(larger ? .title2 : .title3)
             .foregroundStyle(Color.primary)
-            .frame(width: larger ? 56 : 44, height: larger ? 56 : 44)
+            .frame(width: larger ? 56 : 40, height: larger ? 56 : 40)
             .background(Circle().fill(.ultraThinMaterial))
             .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
             .contentShape(Circle())

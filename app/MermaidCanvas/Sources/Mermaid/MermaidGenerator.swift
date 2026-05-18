@@ -218,8 +218,12 @@ enum MermaidGenerator {
         case .rectangle: return "[\"\(label)\"]"
         case .diamond:   return "{\"\(label)\"}"
         case .text:      return "[\"\(label)\"]"
-        case .table:     return "[\"\(label)\"]"   // tabell-data skrivs som %% kommentar
-        case .link:      return "((\"\(label)\"))" // länk-nummer skrivs som %% kommentar
+        case .table:     return "[\"\(label)\"]"
+        case .link:      return "((\"\(label)\"))"
+        // v31:
+        case .pill:      return "([\"\(label)\"])"  // mermaid stadium-shape
+        case .line:      return "[\"\(label)\"]"    // lös linje — endpoints i %% line-kommentar
+        case .arrow:     return "[\"\(label)\"]"    // lös pil — som line + arrow-flagga
         }
     }
 

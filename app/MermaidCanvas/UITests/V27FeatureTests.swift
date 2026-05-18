@@ -134,9 +134,9 @@ final class V27FeatureTests: XCTestCase {
             XCTFail("Kunde inte läsa senaste shape-position")
             return
         }
-        // v28: canvas startar 800×800 → mitten ≈ (400, 400).
-        XCTAssertLessThan(abs(pos.x - 400), 250, "Cirkel landade för långt från drop-punkt X (pos=\(pos))")
-        XCTAssertLessThan(abs(pos.y - 400), 250, "Cirkel landade för långt från drop-punkt Y (pos=\(pos))")
+        // v31: canvas 1600×1600 → mitten ≈ (800, 800). Drag-test landar någonstans inom 600pt rimligt avstånd.
+        XCTAssertLessThan(abs(pos.x - 800), 600, "Cirkel landade för långt från drop-punkt X (pos=\(pos))")
+        XCTAssertLessThan(abs(pos.y - 800), 600, "Cirkel landade för långt från drop-punkt Y (pos=\(pos))")
     }
 
     /// Verifiera att en cirkel som dras nära kanten landar långt från mitten —
@@ -161,8 +161,8 @@ final class V27FeatureTests: XCTestCase {
             XCTFail("Kunde inte läsa senaste shape-position")
             return
         }
-        // v28: canvas-mitten ≈ (400, 400). Drop i hörnet ska INTE vara där.
-        let distFromCenter = abs(pos.x - 400) + abs(pos.y - 400)
+        // v31: canvas-mitten ≈ (800, 800). Drop i hörnet ska INTE vara där.
+        let distFromCenter = abs(pos.x - 800) + abs(pos.y - 800)
         XCTAssertGreaterThan(distFromCenter, 80,
                              "Drop i hörnet hade samma position som mitten — drag flyttar inte (pos=\(pos))")
     }

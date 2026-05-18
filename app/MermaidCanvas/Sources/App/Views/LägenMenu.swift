@@ -90,9 +90,9 @@ struct ToolbarIconButton: View {
 
     var body: some View {
         Image(systemName: systemImage)
-            .font(.system(size: 17, weight: .medium))
+            .font(.system(size: 16, weight: .medium))
             .foregroundStyle(isActive ? Color.white : foregroundColor)
-            .frame(width: 44, height: 44)
+            .frame(width: 40, height: 40)
             .background(
                 Circle().fill(isActive ? Color.accentColor : .clear)
             )

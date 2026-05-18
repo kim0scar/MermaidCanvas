@@ -9,6 +9,12 @@ enum ShapeType: String, Codable, CaseIterable {
     case text
     case table
     case link
+    /// v31: avlång rektangel med fullständigt rundade ändar (Capsule).
+    case pill
+    /// v31: lös linje utan form-koppling. Endpoints i `lineEnd` (relativ position från center).
+    case line
+    /// v31: lös pil — som line med pilhuvud på linjeslutet.
+    case arrow
 }
 
 extension ShapeType: Transferable {
@@ -23,7 +29,12 @@ struct ShapeNode: Identifiable, Codable {
     var position: CGPoint
     var label: String
     var showLabel: Bool
+    /// Behålls för bakåtkompatibilitet — används om widthMultiplier/heightMultiplier saknas.
     var sizeMultiplier: CGFloat
+    /// v31: separat bredd-skalning (för fri resize). Default = sizeMultiplier vid läsning.
+    var widthMultiplier: CGFloat?
+    /// v31: separat höjd-skalning.
+    var heightMultiplier: CGFloat?
     var note: String
     var category: ShapeCategory
     var rotation: CGFloat
@@ -39,6 +50,8 @@ struct ShapeNode: Identifiable, Codable {
     var textStyle: TextStyle
     /// v23: färg-paket-id (ColorPack.id) eller nil = ingen färg = vit + kategori-ram.
     var colorPackId: String?
+    /// v31: endpoint för lösa linjer/pilar (relativ från `position`). nil för icke-line.
+    var lineEnd: CGPoint?
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -46,6 +59,8 @@ struct ShapeNode: Identifiable, Codable {
          label: String = "",
          showLabel: Bool = true,
          sizeMultiplier: CGFloat = 1.0,
+         widthMultiplier: CGFloat? = nil,
+         heightMultiplier: CGFloat? = nil,
          note: String = "",
          category: ShapeCategory = .ui,
          rotation: CGFloat = 0,
@@ -54,13 +69,16 @@ struct ShapeNode: Identifiable, Codable {
          tableRows: Int? = nil,
          tableCols: Int? = nil,
          textStyle: TextStyle = .body,
-         colorPackId: String? = nil) {
+         colorPackId: String? = nil,
+         lineEnd: CGPoint? = nil) {
         self.id = id
         self.type = type
         self.position = position
         self.label = label
         self.showLabel = showLabel
         self.sizeMultiplier = sizeMultiplier
+        self.widthMultiplier = widthMultiplier
+        self.heightMultiplier = heightMultiplier
         self.note = note
         self.category = category
         self.rotation = rotation
@@ -70,5 +88,11 @@ struct ShapeNode: Identifiable, Codable {
         self.tableCols = tableCols
         self.textStyle = textStyle
         self.colorPackId = colorPackId
+        self.lineEnd = lineEnd
     }
+
+    /// v31: effective width-multiplier (fallback till sizeMultiplier).
+    var effectiveWidth: CGFloat { widthMultiplier ?? sizeMultiplier }
+    /// v31: effective height-multiplier (fallback till sizeMultiplier).
+    var effectiveHeight: CGFloat { heightMultiplier ?? sizeMultiplier }
 }

@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var zoomPercent: Int = 100
     @State private var resetZoomTrigger: Int = 0
     @State private var showMinimap: Bool = false
+    @State private var showNotePopup: Bool = false
 
     var body: some View {
         ZStack {
@@ -51,7 +52,8 @@ struct ContentView: View {
                         }
                     },
                     onResetZoom: { resetZoomTrigger &+= 1 },
-                    onDropShape: handleDrop
+                    onDropShape: handleDrop,
+                    onShowNotePopup: { showNotePopup = true }
                 )
 
                 CanvasView(
@@ -179,6 +181,12 @@ struct ContentView: View {
             MermaidCodeSheet(code: generatedCode) {
                 showCodeSheet = false
             }
+        }
+        .sheet(isPresented: $showNotePopup) {
+            NotePopupSheet(
+                shapes: model.shapes,
+                onClose: { showNotePopup = false }
+            )
         }
         .sheet(isPresented: $showNewCanvasSheet) {
             NewCanvasSheet(
@@ -338,12 +346,17 @@ struct ContentView: View {
     private func handleDrop(_ type: ShapeType, _ globalLocation: CGPoint) {
         let inside = dragController.isInsideCanvas(globalLocation)
         dragLog.info("handleDrop type=\(type.rawValue) global=(\(globalLocation.x),\(globalLocation.y)) inside=\(inside)")
-        guard inside else {
-            dragLog.error("DROP AVVISAD — punkt utanför canvas. frame=\(String(describing: dragController.canvasGlobalFrame))")
-            return
+        // v29: skapa ALLTID form vid drag-end. Om släppet är utanför canvas → lägg
+        // i canvas-mitten istället för att tappa. "Form syns men på fel ställe"
+        // är bättre UX än "form försvann". Användaren kan dra den dit den ska.
+        let canvasPoint: CGPoint
+        if inside {
+            canvasPoint = dragController.canvasPoint(forGlobal: globalLocation)
+            dragLog.info("handleDrop canvasPoint=(\(canvasPoint.x),\(canvasPoint.y)) — skapar form")
+        } else {
+            canvasPoint = canvasCenter
+            dragLog.info("DROP UTANFÖR — lägger form i canvas-mitten (\(canvasPoint.x),\(canvasPoint.y))")
         }
-        let canvasPoint = dragController.canvasPoint(forGlobal: globalLocation)
-        dragLog.info("handleDrop canvasPoint=(\(canvasPoint.x),\(canvasPoint.y)) — skapar form")
         switch type {
         case .table:
             model.addTable(at: canvasPoint)
@@ -373,6 +386,9 @@ struct ContentView: View {
         case .text: return "character.textbox"
         case .table: return "tablecells"
         case .link: return "link"
+        case .pill: return "capsule"
+        case .line: return "minus"
+        case .arrow: return "arrow.right"
         }
     }
 }

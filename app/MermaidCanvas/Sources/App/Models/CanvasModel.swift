@@ -39,12 +39,11 @@ final class CanvasModel: ObservableObject {
     @Published var markerMode: Bool = false
     @Published var collapsedIds: Set<UUID> = []
 
-    // v28: canvas startar som ett kvadratiskt vitt papper (800×800) — dubbelt så stort
-    // som v27 efter Kim's feedback. Vid scale 1.0 sticker bredden ut på iPhone-skärmen
-    // men det är OK — Kim kan panorera och zooma.
-    // Expanderar dynamiskt med 600pt åt vald kant när en form placeras inom 100pt.
+    // v31: canvas är 1600×1600 (dubbel storlek mot v30) — kvadratisk vit yta.
+    // Startzoom 100% (scale 1.0). Pan-clamp i CanvasView säkerställer att papperet
+    // aldrig kan lämna viewport helt. v31 borttog dynamisk expand — hård begränsning används.
     static let contentSize = CGSize(width: 3000, height: 3000)
-    @Published var contentSize: CGSize = CGSize(width: 800, height: 800)
+    @Published var contentSize: CGSize = CGSize(width: 1600, height: 1600)
 
     /// v27: utöka canvasen om en form placerats inom `margin` pt från en kant.
     func expandCanvasIfNeeded(near point: CGPoint, margin: CGFloat = 100, expandBy: CGFloat = 600) {
@@ -170,6 +169,30 @@ final class CanvasModel: ObservableObject {
         let cat = specType.defaultCategory
         // v23: tom label från start — Kim vill skriva själv
         shapes.append(ShapeNode(type: type, position: position, label: "", category: cat))
+        expandCanvasIfNeeded(near: position)
+    }
+
+    /// v29: lägg form med en explicit kategori (används av form-pack-chips).
+    func addShape(_ type: ShapeType, at position: CGPoint, category: ShapeCategory) {
+        snapshotForUndo()
+        shapes.append(ShapeNode(type: type, position: position, label: "", category: category))
+        expandCanvasIfNeeded(near: position)
+    }
+
+    /// v31: lös linje eller pil — endpoint sätts 60pt åt höger om center som default.
+    /// `withArrow=true` ger en lös pil med pilhuvud, false ger ett vanligt streck.
+    func addFreeLine(at position: CGPoint, withArrow: Bool) {
+        snapshotForUndo()
+        let cat = specType.defaultCategory
+        let node = ShapeNode(
+            type: withArrow ? .arrow : .line,
+            position: position,
+            label: "",
+            showLabel: false,
+            category: cat,
+            lineEnd: CGPoint(x: 60, y: 0)
+        )
+        shapes.append(node)
         expandCanvasIfNeeded(near: position)
     }
 

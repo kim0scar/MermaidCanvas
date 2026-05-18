@@ -18,7 +18,9 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: Sources
+      - path: Sources/App
+      - path: Sources/Mermaid
+      - path: Sources/ClaudeCode
       - path: Resources
     settings:
       base:
@@ -51,12 +53,31 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: MermaidCanvas
 
+  MermaidCanvasUnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: UnitTests
+    dependencies:
+      - target: MermaidCanvas
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kimlundqvist.mermaidcanvas.unittests
+        TARGETED_DEVICE_FAMILY: "1"
+        DEVELOPMENT_TEAM: SFXR8MV6MP
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/MermaidCanvas.app/MermaidCanvas
+        BUNDLE_LOADER: $(TEST_HOST)
+
 schemes:
   MermaidCanvas:
     build:
       targets:
         MermaidCanvas: all
         MermaidCanvasUITests: [test]
+        MermaidCanvasUnitTests: [test]
     test:
       targets:
+        - MermaidCanvasUnitTests
         - MermaidCanvasUITests

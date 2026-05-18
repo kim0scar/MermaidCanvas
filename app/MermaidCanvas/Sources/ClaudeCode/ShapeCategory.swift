@@ -24,13 +24,18 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
     case service
     case data
 
-    // Flow-läge
+    // Flow-läge (v31: behålls för bakåtkomp men användning fasas ut)
     case input
     case agent
     case tool
     case router
     case memory
     case output
+
+    // v31 Prompt-Process-pack (Claude/AI agent-flow)
+    case subagent
+    case prompt
+    case skill
 
     // Godot-läge — kategorier matchar Godot UI-noder
     case godot_scene       // .tscn scene-root (motsvarar "Screen")
@@ -73,6 +78,9 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .godot_label:     return "Label"
         case .godot_signal:    return "Signal"
         case .godot_script:    return "Script"
+        case .subagent:        return "Subagent"
+        case .prompt:          return "Prompt"
+        case .skill:           return "Skill"
         }
     }
 
@@ -85,6 +93,7 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .input, .agent, .tool, .router, .memory, .output: return .flow
         case .godot_scene, .godot_control, .godot_container, .godot_panel,
              .godot_button, .godot_label, .godot_signal, .godot_script: return .godot
+        case .subagent, .prompt, .skill: return .flow // v31: Prompt-Process delar SpecType.flow
         case .note: return .ui // note är gemensam men hör hem i UI som default
         }
     }
@@ -150,6 +159,10 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .godot_label:     return Color(hex: 0xF1F3F5) // ljus (text)
         case .godot_signal:    return Color(hex: 0xFCD34D) // gul (signal)
         case .godot_script:    return Color(hex: 0x4ADE80) // grön (kod)
+        // v31 Prompt-Process — distinkta nyanser
+        case .subagent:        return Color(hex: 0x7c3aed) // violett (agent-delegering)
+        case .prompt:          return Color(hex: 0x10b981) // emerald (text-input)
+        case .skill:           return Color(hex: 0xf97316) // orange (kapacitet)
         }
     }
 
@@ -183,6 +196,9 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .godot_label:     return Color(hex: 0xd1d5db)
         case .godot_signal:    return Color(hex: 0xca8a04)
         case .godot_script:    return Color(hex: 0x16a34a)
+        case .subagent:        return Color(hex: 0x5b21b6)
+        case .prompt:          return Color(hex: 0x059669)
+        case .skill:           return Color(hex: 0xc2410c)
         }
     }
 
@@ -192,7 +208,8 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .ui, .overlay, .feat, .milestone, .blocker, .future,
              .module, .service, .data, .input, .agent, .tool,
              .router, .memory, .output,
-             .godot_scene, .godot_control, .godot_container:
+             .godot_scene, .godot_control, .godot_container,
+             .subagent, .prompt, .skill:
             return Color(hex: 0xf9fafb)
         // Ljusa fyllningar → mörk text
         case .zone, .folder, .file,
@@ -245,6 +262,9 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .godot_label:     return "Label"
         case .godot_signal:    return "Signal"
         case .godot_script:    return "Script"
+        case .subagent:        return "Subagent"
+        case .prompt:          return "Prompt"
+        case .skill:           return "Skill"
         }
     }
 
@@ -277,6 +297,9 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .godot_label:     return "Label — text-element."
         case .godot_signal:    return "Signal-koppling (för Flow-mode kopplingar)."
         case .godot_script:    return "GDScript-fil med logik."
+        case .subagent:        return "Subagent — delegerad uppgift till annan Claude-instans."
+        case .prompt:          return "Prompt — text till LLM/agent."
+        case .skill:           return "Skill — predefined kapacitet/protokoll."
         }
     }
 }

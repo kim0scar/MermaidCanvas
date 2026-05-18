@@ -324,12 +324,26 @@ enum MermaidParser {
     private static func categoryFor(mermaidId: String, classSuffixRange: NSRange, ns: NSString) -> ShapeCategory {
         if classSuffixRange.location != NSNotFound {
             let raw = ns.substring(with: classSuffixRange)
-            if let cat = ShapeCategory(rawValue: raw) { return cat }
+            if let cat = ShapeCategory(rawValue: raw) { return migrateDeprecated(cat) }
         }
         if let underscore = mermaidId.firstIndex(of: "_") {
             let prefix = String(mermaidId[..<underscore])
-            if let cat = ShapeCategory(rawValue: prefix) { return cat }
+            if let cat = ShapeCategory(rawValue: prefix) { return migrateDeprecated(cat) }
         }
         return .ui
+    }
+
+    /// v31: deprecated kategorier (Roadmap/Architecture-pack) migreras till `.note`.
+    /// Inga former tappas — bara färg/kategori byts ut.
+    /// `.input`/`.agent`/`.tool`/`.router`/`.memory`/`.output` behålls eftersom de återanvänds
+    /// av Prompt-Process-pack (delar SpecType.flow).
+    private static func migrateDeprecated(_ cat: ShapeCategory) -> ShapeCategory {
+        switch cat {
+        case .feat, .milestone, .blocker, .future,
+             .folder, .file, .module, .service, .data:
+            return .note
+        default:
+            return cat
+        }
     }
 }
