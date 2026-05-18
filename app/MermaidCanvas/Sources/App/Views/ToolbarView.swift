@@ -26,7 +26,6 @@ struct ToolbarView: View {
     var onSaveAs: () -> Void
     var onUndo: () -> Void
     var onShowCode: () -> Void
-    var onShowPreview: () -> Void
     var onShowRules: () -> Void
     var onToggleMarker: () -> Void
     var onAddTable: () -> Void
@@ -73,7 +72,6 @@ struct ToolbarView: View {
                 onOpen: onOpen,
                 onNewCanvas: onNewCanvas,
                 onShowCode: onShowCode,
-                onShowPreview: onShowPreview,
                 onShowRules: onShowRules
             )
         }

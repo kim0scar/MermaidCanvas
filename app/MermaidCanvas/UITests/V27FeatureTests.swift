@@ -172,6 +172,9 @@ final class V27FeatureTests: XCTestCase {
     /// Öppna Lägen-menyn → kontrollera att form-paketer-toggles existerar.
     @MainActor
     func testShapePackTogglesExistInModesMenu() throws {
+        // v32: pack-toggles flyttades från Lägen-menyn till toolbar.packs.
+        // Detta test är obsolete. Pack-toggles testas via LayoutOverflowTests/EndToEndTests.
+        throw XCTSkip("v32: pack-toggles flyttade till toolbar.packs — test obsolete")
         let app = launchApp()
         let modesBtn = app.buttons["toolbar.modes"]
         XCTAssertTrue(modesBtn.waitForExistence(timeout: 4))

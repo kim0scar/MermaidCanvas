@@ -7,7 +7,8 @@ enum MermaidGenerator {
                          specType: SpecType = .ui,
                          collapsedIds: Set<UUID> = []) -> String {
         guard !shapes.isEmpty else {
-            return "flowchart TD\n    Tom[\"Tom canvas — lägg till en form\"]"
+            // v32: bara header — inget diagnostiskt "Tom canvas"-meddelande som kan tolkas som fel.
+            return "flowchart TD\n"
         }
         var lines: [String] = ["flowchart TD"]
         let mermaidIds = makeMermaidIds(for: shapes)

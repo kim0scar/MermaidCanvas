@@ -12,9 +12,12 @@
 		084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */; };
 		08E3968AA32CB239C81D65C0 /* godot-lexicon.md in Resources */ = {isa = PBXBuildFile; fileRef = 4F05E5949388DD0DA7C68672 /* godot-lexicon.md */; };
 		0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
+		1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */; };
+		114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */; };
 		11BE53EC33154017D1148891 /* CanvasDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AB7BE4C160CC630F4E4CFA /* CanvasDocument.swift */; };
 		12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */; };
 		150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
+		155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */; };
 		17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */; };
 		2801B7CB05578020FBB75138 /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */; };
 		283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228F689846F0D1503749250D /* CanvasView.swift */; };
@@ -26,6 +29,7 @@
 		414054BE34E93776285A75C4 /* DragOutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */; };
 		46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0E6420DE137F57D019A7EB /* ShapeNode.swift */; };
 		4962458B87780D419EBA6F8A /* MinimapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D338F508BC03A111FDAC0 /* MinimapView.swift */; };
+		4CBA5CE815AFDDCC6E0D9143 /* ios-swiftui-rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 26849544B1328648A4C1C344 /* ios-swiftui-rules.md */; };
 		56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */; };
 		62EF8D225C5132FB200E453E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4913E980F026A3D6E49070B7 /* AppVersion.swift */; };
 		695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
@@ -40,6 +44,7 @@
 		9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */; };
 		AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */; };
 		AF71D014F6A90DEEDB254840 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */; };
+		B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */; };
 		B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7282ECFED87095333BB0D4 /* LägenMenu.swift */; };
 		C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */; };
 		C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */; };
@@ -54,6 +59,7 @@
 		E8222C0DB48D847CC8B8ADDA /* ShapeDragController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E7D633F121D874D63B3B81 /* ShapeDragController.swift */; };
 		E89E5E4258D420A82D09BDD6 /* PlatformRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024C106FB50C0683CF678899 /* PlatformRules.swift */; };
 		EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535348C28035BBC3C632F26A /* TextStyle.swift */; };
+		EF3A6ED12336454DED83D357 /* prompt-process-rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 0E42EE69DC47FA92EA10BD2F /* prompt-process-rules.md */; };
 		F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E6FAA7A14093A0397C1316 /* UIRenderer.swift */; };
 		F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */; };
 		FA1737FF5856B37C8337F489 /* METOD-VISUELL-DIALOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */; };
@@ -82,12 +88,15 @@
 		024C106FB50C0683CF678899 /* PlatformRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRules.swift; sourceTree = "<group>"; };
 		0B2B5D75E6C39BD72EC980C0 /* MermaidCanvasUnitTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotGridBackground.swift; sourceTree = "<group>"; };
+		0E42EE69DC47FA92EA10BD2F /* prompt-process-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "prompt-process-rules.md"; sourceTree = "<group>"; };
 		12BE1B86655B722847CCF708 /* V27FeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V27FeatureTests.swift; sourceTree = "<group>"; };
 		162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "METOD-VISUELL-DIALOG.md"; sourceTree = "<group>"; };
+		18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutOverflowTests.swift; sourceTree = "<group>"; };
 		19DBECF727C64AC554A79FCC /* RoundTripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundTripTests.swift; sourceTree = "<group>"; };
 		20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCodeSheet.swift; sourceTree = "<group>"; };
 		228F689846F0D1503749250D /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		23D164BF747C4ACF00F0921D /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
+		26849544B1328648A4C1C344 /* ios-swiftui-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "ios-swiftui-rules.md"; sourceTree = "<group>"; };
 		290C826C5E3BCE9774F09866 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2D0E6420DE137F57D019A7EB /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
@@ -102,6 +111,7 @@
 		63AB7BE4C160CC630F4E4CFA /* CanvasDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDocument.swift; sourceTree = "<group>"; };
 		652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
 		6660E4DB431B5BBCAF625147 /* SpecType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecType.swift; sourceTree = "<group>"; };
+		68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33SensorTests.swift; sourceTree = "<group>"; };
 		6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPackPopover.swift; sourceTree = "<group>"; };
 		6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V29CoverageTests.swift; sourceTree = "<group>"; };
@@ -110,10 +120,12 @@
 		7551766C6C334EDA0CFD664E /* EditShapeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditShapeSheet.swift; sourceTree = "<group>"; };
 		75DBE1118CB6B8E7AD3B7E51 /* CanvasFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileManager.swift; sourceTree = "<group>"; };
 		773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidGenerator.swift; sourceTree = "<group>"; };
+		7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndToEndTests.swift; sourceTree = "<group>"; };
 		7B7282ECFED87095333BB0D4 /* LägenMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LägenMenu.swift"; sourceTree = "<group>"; };
 		8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitectureRenderer.swift; sourceTree = "<group>"; };
 		8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "claude-canvas-protocol.md"; sourceTree = "<group>"; };
 		942D338F508BC03A111FDAC0 /* MinimapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimapView.swift; sourceTree = "<group>"; };
+		A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33AutoLoopTests.swift; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
 		ADAFD7500719BA94561524F9 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
@@ -273,6 +285,8 @@
 			children = (
 				8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */,
 				4F05E5949388DD0DA7C68672 /* godot-lexicon.md */,
+				26849544B1328648A4C1C344 /* ios-swiftui-rules.md */,
+				0E42EE69DC47FA92EA10BD2F /* prompt-process-rules.md */,
 			);
 			path = Rules;
 			sourceTree = "<group>";
@@ -303,9 +317,13 @@
 			isa = PBXGroup;
 			children = (
 				EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */,
+				7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */,
+				18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */,
 				12BE1B86655B722847CCF708 /* V27FeatureTests.swift */,
 				DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */,
 				712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */,
+				A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */,
+				68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */,
 			);
 			path = UITests;
 			sourceTree = "<group>";
@@ -420,6 +438,8 @@
 				FA1737FF5856B37C8337F489 /* METOD-VISUELL-DIALOG.md in Resources */,
 				695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */,
 				08E3968AA32CB239C81D65C0 /* godot-lexicon.md in Resources */,
+				4CBA5CE815AFDDCC6E0D9143 /* ios-swiftui-rules.md in Resources */,
+				EF3A6ED12336454DED83D357 /* prompt-process-rules.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,9 +510,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				414054BE34E93776285A75C4 /* DragOutTests.swift in Sources */,
+				114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */,
+				155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */,
 				D4040B6552C65FDDCE78A77B /* V27FeatureTests.swift in Sources */,
 				07E3490A9963968FB98F7B44 /* V28VisualTests.swift in Sources */,
 				AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */,
+				B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */,
+				1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

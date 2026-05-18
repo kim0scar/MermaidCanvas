@@ -1,12 +1,27 @@
 import SwiftUI
 
 /// Bottom sheet som visar genererad mermaid-kod för aktuell canvas.
-/// Apple-design: scrollbar text, copy-knapp, stäng-knapp i nav-bar.
+/// v32: Live från CanvasModel — kod regenereras vid varje render om model.shapes ändras.
 struct MermaidCodeSheet: View {
-    let code: String
+    @ObservedObject var model: CanvasModel
     var onClose: () -> Void
 
     @State private var copied = false
+
+    /// Live-genererad mermaid-kod (computed varje render).
+    private var code: String {
+        let doc = CanvasDocument(
+            title: model.canvasTitle,
+            shapes: model.shapes,
+            edges: model.edges,
+            canvasSize: model.canvasSize,
+            specType: model.specType,
+            platform: model.platform,
+            activeShapePacks: model.activeShapePacks,
+            collapsedIds: model.collapsedIds
+        )
+        return doc.content
+    }
 
     var body: some View {
         NavigationStack {
