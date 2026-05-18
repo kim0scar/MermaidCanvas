@@ -11,7 +11,6 @@ struct LägenMenu: View {
     var onOpen: () -> Void
     var onNewCanvas: () -> Void
     var onShowCode: () -> Void
-    var onShowPreview: () -> Void
     var onShowRules: () -> Void
 
     var body: some View {
@@ -61,11 +60,7 @@ struct LägenMenu: View {
                 Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
             }
             Divider()
-            if model.platform == .godot {
-                Button { onShowPreview() } label: {
-                    Label("Preview (simulerad app)", systemImage: "eye")
-                }
-            }
+            // v32: Preview-knapp borttagen — kommer tillbaka när Godot-flödet är moget.
             Button { onShowCode() } label: {
                 Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")
             }

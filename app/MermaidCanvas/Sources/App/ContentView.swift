@@ -13,8 +13,6 @@ struct ContentView: View {
     @State private var editingShapeId: UUID? = nil
     @State private var notingShapeId: UUID? = nil
     @State private var showCodeSheet: Bool = false
-    @State private var generatedCode: String = ""
-    @State private var showPreviewSheet: Bool = false
     @State private var showNewCanvasPrompt: Bool = false
     @State private var showNewCanvasSheet: Bool = false
     @State private var showRulesSheet: Bool = false
@@ -39,7 +37,6 @@ struct ContentView: View {
                     onSaveAs: saveAs,
                     onUndo: { model.undo() },
                     onShowCode: showMermaidCode,
-                    onShowPreview: { showPreviewSheet = true },
                     onShowRules: { showRulesSheet = true },
                     onToggleMarker: { model.toggleMarkerMode() },
                     onAddTable: { model.addTable(at: canvasCenter) },
@@ -178,7 +175,8 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showCodeSheet) {
-            MermaidCodeSheet(code: generatedCode) {
+            // v32: live från model (inte cached string)
+            MermaidCodeSheet(model: model) {
                 showCodeSheet = false
             }
         }
@@ -200,15 +198,6 @@ struct ContentView: View {
         .sheet(isPresented: $showRulesSheet) {
             PlatformRulesSheet(platform: model.platform,
                                onClose: { showRulesSheet = false })
-        }
-        .sheet(isPresented: $showPreviewSheet) {
-            PreviewSheet(
-                shapes: model.shapes,
-                edges: model.edges,
-                canvasSize: model.canvasSize,
-                specType: model.specType,
-                onClose: { showPreviewSheet = false }
-            )
         }
         .fileImporter(
             isPresented: $showImporter,
@@ -336,8 +325,7 @@ struct ContentView: View {
     }
 
     private func showMermaidCode() {
-        let doc = makeDocument()
-        generatedCode = doc.content
+        // v32: kod genereras live i sheet via @ObservedObject model
         showCodeSheet = true
     }
 

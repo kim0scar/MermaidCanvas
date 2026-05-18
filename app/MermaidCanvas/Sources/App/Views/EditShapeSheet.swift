@@ -42,6 +42,7 @@ struct EditShapeSheet: View {
                         TextField("Skriv text", text: $draft.label, axis: .vertical)
                             .lineLimit(1...4)
                             .focused($labelFocused)
+                            .accessibilityIdentifier("edit.label")
                         Picker("Stil", selection: $draft.textStyle) {
                             ForEach(TextStyle.allCases) { st in
                                 Text(st.displayName).tag(st)
@@ -54,6 +55,7 @@ struct EditShapeSheet: View {
                 Section("Anteckning (osynlig på canvasen)") {
                     TextField("Skriv anteckning här", text: $draft.note, axis: .vertical)
                         .lineLimit(2...8)
+                        .accessibilityIdentifier("edit.note")
                 }
 
                 Section {
