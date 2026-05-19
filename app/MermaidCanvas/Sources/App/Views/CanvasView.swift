@@ -508,17 +508,23 @@ private struct JumpLinkShapeBackground: View {
 }
 
 /// v28: rundad diamant — mjuka hörn istället för vassa spetsar.
-/// Använder addQuadCurve mellan hörnpunkter med en inset på `cornerRadius`.
+/// v35.1: begränsad till kvadrat (min(width,height)) så den matchar SF-symbolen "diamond"
+/// och Mermaid's {} som båda är likasidiga ◇.
 struct DiamondShape: Shape {
     var cornerRadius: CGFloat = 8
 
     func path(in rect: CGRect) -> Path {
-        let top = CGPoint(x: rect.midX, y: rect.minY)
-        let right = CGPoint(x: rect.maxX, y: rect.midY)
-        let bottom = CGPoint(x: rect.midX, y: rect.maxY)
-        let left = CGPoint(x: rect.minX, y: rect.midY)
+        // Centrera en kvadrat i ramen — lika bred som hög.
+        let side = min(rect.width, rect.height)
+        let sqRect = CGRect(x: rect.midX - side / 2,
+                            y: rect.midY - side / 2,
+                            width: side, height: side)
+        let top = CGPoint(x: sqRect.midX, y: sqRect.minY)
+        let right = CGPoint(x: sqRect.maxX, y: sqRect.midY)
+        let bottom = CGPoint(x: sqRect.midX, y: sqRect.maxY)
+        let left = CGPoint(x: sqRect.minX, y: sqRect.midY)
 
-        let r = min(cornerRadius, min(rect.width, rect.height) / 4)
+        let r = min(cornerRadius, side / 4)
         // För varje hörn: gå r-pt åt vardera håll längs kanten innan hörnet
         // och rita en quad-curve runt själva hörnet.
         let topToRightDir = unitVector(from: top, to: right)
