@@ -54,31 +54,10 @@ final class V29CoverageTests: XCTestCase {
 
     @MainActor
     func testT7_DropOutsideCanvasFallsBackToCenter() throws {
-        let app = launchApp()
-        openShapesRow(app)
-        let chip = app.buttons["chip.circle"]
-        XCTAssertTrue(chip.waitForExistence(timeout: 4))
-
-        // Dra cirkel till en punkt LÅNGT utanför canvas-arean
-        // (t.ex. över skärmens översta kant, ovanför toolbar)
-        let from = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-        // Mål: punkt utanför canvas — toolbar.zoom-ikonen som ligger i toolbar
-        let target = app.buttons["toolbar.zoom"].coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-        from.press(forDuration: 0.3, thenDragTo: target)
-        sleep(1)
-
-        // Förväntat: 1 form skapad, position ≈ canvas-mitten (400, 400)
-        XCTAssertEqual(modelShapeCount(app), 1,
-                       "Drop utanför canvas ska skapa form ändå (fallback)")
-        guard let pos = lastShapePosition(app) else {
-            XCTFail("Kunde inte läsa shape-position")
-            return
-        }
-        // v31: Canvas-mitten är (800, 800) för 1600×1600 canvas
-        XCTAssertLessThan(abs(pos.x - 800), 50,
-                          "Form ska hamna nära canvas-mitten X=800, fick \(pos.x)")
-        XCTAssertLessThan(abs(pos.y - 800), 50,
-                          "Form ska hamna nära canvas-mitten Y=800, fick \(pos.y)")
+        // v34: drop-fallback-funktionen rivades — .dropDestination tar bara emot drops
+        // INOM sin frame. Att släppa över toolbar gör inget. Den gamla fallbacken
+        // var en workaround för buggar i ShapeDragController som inte längre finns.
+        throw XCTSkip("v34: drop-utanför-canvas-fallback rivad — .dropDestination kräver släpp inom canvas-frame")
     }
 
     // MARK: - T16: Tap utanför avmarkerar
@@ -199,17 +178,8 @@ final class V29CoverageTests: XCTestCase {
 
     @MainActor
     func testT13_MinimapButtonOpensMinimap() throws {
-        let app = launchApp()
-
-        let mapBtn = app.buttons["toolbar.minimap"]
-        XCTAssertTrue(mapBtn.waitForExistence(timeout: 4),
-                      "toolbar.minimap-knappen ska finnas i topp-höger overlay")
-        mapBtn.tap()
-        sleep(1)
-
-        // Efter tap ska minimap-vyn vara synlig — den har accessibilityIdentifier "minimap.canvas"
-        let minimapCanvas = app.otherElements["minimap.canvas"]
-        XCTAssertTrue(minimapCanvas.waitForExistence(timeout: 3),
-                      "minimap.canvas ska visas efter tap på toolbar.minimap")
+        // v34: minimap bortplockad. Med UIScrollView's fit-zoom kan man inte tappa
+        // bort sig i canvasen — papperet täcker alltid minst en dimension av viewporten.
+        throw XCTSkip("v34: minimap-funktionen rivad — UIScrollView fit-zoom täcker behovet")
     }
 }

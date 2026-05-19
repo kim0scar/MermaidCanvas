@@ -1,8 +1,8 @@
 import XCTest
 
-/// v33: Visuellt bevis att versionsnumret "v33" syns i Lägen-menyn.
+/// v33: Visuellt bevis att versionsnumret "v34" syns i Lägen-menyn.
 /// Skapad efter att Kim klagade på att appen visade "v32" trots deploy.
-/// Detta test öppnar menyn och tar screenshot — om "v33" inte syns visuellt
+/// Detta test öppnar menyn och tar screenshot — om "v34" inte syns visuellt
 /// är det inte en deploy-bug utan en kod-bug i AppVersion.current.
 final class V33VersionVisibleTests: XCTestCase {
 
@@ -35,14 +35,14 @@ final class V33VersionVisibleTests: XCTestCase {
         attMenu.lifetime = .keepAlways
         add(attMenu)
 
-        // Steg 4: leta efter versionsraden — den ska innehålla "v33"
-        let v33Label = app.staticTexts["v33"]
+        // Steg 4: leta efter versionsraden — den ska innehålla "v34"
+        let v33Label = app.staticTexts["v34"]
         let exists = v33Label.waitForExistence(timeout: 3)
 
-        // Fallback: om staticText("v33") inte hittar exakt match, leta brett
+        // Fallback: om staticText("v34") inte hittar exakt match, leta brett
         if !exists {
             let allTexts = app.descendants(matching: .any)
-                .matching(NSPredicate(format: "label CONTAINS[c] %@", "v33"))
+                .matching(NSPredicate(format: "label CONTAINS[c] %@", "v34"))
             let found = allTexts.firstMatch.waitForExistence(timeout: 2)
             XCTAssertTrue(found,
                           "v33 syns INTE i Lägen-menyn. AppVersion.current är troligen fel värde.")

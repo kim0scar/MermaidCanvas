@@ -33,8 +33,13 @@ final class V33AutoLoopTests: XCTestCase {
         let start = Date()
         var iter = 0
 
-        // Hämta initial canvas-frame
-        let canvas = app.otherElements["canvas"]
+        // Hämta initial canvas-frame. v34: UIScrollView mappas till scrollViews i XCTest
+        // istället för otherElements som SwiftUI-vy gjorde i v33.
+        let canvas: XCUIElement = {
+            let scroll = app.scrollViews["canvas"]
+            if scroll.waitForExistence(timeout: 2) { return scroll }
+            return app.otherElements["canvas"]
+        }()
         XCTAssertTrue(canvas.waitForExistence(timeout: 4))
         let initialCanvasFrame = canvas.frame
 

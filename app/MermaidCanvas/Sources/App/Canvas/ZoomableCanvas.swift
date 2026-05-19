@@ -82,6 +82,9 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.backgroundColor = .systemGray5
         scrollView.decelerationRate = .normal
+        // För XCUITest: så testerna kan hitta canvas-elementet via otherElements["canvas"]
+        // ELLER scrollViews["canvas"]. UIScrollView är av default ett accessibility-element.
+        scrollView.accessibilityIdentifier = "canvas"
 
         // Lägg den hostade SwiftUI-vyn som content
         let hosted = context.coordinator.hostingController.view!
@@ -182,16 +185,27 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
 
         // Hjälp-metoder
 
-        /// Beräkna och sätt min-zoom = fit-screen, sedan zooma till det.
+        /// Beräkna min-zoom så canvasen alltid fyller minst en dimension av viewporten
+        /// (Apple Maps/Photos-stil). Då uppstår aldrig grå "tomma" områden runt canvasen —
+        /// max på en led i taget, beroende på vilken kant användaren panorerar mot.
+        ///
+        /// Startzoom = 1.0 (naturlig storlek) om min-zoom är mindre, annars min-zoom.
+        /// Centrera på canvas-mitten så Kim ser canvasen i naturlig storlek vid start.
         func fitToScreen(scrollView: UIScrollView, animated: Bool) {
             let viewport = scrollView.bounds.size
             guard viewport.width > 0, viewport.height > 0 else { return }
             let xScale = viewport.width / contentSize.width
             let yScale = viewport.height / contentSize.height
-            let minScale = min(xScale, yScale)
+            // max så canvasen alltid täcker minst en dimension — inget grått alla sidor
+            let minScale = max(xScale, yScale)
             scrollView.minimumZoomScale = minScale
-            scrollView.setZoomScale(minScale, animated: animated)
-            centerContentIfNeeded(scrollView: scrollView)
+            // Startzoom: 1.0 om möjligt, annars min-scale
+            let initialScale: CGFloat = max(1.0, minScale)
+            scrollView.setZoomScale(initialScale, animated: animated)
+            // Centrera på canvas-mitten
+            let centerCanvas = CGPoint(x: contentSize.width / 2,
+                                       y: contentSize.height / 2)
+            center(on: centerCanvas, scrollView: scrollView, animated: animated)
         }
 
         /// Centrera scrollviewens content när det är mindre än viewport
