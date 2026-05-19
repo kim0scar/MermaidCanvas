@@ -73,6 +73,18 @@ enum MermaidGenerator {
         let hints = layoutHints(shapes: shapes, edges: edges, mermaidIds: mermaidIds, indent: indent)
         for hint in hints { lines.append(hint) }
 
+        // v35.1: Storleks-styling — style-taggar för noder med icke-standard storlek
+        // så att Mermaid-renderaren visar relativ storlek (font-size-skalning).
+        for shape in shapes {
+            guard abs(shape.sizeMultiplier - 1.0) > 0.01 else { continue }
+            guard let id = mermaidIds[shape.id] else { continue }
+            let baseFontSize: Double = 14.0
+            let basePadding: Double = 8.0
+            let fontSize = max(8, Int((baseFontSize * Double(shape.sizeMultiplier)).rounded()))
+            let padding  = max(2, Int((basePadding  * Double(shape.sizeMultiplier)).rounded()))
+            lines.append("\(indent)style \(id) font-size:\(fontSize)px,padding:\(padding)px")
+        }
+
         // Edges
         for (i, edge) in edges.enumerated() {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }

@@ -440,6 +440,37 @@ final class V35MermaidValidationTests: XCTestCase {
                        "Ska INTE innehålla ~~~-hints när kanter finns:\n\(code)")
     }
 
+    /// Verifierar att storleks-variation genererar Mermaid style-taggar
+    /// med skalad font-size så att noder ser relativt stora/små ut.
+    func testGenerator_SizeVariation_ProducesStyleTags() throws {
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .circle,    position: CGPoint(x: 100, y: 200),
+                      label: "Liten",  sizeMultiplier: 0.5),
+            ShapeNode(type: .rectangle, position: CGPoint(x: 300, y: 200),
+                      label: "Normal", sizeMultiplier: 1.0),   // ingen style-tag
+            ShapeNode(type: .diamond,   position: CGPoint(x: 500, y: 200),
+                      label: "Stor",   sizeMultiplier: 2.0)
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes,
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 600),
+            specType: .general
+        )
+
+        // Liten nod (0.5) ska ha style-tag med liten font (min 8px)
+        XCTAssertTrue(code.contains("style ui_N0 font-size:8px"),
+                      "Liten nod (0.5×) ska ha style-tag:\n\(code)")
+
+        // Normal nod (1.0) ska INTE ha style-tag
+        XCTAssertFalse(code.contains("style ui_N1"),
+                       "Normal nod (1.0×) ska inte ha style-tag:\n\(code)")
+
+        // Stor nod (2.0) ska ha style-tag med stor font
+        XCTAssertTrue(code.contains("style ui_N2 font-size:28px"),
+                      "Stor nod (2.0×) ska ha style-tag:\n\(code)")
+    }
+
     /// Verifierar att shapes i en enda kolumn (alla ungefär samma X)
     /// får en vertikal kedja av ~~~-hintar.
     func testGenerator_LayoutHints_SingleColumnChain() throws {
