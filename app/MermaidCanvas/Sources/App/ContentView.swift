@@ -16,7 +16,11 @@ struct ContentView: View {
     /// som inte fungerar pålitligt inuti UIViewRepresentable runt UIScrollView).
     @StateObject private var chipDragState = ChipDragState()
 
-    @State private var canvasCenter: CGPoint = CGPoint(x: 2000, y: 2000)
+    /// v35: canvasCenter är nu DYNAMISK — räknas från viewportState's
+    /// synliga viewport-mitt. När Kim panorerar/zoomar och sedan tappar
+    /// en chip, läggs formen DÄR HAN TITTAR — inte vid statisk (2000,2000)
+    /// som kan vara utanför skärm.
+    private var canvasCenter: CGPoint { viewportState.visibleCenterInCanvas }
     @State private var showImporter: Bool = false
     @State private var showExporter: Bool = false
     @State private var pendingDocument: CanvasDocument?
@@ -77,26 +81,8 @@ struct ContentView: View {
                     resetZoomTrigger: resetZoomTrigger
                 )
 
-            // canvasCenter pekas på canvas-mitten — används vid "lägg till form från meny"
-            // (UI-läge: vi vill helst lägga former inom iPhone-frame, men canvas-mitten räcker)
-            .onAppear {
-                if model.specType == .ui {
-                    let frame = iPhoneFrameMath.canvasFrame(in: model.contentSize)
-                    canvasCenter = CGPoint(x: frame.midX, y: frame.midY)
-                } else {
-                    canvasCenter = CGPoint(x: model.contentSize.width / 2,
-                                           y: model.contentSize.height / 2)
-                }
-            }
-            .onChange(of: model.specType) { _, new in
-                if new == .ui {
-                    let frame = iPhoneFrameMath.canvasFrame(in: model.contentSize)
-                    canvasCenter = CGPoint(x: frame.midX, y: frame.midY)
-                } else {
-                    canvasCenter = CGPoint(x: model.contentSize.width / 2,
-                                           y: model.contentSize.height / 2)
-                }
-            }
+            // v35: canvasCenter är dynamisk via computed property från viewportState
+            // — ingen .onAppear / .onChange behövs.
             }
 
             // v34: flytande chip-preview vid finger under aktiv drag
