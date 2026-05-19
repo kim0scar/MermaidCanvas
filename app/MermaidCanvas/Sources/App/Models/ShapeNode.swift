@@ -22,8 +22,6 @@ enum ShapeType: String, Codable, CaseIterable {
     case triangle
     /// Processsteg-pil (pentagon) — rektangel med spetsig högerände. Kan ha label.
     case processArrow
-    /// Chevron/processpil — indragen vänsterkant + spetsig högerände.
-    case chevron
 }
 
 extension ShapeType: Transferable {

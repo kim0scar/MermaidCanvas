@@ -6,7 +6,6 @@ import SwiftUI
 
 enum SecondaryToolbarRow: Equatable {
     case shapes
-    case arrows
     case colors
     case textStyles
     /// v31: form-paket-rad (visar UI-pack + Prompt-Process-pack-toggles)
@@ -68,8 +67,7 @@ struct ToolbarView: View {
         // så 8 toggle-knappar + zoom + undo + menyknapp ryms på iPhone-bredd.
         HStack(spacing: 4) {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
-            toggleButton("arrow.right", row: .arrows, disabled: model.isEdgeMode, accId: "toolbar.arrows")
-            toggleButton("brain.head.profile", row: .packs, accId: "toolbar.packs")
+            toggleButton("swatchpalette", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
             Spacer(minLength: 0)
@@ -174,11 +172,10 @@ struct ToolbarView: View {
     private func secondaryRowView(_ row: SecondaryToolbarRow) -> some View {
         HStack(spacing: 8) {
             switch row {
-            case .shapes:    shapesSecondary
-            case .arrows:    arrowsSecondary
-            case .colors:    colorsSecondary
+            case .shapes:     shapesSecondary
+            case .colors:     colorsSecondary
             case .textStyles: textStylesSecondary
-            case .packs:     packsSecondary
+            case .packs:      packsSecondary
             }
         }
         .padding(.horizontal, 10)
@@ -189,50 +186,44 @@ struct ToolbarView: View {
 
     // MARK: - Former-rad (tap + drag-out via egen controller)
 
-    /// v31: två rader — basformer + special-symboler.
-    /// Rad A: circle, rectangle, diamond, pill (ny avlång capsule)
-    /// Rad B: table, link, text, line (ny lös streck), arrow (ny lös pil), note-popup
-    /// HStack (INTE ScrollView) eftersom ScrollView konsumerar tap-events på iPhone (v29-lärdom).
+    /// v36: två rader med alla 12 former.
+    /// Rad A (7): circle, rectangle, square, diamond, pill, triangle, processArrow
+    /// Rad B (5): text, table, link, line, notePopup
+    /// HStack (INTE ScrollView) — ScrollView konsumerar tap-events på iPhone (v29-lärdom).
     @ViewBuilder
     private var shapesSecondary: some View {
         VStack(spacing: 8) {
-            // Rad A — rundade basformer
+            // Rad A — 7 grundformer
             HStack(spacing: 8) {
-                shapeChip(.circle,    "circle",    accId: "chip.circle") {
+                shapeChip(.circle,       "circle",           accId: "chip.circle") {
                     model.addShape(.circle, at: canvasCenter)
                 }
-                shapeChip(.rectangle, "rectangle", accId: "chip.rectangle") {
+                shapeChip(.rectangle,    "rectangle",        accId: "chip.rectangle") {
                     model.addShape(.rectangle, at: canvasCenter)
                 }
-                shapeChip(.square,    "square",    accId: "chip.square") {
+                shapeChip(.square,       "square",           accId: "chip.square") {
                     model.addShape(.square, at: canvasCenter)
                 }
-                shapeChip(.diamond,   "diamond",   accId: "chip.diamond") {
+                shapeChip(.diamond,      "diamond",          accId: "chip.diamond") {
                     model.addShape(.diamond, at: canvasCenter)
                 }
-            }
-            // Rad B — fler former + process-pilar
-            HStack(spacing: 8) {
-                shapeChip(.pill,        "capsule",              accId: "chip.pill") {
+                shapeChip(.pill,         "capsule",          accId: "chip.pill") {
                     model.addShape(.pill, at: canvasCenter)
                 }
-                shapeChip(.triangle,    "triangle",             accId: "chip.triangle") {
+                shapeChip(.triangle,     "triangle",         accId: "chip.triangle") {
                     model.addShape(.triangle, at: canvasCenter)
                 }
-                shapeChip(.processArrow,"arrowshape.right",     accId: "chip.processArrow") {
+                shapeChip(.processArrow, "arrowshape.right", accId: "chip.processArrow") {
                     model.addShape(.processArrow, at: canvasCenter)
                 }
-                shapeChip(.chevron,     "arrowshape.right.fill", accId: "chip.chevron") {
-                    model.addShape(.chevron, at: canvasCenter)
-                }
             }
-            // Rad C — special + streck
+            // Rad B — 5 special-typer + anteckning-popup
             HStack(spacing: 8) {
                 shapeChip(.text,  "character.textbox", accId: "chip.text") {
                     model.addShape(.text, at: canvasCenter)
                 }
-                shapeChip(.table, "tablecells",        accId: "chip.table",  onTap: onAddTable)
-                shapeChip(.link,  "link",              accId: "chip.link",   onTap: onAddJumpLink)
+                shapeChip(.table, "tablecells",        accId: "chip.table", onTap: onAddTable)
+                shapeChip(.link,  "link",              accId: "chip.link",  onTap: onAddJumpLink)
                 shapeChip(.line,  "minus",             accId: "chip.line") {
                     model.addFreeLine(at: canvasCenter, withArrow: false)
                 }
@@ -346,56 +337,6 @@ struct ToolbarView: View {
             .accessibilityIdentifier(accId)
     }
 
-
-    // MARK: - Pilar-rad
-
-    @ViewBuilder
-    private var arrowsSecondary: some View {
-        HStack(spacing: 8) {
-            arrowChip("arrow.right", mode: .directional, label: "Pil")
-            arrowChip("arrow.left.arrow.right", mode: .bidirectional, label: "Dubbel")
-            Text("Tips: dra från handtagen på en vald form")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            if model.isEdgeMode {
-                Button(action: onCancelEdgeMode) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "xmark")
-                        Text("Avbryt")
-                    }
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.red)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Capsule().fill(Color.red.opacity(0.1)))
-                }
-                .buttonStyle(.plain)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func arrowChip(_ system: String, mode: EdgeCreationMode, label: String) -> some View {
-        Button {
-            onStartEdgeMode(mode)
-            secondaryRow = nil
-        } label: {
-            HStack(spacing: 5) {
-                Image(systemName: system).font(.title3)
-                Text(label).font(.subheadline.weight(.medium))
-            }
-            .foregroundStyle(model.edgeCreationMode == mode ? Color.white : Color.primary)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(
-                Capsule().fill(model.edgeCreationMode == mode
-                               ? Color.accentColor
-                               : Color(.systemBackground))
-            )
-            .overlay(Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
-        }
-        .buttonStyle(.plain)
-    }
 
     // MARK: - Färg-rad
 

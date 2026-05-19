@@ -357,7 +357,6 @@ enum MermaidGenerator {
         case .square:       return "(\"\(label)\")"    // rundad rektangel — närmast Mermaid har en kvadrat
         case .triangle:     return "[\"\(label)\"]"    // Mermaid har ingen triangel-native; rektangel tills vidare
         case .processArrow: return "[\"\(label)\"]"    // Mermaid saknar pentagon-form; rektangel
-        case .chevron:      return "[\"\(label)\"]"    // Mermaid saknar chevron-form; rektangel
         }
     }
 

@@ -38,18 +38,16 @@ struct EditShapeSheet: View {
             Form {
                 Section("Text i form") {
                     Toggle("Visa text", isOn: $draft.showLabel)
-                    if draft.showLabel {
-                        TextField("Skriv text", text: $draft.label, axis: .vertical)
-                            .lineLimit(1...4)
-                            .focused($labelFocused)
-                            .accessibilityIdentifier("edit.label")
-                        Picker("Stil", selection: $draft.textStyle) {
-                            ForEach(TextStyle.allCases) { st in
-                                Text(st.displayName).tag(st)
-                            }
+                    TextField("Skriv text", text: $draft.label, axis: .vertical)
+                        .lineLimit(1...4)
+                        .focused($labelFocused)
+                        .accessibilityIdentifier("edit.label")
+                    Picker("Stil", selection: $draft.textStyle) {
+                        ForEach(TextStyle.allCases) { st in
+                            Text(st.displayName).tag(st)
                         }
-                        .pickerStyle(.segmented)
                     }
+                    .pickerStyle(.segmented)
                 }
 
                 Section("Anteckning (osynlig på canvasen)") {

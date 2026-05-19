@@ -205,19 +205,20 @@ final class CanvasModel: ObservableObject {
         var next = 1
         while usedNumbers.contains(next) { next += 1 }
         let a = ShapeNode(type: .link,
-                          position: CGPoint(x: position.x - 100, y: position.y),
+                          position: CGPoint(x: position.x - 80, y: position.y),
                           label: "",
-                          sizeMultiplier: 0.7,
+                          sizeMultiplier: 1.0,
                           category: .note,
                           linkNumber: next)
         let b = ShapeNode(type: .link,
-                          position: CGPoint(x: position.x + 100, y: position.y),
+                          position: CGPoint(x: position.x + 80, y: position.y),
                           label: "",
-                          sizeMultiplier: 0.7,
+                          sizeMultiplier: 1.0,
                           category: .note,
                           linkNumber: next)
         shapes.append(a)
         shapes.append(b)
+        expandCanvasIfNeeded(near: a.position)
         expandCanvasIfNeeded(near: b.position)
     }
 

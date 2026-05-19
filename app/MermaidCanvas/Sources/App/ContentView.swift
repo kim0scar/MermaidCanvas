@@ -8,6 +8,8 @@ let dragLog = Logger(subsystem: "com.kimlundqvist.mermaidcanvas", category: "dra
 struct ContentView: View {
     @StateObject private var model = CanvasModel()
     @StateObject private var fileManager = CanvasFileManager()
+    /// v36: autosave vid bakgrundning.
+    @Environment(\.scenePhase) private var scenePhase
     /// v34: synkroniserad spegel av UIScrollView's pan/zoom-state.
     /// Speglat live i ZoomableCanvas delegate-callbacks (utan async). Manuell
     /// chip-drop läser detta synkront vid drag-end → ingen race-condition.
@@ -187,6 +189,12 @@ struct ContentView: View {
         .onChange(of: fileManager.reloadTick) { _, _ in
             reloadFromFile()
         }
+        // v36: autospara när appen bakgrundas (inga data försvinner)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background, fileManager.hasOpenFile {
+                saveToOpenFile()
+            }
+        }
         .confirmationDialog("Spara nuvarande canvas först?",
                             isPresented: $showNewCanvasPrompt,
                             titleVisibility: .visible) {
@@ -323,11 +331,9 @@ struct ContentView: View {
         case .pill:         return "capsule"
         case .line:         return "minus"
         case .arrow:        return "arrow.right"
-        // v35.1: nya grundformer
         case .square:       return "square"
         case .triangle:     return "triangle"
         case .processArrow: return "arrowshape.right"
-        case .chevron:      return "arrowshape.right.fill"
         }
     }
 }

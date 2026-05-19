@@ -5,21 +5,21 @@ enum ShapeGeometry {
     static let baseWidth: CGFloat = 120
     static let baseHeight: CGFloat = 80
 
-    /// v35.1: typ-specifika basbredder/-höjder.
+    /// v35.1/v36: typ-specifika basbredder/-höjder.
     static func typeBaseWidth(for type: ShapeType) -> CGFloat {
         switch type {
         case .pill:         return 150   // 25% bredare oval
         case .square:       return 80    // liksidig
         case .triangle:     return 88    // liksidig triangel
         case .processArrow: return 140   // bredare pil-form
-        case .chevron:      return 130   // chevron
         default:            return baseWidth
         }
     }
     static func typeBaseHeight(for type: ShapeType) -> CGFloat {
         switch type {
-        case .square: return 80   // liksidig
-        default:      return baseHeight
+        case .square:    return 80   // liksidig kvadrat
+        case .triangle:  return 88   // v36: liksidig triangel (88×88 = alla sidor lika)
+        default:         return baseHeight
         }
     }
 
@@ -329,6 +329,10 @@ struct ShapeView: View {
             background
             stroke
             highlight
+            // v36: lös linje/pil ritas via FreeLineView (background ger EmptyView)
+            if shape.type == .line || shape.type == .arrow {
+                FreeLineView(shape: shape, stroke: effectiveStroke)
+            }
             if shape.showLabel {
                 Text(shape.label)
                     .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
@@ -442,12 +446,7 @@ struct ShapeView: View {
             ProcessArrowShape()
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
-        case .chevron:
-            ChevronShape()
-                .fill(effectiveFill)
-                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .line, .arrow:
-            // v31: lös linje/pil renderas separat via FreeLineShape (utanför background)
             EmptyView()
         }
     }
@@ -469,8 +468,6 @@ struct ShapeView: View {
             TriangleShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .processArrow:
             ProcessArrowShape().stroke(effectiveStroke, lineWidth: 1.5)
-        case .chevron:
-            ChevronShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .text, .table, .link, .line, .arrow:
             EmptyView()
         }
@@ -494,8 +491,6 @@ struct ShapeView: View {
                 TriangleShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .processArrow:
                 ProcessArrowShape().stroke(Color.accentColor, lineWidth: 3.5)
-            case .chevron:
-                ChevronShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .text:
                 RoundedRectangle(cornerRadius: 8).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
@@ -657,58 +652,73 @@ struct TriangleShape: Shape {
     }
 }
 
-/// Processsteg-pil — rektangel med spetsig högerände (pentagon).
-/// Vänsterkant har rundade hörn; höger spets är skarp (mjukas av med liten r).
+/// Processsteg-pil — pentagon med PLATT vänsterkant och spetsig högerände.
+/// v36: matchar SF-symbolen arrowshape.right (rak vänster, spets höger).
 struct ProcessArrowShape: Shape {
-    var cornerRadius: CGFloat = 14
-
     func path(in rect: CGRect) -> Path {
-        let r  = min(cornerRadius, rect.height / 3)
         let tip: CGFloat = rect.height * 0.45   // hur djup spetsen är
 
         var p = Path()
-        // Övre-vänster (runt hörn)
-        p.move(to: CGPoint(x: rect.minX, y: rect.minY + r))
-        p.addQuadCurve(to: CGPoint(x: rect.minX + r, y: rect.minY),
-                       control: CGPoint(x: rect.minX, y: rect.minY))
-        // Övre kanten → spets-axel
+        p.move(to: CGPoint(x: rect.minX, y: rect.minY))
         p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.minY))
-        // Spets (höger)
         p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        // Nedre sida → nedre-vänster
         p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.maxY))
-        p.addLine(to: CGPoint(x: rect.minX + r, y: rect.maxY))
-        // Nedre-vänster (runt hörn)
-        p.addQuadCurve(to: CGPoint(x: rect.minX, y: rect.maxY - r),
-                       control: CGPoint(x: rect.minX, y: rect.maxY))
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
         p.closeSubpath()
         return p
     }
 }
 
-/// Chevron/Processbåge — indragen vänsterkant + spetsig högerände.
-/// Ser ut som en pil som passar in i en sekvens av processsteg (▷▷▷).
-struct ChevronShape: Shape {
-    var cornerRadius: CGFloat = 8
+// MARK: - FreeLineView
 
-    func path(in rect: CGRect) -> Path {
-        let tip: CGFloat  = rect.height * 0.40   // spetsdjup höger
-        let notch: CGFloat = rect.height * 0.35  // indragning vänster
+/// v36: Ritar en lös linje eller pil på canvas.
+/// Linjen går från formens centrum (0,0 i view-space) till lineEnd (relativ offset).
+/// Används för ShapeType.line och .arrow — dessa renderas INTE av background/stroke.
+struct FreeLineView: View {
+    let shape: ShapeNode
+    let stroke: Color
 
-        var p = Path()
-        // Vänster indragning (V-formad) med mjukt hörn vid mitten
-        p.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        p.addLine(to: CGPoint(x: rect.minX + notch, y: rect.midY - 1))
-        p.addQuadCurve(to: CGPoint(x: rect.minX + notch, y: rect.midY + 1),
-                       control: CGPoint(x: rect.minX + notch + cornerRadius, y: rect.midY))
-        p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-        // Nedre kanten
-        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.maxY))
-        // Höger spets
-        p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.minY))
-        p.closeSubpath()
-        return p
+    var body: some View {
+        Canvas { ctx, size in
+            guard let end = shape.lineEnd else { return }
+            let from = CGPoint(x: size.width / 2, y: size.height / 2)
+            let to   = CGPoint(x: size.width / 2 + end.x,
+                               y: size.height / 2 + end.y)
+
+            // Linje
+            var path = Path()
+            path.move(to: from)
+            path.addLine(to: to)
+            ctx.stroke(path, with: .color(stroke),
+                       style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+
+            // Pilhuvud (endast .arrow)
+            if shape.type == .arrow {
+                let angle = atan2(end.y, end.x)
+                let headLen: CGFloat = 14
+                let headAngle: CGFloat = .pi / 6   // 30°
+
+                let a1 = CGPoint(
+                    x: to.x - headLen * cos(angle - headAngle),
+                    y: to.y - headLen * sin(angle - headAngle))
+                let a2 = CGPoint(
+                    x: to.x - headLen * cos(angle + headAngle),
+                    y: to.y - headLen * sin(angle + headAngle))
+
+                var head = Path()
+                head.move(to: to)
+                head.addLine(to: a1)
+                head.move(to: to)
+                head.addLine(to: a2)
+                ctx.stroke(head, with: .color(stroke),
+                           style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+            }
+        }
+        // Ramen måste täcka hela sträckan. lineEnd kan peka åt valfritt håll.
+        // ShapeGeometry.width/height ger rätt ram om lineEnd är satt korrekt.
+        .frame(width: ShapeGeometry.width(for: shape),
+               height: ShapeGeometry.height(for: shape))
+        .allowsHitTesting(false)
     }
 }
 
@@ -895,7 +905,7 @@ struct EdgesView: View {
             guard denom > 0.001 else { return center }
             let t = 1.0 / denom
             return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
-        case .text, .table, .pill, .square, .processArrow, .chevron:
+        case .text, .table, .pill, .square, .processArrow:
             return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
         case .triangle:
             // Approximera med bounding box — bra nog för kant-ankare

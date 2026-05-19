@@ -9,7 +9,7 @@ import CoreGraphics
 /// genererar ogiltig mermaid när en form innehåller åäö eller emoji.
 final class V35MermaidValidationTests: XCTestCase {
 
-    // MARK: - 1. Alla shape-typer → korrekt mermaid-syntax (v35.1: 13 typer)
+    // MARK: - 1. Alla shape-typer → korrekt mermaid-syntax (v36: 12 typer, chevron borttagen)
 
     func testGenerator_AllNineShapeTypes_ProducesValidSyntax() throws {
         let shapes: [ShapeNode] = [
@@ -29,8 +29,7 @@ final class V35MermaidValidationTests: XCTestCase {
             // v35.1 nya grundformer
             ShapeNode(type: .square,       position: CGPoint(x: 1000, y: 100), label: "Fyrkant"),
             ShapeNode(type: .triangle,     position: CGPoint(x: 1100, y: 100), label: "Triangel"),
-            ShapeNode(type: .processArrow, position: CGPoint(x: 1200, y: 100), label: "Processpil"),
-            ShapeNode(type: .chevron,      position: CGPoint(x: 1300, y: 100), label: "Chevron")
+            ShapeNode(type: .processArrow, position: CGPoint(x: 1200, y: 100), label: "Processpil")
         ]
         XCTAssertEqual(shapes.count, ShapeType.allCases.count, "Testet ska täcka alla ShapeType-fall")
         // Sanity check: alla ShapeType-fall ska finnas representerade

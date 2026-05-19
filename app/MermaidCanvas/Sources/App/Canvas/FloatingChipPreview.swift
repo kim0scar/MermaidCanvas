@@ -33,7 +33,6 @@ struct FloatingChipPreview: View {
         case .square:       return "square"
         case .triangle:     return "triangle"
         case .processArrow: return "arrowshape.right"
-        case .chevron:      return "arrowshape.right.fill"
         }
     }
 }
