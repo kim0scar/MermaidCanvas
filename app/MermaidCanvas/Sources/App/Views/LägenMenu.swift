@@ -12,6 +12,8 @@ struct LägenMenu: View {
     var onNewCanvas: () -> Void
     var onShowCode: () -> Void
     var onShowRules: () -> Void
+    /// v33: markerButton flyttad hit från primary toolbar för att rymma 44pt-knappar.
+    var onToggleMarker: () -> Void
 
     var body: some View {
         Menu {
@@ -60,6 +62,12 @@ struct LägenMenu: View {
                 Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
             }
             Divider()
+            // v33: markeringsläge flyttat hit från toolbar
+            Button { onToggleMarker() } label: {
+                Label(model.markerMode ? "Stäng markeringsläge" : "Markeringsläge",
+                      systemImage: model.markerMode ? "pencil.slash" : "pencil.tip")
+            }
+            .accessibilityIdentifier("menu.toggleMarker")
             // v32: Preview-knapp borttagen — kommer tillbaka när Godot-flödet är moget.
             Button { onShowCode() } label: {
                 Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")
@@ -84,10 +92,12 @@ struct ToolbarIconButton: View {
     var foregroundColor: Color = .primary
 
     var body: some View {
+        // v33 polish: 16→17pt font + 40→44pt frame. Större finger-träffyta på iPhone
+        // och ikonen läses bättre vid samma kontrast. Matchar Apple HIG (min 44pt).
         Image(systemName: systemImage)
-            .font(.system(size: 16, weight: .medium))
+            .font(.system(size: 17, weight: .medium))
             .foregroundStyle(isActive ? Color.white : foregroundColor)
-            .frame(width: 40, height: 40)
+            .frame(width: 44, height: 44)
             .background(
                 Circle().fill(isActive ? Color.accentColor : .clear)
             )

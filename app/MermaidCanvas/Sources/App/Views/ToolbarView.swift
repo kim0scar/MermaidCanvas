@@ -54,15 +54,14 @@ struct ToolbarView: View {
 
     @ViewBuilder
     private var primaryRow: some View {
-        // v33 polish: spacing 6→4 så 9 knappar ryms på iPhone utan trängsel,
-        // horizontal padding 14→10 för mer aktiv yta åt knapparna.
+        // v33: 44pt-knappar enligt Apple HIG. markerButton flyttad till Lägen-menyn
+        // så 8 toggle-knappar + zoom + undo + menyknapp ryms på iPhone-bredd.
         HStack(spacing: 4) {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
             toggleButton("arrow.right", row: .arrows, disabled: model.isEdgeMode, accId: "toolbar.arrows")
             toggleButton("brain.head.profile", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
-            markerButton
             Spacer(minLength: 0)
             zoomBadge
             undoButton
@@ -74,7 +73,8 @@ struct ToolbarView: View {
                 onOpen: onOpen,
                 onNewCanvas: onNewCanvas,
                 onShowCode: onShowCode,
-                onShowRules: onShowRules
+                onShowRules: onShowRules,
+                onToggleMarker: onToggleMarker
             )
         }
         .padding(.horizontal, 10)
