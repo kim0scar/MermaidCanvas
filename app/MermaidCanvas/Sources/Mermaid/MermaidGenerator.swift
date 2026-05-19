@@ -92,13 +92,31 @@ enum MermaidGenerator {
             guard let id = mermaidIds[shape.id] else { continue }
             var styleProps: [String] = []
 
-            // Storlek: medelvärde av effectiveWidth/effectiveHeight → font-size-skalning
+            // Font-size: textStyle.fontSize × sizeMultiplier-genomsnitt.
+            // body×1.0 = 14px = Mermaids default → hoppa över för att hålla koden ren.
             let visSize = Double((shape.effectiveWidth + shape.effectiveHeight) / 2.0)
+            let baseFontPt: Double
+            switch shape.textStyle {
+            case .r1:   baseFontPt = 20
+            case .r2:   baseFontPt = 17
+            case .r3:   baseFontPt = 14
+            case .body: baseFontPt = 14   // matchar Mermaids default
+            }
+            let scaledFont = max(8, Int((baseFontPt * visSize).rounded()))
+            if abs(scaledFont - 14) > 1 {
+                styleProps.append("font-size:\(scaledFont)px")
+            }
+            // Padding skalas bara med form-storlek (inte textstil)
             if abs(visSize - 1.0) > 0.01 {
-                let fontSize = max(8,  Int((14.0 * visSize).rounded()))
-                let padding  = max(2,  Int((8.0  * visSize).rounded()))
-                styleProps.append("font-size:\(fontSize)px")
+                let padding = max(2, Int((8.0 * visSize).rounded()))
                 styleProps.append("padding:\(padding)px")
+            }
+            // Font-weight: r1=bold, r2=600(semibold), r3=500(medium)
+            switch shape.textStyle {
+            case .r1:   styleProps.append("font-weight:bold")
+            case .r2:   styleProps.append("font-weight:600")
+            case .r3:   styleProps.append("font-weight:500")
+            case .body: break
             }
 
             // Färg: colorOverride → colorPack → text-transparens (i prioritetsordning).
