@@ -230,7 +230,9 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
     /// (Appen renderar formerna med fillColor — Mermaid-exporten är neutral.)
     var mermaidClassDef: String {
         let stroke = strokeColor.hex
-        return "fill:#ffffff,stroke:\(stroke),color:#111827"
+        // font-weight:normal förhindrar att Mermaid-renderare sätter bold som default
+        // på noder utan explicit textStyle (t.ex. "Hjulet" ska vara regular, inte fet).
+        return "fill:#ffffff,stroke:\(stroke),color:#111827,font-weight:normal"
     }
 
     /// Föreslagen short-label på canvas när formen är tom (visar kategori).

@@ -295,8 +295,11 @@ struct ShapeView: View {
 
     private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
     private var effectiveFill: Color { pack.fillColor }
-    // v28: alla former får svart/primary stroke. Kim vill konsekvent färg, inte blå accent.
-    private var effectiveStroke: Color { Color.primary }
+    // v35.1: pack.strokeColor när pack är satt, annars kategori-stroke.
+    // (Tidigare: alltid Color.primary = svart — ignorerade pack-färgen.)
+    private var effectiveStroke: Color {
+        pack.id != "none" ? pack.strokeColor : shape.category.strokeColor
+    }
     private var effectiveTextColor: Color { pack.textColor }
 
     var body: some View {
