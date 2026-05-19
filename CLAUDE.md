@@ -12,8 +12,9 @@ Detta är minimum för att fortsätta arbeta:
 2. **`app/MermaidCanvas/Sources/AppVersion.swift`** — nuvarande version-nummer (single source of truth)
 3. **`ARKITEKTUR-MERMAID.md`** — exakt vad nuvarande version har för funktioner + filöversikt
 4. **`~/.claude/plans/vi-ska-bygga-en-magical-knuth.md`** — vad som är gjort + nästa steg
-5. **Memory:** `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/MEMORY.md` (laddas automatiskt)
-6. **Git-loggen:** `git log --oneline -10` för senaste 10 commits
+5. **`ROADMAP.md`** — versioner + roadmap framåt
+6. **Memory:** `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/MEMORY.md` (laddas automatiskt)
+7. **Git-loggen:** `git log --oneline -10` för senaste 10 commits
 
 Om något verkar saknas, fråga Kim: "Är allt sparat enligt CLAUDE.md sanningskälla?"
 
@@ -32,12 +33,13 @@ Den här tabellen är **alltid aktuell**. Uppdatera den så fort en ny sparplats
 | **Xcode-projekt** | `app/MermaidCanvas/MermaidCanvas.xcodeproj/` (regenereras från `project.yml` via `xcodegen`) | git |
 | **Build-artefakter** | `app/MermaidCanvas/DerivedData/` — *.gitignored*, regenereras vid build | endast lokalt |
 | **Aktuell arkitektur** | `ARKITEKTUR-MERMAID.md` (senaste version) | git |
+| **Swift-modul-tabell** | `ARKITEKTUR-SWIFT.md` (filtabell + modul-roller) | git |
+| **Roadmap + version-spårning** | `ROADMAP.md` (versioner + plan framåt) | git |
 | **Tidigare arkitektur-versioner** | `arkiv/ARKITEKTUR-MERMAID-vN.md` (en per deploy) | git |
 | **Appen på iPhone** | bundle-ID `com.kimlundqvist.mermaidcanvas`, Team `SFXR8MV6MP`, device F271CF8E-4260-5501-9E86-1C765EA1A38E | enbart på iPhone tills nästa deploy från Mac |
 | **Kims canvas-filer (i drift)** | `~/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/1. Mermaid/` | iCloud Drive — syns på både iPhone och Mac |
 | **Memory (för framtida sessioner)** | `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/` | endast lokalt på Macen |
 | **Plan-fil (aktuell roadmap)** | `~/.claude/plans/vi-ska-bygga-en-magical-knuth.md` | endast lokalt på Macen |
-| **Perplexity-vision (referens)** | `PERPLEXITY-INPUT.md` (5 Perplexity-svar om 4-modes-vision) | git |
 | **Versionssnapshot per deploy** | `arkiv/ARKITEKTUR-MERMAID-vN.md` | git |
 
 **Verifiera sparat-status:** `git status` (ska säga clean) + `git log --oneline -5` (sista commit syns) + `git status -sb` (ska säga `up to date with origin/main`).
@@ -85,9 +87,10 @@ Användarens canvas-filer ligger i:
 | `METOD-VISUELL-DIALOG.md` | Protokoll för delat visuellt språk Kim ↔ Claude Code. Portabel — gäller alla projekt med visuell yta. |
 | `VERSIONSHANTERING.md` | Exakt checklista vid varje deploy / ny version |
 | `ARKITEKTUR-MERMAID.md` | Aktuell arkitektur: mermaid-diagram + fil-tabell |
+| `ARKITEKTUR-SWIFT.md` | Swift-modul-tabell |
+| `ROADMAP.md` | Versioner + roadmap framåt |
 | `Start för ios appar Kim.md` | iPhone-deploy: signing, build, devicectl |
 | `arkiv/ARKITEKTUR-MERMAID-vN.md` | Historik över hur appen sett ut tidigare |
-| `PERPLEXITY-INPUT.md` | 5 Perplexity-svar med 4-modes-vision (UI/Roadmap/Arch/Flow) — bakgrund till feature-listan |
 | `~/.claude/plans/vi-ska-bygga-en-magical-knuth.md` | MVP-roadmap + nuvarande etapp |
 
 ## Användarens profil (kort)

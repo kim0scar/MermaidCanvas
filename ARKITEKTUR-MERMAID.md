@@ -1,6 +1,10 @@
 # ARKITEKTUR-MERMAID — Version v31
 *Datum: 2026-05-18*
 
+**Aktuell version:** v34 (under utveckling)
+
+**v34-huvudändring:** Canvas-kärnan ombyggd med UIScrollView (löser drop/pan/zoom-buggarna). Minimap bortplockad. Fast 4000×4000pt canvas-storlek.
+
 > **Status:** v31 är en STOR version efter v30: modulär omstrukturering (Sources/App/, Mermaid/, ClaudeCode/), canvas 1600×1600, startzoom 100%, pan-clamp, zoom-mot-finger, 2-rads-former, nya symboler (pill, lös linje, lös pil, anteckning-popup), ny plattform iOS SwiftUI, form-paketer-toolbar-ikon, Prompt-Process-pack (subagent/prompt/skill/tool/memory/output), migrerade deprecated kategorier, fri-resize-handtag, GitHub-publicering.
 
 ---
