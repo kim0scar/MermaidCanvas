@@ -13,6 +13,7 @@
 		08E3968AA32CB239C81D65C0 /* godot-lexicon.md in Resources */ = {isa = PBXBuildFile; fileRef = 4F05E5949388DD0DA7C68672 /* godot-lexicon.md */; };
 		0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
 		1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */; };
+		AABB01CC11AABB1111000001 /* V33VersionVisibleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB02CC11AABB1111000002 /* V33VersionVisibleTests.swift */; };
 		114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */; };
 		11BE53EC33154017D1148891 /* CanvasDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AB7BE4C160CC630F4E4CFA /* CanvasDocument.swift */; };
 		12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */; };
@@ -112,6 +113,7 @@
 		652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
 		6660E4DB431B5BBCAF625147 /* SpecType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecType.swift; sourceTree = "<group>"; };
 		68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33SensorTests.swift; sourceTree = "<group>"; };
+		AABB02CC11AABB1111000002 /* V33VersionVisibleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33VersionVisibleTests.swift; sourceTree = "<group>"; };
 		6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPackPopover.swift; sourceTree = "<group>"; };
 		6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V29CoverageTests.swift; sourceTree = "<group>"; };
@@ -324,6 +326,7 @@
 				712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */,
 				A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */,
 				68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */,
+				AABB02CC11AABB1111000002 /* V33VersionVisibleTests.swift */,
 			);
 			path = UITests;
 			sourceTree = "<group>";
@@ -517,6 +520,7 @@
 				AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */,
 				B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */,
 				1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */,
+				AABB01CC11AABB1111000001 /* V33VersionVisibleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
