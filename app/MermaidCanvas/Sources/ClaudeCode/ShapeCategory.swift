@@ -225,11 +225,14 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
     }
 
     /// Hex för Mermaid `classDef`-rader.
+    /// v35.1: vit fyllning + kategori-kantlinje — standard flödesschema-stil.
+    /// Kategorifärgen syns i kantlinjen så semantiken bevaras.
+    /// (Appen renderar formerna med fillColor — Mermaid-exporten är neutral.)
     var mermaidClassDef: String {
-        let fill = fillColor.hex
         let stroke = strokeColor.hex
-        let text = textColor.hex
-        return "fill:\(fill),stroke:\(stroke),color:\(text)"
+        // font-weight:normal förhindrar att Mermaid-renderare sätter bold som default
+        // på noder utan explicit textStyle (t.ex. "Hjulet" ska vara regular, inte fet).
+        return "fill:#ffffff,stroke:\(stroke),color:#111827,font-weight:normal"
     }
 
     /// Föreslagen short-label på canvas när formen är tom (visar kategori).

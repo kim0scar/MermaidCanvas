@@ -196,22 +196,37 @@ struct ToolbarView: View {
     @ViewBuilder
     private var shapesSecondary: some View {
         VStack(spacing: 8) {
-            // Rad A — basformer
+            // Rad A — rundade basformer
             HStack(spacing: 8) {
-                shapeChip(.circle,    "circle",   accId: "chip.circle") {
+                shapeChip(.circle,    "circle",    accId: "chip.circle") {
                     model.addShape(.circle, at: canvasCenter)
                 }
                 shapeChip(.rectangle, "rectangle", accId: "chip.rectangle") {
                     model.addShape(.rectangle, at: canvasCenter)
                 }
-                shapeChip(.diamond,   "diamond",  accId: "chip.diamond") {
+                shapeChip(.square,    "square",    accId: "chip.square") {
+                    model.addShape(.square, at: canvasCenter)
+                }
+                shapeChip(.diamond,   "diamond",   accId: "chip.diamond") {
                     model.addShape(.diamond, at: canvasCenter)
                 }
-                shapeChip(.pill,      "capsule",  accId: "chip.pill") {
+            }
+            // Rad B — fler former + process-pilar
+            HStack(spacing: 8) {
+                shapeChip(.pill,        "capsule",              accId: "chip.pill") {
                     model.addShape(.pill, at: canvasCenter)
                 }
+                shapeChip(.triangle,    "triangle",             accId: "chip.triangle") {
+                    model.addShape(.triangle, at: canvasCenter)
+                }
+                shapeChip(.processArrow,"arrowshape.right",     accId: "chip.processArrow") {
+                    model.addShape(.processArrow, at: canvasCenter)
+                }
+                shapeChip(.chevron,     "arrowshape.right.fill", accId: "chip.chevron") {
+                    model.addShape(.chevron, at: canvasCenter)
+                }
             }
-            // Rad B — special
+            // Rad C — special + streck
             HStack(spacing: 8) {
                 shapeChip(.text,  "character.textbox", accId: "chip.text") {
                     model.addShape(.text, at: canvasCenter)
@@ -220,9 +235,6 @@ struct ToolbarView: View {
                 shapeChip(.link,  "link",              accId: "chip.link",   onTap: onAddJumpLink)
                 shapeChip(.line,  "minus",             accId: "chip.line") {
                     model.addFreeLine(at: canvasCenter, withArrow: false)
-                }
-                shapeChip(.arrow, "arrow.right",       accId: "chip.arrow") {
-                    model.addFreeLine(at: canvasCenter, withArrow: true)
                 }
                 Button {
                     onShowNotePopup()

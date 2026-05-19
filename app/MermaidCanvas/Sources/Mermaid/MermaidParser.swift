@@ -247,11 +247,14 @@ enum MermaidParser {
         let block = String(markdown[start.upperBound..<end.lowerBound])
         let ns = block as NSString
 
-        // Tre former; valfritt :::klass-suffix
+        // Former; valfritt :::klass-suffix. Ordning: circle/pill-tests före rektangel
+        // så att ((..)) och ([..]) inte snappas upp av enkelparen-regeln.
         let patterns: [(String, ShapeType)] = [
-            (#"(\w+)\(\(\s*\"([^\"]*?)\"\s*\)\)(?::::(\w+))?"#, .circle),
-            (#"(\w+)\[\s*\"([^\"]*?)\"\s*\](?::::(\w+))?"#, .rectangle),
-            (#"(\w+)\{\s*\"([^\"]*?)\"\s*\}(?::::(\w+))?"#, .diamond)
+            (#"(\w+)\(\(\s*\"([^\"]*?)\"\s*\)\)(?::::(\w+))?"#, .circle),      // ((".."))
+            (#"(\w+)\(\[\s*\"([^\"]*?)\"\s*\]\)(?::::(\w+))?"#, .pill),         // ([".."])
+            (#"(\w+)\(\s*\"([^\"]*?)\"\s*\)(?::::(\w+))?"#, .rectangle),        // ("..") v35.1
+            (#"(\w+)\[\s*\"([^\"]*?)\"\s*\](?::::(\w+))?"#, .rectangle),        // [".."] bakåtkomp
+            (#"(\w+)\{\s*\"([^\"]*?)\"\s*\}(?::::(\w+))?"#, .diamond)           // {".."}
         ]
 
         var seen = Set<String>()

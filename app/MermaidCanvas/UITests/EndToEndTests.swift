@@ -136,11 +136,7 @@ final class EndToEndTests: XCTestCase {
         assertDragCreatesShape(app, chipId: "chip.line", expectedDelta: 1)
     }
 
-    @MainActor func testDragArrowCreatesShape() throws {
-        let app = launchApp()
-        openShapesRow(app)
-        assertDragCreatesShape(app, chipId: "chip.arrow", expectedDelta: 1)
-    }
+    // chip.arrow togs bort i v35.1 — fri pil ersatt av processArrow och chevron.
 
     // MARK: - Mermaid-kod-innehåll per shape-typ
 

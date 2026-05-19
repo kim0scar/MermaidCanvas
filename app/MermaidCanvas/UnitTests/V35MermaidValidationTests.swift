@@ -9,29 +9,34 @@ import CoreGraphics
 /// genererar ogiltig mermaid när en form innehåller åäö eller emoji.
 final class V35MermaidValidationTests: XCTestCase {
 
-    // MARK: - 1. Alla 9 shape-typer → korrekt mermaid-syntax
+    // MARK: - 1. Alla shape-typer → korrekt mermaid-syntax (v35.1: 13 typer)
 
     func testGenerator_AllNineShapeTypes_ProducesValidSyntax() throws {
         let shapes: [ShapeNode] = [
-            ShapeNode(type: .circle,    position: CGPoint(x: 100, y: 100), label: "Cirkel"),
-            ShapeNode(type: .rectangle, position: CGPoint(x: 200, y: 100), label: "Rektangel"),
-            ShapeNode(type: .diamond,   position: CGPoint(x: 300, y: 100), label: "Diamant"),
-            ShapeNode(type: .pill,      position: CGPoint(x: 400, y: 100), label: "Pill"),
-            ShapeNode(type: .text,      position: CGPoint(x: 500, y: 100), label: "Text"),
-            ShapeNode(type: .table,     position: CGPoint(x: 600, y: 100), label: "Tabell",
+            ShapeNode(type: .circle,       position: CGPoint(x: 100, y: 100), label: "Cirkel"),
+            ShapeNode(type: .rectangle,    position: CGPoint(x: 200, y: 100), label: "Rektangel"),
+            ShapeNode(type: .diamond,      position: CGPoint(x: 300, y: 100), label: "Diamant"),
+            ShapeNode(type: .pill,         position: CGPoint(x: 400, y: 100), label: "Pill"),
+            ShapeNode(type: .text,         position: CGPoint(x: 500, y: 100), label: "Text"),
+            ShapeNode(type: .table,        position: CGPoint(x: 600, y: 100), label: "Tabell",
                       tableRows: 3, tableCols: 4),
-            ShapeNode(type: .link,      position: CGPoint(x: 700, y: 100), label: "Länk",
+            ShapeNode(type: .link,         position: CGPoint(x: 700, y: 100), label: "Länk",
                       linkNumber: 1),
-            ShapeNode(type: .line,      position: CGPoint(x: 800, y: 100), label: "Linje",
+            ShapeNode(type: .line,         position: CGPoint(x: 800, y: 100), label: "Linje",
                       lineEnd: CGPoint(x: 50, y: 50)),
-            ShapeNode(type: .arrow,     position: CGPoint(x: 900, y: 100), label: "Pil",
-                      lineEnd: CGPoint(x: 50, y: 50))
+            ShapeNode(type: .arrow,        position: CGPoint(x: 900, y: 100), label: "Pil",
+                      lineEnd: CGPoint(x: 50, y: 50)),
+            // v35.1 nya grundformer
+            ShapeNode(type: .square,       position: CGPoint(x: 1000, y: 100), label: "Fyrkant"),
+            ShapeNode(type: .triangle,     position: CGPoint(x: 1100, y: 100), label: "Triangel"),
+            ShapeNode(type: .processArrow, position: CGPoint(x: 1200, y: 100), label: "Processpil"),
+            ShapeNode(type: .chevron,      position: CGPoint(x: 1300, y: 100), label: "Chevron")
         ]
-        XCTAssertEqual(shapes.count, 9, "Testet ska täcka alla 9 ShapeType-fall")
+        XCTAssertEqual(shapes.count, ShapeType.allCases.count, "Testet ska täcka alla ShapeType-fall")
         // Sanity check: alla ShapeType-fall ska finnas representerade
         let coveredTypes = Set(shapes.map { $0.type })
         XCTAssertEqual(coveredTypes.count, ShapeType.allCases.count,
-                       "Testet ska täcka alla ShapeType-fall i enumet")
+                       "Testet ska täcka alla \(ShapeType.allCases.count) ShapeType-fall i enumet")
 
         let mermaid = MermaidGenerator.generate(
             shapes: shapes,
@@ -48,7 +53,7 @@ final class V35MermaidValidationTests: XCTestCase {
         // Vi vet att labels är giltiga unika strängar — så vi söker efter dem
         // omslutna av rätt avgränsare.
         let circleSyntax = "((\"Cirkel\"))"
-        let rectSyntax = "[\"Rektangel\"]"
+        let rectSyntax = "(\"Rektangel\")"  // v35.1: rundade hörn
         let diamondSyntax = "{\"Diamant\"}"
         let pillSyntax = "([\"Pill\"])"
         let tableSyntax = "[\"Tabell\"]"
@@ -67,6 +72,11 @@ final class V35MermaidValidationTests: XCTestCase {
         XCTAssertTrue(mermaid.contains(linkSyntax), "Länk-syntax saknas: '\(linkSyntax)'")
         XCTAssertTrue(mermaid.contains(lineSyntax), "Line-syntax saknas: '\(lineSyntax)'")
         XCTAssertTrue(mermaid.contains(arrowSyntax), "Arrow-syntax saknas: '\(arrowSyntax)'")
+        // v35.1: nya grundformer — alla renderas med [...] eller (...) i Mermaid
+        XCTAssertTrue(mermaid.contains("\"Fyrkant\""), "Fyrkant-label saknas i output")
+        XCTAssertTrue(mermaid.contains("\"Triangel\""), "Triangel-label saknas i output")
+        XCTAssertTrue(mermaid.contains("\"Processpil\""), "Processpil-label saknas i output")
+        XCTAssertTrue(mermaid.contains("\"Chevron\""), "Chevron-label saknas i output")
 
         // Tabell-metadata ska finnas som mermaid-kommentar
         XCTAssertTrue(mermaid.contains("table: 3×4"),
@@ -78,8 +88,8 @@ final class V35MermaidValidationTests: XCTestCase {
 
         // Varje shape ska ha en position-kommentar
         let posLines = mermaid.split(separator: "\n").filter { $0.contains("pos:") }
-        XCTAssertEqual(posLines.count, 9,
-                       "Alla 9 former ska ha 'pos:'-kommentar (en per form)")
+        XCTAssertEqual(posLines.count, ShapeType.allCases.count,
+                       "Alla \(ShapeType.allCases.count) former ska ha 'pos:'-kommentar (en per form)")
     }
 
     // MARK: - 2. Svåra labels: åäö + emoji + mellanslag + citationstecken
@@ -602,5 +612,55 @@ final class V35MermaidValidationTests: XCTestCase {
                       "Top → Mid:\n\(code)")
         XCTAssertTrue(code.contains("ui_N1 ~~~ ui_N2"),
                       "Mid → Bot:\n\(code)")
+    }
+
+    /// Verifierar att colorPackId → inline style fill:X i Mermaid-export,
+    /// så att pastellfärgerna syns i alla Mermaid-renderare och inte döljs
+    /// av classDef:s vita fyllning.
+    func testGenerator_ColorPack_ProducesStyleFill() throws {
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .diamond, position: CGPoint(x: 100, y: 200),
+                      label: "Lila",  colorPackId: "lila"),
+            ShapeNode(type: .diamond, position: CGPoint(x: 300, y: 200),
+                      label: "Rosa",  colorPackId: "rosa"),
+            ShapeNode(type: .circle,  position: CGPoint(x: 500, y: 200),
+                      label: "Ingen") // ingen pack
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes, edges: [],
+            canvasSize: CGSize(width: 800, height: 600), specType: .general
+        )
+
+        // Lila pack → fill:#ecdfff
+        XCTAssertTrue(code.contains("fill:#ecdfff"),
+                      "Lila colorPack ska ge fill:#ecdfff:\n\(code)")
+        // Rosa pack → fill:#ffe5ec
+        XCTAssertTrue(code.contains("fill:#ffe5ec"),
+                      "Rosa colorPack ska ge fill:#ffe5ec:\n\(code)")
+        // Ingen pack → ingen style-tag för den noden (N2 har ingen size/color)
+        XCTAssertFalse(code.contains("style ui_N2"),
+                       "Nod utan pack ska inte ha style-tag:\n\(code)")
+    }
+
+    /// Verifierar att rectangle exporteras med rundade hörn (("label"))
+    /// och att fallback-parsern känner igen formatet tillbaka som rectangle.
+    func testGenerator_Rectangle_RoundedCornerSyntax() throws {
+        let shape = ShapeNode(type: .rectangle, position: CGPoint(x: 200, y: 200), label: "Hej")
+        let code = MermaidGenerator.generate(
+            shapes: [shape], edges: [],
+            canvasSize: CGSize(width: 600, height: 400), specType: .general
+        )
+
+        XCTAssertTrue(code.contains("(\"Hej\")"),
+                      "Rectangle ska exporteras med rundade hörn (\"Hej\"):\n\(code)")
+
+        // Fallback-parsern ska läsa tillbaka ("Hej") som rectangle.
+        // parseMermaid kräver ```mermaid```-wrapper — generatorn ger bara raw-kod,
+        // så vi lindar in den manuellt för att testa fallback-stigen.
+        let wrapped = "```mermaid\n\(code)\n```"
+        let parsed = MermaidParser.parse(wrapped)
+        XCTAssertEqual(parsed.shapes.count, 1, "Parsern ska hitta 1 shape:\n\(wrapped)")
+        XCTAssertEqual(parsed.shapes.first?.type, .rectangle,
+                       "Parsern ska identifiera formen som rectangle:\n\(wrapped)")
     }
 }

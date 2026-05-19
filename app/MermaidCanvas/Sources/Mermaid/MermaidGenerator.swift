@@ -92,19 +92,45 @@ enum MermaidGenerator {
             guard let id = mermaidIds[shape.id] else { continue }
             var styleProps: [String] = []
 
-            // Storlek: medelvärde av effectiveWidth/effectiveHeight → font-size-skalning
+            // Font-size: textStyle.fontSize × sizeMultiplier-genomsnitt.
+            // body×1.0 = 14px = Mermaids default → hoppa över för att hålla koden ren.
             let visSize = Double((shape.effectiveWidth + shape.effectiveHeight) / 2.0)
+            let baseFontPt: Double
+            switch shape.textStyle {
+            case .r1:   baseFontPt = 20
+            case .r2:   baseFontPt = 17
+            case .r3:   baseFontPt = 14
+            case .body: baseFontPt = 14   // matchar Mermaids default
+            }
+            let scaledFont = max(8, Int((baseFontPt * visSize).rounded()))
+            if abs(scaledFont - 14) > 1 {
+                styleProps.append("font-size:\(scaledFont)px")
+            }
+            // Padding skalas bara med form-storlek (inte textstil)
             if abs(visSize - 1.0) > 0.01 {
-                let fontSize = max(8,  Int((14.0 * visSize).rounded()))
-                let padding  = max(2,  Int((8.0  * visSize).rounded()))
-                styleProps.append("font-size:\(fontSize)px")
+                let padding = max(2, Int((8.0 * visSize).rounded()))
                 styleProps.append("padding:\(padding)px")
             }
+            // Font-weight: r1=bold, r2=600(semibold), r3=500(medium)
+            switch shape.textStyle {
+            case .r1:   styleProps.append("font-weight:bold")
+            case .r2:   styleProps.append("font-weight:600")
+            case .r3:   styleProps.append("font-weight:500")
+            case .body: break
+            }
 
-            // Anpassad färg (fill + stroke från colorOverride)
+            // Färg: colorOverride → colorPack → text-transparens (i prioritetsordning).
+            // colorOverride och colorPack emitteras som inline style → slår alltid igenom
+            // mot classDef:s vita fyllning.
             if let color = shape.colorOverride, !color.isEmpty {
                 styleProps.append("fill:\(color)")
                 styleProps.append("stroke:\(color)")
+            } else if let packId = shape.colorPackId, packId != "none",
+                      let hex = colorPackHex(packId) {
+                // v35.1: ColorPack-färger → inline style så de syns i Mermaid-export.
+                styleProps.append("fill:\(hex.fill)")
+                styleProps.append("stroke:\(hex.stroke)")
+                styleProps.append("color:\(hex.text)")
             } else if shape.type == .text {
                 // Text-shapes ska vara transparenta — classDef textOnly är definierad
                 // men appliceras aldrig automatiskt; inline style tar prioritet.
@@ -317,16 +343,21 @@ enum MermaidGenerator {
 
     private static func shapeBody(for type: ShapeType, label: String) -> String {
         switch type {
-        case .circle:    return "((\"\(label)\"))"
-        case .rectangle: return "[\"\(label)\"]"
-        case .diamond:   return "{\"\(label)\"}"
-        case .text:      return "[\"\(label)\"]"
-        case .table:     return "[\"\(label)\"]"
-        case .link:      return "((\"\(label)\"))"
+        case .circle:       return "((\"\(label)\"))"
+        case .rectangle:    return "(\"\(label)\")"  // v35.1: rundade hörn matchar RoundedRectangle i appen
+        case .diamond:      return "{\"\(label)\"}"
+        case .text:         return "[\"\(label)\"]"
+        case .table:        return "[\"\(label)\"]"
+        case .link:         return "((\"\(label)\"))"
         // v31:
-        case .pill:      return "([\"\(label)\"])"  // mermaid stadium-shape
-        case .line:      return "[\"\(label)\"]"    // lös linje — endpoints i %% line-kommentar
-        case .arrow:     return "[\"\(label)\"]"    // lös pil — som line + arrow-flagga
+        case .pill:         return "([\"\(label)\"])"  // mermaid stadium-shape
+        case .line:         return "[\"\(label)\"]"    // lös linje — endpoints i %% line-kommentar
+        case .arrow:        return "[\"\(label)\"]"    // lös pil — som line + arrow-flagga
+        // v35.1: nya grundformer
+        case .square:       return "(\"\(label)\")"    // rundad rektangel — närmast Mermaid har en kvadrat
+        case .triangle:     return "[\"\(label)\"]"    // Mermaid har ingen triangel-native; rektangel tills vidare
+        case .processArrow: return "[\"\(label)\"]"    // Mermaid saknar pentagon-form; rektangel
+        case .chevron:      return "[\"\(label)\"]"    // Mermaid saknar chevron-form; rektangel
         }
     }
 
@@ -339,5 +370,20 @@ enum MermaidGenerator {
     private static func oneLine(_ text: String) -> String {
         text.replacingOccurrences(of: "\n", with: " ⏎ ")
             .replacingOccurrences(of: "%%", with: "%-%")
+    }
+
+    /// v35.1: Hex-färger för ColorPack per id — speglar ColorPack.swift exakt.
+    /// MermaidGenerator importerar bara Foundation (inte SwiftUI) så vi slår upp
+    /// värdena direkt istället för att anropa ColorPack.fillColor.hex.
+    private static func colorPackHex(_ id: String) -> (fill: String, stroke: String, text: String)? {
+        switch id {
+        case "persika": return ("#ffe3d0", "#e5a57a", "#7a3f1a")
+        case "rosa":    return ("#ffe5ec", "#ff8fa3", "#8b2a3e")
+        case "blå":     return ("#e0f0ff", "#7fb8e5", "#1a4a7a")
+        case "grön":    return ("#d9f5e0", "#7cc196", "#1f5733")
+        case "gul":     return ("#fff4d6", "#e0b85c", "#6b4a1a")
+        case "lila":    return ("#ecdfff", "#b89ce0", "#4a2d7a")
+        default:        return nil
+        }
     }
 }
