@@ -48,7 +48,7 @@ final class V35MermaidValidationTests: XCTestCase {
         // Vi vet att labels är giltiga unika strängar — så vi söker efter dem
         // omslutna av rätt avgränsare.
         let circleSyntax = "((\"Cirkel\"))"
-        let rectSyntax = "[\"Rektangel\"]"
+        let rectSyntax = "(\"Rektangel\")"  // v35.1: rundade hörn
         let diamondSyntax = "{\"Diamant\"}"
         let pillSyntax = "([\"Pill\"])"
         let tableSyntax = "[\"Tabell\"]"
@@ -602,5 +602,55 @@ final class V35MermaidValidationTests: XCTestCase {
                       "Top → Mid:\n\(code)")
         XCTAssertTrue(code.contains("ui_N1 ~~~ ui_N2"),
                       "Mid → Bot:\n\(code)")
+    }
+
+    /// Verifierar att colorPackId → inline style fill:X i Mermaid-export,
+    /// så att pastellfärgerna syns i alla Mermaid-renderare och inte döljs
+    /// av classDef:s vita fyllning.
+    func testGenerator_ColorPack_ProducesStyleFill() throws {
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .diamond, position: CGPoint(x: 100, y: 200),
+                      label: "Lila",  colorPackId: "lila"),
+            ShapeNode(type: .diamond, position: CGPoint(x: 300, y: 200),
+                      label: "Rosa",  colorPackId: "rosa"),
+            ShapeNode(type: .circle,  position: CGPoint(x: 500, y: 200),
+                      label: "Ingen") // ingen pack
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes, edges: [],
+            canvasSize: CGSize(width: 800, height: 600), specType: .general
+        )
+
+        // Lila pack → fill:#ecdfff
+        XCTAssertTrue(code.contains("fill:#ecdfff"),
+                      "Lila colorPack ska ge fill:#ecdfff:\n\(code)")
+        // Rosa pack → fill:#ffe5ec
+        XCTAssertTrue(code.contains("fill:#ffe5ec"),
+                      "Rosa colorPack ska ge fill:#ffe5ec:\n\(code)")
+        // Ingen pack → ingen style-tag för den noden (N2 har ingen size/color)
+        XCTAssertFalse(code.contains("style ui_N2"),
+                       "Nod utan pack ska inte ha style-tag:\n\(code)")
+    }
+
+    /// Verifierar att rectangle exporteras med rundade hörn (("label"))
+    /// och att fallback-parsern känner igen formatet tillbaka som rectangle.
+    func testGenerator_Rectangle_RoundedCornerSyntax() throws {
+        let shape = ShapeNode(type: .rectangle, position: CGPoint(x: 200, y: 200), label: "Hej")
+        let code = MermaidGenerator.generate(
+            shapes: [shape], edges: [],
+            canvasSize: CGSize(width: 600, height: 400), specType: .general
+        )
+
+        XCTAssertTrue(code.contains("(\"Hej\")"),
+                      "Rectangle ska exporteras med rundade hörn (\"Hej\"):\n\(code)")
+
+        // Fallback-parsern ska läsa tillbaka ("Hej") som rectangle.
+        // parseMermaid kräver ```mermaid```-wrapper — generatorn ger bara raw-kod,
+        // så vi lindar in den manuellt för att testa fallback-stigen.
+        let wrapped = "```mermaid\n\(code)\n```"
+        let parsed = MermaidParser.parse(wrapped)
+        XCTAssertEqual(parsed.shapes.count, 1, "Parsern ska hitta 1 shape:\n\(wrapped)")
+        XCTAssertEqual(parsed.shapes.first?.type, .rectangle,
+                       "Parsern ska identifiera formen som rectangle:\n\(wrapped)")
     }
 }

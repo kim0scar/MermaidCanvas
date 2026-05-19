@@ -101,10 +101,18 @@ enum MermaidGenerator {
                 styleProps.append("padding:\(padding)px")
             }
 
-            // Anpassad färg (fill + stroke från colorOverride)
+            // Färg: colorOverride → colorPack → text-transparens (i prioritetsordning).
+            // colorOverride och colorPack emitteras som inline style → slår alltid igenom
+            // mot classDef:s vita fyllning.
             if let color = shape.colorOverride, !color.isEmpty {
                 styleProps.append("fill:\(color)")
                 styleProps.append("stroke:\(color)")
+            } else if let packId = shape.colorPackId, packId != "none",
+                      let hex = colorPackHex(packId) {
+                // v35.1: ColorPack-färger → inline style så de syns i Mermaid-export.
+                styleProps.append("fill:\(hex.fill)")
+                styleProps.append("stroke:\(hex.stroke)")
+                styleProps.append("color:\(hex.text)")
             } else if shape.type == .text {
                 // Text-shapes ska vara transparenta — classDef textOnly är definierad
                 // men appliceras aldrig automatiskt; inline style tar prioritet.
@@ -318,7 +326,7 @@ enum MermaidGenerator {
     private static func shapeBody(for type: ShapeType, label: String) -> String {
         switch type {
         case .circle:    return "((\"\(label)\"))"
-        case .rectangle: return "[\"\(label)\"]"
+        case .rectangle: return "(\"\(label)\")"  // v35.1: rundade hörn matchar RoundedRectangle i appen
         case .diamond:   return "{\"\(label)\"}"
         case .text:      return "[\"\(label)\"]"
         case .table:     return "[\"\(label)\"]"
@@ -339,5 +347,20 @@ enum MermaidGenerator {
     private static func oneLine(_ text: String) -> String {
         text.replacingOccurrences(of: "\n", with: " ⏎ ")
             .replacingOccurrences(of: "%%", with: "%-%")
+    }
+
+    /// v35.1: Hex-färger för ColorPack per id — speglar ColorPack.swift exakt.
+    /// MermaidGenerator importerar bara Foundation (inte SwiftUI) så vi slår upp
+    /// värdena direkt istället för att anropa ColorPack.fillColor.hex.
+    private static func colorPackHex(_ id: String) -> (fill: String, stroke: String, text: String)? {
+        switch id {
+        case "persika": return ("#ffe3d0", "#e5a57a", "#7a3f1a")
+        case "rosa":    return ("#ffe5ec", "#ff8fa3", "#8b2a3e")
+        case "blå":     return ("#e0f0ff", "#7fb8e5", "#1a4a7a")
+        case "grön":    return ("#d9f5e0", "#7cc196", "#1f5733")
+        case "gul":     return ("#fff4d6", "#e0b85c", "#6b4a1a")
+        case "lila":    return ("#ecdfff", "#b89ce0", "#4a2d7a")
+        default:        return nil
+        }
     }
 }
