@@ -44,7 +44,11 @@ struct ToolbarView: View {
             primaryRow
             if let row = secondaryRow {
                 secondaryRowView(row)
-                    .transition(.identity)
+                    // v33 Apple-nivå: smooth opacity+slide-transition vid expand
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .move(edge: .top)),
+                        removal: .opacity.combined(with: .move(edge: .top))
+                    ))
             }
         }
         .background(Color(.systemBackground))
@@ -98,10 +102,17 @@ struct ToolbarView: View {
                               disabled: Bool = false,
                               accId: String) -> some View {
         Button {
-            if secondaryRow == row {
-                secondaryRow = nil
-            } else {
-                secondaryRow = row
+            // v33 Apple-nivå: haptic feedback vid toggle (light impact = avslappnad känsla)
+            #if canImport(UIKit)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
+            // v33 Apple-nivå: smooth spring-animation vid expand/collapse
+            withAnimation(.smooth(duration: 0.25)) {
+                if secondaryRow == row {
+                    secondaryRow = nil
+                } else {
+                    secondaryRow = row
+                }
             }
         } label: {
             ToolbarIconButton(systemImage: systemImage,

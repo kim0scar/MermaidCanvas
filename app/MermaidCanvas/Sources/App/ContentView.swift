@@ -353,6 +353,11 @@ struct ContentView: View {
         default:
             model.addShape(type, at: canvasPoint)
         }
+        // v33 Apple-nivå: medium haptic-bekräftelse på drop — formen "landade",
+        // användaren känner det utan att titta. Klassisk iOS-feedback (jfr Photos drag).
+        #if canImport(UIKit)
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        #endif
     }
 
     /// v28: räkna ut den synliga delen av canvas (i canvas-koord) från pan/zoom + viewport.
