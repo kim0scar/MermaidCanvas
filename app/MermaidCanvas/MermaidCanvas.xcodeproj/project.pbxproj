@@ -11,6 +11,7 @@
 		07E3490A9963968FB98F7B44 /* V28VisualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */; };
 		084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */; };
 		08E3968AA32CB239C81D65C0 /* godot-lexicon.md in Resources */ = {isa = PBXBuildFile; fileRef = 4F05E5949388DD0DA7C68672 /* godot-lexicon.md */; };
+		0B5008A8351CBA21829492D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0DF183504C9423B6FDC2B195 /* Assets.xcassets */; };
 		0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
 		1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */; };
 		114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */; };
@@ -19,6 +20,7 @@
 		150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
 		155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */; };
 		17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */; };
+		26BA18040735A21CC95E37DC /* V34DropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D49F47552871CE2D445E1F /* V34DropTests.swift */; };
 		2801B7CB05578020FBB75138 /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */; };
 		283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228F689846F0D1503749250D /* CanvasView.swift */; };
 		2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D164BF747C4ACF00F0921D /* ToolbarView.swift */; };
@@ -44,6 +46,7 @@
 		999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290C826C5E3BCE9774F09866 /* ContentView.swift */; };
 		9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */; };
 		9BAFA33B65E91F3B02ED1035 /* V33VersionVisibleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B560714D67098D8A734035 /* V33VersionVisibleTests.swift */; };
+		AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */; };
 		AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */; };
 		AF71D014F6A90DEEDB254840 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */; };
 		B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */; };
@@ -91,6 +94,7 @@
 		024C106FB50C0683CF678899 /* PlatformRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRules.swift; sourceTree = "<group>"; };
 		0B2B5D75E6C39BD72EC980C0 /* MermaidCanvasUnitTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotGridBackground.swift; sourceTree = "<group>"; };
+		0DF183504C9423B6FDC2B195 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0E42EE69DC47FA92EA10BD2F /* prompt-process-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "prompt-process-rules.md"; sourceTree = "<group>"; };
 		12BE1B86655B722847CCF708 /* V27FeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V27FeatureTests.swift; sourceTree = "<group>"; };
 		162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "METOD-VISUELL-DIALOG.md"; sourceTree = "<group>"; };
@@ -106,6 +110,7 @@
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
 		37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPack.swift; sourceTree = "<group>"; };
+		48D49F47552871CE2D445E1F /* V34DropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V34DropTests.swift; sourceTree = "<group>"; };
 		4913E980F026A3D6E49070B7 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
 		4F05E5949388DD0DA7C68672 /* godot-lexicon.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "godot-lexicon.md"; sourceTree = "<group>"; };
@@ -140,6 +145,7 @@
 		CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableCanvas.swift; sourceTree = "<group>"; };
 		D35F5529A9079DF8958E486C /* PreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSheet.swift; sourceTree = "<group>"; };
 		D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GodotPreviewRenderer.swift; sourceTree = "<group>"; };
+		D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V35MermaidValidationTests.swift; sourceTree = "<group>"; };
 		DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V28VisualTests.swift; sourceTree = "<group>"; };
 		DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMiniSheet.swift; sourceTree = "<group>"; };
 		E00A564942F1596BCF995981 /* CanvasViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewportState.swift; sourceTree = "<group>"; };
@@ -219,6 +225,7 @@
 		3A3BC9C085033B21CE4FBA3E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0DF183504C9423B6FDC2B195 /* Assets.xcassets */,
 				162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */,
 			);
 			path = Resources;
@@ -309,6 +316,7 @@
 			isa = PBXGroup;
 			children = (
 				19DBECF727C64AC554A79FCC /* RoundTripTests.swift */,
+				D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */,
 			);
 			path = UnitTests;
 			sourceTree = "<group>";
@@ -340,6 +348,7 @@
 				A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */,
 				68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */,
 				F1B560714D67098D8A734035 /* V33VersionVisibleTests.swift */,
+				48D49F47552871CE2D445E1F /* V34DropTests.swift */,
 				844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */,
 			);
 			path = UITests;
@@ -452,6 +461,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B5008A8351CBA21829492D4 /* Assets.xcassets in Resources */,
 				FA1737FF5856B37C8337F489 /* METOD-VISUELL-DIALOG.md in Resources */,
 				695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */,
 				08E3968AA32CB239C81D65C0 /* godot-lexicon.md in Resources */,
@@ -520,6 +530,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CAF3B1AA079DA30839223936 /* RoundTripTests.swift in Sources */,
+				AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,6 +547,7 @@
 				B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */,
 				1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */,
 				9BAFA33B65E91F3B02ED1035 /* V33VersionVisibleTests.swift in Sources */,
+				26BA18040735A21CC95E37DC /* V34DropTests.swift in Sources */,
 				2FB60923F478B3E69A314A91 /* V34PanSymmetryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -603,7 +615,7 @@
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = MermaidCanvas;
+				INFOPLIST_KEY_CFBundleDisplayName = "Flöde";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIFileSharingEnabled = YES;
@@ -628,7 +640,7 @@
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = MermaidCanvas;
+				INFOPLIST_KEY_CFBundleDisplayName = "Flöde";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIFileSharingEnabled = YES;
