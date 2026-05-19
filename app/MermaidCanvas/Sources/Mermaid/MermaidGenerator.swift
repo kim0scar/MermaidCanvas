@@ -47,6 +47,19 @@ enum MermaidGenerator {
             if let color = shape.colorOverride {
                 lines.append("\(indent)%% \(id) color: \(color)")
             }
+            // v35.1: separat bredd/höjd om de avviker från sizeMultiplier
+            if let w = shape.widthMultiplier {
+                lines.append("\(indent)%% \(id) width: \(String(format: "%.2f", w))")
+            }
+            if let h = shape.heightMultiplier {
+                lines.append("\(indent)%% \(id) height: \(String(format: "%.2f", h))")
+            }
+            // v35.1: absolut slutposition för lösa linjer/pilar — synligt för Claude
+            if let end = shape.lineEnd {
+                let absX = Int((shape.position.x + end.x).rounded())
+                let absY = Int((shape.position.y + end.y).rounded())
+                lines.append("\(indent)%% \(id) line-end: \(absX),\(absY)")
+            }
             if let link = shape.linkNumber {
                 lines.append("\(indent)%% \(id) link: \(link)")
             }
@@ -73,16 +86,34 @@ enum MermaidGenerator {
         let hints = layoutHints(shapes: shapes, edges: edges, mermaidIds: mermaidIds, indent: indent)
         for hint in hints { lines.append(hint) }
 
-        // v35.1: Storleks-styling — style-taggar för noder med icke-standard storlek
-        // så att Mermaid-renderaren visar relativ storlek (font-size-skalning).
+        // v35.1: Unified style-taggar per nod — storlek + färg + text-transparens.
+        // En enda `style id ...`-rad per nod kombinerar alla CSS-egenskaper.
         for shape in shapes {
-            guard abs(shape.sizeMultiplier - 1.0) > 0.01 else { continue }
             guard let id = mermaidIds[shape.id] else { continue }
-            let baseFontSize: Double = 14.0
-            let basePadding: Double = 8.0
-            let fontSize = max(8, Int((baseFontSize * Double(shape.sizeMultiplier)).rounded()))
-            let padding  = max(2, Int((basePadding  * Double(shape.sizeMultiplier)).rounded()))
-            lines.append("\(indent)style \(id) font-size:\(fontSize)px,padding:\(padding)px")
+            var styleProps: [String] = []
+
+            // Storlek: medelvärde av effectiveWidth/effectiveHeight → font-size-skalning
+            let visSize = Double((shape.effectiveWidth + shape.effectiveHeight) / 2.0)
+            if abs(visSize - 1.0) > 0.01 {
+                let fontSize = max(8,  Int((14.0 * visSize).rounded()))
+                let padding  = max(2,  Int((8.0  * visSize).rounded()))
+                styleProps.append("font-size:\(fontSize)px")
+                styleProps.append("padding:\(padding)px")
+            }
+
+            // Anpassad färg (fill + stroke från colorOverride)
+            if let color = shape.colorOverride, !color.isEmpty {
+                styleProps.append("fill:\(color)")
+                styleProps.append("stroke:\(color)")
+            } else if shape.type == .text {
+                // Text-shapes ska vara transparenta — classDef textOnly är definierad
+                // men appliceras aldrig automatiskt; inline style tar prioritet.
+                styleProps.append("fill:transparent")
+                styleProps.append("stroke:transparent")
+            }
+
+            guard !styleProps.isEmpty else { continue }
+            lines.append("\(indent)style \(id) \(styleProps.joined(separator: ","))")
         }
 
         // Edges
@@ -162,6 +193,13 @@ enum MermaidGenerator {
             }
             if let packId = shape.colorPackId {
                 n["colorPackId"] = packId
+            }
+            // v35.1: separat bredd/höjd-skalning
+            if let w = shape.widthMultiplier  { n["widthMultiplier"]  = Double(w) }
+            if let h = shape.heightMultiplier { n["heightMultiplier"] = Double(h) }
+            // v35.1: endpoint för lösa linjer/pilar (relativ offset från position)
+            if let end = shape.lineEnd {
+                n["lineEnd"] = ["x": Double(end.x), "y": Double(end.y)]
             }
             return n
         }

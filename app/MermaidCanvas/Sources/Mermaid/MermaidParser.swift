@@ -135,12 +135,27 @@ enum MermaidParser {
             let textStyleRaw = (node["textStyle"] as? String) ?? TextStyle.body.rawValue
             let textStyle = TextStyle(rawValue: textStyleRaw) ?? .body
             let colorPackId = node["colorPackId"] as? String
+            // v35.1: separat bredd/höjd-skalning (optional för bakåtkompatibilitet)
+            let widthMultiplierRaw = node["widthMultiplier"]
+            let widthMultiplier: CGFloat? = widthMultiplierRaw.map {
+                max(0.1, min(10.0, numberValue($0))) }
+            let heightMultiplierRaw = node["heightMultiplier"]
+            let heightMultiplier: CGFloat? = heightMultiplierRaw.map {
+                max(0.1, min(10.0, numberValue($0))) }
+            // v35.1: lineEnd för lösa linjer/pilar (relativ offset från position)
+            var lineEnd: CGPoint? = nil
+            if let leDict = node["lineEnd"] as? [String: Any],
+               let lx = leDict["x"], let ly = leDict["y"] {
+                lineEnd = CGPoint(x: numberValue(lx), y: numberValue(ly))
+            }
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
                 label: label,
                 showLabel: showLabel,
                 sizeMultiplier: max(0.3, min(3.0, size)),
+                widthMultiplier: widthMultiplier,
+                heightMultiplier: heightMultiplier,
                 note: note,
                 category: category,
                 rotation: max(-360, min(360, rotation)),
@@ -149,7 +164,8 @@ enum MermaidParser {
                 tableRows: tableRows,
                 tableCols: tableCols,
                 textStyle: textStyle,
-                colorPackId: colorPackId
+                colorPackId: colorPackId,
+                lineEnd: lineEnd
             )
             idMap[mid] = shape.id
             shapes.append(shape)

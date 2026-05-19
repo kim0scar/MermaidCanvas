@@ -440,6 +440,111 @@ final class V35MermaidValidationTests: XCTestCase {
                        "Ska INTE innehålla ~~~-hints när kanter finns:\n\(code)")
     }
 
+    /// Verifierar att colorOverride genererar en Mermaid style-tag med fill-färg
+    /// (inte bara en %%-kommentar) — så färgen syns i alla Mermaid-renderare.
+    func testGenerator_ColorOverride_ProducesStyleTag() throws {
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .circle,    position: CGPoint(x: 100, y: 200),
+                      label: "Röd",  colorOverride: "#FF5500"),
+            ShapeNode(type: .rectangle, position: CGPoint(x: 300, y: 200),
+                      label: "Normal") // ingen colorOverride
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes,
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 600),
+            specType: .general
+        )
+
+        // Röd nod ska ha fill-style
+        XCTAssertTrue(code.contains("style ui_N0") && code.contains("fill:#FF5500"),
+                      "colorOverride ska generera fill-style:\n\(code)")
+        // Normal nod ska INTE ha style-tag (ingen size, ingen color)
+        XCTAssertFalse(code.contains("style ui_N1"),
+                       "Nod utan colorOverride/size ska inte ha style-tag:\n\(code)")
+    }
+
+    /// Verifierar att text-shapes får transparent fill/stroke i Mermaid
+    /// (inte kategori-fyllning som skulle täcka texten).
+    func testGenerator_TextShape_HasTransparentStyle() throws {
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .text, position: CGPoint(x: 200, y: 200), label: "Rubrik")
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes,
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 600),
+            specType: .general
+        )
+
+        XCTAssertTrue(code.contains("fill:transparent") && code.contains("stroke:transparent"),
+                      "Text-shape ska ha transparent fill + stroke:\n\(code)")
+    }
+
+    /// Verifierar att lineEnd för lösa linjer/pilar round-trippar via JSON-state.
+    func testRoundTrip_LineEnd_Preserved() throws {
+        let startPos = CGPoint(x: 500, y: 600)
+        let endOffset = CGPoint(x: 150, y: -80)
+        let shape = ShapeNode(
+            type: .arrow,
+            position: startPos,
+            label: "Fri pil",
+            lineEnd: endOffset
+        )
+        let doc = CanvasDocument(
+            title: "LineEnd-test",
+            shapes: [shape],
+            edges: [],
+            canvasSize: CGSize(width: 1000, height: 1000),
+            specType: .general,
+            platform: .blank,
+            activeShapePacks: [.basic],
+            collapsedIds: []
+        )
+        let parsed = MermaidParser.parse(doc.content)
+
+        XCTAssertEqual(parsed.shapes.count, 1, "En shape ska finnas efter round-trip")
+        let restored = try XCTUnwrap(parsed.shapes.first)
+        XCTAssertNotNil(restored.lineEnd, "lineEnd ska bevaras efter round-trip")
+        let le = try XCTUnwrap(restored.lineEnd)
+        XCTAssertEqual(le.x, endOffset.x, accuracy: 1.0, "lineEnd.x ska stämma")
+        XCTAssertEqual(le.y, endOffset.y, accuracy: 1.0, "lineEnd.y ska stämma")
+
+        // Mermaid-koden ska också ha ett line-end-kommentar (absolutposition)
+        XCTAssertTrue(doc.content.contains("line-end:"),
+                      "Mermaid-kod ska innehålla %% line-end-kommentar:\n\(doc.content)")
+    }
+
+    /// Verifierar att widthMultiplier + heightMultiplier round-trippar via JSON-state.
+    func testRoundTrip_WidthHeightMultiplier_Preserved() throws {
+        let shape = ShapeNode(
+            type: .rectangle,
+            position: CGPoint(x: 300, y: 300),
+            label: "Bred ruta",
+            sizeMultiplier: 1.0,
+            widthMultiplier: 2.5,
+            heightMultiplier: 0.6
+        )
+        let doc = CanvasDocument(
+            title: "WidthHeight-test",
+            shapes: [shape],
+            edges: [],
+            canvasSize: CGSize(width: 1000, height: 1000),
+            specType: .general,
+            platform: .blank,
+            activeShapePacks: [.basic],
+            collapsedIds: []
+        )
+        let parsed = MermaidParser.parse(doc.content)
+
+        XCTAssertEqual(parsed.shapes.count, 1)
+        let restored = try XCTUnwrap(parsed.shapes.first)
+        XCTAssertNotNil(restored.widthMultiplier,  "widthMultiplier ska bevaras")
+        XCTAssertNotNil(restored.heightMultiplier, "heightMultiplier ska bevaras")
+        XCTAssertEqual(Double(restored.widthMultiplier  ?? 0), 2.5, accuracy: 0.01)
+        XCTAssertEqual(Double(restored.heightMultiplier ?? 0), 0.6, accuracy: 0.01)
+    }
+
     /// Verifierar att storleks-variation genererar Mermaid style-taggar
     /// med skalad font-size så att noder ser relativt stora/små ut.
     func testGenerator_SizeVariation_ProducesStyleTags() throws {
