@@ -24,6 +24,19 @@ import UIKit
 ///     canvasContent   // SwiftUI-content som ligger inuti scrollviewen
 /// }
 /// ```
+/// Subclass av UIScrollView som rapporterar layoutSubviews. Vi behöver det för att
+/// hinna sätta minimumZoomScale + initial center när bounds faktiskt har räknats ut —
+/// DispatchQueue.main.async i makeUIView är inte garanterat efter layout, så vid app-start
+/// var contentOffset = (0,0) och Kim kunde inte panorera upp/vänster eftersom han redan
+/// stod i övre-vänstra hörnet.
+final class _CanvasScrollView: UIScrollView {
+    var onLayoutSubviews: ((UIScrollView) -> Void)?
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        onLayoutSubviews?(self)
+    }
+}
+
 struct ZoomableCanvas<Content: View>: UIViewRepresentable {
     /// Storlek på den vita canvas-papperytan (i canvas-koordinater).
     let contentSize: CGSize
@@ -71,8 +84,13 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UIScrollView {
-        let scrollView = UIScrollView()
+        let scrollView = _CanvasScrollView()
         scrollView.delegate = context.coordinator
+        // Initial fit + center körs först när scrollViewens bounds är kända (efter layout).
+        // Annars är bounds = .zero vid makeUIView och fitToScreen blir no-op.
+        scrollView.onLayoutSubviews = { [weak coordinator = context.coordinator] sv in
+            coordinator?.initialFitIfNeeded(scrollView: sv)
+        }
         scrollView.maximumZoomScale = 4.0
         scrollView.minimumZoomScale = 0.1   // beräknas i layout
         scrollView.bouncesZoom = true
@@ -94,10 +112,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         scrollView.contentSize = contentSize
         scrollView.addSubview(hosted)
 
-        // Initial fit + centrera när bounds finns
-        DispatchQueue.main.async {
-            context.coordinator.fitToScreen(scrollView: scrollView, animated: false)
-        }
+        // (Initial fit körs via onLayoutSubviews ovan när bounds har räknats ut.)
 
         // Stötta UIDropInteraction (UIScrollView blockerar inte drops av default,
         // men vi sätter det explicit för att vara säker).
@@ -177,6 +192,22 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
             }
             // Håll content centrerat när det är mindre än viewport
             centerContentIfNeeded(scrollView: scrollView)
+            updateAccessibilityValue(scrollView: scrollView)
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            // För XCUITest: exponera contentOffset så testerna kan verifiera pan
+            updateAccessibilityValue(scrollView: scrollView)
+        }
+
+        /// Spegla contentOffset + zoomScale till scrollView.accessibilityValue
+        /// så XCUITest kan läsa via `app.scrollViews["canvas"].value`.
+        /// Format: "x=<int>,y=<int>,s=<float>"
+        private func updateAccessibilityValue(scrollView: UIScrollView) {
+            let x = Int(scrollView.contentOffset.x)
+            let y = Int(scrollView.contentOffset.y)
+            let s = String(format: "%.3f", scrollView.zoomScale)
+            scrollView.accessibilityValue = "x=\(x),y=\(y),s=\(s)"
         }
 
         func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
@@ -249,6 +280,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
             guard scrollView.bounds.width > 0 else { return }
             hasDoneInitialFit = true
             fitToScreen(scrollView: scrollView, animated: false)
+            updateAccessibilityValue(scrollView: scrollView)
         }
     }
 }
