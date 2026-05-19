@@ -8,6 +8,13 @@ let dragLog = Logger(subsystem: "com.kimlundqvist.mermaidcanvas", category: "dra
 struct ContentView: View {
     @StateObject private var model = CanvasModel()
     @StateObject private var fileManager = CanvasFileManager()
+    /// v34: synkroniserad spegel av UIScrollView's pan/zoom-state.
+    /// Speglat live i ZoomableCanvas delegate-callbacks (utan async). Manuell
+    /// chip-drop läser detta synkront vid drag-end → ingen race-condition.
+    @StateObject private var viewportState = CanvasViewportState()
+    /// v34: aktivt chip-drag (ersätter Apple's .draggable/.dropDestination
+    /// som inte fungerar pålitligt inuti UIViewRepresentable runt UIScrollView).
+    @StateObject private var chipDragState = ChipDragState()
 
     @State private var canvasCenter: CGPoint = CGPoint(x: 2000, y: 2000)
     @State private var showImporter: Bool = false
@@ -28,6 +35,9 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 ToolbarView(
                     model: model,
+                    chipDragState: chipDragState,
+                    viewportState: viewportState,
+                    onDropShape: handleDrop,
                     canvasCenter: canvasCenter,
                     zoomPercent: zoomPercent,
                     hasOpenFile: fileManager.hasOpenFile,
@@ -55,6 +65,7 @@ struct ContentView: View {
 
                 CanvasView(
                     model: model,
+                    viewportState: viewportState,
                     onShapeEdgeTap: { id in _ = model.handleEdgeTap(on: id) },
                     onShapeEdit: { id in editingShapeId = id },
                     onShapeDelete: { id in model.deleteShape(id: id) },
@@ -62,7 +73,6 @@ struct ContentView: View {
                     onShapeSelect: { id in model.selectShape(id) },
                     onShapeDuplicate: { id in model.duplicateShape(id: id) },
                     onShapeShowNote: { id in notingShapeId = id },
-                    onDropShape: handleDrop,
                     zoomPercent: $zoomPercent,
                     resetZoomTrigger: resetZoomTrigger
                 )
@@ -88,7 +98,16 @@ struct ContentView: View {
                 }
             }
             }
+
+            // v34: flytande chip-preview vid finger under aktiv drag
+            if let type = chipDragState.activeType {
+                FloatingChipPreview(type: type)
+                    .position(chipDragState.globalLocation)
+                    .allowsHitTesting(false)
+                    .transition(.scale.combined(with: .opacity))
+            }
         }
+        .ignoresSafeArea(.keyboard)
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
                let shape = model.shapes.first(where: { $0.id == id }) {

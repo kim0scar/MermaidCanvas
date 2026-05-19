@@ -36,6 +36,9 @@ struct ConnectionDrag: Equatable {
 
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
+    /// v34: synkroniserad spegel av UIScrollView's pan/zoom + global frame.
+    /// Manuell chip-drop läser detta synkront — ingen race-condition.
+    @ObservedObject var viewportState: CanvasViewportState
     var onShapeEdgeTap: (UUID) -> Void
     var onShapeEdit: (UUID) -> Void
     var onShapeDelete: (UUID) -> Void
@@ -43,9 +46,6 @@ struct CanvasView: View {
     var onShapeSelect: (UUID) -> Void
     var onShapeDuplicate: (UUID) -> Void
     var onShapeShowNote: (UUID) -> Void
-    /// v34: drop-handler. Får canvas-lokala koordinater direkt från .dropDestination,
-    /// så ingen översättning behövs i ContentView.
-    var onDropShape: (ShapeType, CGPoint) -> Void
 
     /// v25: rapporterar zoom-procent uppåt till toolbar
     @Binding var zoomPercent: Int
@@ -61,6 +61,7 @@ struct CanvasView: View {
             contentSize: model.contentSize,
             zoomPercent: $zoomPercent,
             zoomScale: $zoomScale,
+            viewportState: viewportState,
             resetTrigger: resetZoomTrigger,
             centerOnPoint: $centerOnPoint
         ) {
@@ -74,13 +75,6 @@ struct CanvasView: View {
                         .stroke(Color.primary.opacity(0.18), lineWidth: 1)
                 )
                 .coordinateSpace(name: "canvas")
-                .dropDestination(for: ShapeType.self) { items, location in
-                    guard let type = items.first else { return false }
-                    // v34: location är ALREADY i canvas-koord (SwiftUI applicerar
-                    // scrollview-transformen åt oss). Drop blir deterministisk.
-                    onDropShape(type, location)
-                    return true
-                }
         }
         .ignoresSafeArea()
         .accessibilityIdentifier("canvas")

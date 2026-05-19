@@ -48,6 +48,10 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
     /// för att skala stroke/linewidth invers så de inte blir för stora/små vid zoom.
     @Binding var zoomScale: CGFloat
 
+    /// Synkroniserad spegel av scrollViewens state. Uppdateras SYNKRONT i delegate-
+    /// callbacks så manuell chip-drag kan läsa pan/zoom utan race-condition.
+    @ObservedObject var viewportState: CanvasViewportState
+
     /// Räknare som ökar varje gång toolbar vill nollställa zoom (fit-screen).
     let resetTrigger: Int
 
@@ -62,6 +66,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         contentSize: CGSize,
         zoomPercent: Binding<Int>,
         zoomScale: Binding<CGFloat>,
+        viewportState: CanvasViewportState,
         resetTrigger: Int,
         centerOnPoint: Binding<CGPoint?>,
         @ViewBuilder content: () -> Content
@@ -69,6 +74,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         self.contentSize = contentSize
         self._zoomPercent = zoomPercent
         self._zoomScale = zoomScale
+        self.viewportState = viewportState
         self.resetTrigger = resetTrigger
         self._centerOnPoint = centerOnPoint
         self.content = content()
@@ -79,6 +85,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
             hostingController: UIHostingController(rootView: content),
             zoomPercent: $zoomPercent,
             zoomScale: $zoomScale,
+            viewportState: viewportState,
             centerOnPoint: $centerOnPoint
         )
     }
@@ -153,6 +160,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         let hostingController: UIHostingController<Content>
         @Binding var zoomPercent: Int
         @Binding var zoomScale: CGFloat
+        let viewportState: CanvasViewportState
         @Binding var centerOnPoint: CGPoint?
         weak var scrollView: UIScrollView?
         var contentSize: CGSize = .zero
@@ -163,15 +171,37 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
             hostingController: UIHostingController<Content>,
             zoomPercent: Binding<Int>,
             zoomScale: Binding<CGFloat>,
+            viewportState: CanvasViewportState,
             centerOnPoint: Binding<CGPoint?>
         ) {
             self.hostingController = hostingController
             self._zoomPercent = zoomPercent
             self._zoomScale = zoomScale
+            self.viewportState = viewportState
             self._centerOnPoint = centerOnPoint
             super.init()
             // Gör hostingController-vyn transparent och utan auto-resize-magi
             hostingController.view.backgroundColor = .clear
+        }
+
+        /// Synkron spegling av scrollViewens state → CanvasViewportState.
+        /// Körs i delegate-callbacks som alltid är på huvudtråden, så vi
+        /// kan uppdatera direkt utan DispatchQueue.async.
+        @MainActor
+        func syncViewportState(scrollView: UIScrollView) {
+            let newOffset = CGSize(width: scrollView.contentOffset.x,
+                                   height: scrollView.contentOffset.y)
+            let newScale = scrollView.zoomScale
+            let newGlobal = scrollView.convert(scrollView.bounds, to: nil)
+            if viewportState.contentOffset != newOffset {
+                viewportState.contentOffset = newOffset
+            }
+            if abs(viewportState.zoomScale - newScale) > 0.0001 {
+                viewportState.zoomScale = newScale
+            }
+            if viewportState.globalFrame != newGlobal {
+                viewportState.globalFrame = newGlobal
+            }
         }
 
         // UIScrollViewDelegate
@@ -193,11 +223,15 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
             // Håll content centrerat när det är mindre än viewport
             centerContentIfNeeded(scrollView: scrollView)
             updateAccessibilityValue(scrollView: scrollView)
+            // SYNKRONT spegling till viewportState — manuell chip-drop läser detta
+            syncViewportState(scrollView: scrollView)
         }
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             // För XCUITest: exponera contentOffset så testerna kan verifiera pan
             updateAccessibilityValue(scrollView: scrollView)
+            // SYNKRONT spegling så drop-koord aldrig läser stale offset
+            syncViewportState(scrollView: scrollView)
         }
 
         /// Spegla contentOffset + zoomScale till scrollView.accessibilityValue
@@ -276,11 +310,15 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
 
         /// Initial fit som körs när scrollViewens bounds är kända.
         func initialFitIfNeeded(scrollView: UIScrollView) {
+            // Sync globalFrame VARJE gång layoutSubviews körs — den ändras vid
+            // rotation, sheet-presentation, keyboard etc.
+            syncViewportState(scrollView: scrollView)
             guard !hasDoneInitialFit else { return }
             guard scrollView.bounds.width > 0 else { return }
             hasDoneInitialFit = true
             fitToScreen(scrollView: scrollView, animated: false)
             updateAccessibilityValue(scrollView: scrollView)
+            syncViewportState(scrollView: scrollView)
         }
     }
 }

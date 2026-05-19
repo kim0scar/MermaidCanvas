@@ -15,6 +15,15 @@ enum SecondaryToolbarRow: Equatable {
 
 struct ToolbarView: View {
     @ObservedObject var model: CanvasModel
+    /// v34: aktivt chip-drag — uppdateras av manuell DragGesture på shape-chips.
+    /// ContentView ritar flytande chip-preview vid `chipDragState.globalLocation`
+    /// och konverterar global → canvas-koord vid drop-end via viewportState.
+    @ObservedObject var chipDragState: ChipDragState
+    /// v34: synkroniserad spegel av UIScrollView's pan/zoom — för att konvertera
+    /// global drop-koord till canvas-koord SYNKRONT vid drag-end.
+    @ObservedObject var viewportState: CanvasViewportState
+    /// v34: drop-handler. Anropas i chip.DragGesture.onEnded med (type, canvasPoint).
+    var onDropShape: (ShapeType, CGPoint) -> Void
     let canvasCenter: CGPoint
     let zoomPercent: Int
     var hasOpenFile: Bool
@@ -277,9 +286,16 @@ struct ToolbarView: View {
         .accessibilityIdentifier("toggle.pack.\(pack.rawValue)")
     }
 
-    /// v34: shapeChip använder Apple's .draggable + tap-onTap.
-    /// Drop hanteras av .dropDestination i CanvasView (canvas-lokala koord).
-    /// ShapeType har Transferable-conformance via ProxyRepresentation (rawValue).
+    /// v34: shapeChip använder MANUELL DragGesture(coordinateSpace: .global)
+    /// — Apple's .draggable + .dropDestination fungerar inte pålitligt inuti
+    /// UIViewRepresentable runt UIScrollView (iOS drag-system kan inte alltid
+    /// koppla draggable-source till dropDestination-target genom UIKit-wrappers).
+    ///
+    /// Flöde:
+    /// 1. Chip's DragGesture.onChanged sätter chipDragState.activeType + location
+    /// 2. ContentView ritar flytande chip-preview vid location
+    /// 3. .onEnded: ContentView läser location, konverterar via viewportState
+    ///    och anropar handleDrop. Eller chipsens egen onEnded gör det direkt.
     @ViewBuilder
     private func shapeChip(_ type: ShapeType,
                            _ system: String,
@@ -287,12 +303,31 @@ struct ToolbarView: View {
                            onTap: @escaping () -> Void) -> some View {
         ChipFace(systemImage: system)
             .contentShape(Circle())
+            .gesture(
+                DragGesture(minimumDistance: 8, coordinateSpace: .global)
+                    .onChanged { value in
+                        if chipDragState.activeType != type {
+                            chipDragState.activeType = type
+                        }
+                        chipDragState.globalLocation = value.location
+                    }
+                    .onEnded { value in
+                        // SYNKRONT: läs viewportState (UIScrollView's offset/scale/frame)
+                        // och konvertera global drop-position → canvas-koord. Eftersom
+                        // viewportState uppdateras SYNKRONT i delegate-callbacks läser
+                        // vi exakt det värde som scrollViewen visar just nu — ingen race.
+                        let global = value.location
+                        chipDragState.globalLocation = global
+                        chipDragState.activeType = nil
+                        // Släpp inom canvas → kalla onDropShape med canvas-koord.
+                        // Släpp utanför → ingen åtgärd (drag avbryts).
+                        if viewportState.isInsideCanvas(global),
+                           let canvasPoint = viewportState.canvasPoint(forGlobal: global) {
+                            onDropShape(type, canvasPoint)
+                        }
+                    }
+            )
             .onTapGesture { onTap() }
-            .draggable(type) {
-                // v34: drag-preview = samma chip-yta så användaren ser exakt vad
-                // som dras. SwiftUI flyttar den med fingret automatiskt.
-                ChipFace(systemImage: system, larger: true)
-            }
             .accessibilityElement(children: .ignore)
             .accessibilityAddTraits(.isButton)
             .accessibilityLabel(Text(accId))
