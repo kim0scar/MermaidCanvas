@@ -54,7 +54,9 @@ struct ToolbarView: View {
 
     @ViewBuilder
     private var primaryRow: some View {
-        HStack(spacing: 6) {
+        // v33 polish: spacing 6→4 så 9 knappar ryms på iPhone utan trängsel,
+        // horizontal padding 14→10 för mer aktiv yta åt knapparna.
+        HStack(spacing: 4) {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
             toggleButton("arrow.right", row: .arrows, disabled: model.isEdgeMode, accId: "toolbar.arrows")
             toggleButton("brain.head.profile", row: .packs, accId: "toolbar.packs")
@@ -75,8 +77,19 @@ struct ToolbarView: View {
                 onShowRules: onShowRules
             )
         }
-        .padding(.horizontal, 14)
+        .padding(.horizontal, 10)
         .padding(.vertical, 8)
+    }
+
+    /// v33: delegerar till dragController — så att alla call-sites (add-shape vid tap,
+    /// chip-drop, recenter) använder EN och SAMMA viewport-center-formel.
+    private func computeViewportCenter() -> CGPoint {
+        let v = dragController.viewportSize
+        let s = max(dragController.canvasScale, 0.001)
+        return CGPoint(
+            x: (v.width / 2 - dragController.canvasOffset.width) / s,
+            y: (v.height / 2 - dragController.canvasOffset.height) / s
+        )
     }
 
     @ViewBuilder
@@ -129,7 +142,8 @@ struct ToolbarView: View {
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(Color.primary.opacity(0.7))
-                .frame(minWidth: 48, minHeight: 28)
+                // v33 polish: 48→40 så zoom-badge tar mindre plats i primary-raden
+                .frame(minWidth: 40, minHeight: 28)
                 .background(Capsule().fill(.ultraThinMaterial))
                 .overlay(Capsule().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
         }
@@ -469,7 +483,8 @@ struct ChipFace: View {
         Image(systemName: systemImage)
             .font(larger ? .title2 : .title3)
             .foregroundStyle(Color.primary)
-            .frame(width: larger ? 56 : 40, height: larger ? 56 : 40)
+            // v33 polish: small chip 40→44 så fingret träffar bättre på iPhone
+            .frame(width: larger ? 56 : 44, height: larger ? 56 : 44)
             .background(Circle().fill(.ultraThinMaterial))
             .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
             .contentShape(Circle())
