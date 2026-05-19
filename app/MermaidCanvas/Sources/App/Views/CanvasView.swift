@@ -5,8 +5,30 @@ enum ShapeGeometry {
     static let baseWidth: CGFloat = 120
     static let baseHeight: CGFloat = 80
 
-    static func width(for shape: ShapeNode) -> CGFloat { baseWidth * shape.effectiveWidth }
-    static func height(for shape: ShapeNode) -> CGFloat { baseHeight * shape.effectiveHeight }
+    /// v35.1: typ-specifika basbredder/-höjder.
+    static func typeBaseWidth(for type: ShapeType) -> CGFloat {
+        switch type {
+        case .pill:         return 150   // 25% bredare oval
+        case .square:       return 80    // liksidig
+        case .triangle:     return 88    // liksidig triangel
+        case .processArrow: return 140   // bredare pil-form
+        case .chevron:      return 130   // chevron
+        default:            return baseWidth
+        }
+    }
+    static func typeBaseHeight(for type: ShapeType) -> CGFloat {
+        switch type {
+        case .square: return 80   // liksidig
+        default:      return baseHeight
+        }
+    }
+
+    static func width(for shape: ShapeNode) -> CGFloat {
+        typeBaseWidth(for: shape.type) * shape.effectiveWidth
+    }
+    static func height(for shape: ShapeNode) -> CGFloat {
+        typeBaseHeight(for: shape.type) * shape.effectiveHeight
+    }
     static func halfWidth(for shape: ShapeNode) -> CGFloat { width(for: shape) / 2 }
     static func halfHeight(for shape: ShapeNode) -> CGFloat { height(for: shape) / 2 }
     static func circleRadius(for shape: ShapeNode) -> CGFloat {
@@ -408,6 +430,22 @@ struct ShapeView: View {
                                  stroke: effectiveStroke)
         case .link:
             JumpLinkShapeBackground(number: shape.linkNumber ?? 0, fill: effectiveFill)
+        case .square:
+            SquareShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
+        case .triangle:
+            TriangleShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
+        case .processArrow:
+            ProcessArrowShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
+        case .chevron:
+            ChevronShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .line, .arrow:
             // v31: lös linje/pil renderas separat via FreeLineShape (utanför background)
             EmptyView()
@@ -425,6 +463,14 @@ struct ShapeView: View {
             DiamondShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .pill:
             Capsule(style: .continuous).stroke(effectiveStroke, lineWidth: 1.5)
+        case .square:
+            SquareShape().stroke(effectiveStroke, lineWidth: 1.5)
+        case .triangle:
+            TriangleShape().stroke(effectiveStroke, lineWidth: 1.5)
+        case .processArrow:
+            ProcessArrowShape().stroke(effectiveStroke, lineWidth: 1.5)
+        case .chevron:
+            ChevronShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .text, .table, .link, .line, .arrow:
             EmptyView()
         }
@@ -442,6 +488,14 @@ struct ShapeView: View {
                 DiamondShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .pill:
                 Capsule(style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
+            case .square:
+                SquareShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .triangle:
+                TriangleShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .processArrow:
+                ProcessArrowShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .chevron:
+                ChevronShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .text:
                 RoundedRectangle(cornerRadius: 8).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
@@ -510,24 +564,18 @@ private struct JumpLinkShapeBackground: View {
     }
 }
 
-/// v28: rundad diamant — mjuka hörn istället för vassa spetsar.
-/// v35.1: begränsad till kvadrat (min(width,height)) så den matchar SF-symbolen "diamond"
-/// och Mermaid's {} som båda är likasidiga ◇.
+/// v28: rundad romb/diamant — mjuka hörn istället för vassa spetsar.
+/// v35.1: fyller hela ramen (120×80) → bredare-än-hög romb som matchar Mermaid's {} render.
 struct DiamondShape: Shape {
     var cornerRadius: CGFloat = 8
 
     func path(in rect: CGRect) -> Path {
-        // Centrera en kvadrat i ramen — lika bred som hög.
-        let side = min(rect.width, rect.height)
-        let sqRect = CGRect(x: rect.midX - side / 2,
-                            y: rect.midY - side / 2,
-                            width: side, height: side)
-        let top = CGPoint(x: sqRect.midX, y: sqRect.minY)
-        let right = CGPoint(x: sqRect.maxX, y: sqRect.midY)
-        let bottom = CGPoint(x: sqRect.midX, y: sqRect.maxY)
-        let left = CGPoint(x: sqRect.minX, y: sqRect.midY)
+        let top    = CGPoint(x: rect.midX, y: rect.minY)
+        let right  = CGPoint(x: rect.maxX, y: rect.midY)
+        let bottom = CGPoint(x: rect.midX, y: rect.maxY)
+        let left   = CGPoint(x: rect.minX, y: rect.midY)
 
-        let r = min(cornerRadius, side / 4)
+        let r = min(cornerRadius, min(rect.width, rect.height) / 4)
         // För varje hörn: gå r-pt åt vardera håll längs kanten innan hörnet
         // och rita en quad-curve runt själva hörnet.
         let topToRightDir = unitVector(from: top, to: right)
@@ -559,6 +607,108 @@ struct DiamondShape: Shape {
 
     private func offset(_ p: CGPoint, by v: CGVector, amount: CGFloat) -> CGPoint {
         CGPoint(x: p.x + v.dx * amount, y: p.y + v.dy * amount)
+    }
+}
+
+// MARK: - Nya grundformer v35.1
+
+/// Liksidig kvadrat med rundade hörn — identisk med RoundedRectangle men kvadratisk.
+/// ShapeGeometry ger 80×80-ram; formen fyller den.
+struct SquareShape: Shape {
+    var cornerRadius: CGFloat = 14
+    func path(in rect: CGRect) -> Path {
+        Path(roundedRect: rect, cornerRadius: cornerRadius, style: .continuous)
+    }
+}
+
+/// Liksidig triangel med mjuka hörn.
+/// Spets uppåt, bas nedåt. Hörnradien är ~10 % av sidan.
+struct TriangleShape: Shape {
+    var cornerRadius: CGFloat = 10
+
+    func path(in rect: CGRect) -> Path {
+        // Tre hörn för liksidig triangel inom rect
+        let top    = CGPoint(x: rect.midX,  y: rect.minY)
+        let right  = CGPoint(x: rect.maxX,  y: rect.maxY)
+        let left   = CGPoint(x: rect.minX,  y: rect.maxY)
+        let r = min(cornerRadius, rect.height / 5)
+
+        func uv(from a: CGPoint, to b: CGPoint) -> CGVector {
+            let dx = b.x - a.x; let dy = b.y - a.y
+            let l = sqrt(dx*dx + dy*dy)
+            return l > 0.001 ? CGVector(dx: dx/l, dy: dy/l) : .zero
+        }
+        func pt(_ p: CGPoint, _ v: CGVector, _ d: CGFloat) -> CGPoint {
+            CGPoint(x: p.x + v.dx*d, y: p.y + v.dy*d)
+        }
+        let tr = uv(from: top, to: right);   let rt = uv(from: right, to: left)
+        let lr = uv(from: left, to: top)
+
+        var p = Path()
+        p.move(to: pt(top, tr, r))
+        p.addLine(to: pt(right, tr, -r))
+        p.addQuadCurve(to: pt(right, rt, r), control: right)
+        p.addLine(to: pt(left,  rt, -r))
+        p.addQuadCurve(to: pt(left,  lr, r), control: left)
+        p.addLine(to: pt(top, lr, -r))
+        p.addQuadCurve(to: pt(top, tr, r), control: top)
+        p.closeSubpath()
+        return p
+    }
+}
+
+/// Processsteg-pil — rektangel med spetsig högerände (pentagon).
+/// Vänsterkant har rundade hörn; höger spets är skarp (mjukas av med liten r).
+struct ProcessArrowShape: Shape {
+    var cornerRadius: CGFloat = 14
+
+    func path(in rect: CGRect) -> Path {
+        let r  = min(cornerRadius, rect.height / 3)
+        let tip: CGFloat = rect.height * 0.45   // hur djup spetsen är
+
+        var p = Path()
+        // Övre-vänster (runt hörn)
+        p.move(to: CGPoint(x: rect.minX, y: rect.minY + r))
+        p.addQuadCurve(to: CGPoint(x: rect.minX + r, y: rect.minY),
+                       control: CGPoint(x: rect.minX, y: rect.minY))
+        // Övre kanten → spets-axel
+        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.minY))
+        // Spets (höger)
+        p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        // Nedre sida → nedre-vänster
+        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.maxY))
+        p.addLine(to: CGPoint(x: rect.minX + r, y: rect.maxY))
+        // Nedre-vänster (runt hörn)
+        p.addQuadCurve(to: CGPoint(x: rect.minX, y: rect.maxY - r),
+                       control: CGPoint(x: rect.minX, y: rect.maxY))
+        p.closeSubpath()
+        return p
+    }
+}
+
+/// Chevron/Processbåge — indragen vänsterkant + spetsig högerände.
+/// Ser ut som en pil som passar in i en sekvens av processsteg (▷▷▷).
+struct ChevronShape: Shape {
+    var cornerRadius: CGFloat = 8
+
+    func path(in rect: CGRect) -> Path {
+        let tip: CGFloat  = rect.height * 0.40   // spetsdjup höger
+        let notch: CGFloat = rect.height * 0.35  // indragning vänster
+
+        var p = Path()
+        // Vänster indragning (V-formad) med mjukt hörn vid mitten
+        p.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.minX + notch, y: rect.midY - 1))
+        p.addQuadCurve(to: CGPoint(x: rect.minX + notch, y: rect.midY + 1),
+                       control: CGPoint(x: rect.minX + notch + cornerRadius, y: rect.midY))
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        // Nedre kanten
+        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.maxY))
+        // Höger spets
+        p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.minY))
+        p.closeSubpath()
+        return p
     }
 }
 
@@ -745,7 +895,10 @@ struct EdgesView: View {
             guard denom > 0.001 else { return center }
             let t = 1.0 / denom
             return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
-        case .text, .table, .pill:
+        case .text, .table, .pill, .square, .processArrow, .chevron:
+            return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
+        case .triangle:
+            // Approximera med bounding box — bra nog för kant-ankare
             return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
         case .link:
             let r = ShapeGeometry.circleRadius(for: shape)

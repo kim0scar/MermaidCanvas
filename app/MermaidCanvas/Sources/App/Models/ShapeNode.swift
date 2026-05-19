@@ -15,6 +15,15 @@ enum ShapeType: String, Codable, CaseIterable {
     case line
     /// v31: lös pil — som line med pilhuvud på linjeslutet.
     case arrow
+    // v35.1: nya grundformer
+    /// Liksidig kvadrat med rundade hörn.
+    case square
+    /// Liksidig triangel med mjuka hörn.
+    case triangle
+    /// Processsteg-pil (pentagon) — rektangel med spetsig högerände. Kan ha label.
+    case processArrow
+    /// Chevron/processpil — indragen vänsterkant + spetsig högerände.
+    case chevron
 }
 
 extension ShapeType: Transferable {

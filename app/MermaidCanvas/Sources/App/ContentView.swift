@@ -314,15 +314,20 @@ struct ContentView: View {
 
     static func chipSystemImage(for type: ShapeType) -> String {
         switch type {
-        case .circle: return "circle"
-        case .rectangle: return "rectangle"
-        case .diamond: return "diamond"
-        case .text: return "character.textbox"
-        case .table: return "tablecells"
-        case .link: return "link"
-        case .pill: return "capsule"
-        case .line: return "minus"
-        case .arrow: return "arrow.right"
+        case .circle:       return "circle"
+        case .rectangle:    return "rectangle"
+        case .diamond:      return "diamond"
+        case .text:         return "character.textbox"
+        case .table:        return "tablecells"
+        case .link:         return "link"
+        case .pill:         return "capsule"
+        case .line:         return "minus"
+        case .arrow:        return "arrow.right"
+        // v35.1: nya grundformer
+        case .square:       return "square"
+        case .triangle:     return "triangle"
+        case .processArrow: return "arrowshape.right"
+        case .chevron:      return "arrowshape.right.fill"
         }
     }
 }

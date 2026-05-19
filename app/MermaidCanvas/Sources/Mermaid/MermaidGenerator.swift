@@ -343,16 +343,21 @@ enum MermaidGenerator {
 
     private static func shapeBody(for type: ShapeType, label: String) -> String {
         switch type {
-        case .circle:    return "((\"\(label)\"))"
-        case .rectangle: return "(\"\(label)\")"  // v35.1: rundade hörn matchar RoundedRectangle i appen
-        case .diamond:   return "{\"\(label)\"}"
-        case .text:      return "[\"\(label)\"]"
-        case .table:     return "[\"\(label)\"]"
-        case .link:      return "((\"\(label)\"))"
+        case .circle:       return "((\"\(label)\"))"
+        case .rectangle:    return "(\"\(label)\")"  // v35.1: rundade hörn matchar RoundedRectangle i appen
+        case .diamond:      return "{\"\(label)\"}"
+        case .text:         return "[\"\(label)\"]"
+        case .table:        return "[\"\(label)\"]"
+        case .link:         return "((\"\(label)\"))"
         // v31:
-        case .pill:      return "([\"\(label)\"])"  // mermaid stadium-shape
-        case .line:      return "[\"\(label)\"]"    // lös linje — endpoints i %% line-kommentar
-        case .arrow:     return "[\"\(label)\"]"    // lös pil — som line + arrow-flagga
+        case .pill:         return "([\"\(label)\"])"  // mermaid stadium-shape
+        case .line:         return "[\"\(label)\"]"    // lös linje — endpoints i %% line-kommentar
+        case .arrow:        return "[\"\(label)\"]"    // lös pil — som line + arrow-flagga
+        // v35.1: nya grundformer
+        case .square:       return "(\"\(label)\")"    // rundad rektangel — närmast Mermaid har en kvadrat
+        case .triangle:     return "[\"\(label)\"]"    // Mermaid har ingen triangel-native; rektangel tills vidare
+        case .processArrow: return "[\"\(label)\"]"    // Mermaid saknar pentagon-form; rektangel
+        case .chevron:      return "[\"\(label)\"]"    // Mermaid saknar chevron-form; rektangel
         }
     }
 
