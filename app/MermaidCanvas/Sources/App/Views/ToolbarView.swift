@@ -15,7 +15,6 @@ enum SecondaryToolbarRow: Equatable {
 
 struct ToolbarView: View {
     @ObservedObject var model: CanvasModel
-    @ObservedObject var dragController: ShapeDragController
     let canvasCenter: CGPoint
     let zoomPercent: Int
     var hasOpenFile: Bool
@@ -32,8 +31,6 @@ struct ToolbarView: View {
     var onAddJumpLink: () -> Void
     var onNewCanvas: () -> Void
     var onResetZoom: () -> Void
-    /// Drop-handler: anropas vid drag-end om global-punkten ligger inom canvas.
-    var onDropShape: (ShapeType, CGPoint) -> Void
     /// v31: visa anteckning-popup-sheet med all canvas-text.
     var onShowNotePopup: () -> Void
 
@@ -83,17 +80,6 @@ struct ToolbarView: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-    }
-
-    /// v33: delegerar till dragController — så att alla call-sites (add-shape vid tap,
-    /// chip-drop, recenter) använder EN och SAMMA viewport-center-formel.
-    private func computeViewportCenter() -> CGPoint {
-        let v = dragController.viewportSize
-        let s = max(dragController.canvasScale, 0.001)
-        return CGPoint(
-            x: (v.width / 2 - dragController.canvasOffset.width) / s,
-            y: (v.height / 2 - dragController.canvasOffset.height) / s
-        )
     }
 
     @ViewBuilder
@@ -291,9 +277,9 @@ struct ToolbarView: View {
         .accessibilityIdentifier("toggle.pack.\(pack.rawValue)")
     }
 
-    /// v27: shapeChip är nu generaliserad — alla 6 form-typer använder samma mönster
-    /// (tap + drag-out). Tap-aktionen injiceras så special-fallen (.table / .link)
-    /// kan kalla model.addTable / model.addJumpLinkPair istället för addShape.
+    /// v34: shapeChip använder Apple's .draggable + tap-onTap.
+    /// Drop hanteras av .dropDestination i CanvasView (canvas-lokala koord).
+    /// ShapeType har Transferable-conformance via ProxyRepresentation (rawValue).
     @ViewBuilder
     private func shapeChip(_ type: ShapeType,
                            _ system: String,
@@ -302,39 +288,15 @@ struct ToolbarView: View {
         ChipFace(systemImage: system)
             .contentShape(Circle())
             .onTapGesture { onTap() }
-            .highPriorityGesture(dragOutGesture(type: type))
+            .draggable(type) {
+                // v34: drag-preview = samma chip-yta så användaren ser exakt vad
+                // som dras. SwiftUI flyttar den med fingret automatiskt.
+                ChipFace(systemImage: system, larger: true)
+            }
             .accessibilityElement(children: .ignore)
             .accessibilityAddTraits(.isButton)
             .accessibilityLabel(Text(accId))
             .accessibilityIdentifier(accId)
-    }
-
-    /// v28 (rev): tillbaka till `value.location` i onEnded — på iPhone kan
-    /// @Published-cached globalLocation vara fördröjd och bryta drag helt.
-    /// value.location är alltid SwiftUI:s auktoritativa slutposition för gesten.
-    /// För preview-konsistens uppdaterar vi även dragController.globalLocation
-    /// med samma värde direkt innan vi anropar onDropShape, så preview hinner flytta dit.
-    private func dragOutGesture(type: ShapeType) -> some Gesture {
-        DragGesture(minimumDistance: 8, coordinateSpace: .global)
-            .onChanged { value in
-                if dragController.activeType != type {
-                    dragLog.info("drag-start type=\(type.rawValue) at=(\(value.location.x),\(value.location.y))")
-                    dragController.activeType = type
-                }
-                dragController.globalLocation = value.location
-            }
-            .onEnded { value in
-                let frameStr = "frame=(\(Int(dragController.canvasGlobalFrame.minX)),\(Int(dragController.canvasGlobalFrame.minY)),\(Int(dragController.canvasGlobalFrame.width)),\(Int(dragController.canvasGlobalFrame.height)))"
-                if dragController.activeType != nil {
-                    // Synka preview till slutposition så formens landningspunkt visuellt = preview-pos
-                    dragController.globalLocation = value.location
-                    dragLog.info("drag-end type=\(type.rawValue) drop=(\(value.location.x),\(value.location.y)) \(frameStr)")
-                    onDropShape(type, value.location)
-                } else {
-                    dragLog.error("drag-end men activeType=nil — drag aldrig startade!")
-                }
-                dragController.activeType = nil
-            }
     }
 
 

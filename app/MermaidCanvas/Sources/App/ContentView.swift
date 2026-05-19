@@ -1,12 +1,15 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import os
+
+/// v34: dragLog behålls (för diagnostik) men ShapeDragController är rivet.
+let dragLog = Logger(subsystem: "com.kimlundqvist.mermaidcanvas", category: "drag")
 
 struct ContentView: View {
     @StateObject private var model = CanvasModel()
     @StateObject private var fileManager = CanvasFileManager()
-    @StateObject private var dragController = ShapeDragController()
 
-    @State private var canvasCenter: CGPoint = CGPoint(x: 1500, y: 1500)
+    @State private var canvasCenter: CGPoint = CGPoint(x: 2000, y: 2000)
     @State private var showImporter: Bool = false
     @State private var showExporter: Bool = false
     @State private var pendingDocument: CanvasDocument?
@@ -18,7 +21,6 @@ struct ContentView: View {
     @State private var showRulesSheet: Bool = false
     @State private var zoomPercent: Int = 100
     @State private var resetZoomTrigger: Int = 0
-    @State private var showMinimap: Bool = false
     @State private var showNotePopup: Bool = false
 
     var body: some View {
@@ -26,7 +28,6 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 ToolbarView(
                     model: model,
-                    dragController: dragController,
                     canvasCenter: canvasCenter,
                     zoomPercent: zoomPercent,
                     hasOpenFile: fileManager.hasOpenFile,
@@ -49,13 +50,11 @@ struct ContentView: View {
                         }
                     },
                     onResetZoom: { resetZoomTrigger &+= 1 },
-                    onDropShape: handleDrop,
                     onShowNotePopup: { showNotePopup = true }
                 )
 
                 CanvasView(
                     model: model,
-                    dragController: dragController,
                     onShapeEdgeTap: { id in _ = model.handleEdgeTap(on: id) },
                     onShapeEdit: { id in editingShapeId = id },
                     onShapeDelete: { id in model.deleteShape(id: id) },
@@ -63,6 +62,7 @@ struct ContentView: View {
                     onShapeSelect: { id in model.selectShape(id) },
                     onShapeDuplicate: { id in model.duplicateShape(id: id) },
                     onShapeShowNote: { id in notingShapeId = id },
+                    onDropShape: handleDrop,
                     zoomPercent: $zoomPercent,
                     resetZoomTrigger: resetZoomTrigger
                 )
@@ -88,53 +88,6 @@ struct ContentView: View {
                 }
             }
             }
-
-            // v26: floating chip-preview under drag-out
-            if let type = dragController.activeType {
-                ChipFace(systemImage: ContentView.chipSystemImage(for: type), larger: true)
-                    .position(dragController.globalLocation)
-                    .allowsHitTesting(false)
-                    .ignoresSafeArea()
-                    .transition(.identity)
-                    .zIndex(999)
-            }
-        }
-        // v28: Minikarta-knapp + overlay som .overlay(alignment:) på root-ZStack.
-        // Detta skapar INTE en full-screen layer som blockerar touches (det var v27-buggen).
-        .overlay(alignment: .topTrailing) {
-            VStack(alignment: .trailing, spacing: 8) {
-                Button {
-                    withAnimation(.spring(response: 0.3)) { showMinimap.toggle() }
-                } label: {
-                    Image(systemName: "map")
-                        .font(.title3)
-                        .foregroundStyle(showMinimap ? Color.white : Color.primary)
-                        .frame(width: 40, height: 40)
-                        .background(
-                            Circle()
-                                .fill(showMinimap ? Color.accentColor : Color(.systemBackground).opacity(0.9))
-                        )
-                        .overlay(Circle().stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
-                        .shadow(radius: 2)
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("toolbar.minimap")
-
-                if showMinimap {
-                    MinimapView(
-                        model: model,
-                        viewportRect: currentViewportRect(),
-                        onTapPoint: { canvasPoint in
-                            dragController.requestedCenterPoint = canvasPoint
-                        },
-                        onClose: {
-                            withAnimation(.spring(response: 0.3)) { showMinimap = false }
-                        }
-                    )
-                }
-            }
-            .padding(.trailing, 10)
-            .padding(.top, 110)
         }
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
@@ -329,25 +282,19 @@ struct ContentView: View {
         showCodeSheet = true
     }
 
-    // MARK: - Drag-out drop-handler (v26)
+    // MARK: - Drop-handler (v34)
 
-    private func handleDrop(_ type: ShapeType, _ globalLocation: CGPoint) {
-        let inside = dragController.isInsideCanvas(globalLocation)
-        dragLog.info("handleDrop type=\(type.rawValue) global=(\(globalLocation.x),\(globalLocation.y)) inside=\(inside)")
-        // v29: skapa ALLTID form vid drag-end. Om släppet är utanför canvas → lägg
-        // i canvas-mitten istället för att tappa. "Form syns men på fel ställe"
-        // är bättre UX än "form försvann". Användaren kan dra den dit den ska.
-        let canvasPoint: CGPoint
-        if inside {
-            canvasPoint = dragController.canvasPoint(forGlobal: globalLocation)
-            dragLog.info("handleDrop canvasPoint=(\(canvasPoint.x),\(canvasPoint.y)) — skapar form")
-        } else {
-            canvasPoint = canvasCenter
-            dragLog.info("DROP UTANFÖR — lägger form i canvas-mitten (\(canvasPoint.x),\(canvasPoint.y))")
-        }
+    /// v34: drop-handler. Får canvas-lokala koordinater direkt från
+    /// CanvasView's .dropDestination — ingen översättning behövs.
+    private func handleDrop(_ type: ShapeType, _ canvasPoint: CGPoint) {
+        dragLog.info("handleDrop type=\(type.rawValue) canvasPoint=(\(canvasPoint.x),\(canvasPoint.y))")
         switch type {
         case .table:
             model.addTable(at: canvasPoint)
+        case .line:
+            model.addFreeLine(at: canvasPoint, withArrow: false)
+        case .arrow:
+            model.addFreeLine(at: canvasPoint, withArrow: true)
         case .link:
             model.addJumpLinkPair(near: canvasPoint)
         default:
@@ -358,17 +305,6 @@ struct ContentView: View {
         #if canImport(UIKit)
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         #endif
-    }
-
-    /// v28: räkna ut den synliga delen av canvas (i canvas-koord) från pan/zoom + viewport.
-    private func currentViewportRect() -> CGRect {
-        let scale = max(0.0001, dragController.canvasScale)
-        let viewport = dragController.viewportSize
-        let x = -dragController.canvasOffset.width / scale
-        let y = -dragController.canvasOffset.height / scale
-        let w = viewport.width / scale
-        let h = viewport.height / scale
-        return CGRect(x: x, y: y, width: w, height: h)
     }
 
     static func chipSystemImage(for type: ShapeType) -> String {

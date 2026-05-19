@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreTransferable
 
 enum ShapeGeometry {
     static let baseWidth: CGFloat = 120
@@ -35,7 +36,6 @@ struct ConnectionDrag: Equatable {
 
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
-    @ObservedObject var dragController: ShapeDragController
     var onShapeEdgeTap: (UUID) -> Void
     var onShapeEdit: (UUID) -> Void
     var onShapeDelete: (UUID) -> Void
@@ -43,179 +43,61 @@ struct CanvasView: View {
     var onShapeSelect: (UUID) -> Void
     var onShapeDuplicate: (UUID) -> Void
     var onShapeShowNote: (UUID) -> Void
+    /// v34: drop-handler. Får canvas-lokala koordinater direkt från .dropDestination,
+    /// så ingen översättning behövs i ContentView.
+    var onDropShape: (ShapeType, CGPoint) -> Void
 
     /// v25: rapporterar zoom-procent uppåt till toolbar
     @Binding var zoomPercent: Int
     /// v25: trigger för Reset-zoom från toolbar (incrementeras → onChange → reset)
     var resetZoomTrigger: Int
 
-    @State var canvasOffset: CGSize = .zero
-    @State var canvasScale: CGFloat = 1.0
-    @State private var panStartOffset: CGSize? = nil
-    @State private var pinchStartScale: CGFloat? = nil
+    @State private var zoomScale: CGFloat = 1.0
+    @State private var centerOnPoint: CGPoint? = nil
     @State private var connectionDrag: ConnectionDrag? = nil
-    @State private var lastViewport: CGSize = .zero
-
-    private let minScale: CGFloat = 0.25
-    private let maxScale: CGFloat = 3.0
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .topLeading) {
-                // v28 safe-area-fix: bakgrund täcker även under home-indicator
-                // så vit rand inte syns nedanför canvas-arean.
-                Color(.systemGray5)
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-
-                canvasContent
-                    .frame(width: model.contentSize.width,
-                           height: model.contentSize.height,
-                           alignment: .topLeading)
-                    .background(Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(Color.primary.opacity(0.18), lineWidth: 1)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    .shadow(color: Color.black.opacity(0.18), radius: 8, x: 0, y: 4)
-                    .coordinateSpace(name: "canvas")
-                    // v33 A10: transformEffect istället för scaleEffect+offset.
-                    // På iOS 18 / iPhone 17 Pro applicerar SwiftUI scaleEffect+offset i
-                    // fel ordning så drop-koordinater hamnar fel. CGAffineTransform binder
-                    // scale och translation till EN matris som SwiftUI applicerar atomiskt.
-                    .transformEffect(
-                        CGAffineTransform(scaleX: canvasScale, y: canvasScale)
-                            .concatenating(CGAffineTransform(translationX: canvasOffset.width,
-                                                              y: canvasOffset.height))
-                    )
-            }
-            .frame(width: geo.size.width, height: geo.size.height)
-            .contentShape(Rectangle())
-            // v29: stäng AV pan-gesture när drag-ut är aktivt — annars stjäl
-            // panGesture finger-rörelsen från chip-DragGesture och canvasen
-            // panorerar istället för att formen landar.
-            .gesture((dragController.activeType == nil) ? panGesture : nil)
-            .simultaneousGesture(zoomGesture)
-            // v30: TOG BORT canvas' dubbeltap-zoom-reset — den krockade med ShapeView's
-            // dubbeltap-edit. Zoom-reset finns redan via toolbar.zoom-knappen.
-            // v30: deselect via simultaneousGesture istället för onTapGesture — pan-gesture
-            // (minDist 5) konkurrerade om tap-events; simultaneousGesture säkrar att tap
-            // alltid registreras parallellt med pan.
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    model.deselect()
-                    if model.isEdgeMode { model.cancelEdgeMode() }
-                }
-            )
-            .clipped()
-            // v26: rapportera global frame upp till ShapeDragController
-            .background(
-                GeometryReader { proxy in
-                    Color.clear
-                        .preference(key: CanvasGlobalFramePreferenceKey.self,
-                                    value: proxy.frame(in: .global))
-                }
-            )
-            .onPreferenceChange(CanvasGlobalFramePreferenceKey.self) { frame in
-                // v27 FIX: synkron uppdatering (utan Task hop) — på iPhone kan
-                // async Task komma EFTER drag-end → drag avvisas pga .zero-frame.
-                dragController.canvasGlobalFrame = frame
-            }
-            .accessibilityIdentifier("canvas")
-            .onAppear {
-                lastViewport = geo.size
-                centerOnInitial(viewport: geo.size)
-            }
-            .onChange(of: geo.size) { _, ns in
-                lastViewport = ns
-                if canvasOffset == .zero && canvasScale == 1.0 {
-                    centerOnInitial(viewport: ns)
-                }
-            }
-            .onChange(of: canvasScale) { _, ns in
-                zoomPercent = Int((ns * 100).rounded())
-                dragController.canvasScale = ns
-            }
-            .onChange(of: canvasOffset) { _, ns in
-                dragController.canvasOffset = ns
-            }
-            .onChange(of: resetZoomTrigger) { _, _ in
-                resetZoomAnimated()
-            }
-            .onChange(of: geo.size) { _, ns in
-                dragController.viewportSize = ns
-            }
-            .onAppear {
-                dragController.viewportSize = geo.size
-            }
-            .onChange(of: dragController.requestedCenterPoint) { _, new in
-                guard let p = new else { return }
-                // v33 A10: TOG BORT withAnimation — animering gav mid-transition
-                // transform som inte matchade CGRect-beräkningar för drop-target.
-                let proposed = CGSize(
-                    width: lastViewport.width / 2 - p.x * canvasScale,
-                    height: lastViewport.height / 2 - p.y * canvasScale
+        ZoomableCanvas(
+            contentSize: model.contentSize,
+            zoomPercent: $zoomPercent,
+            zoomScale: $zoomScale,
+            resetTrigger: resetZoomTrigger,
+            centerOnPoint: $centerOnPoint
+        ) {
+            canvasContent
+                .frame(width: model.contentSize.width,
+                       height: model.contentSize.height,
+                       alignment: .topLeading)
+                .background(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(Color.primary.opacity(0.18), lineWidth: 1)
                 )
-                let clamped = clampedOffset(proposed, scale: canvasScale, viewport: lastViewport)
-                canvasOffset = clamped
-                dragController.canvasOffset = clamped
-                Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: 100_000_000)
-                    dragController.requestedCenterPoint = nil
+                .coordinateSpace(name: "canvas")
+                .dropDestination(for: ShapeType.self) { items, location in
+                    guard let type = items.first else { return false }
+                    // v34: location är ALREADY i canvas-koord (SwiftUI applicerar
+                    // scrollview-transformen åt oss). Drop blir deterministisk.
+                    onDropShape(type, location)
+                    return true
                 }
+        }
+        .ignoresSafeArea()
+        .accessibilityIdentifier("canvas")
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                model.deselect()
+                if model.isEdgeMode { model.cancelEdgeMode() }
             }
-        }
-    }
-
-    private func centerOnInitial(viewport: CGSize) {
-        let center: CGPoint
-        if model.specType == .ui {
-            let frame = iPhoneFrameMath.canvasFrame(in: model.contentSize)
-            center = CGPoint(x: frame.midX, y: frame.midY)
-        } else {
-            center = CGPoint(x: model.contentSize.width / 2,
-                             y: model.contentSize.height / 2)
-        }
-        // v31: startzoom 100% (scale 1.0) för alla — Kim panorerar i 1600×1600-canvasen
-        // istället för att se hela på en gång.
-        let initialScale: CGFloat = 1.0
-        canvasScale = initialScale
-        let proposedOffset = CGSize(
-            width: viewport.width / 2 - center.x * canvasScale,
-            height: viewport.height / 2 - center.y * canvasScale
         )
-        // v31: applicera pan-clamp på initial-offset också
-        let newOffset = clampedOffset(proposedOffset, scale: initialScale, viewport: viewport)
-        canvasOffset = newOffset
-        zoomPercent = Int((canvasScale * 100).rounded())
-        // v29: synka dragController direkt — INTE via .onChange (async, kan komma
-        // efter första drag-end och göra canvasPoint(forGlobal:) räkna med .zero offset).
-        dragController.canvasOffset = newOffset
-        dragController.canvasScale = initialScale
-    }
-
-    private func resetZoomAnimated() {
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-            centerOnInitial(viewport: lastViewport)
-        }
     }
 
     private func handleShapeSelect(id: UUID) {
         if let shape = model.shapes.first(where: { $0.id == id }),
            shape.type == .link,
            let partner = model.partnerLink(for: id) {
-            #if canImport(UIKit)
-            let viewport = UIScreen.main.bounds.size
-            #else
-            let viewport = CGSize(width: 400, height: 800)
-            #endif
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.85)) {
-                canvasOffset = CGSize(
-                    width: viewport.width / 2 - partner.position.x * canvasScale,
-                    height: viewport.height / 2 - partner.position.y * canvasScale
-                )
-            }
+            // v34: be ZoomableCanvas centrera på partner-positionen
+            centerOnPoint = partner.position
         } else {
             onShapeSelect(id)
         }
@@ -225,7 +107,7 @@ struct CanvasView: View {
 
     private var canvasContent: some View {
         ZStack(alignment: .topLeading) {
-            // v27: vit pappersyta (var systemGray6 — för otydlig mot grå bakgrund)
+            // v34: vit pappersyta
             Color.white
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
@@ -245,7 +127,7 @@ struct CanvasView: View {
             let hiddenForEdges = model.hiddenShapeIds
             EdgesView(edges: $model.edges,
                       shapes: model.shapes,
-                      canvasScale: canvasScale,
+                      canvasScale: zoomScale,
                       hiddenShapeIds: hiddenForEdges,
                       onEdgeDelete: onEdgeDelete,
                       onEdgeReverse: { id in model.reverseEdge(id: id) },
@@ -269,7 +151,7 @@ struct CanvasView: View {
                         shape: $shape,
                         edgeMode: model.isEdgeMode,
                         markerMode: model.markerMode,
-                        canvasScale: canvasScale,
+                        canvasScale: zoomScale,
                         isCollapsed: model.collapsedIds.contains(shape.id),
                         showCollapseBadge: model.hasOutgoingEdges(id: shape.id),
                         isPendingFrom: model.pendingEdgeFrom == shape.id,
@@ -287,8 +169,8 @@ struct CanvasView: View {
             ForEach(model.shapes.filter { model.multiSelection.contains($0.id) }) { s in
                 Rectangle()
                     .stroke(Color.accentColor,
-                            style: StrokeStyle(lineWidth: 2 / canvasScale,
-                                               dash: [5 / canvasScale, 4 / canvasScale]))
+                            style: StrokeStyle(lineWidth: 2 / zoomScale,
+                                               dash: [5 / zoomScale, 4 / zoomScale]))
                     .frame(width: ShapeGeometry.width(for: s) + 8,
                            height: ShapeGeometry.height(for: s) + 8)
                     .position(s.position)
@@ -302,11 +184,11 @@ struct CanvasView: View {
                 let s = model.shapes[idx]
                 SelectionHandles(
                     shape: $model.shapes[idx],
-                    canvasScale: canvasScale
+                    canvasScale: zoomScale
                 )
                 ConnectionHandles(
                     shape: s,
-                    canvasScale: canvasScale,
+                    canvasScale: zoomScale,
                     onDragChanged: { canvasPoint in
                         connectionDrag = ConnectionDrag(fromShapeId: s.id,
                                                        currentCanvasLocation: canvasPoint)
@@ -326,113 +208,6 @@ struct CanvasView: View {
                 MarkerOverlay(model: model, canvasContentSize: model.contentSize)
             }
         }
-    }
-
-    // MARK: - Gestures
-
-    private var panGesture: some Gesture {
-        DragGesture(minimumDistance: 5)
-            .onChanged { value in
-                if panStartOffset == nil {
-                    panStartOffset = canvasOffset
-                }
-                let start = panStartOffset ?? .zero
-                let proposed = CGSize(
-                    width: start.width + value.translation.width,
-                    height: start.height + value.translation.height
-                )
-                // v31: clamp så vita papperet aldrig kan lämna viewport helt
-                let clamped = clampedOffset(proposed, scale: canvasScale, viewport: lastViewport)
-                canvasOffset = clamped
-                // v33 root-cause: synka dragController SYNKRONT (inte via .onChange)
-                // — annars läser drop-end ev. stale värde och form landar fel.
-                dragController.canvasOffset = clamped
-            }
-            .onEnded { _ in
-                panStartOffset = nil
-            }
-    }
-
-    /// v31: MagnifyGesture med zoom-mot-finger. SwiftUI ger .value.startAnchor (UnitPoint)
-    /// och vi multiplicerar canvasOffset så pinch-centret stannar visuellt fast.
-    private var zoomGesture: some Gesture {
-        MagnifyGesture()
-            .onChanged { value in
-                if pinchStartScale == nil {
-                    pinchStartScale = canvasScale
-                }
-                let start = pinchStartScale ?? 1
-                let dampened = pow(value.magnification, 0.4)
-                let newScale = clamp(start * dampened, minScale, maxScale)
-                guard abs(newScale - canvasScale) > 0.0001 else { return }
-                // v31: pinch-center i view-koord (startLocation är pinch-centrum vid start)
-                let pinchView = value.startLocation
-                // Punkt i canvas-koord innan zoom: (pinchView - oldOffset) / oldScale
-                let oldScale = canvasScale
-                let pinchInCanvas = CGPoint(
-                    x: (pinchView.x - canvasOffset.width) / oldScale,
-                    y: (pinchView.y - canvasOffset.height) / oldScale
-                )
-                // Ny offset så samma canvas-punkt fortfarande är under pinchView efter scale
-                let proposed = CGSize(
-                    width: pinchView.x - pinchInCanvas.x * newScale,
-                    height: pinchView.y - pinchInCanvas.y * newScale
-                )
-                let clamped = clampedOffset(proposed, scale: newScale, viewport: lastViewport)
-                canvasScale = newScale
-                canvasOffset = clamped
-                // v33 root-cause: synka dragController SYNKRONT så drop-end läser samma
-                // värde som rendering precis renderade.
-                dragController.canvasScale = newScale
-                dragController.canvasOffset = clamped
-            }
-            .onEnded { _ in
-                pinchStartScale = nil
-            }
-    }
-
-    /// v31: pan-clamp så vita papperet alltid syns inom viewport.
-    /// - Om scaledContent ≥ viewport: offset ∈ [viewport - scaled, 0] (papper täcker viewport)
-    /// - Om scaledContent < viewport: offset låses till centrerat värde (papper får inte panoreras ut)
-    private func clampedOffset(_ proposed: CGSize, scale: CGFloat, viewport: CGSize) -> CGSize {
-        let scaledW = model.contentSize.width * scale
-        let scaledH = model.contentSize.height * scale
-        let newX: CGFloat
-        let newY: CGFloat
-        if scaledW >= viewport.width {
-            newX = clamp(proposed.width, viewport.width - scaledW, 0)
-        } else {
-            newX = (viewport.width - scaledW) / 2
-        }
-        if scaledH >= viewport.height {
-            newY = clamp(proposed.height, viewport.height - scaledH, 0)
-        } else {
-            newY = (viewport.height - scaledH) / 2
-        }
-        return CGSize(width: newX, height: newY)
-    }
-
-    private func handleDoubleTap() {
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-            if canvasScale < 1.25 {
-                canvasScale = 1.5
-            } else {
-                canvasScale = 1.0
-            }
-        }
-    }
-
-    // MARK: - Koord-konvertering
-
-    private func screenToCanvas(_ p: CGPoint) -> CGPoint {
-        CGPoint(
-            x: (p.x - canvasOffset.width) / canvasScale,
-            y: (p.y - canvasOffset.height) / canvasScale
-        )
-    }
-
-    private func clamp<T: Comparable>(_ v: T, _ lo: T, _ hi: T) -> T {
-        min(max(v, lo), hi)
     }
 }
 

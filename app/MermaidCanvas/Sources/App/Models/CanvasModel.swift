@@ -39,28 +39,15 @@ final class CanvasModel: ObservableObject {
     @Published var markerMode: Bool = false
     @Published var collapsedIds: Set<UUID> = []
 
-    // v31: canvas är 1600×1600 (dubbel storlek mot v30) — kvadratisk vit yta.
-    // Startzoom 100% (scale 1.0). Pan-clamp i CanvasView säkerställer att papperet
-    // aldrig kan lämna viewport helt. v31 borttog dynamisk expand — hård begränsning används.
-    static let contentSize = CGSize(width: 3000, height: 3000)
-    @Published var contentSize: CGSize = CGSize(width: 1600, height: 1600)
+    // v34: canvas är fast 4000×4000 — kvadratisk vit yta. UIScrollView hanterar
+    // pan/zoom symmetriskt. Inga dynamiska expansioner (Kim valde fast storlek).
+    static let contentSize = CGSize(width: 4000, height: 4000)
+    @Published var contentSize: CGSize = CGSize(width: 4000, height: 4000)
 
-    /// v27: utöka canvasen om en form placerats inom `margin` pt från en kant.
+    /// v34: no-op. Canvas är fast 4000×4000; ingen dynamisk expansion behövs eftersom
+    /// UIScrollView hanterar all panorering symmetriskt och Kim valde fast storlek.
     func expandCanvasIfNeeded(near point: CGPoint, margin: CGFloat = 100, expandBy: CGFloat = 600) {
-        var size = contentSize
-        var changed = false
-        if point.x > size.width - margin {
-            size.width += expandBy
-            changed = true
-        }
-        if point.y > size.height - margin {
-            size.height += expandBy
-            changed = true
-        }
-        // v27: vi expanderar inte i negativ riktning eftersom canvas-origo är (0,0).
-        if changed {
-            contentSize = size
-        }
+        // intentionally no-op
     }
 
     private var undoStack: [CanvasSnapshot] = []

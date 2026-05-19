@@ -4,6 +4,7 @@
 # Xcode
 DerivedData/
 DerivedData-sim/
+DerivedData-v34/
 *.xcuserstate
 *.xcodeproj/xcuserdata/
 *.xcodeproj/project.xcworkspace/xcuserdata/

@@ -13,7 +13,6 @@
 		08E3968AA32CB239C81D65C0 /* godot-lexicon.md in Resources */ = {isa = PBXBuildFile; fileRef = 4F05E5949388DD0DA7C68672 /* godot-lexicon.md */; };
 		0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
 		1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */; };
-		AABB01CC11AABB1111000001 /* V33VersionVisibleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB02CC11AABB1111000002 /* V33VersionVisibleTests.swift */; };
 		114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */; };
 		11BE53EC33154017D1148891 /* CanvasDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AB7BE4C160CC630F4E4CFA /* CanvasDocument.swift */; };
 		12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */; };
@@ -29,7 +28,6 @@
 		3CB3443CCE6C72AEF0804D20 /* CollapseBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */; };
 		414054BE34E93776285A75C4 /* DragOutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */; };
 		46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0E6420DE137F57D019A7EB /* ShapeNode.swift */; };
-		4962458B87780D419EBA6F8A /* MinimapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 942D338F508BC03A111FDAC0 /* MinimapView.swift */; };
 		4CBA5CE815AFDDCC6E0D9143 /* ios-swiftui-rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 26849544B1328648A4C1C344 /* ios-swiftui-rules.md */; };
 		56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */; };
 		62EF8D225C5132FB200E453E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4913E980F026A3D6E49070B7 /* AppVersion.swift */; };
@@ -43,6 +41,7 @@
 		8F2521DE2FAD8F29346237F5 /* NoteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADAFD7500719BA94561524F9 /* NoteBadge.swift */; };
 		999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290C826C5E3BCE9774F09866 /* ContentView.swift */; };
 		9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */; };
+		9BAFA33B65E91F3B02ED1035 /* V33VersionVisibleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B560714D67098D8A734035 /* V33VersionVisibleTests.swift */; };
 		AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */; };
 		AF71D014F6A90DEEDB254840 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */; };
 		B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */; };
@@ -57,7 +56,7 @@
 		D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */; };
 		D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */; };
 		E178F46DAD052D49A4D5F5DE /* UIScreenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */; };
-		E8222C0DB48D847CC8B8ADDA /* ShapeDragController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E7D633F121D874D63B3B81 /* ShapeDragController.swift */; };
+		E1C23B0DD30A0D05C656C957 /* ZoomableCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */; };
 		E89E5E4258D420A82D09BDD6 /* PlatformRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024C106FB50C0683CF678899 /* PlatformRules.swift */; };
 		EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535348C28035BBC3C632F26A /* TextStyle.swift */; };
 		EF3A6ED12336454DED83D357 /* prompt-process-rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 0E42EE69DC47FA92EA10BD2F /* prompt-process-rules.md */; };
@@ -113,7 +112,6 @@
 		652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
 		6660E4DB431B5BBCAF625147 /* SpecType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecType.swift; sourceTree = "<group>"; };
 		68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33SensorTests.swift; sourceTree = "<group>"; };
-		AABB02CC11AABB1111000002 /* V33VersionVisibleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33VersionVisibleTests.swift; sourceTree = "<group>"; };
 		6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPackPopover.swift; sourceTree = "<group>"; };
 		6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V29CoverageTests.swift; sourceTree = "<group>"; };
@@ -126,7 +124,6 @@
 		7B7282ECFED87095333BB0D4 /* LägenMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LägenMenu.swift"; sourceTree = "<group>"; };
 		8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitectureRenderer.swift; sourceTree = "<group>"; };
 		8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "claude-canvas-protocol.md"; sourceTree = "<group>"; };
-		942D338F508BC03A111FDAC0 /* MinimapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimapView.swift; sourceTree = "<group>"; };
 		A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33AutoLoopTests.swift; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
@@ -135,15 +132,16 @@
 		B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCanvasApp.swift; sourceTree = "<group>"; };
 		BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapseBadge.swift; sourceTree = "<group>"; };
 		C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRulesSheet.swift; sourceTree = "<group>"; };
+		CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableCanvas.swift; sourceTree = "<group>"; };
 		D35F5529A9079DF8958E486C /* PreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSheet.swift; sourceTree = "<group>"; };
 		D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GodotPreviewRenderer.swift; sourceTree = "<group>"; };
 		DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V28VisualTests.swift; sourceTree = "<group>"; };
 		DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMiniSheet.swift; sourceTree = "<group>"; };
 		E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneFrameMath.swift; sourceTree = "<group>"; };
-		E4E7D633F121D874D63B3B81 /* ShapeDragController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeDragController.swift; sourceTree = "<group>"; };
 		E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasModel.swift; sourceTree = "<group>"; };
 		EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragOutTests.swift; sourceTree = "<group>"; };
 		EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneFrameOverlay.swift; sourceTree = "<group>"; };
+		F1B560714D67098D8A734035 /* V33VersionVisibleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33VersionVisibleTests.swift; sourceTree = "<group>"; };
 		F4EC13BC52408F5BEC68F4C2 /* FlowRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowRenderer.swift; sourceTree = "<group>"; };
 		F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScreenRenderer.swift; sourceTree = "<group>"; };
 		FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapePack.swift; sourceTree = "<group>"; };
@@ -171,11 +169,18 @@
 				3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */,
 				652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */,
 				E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */,
-				E4E7D633F121D874D63B3B81 /* ShapeDragController.swift */,
 				2D0E6420DE137F57D019A7EB /* ShapeNode.swift */,
 				535348C28035BBC3C632F26A /* TextStyle.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		2543505D94410149F6088F34 /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */,
+			);
+			path = Canvas;
 			sourceTree = "<group>";
 		};
 		39D256FE7DA9ACB022D0527D /* Views */ = {
@@ -191,7 +196,6 @@
 				7B7282ECFED87095333BB0D4 /* LägenMenu.swift */,
 				55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */,
 				20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */,
-				942D338F508BC03A111FDAC0 /* MinimapView.swift */,
 				5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */,
 				ADAFD7500719BA94561524F9 /* NoteBadge.swift */,
 				DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */,
@@ -307,6 +311,7 @@
 				4913E980F026A3D6E49070B7 /* AppVersion.swift */,
 				290C826C5E3BCE9774F09866 /* ContentView.swift */,
 				B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */,
+				2543505D94410149F6088F34 /* Canvas */,
 				16AF4C64695A84C9CD01AED1 /* Models */,
 				8B99BE49D2C975832F9634B8 /* Persistence */,
 				07AEA4242A8BE5C1D490A874 /* Preview */,
@@ -326,7 +331,7 @@
 				712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */,
 				A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */,
 				68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */,
-				AABB02CC11AABB1111000002 /* V33VersionVisibleTests.swift */,
+				F1B560714D67098D8A734035 /* V33VersionVisibleTests.swift */,
 			);
 			path = UITests;
 			sourceTree = "<group>";
@@ -475,7 +480,6 @@
 				084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */,
 				D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */,
 				FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */,
-				4962458B87780D419EBA6F8A /* MinimapView.swift in Sources */,
 				56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */,
 				8F2521DE2FAD8F29346237F5 /* NoteBadge.swift in Sources */,
 				CAA79A1EB7C4EBFAE9CE614B /* NoteMiniSheet.swift in Sources */,
@@ -487,7 +491,6 @@
 				F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */,
 				C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */,
 				150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */,
-				E8222C0DB48D847CC8B8ADDA /* ShapeDragController.swift in Sources */,
 				46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */,
 				12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */,
 				0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */,
@@ -495,6 +498,7 @@
 				2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */,
 				F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */,
 				E178F46DAD052D49A4D5F5DE /* UIScreenRenderer.swift in Sources */,
+				E1C23B0DD30A0D05C656C957 /* ZoomableCanvas.swift in Sources */,
 				7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */,
 				7EECEE3DC37DCC6AE815E975 /* iPhoneFrameOverlay.swift in Sources */,
 			);
@@ -520,7 +524,7 @@
 				AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */,
 				B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */,
 				1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */,
-				AABB01CC11AABB1111000001 /* V33VersionVisibleTests.swift in Sources */,
+				9BAFA33B65E91F3B02ED1035 /* V33VersionVisibleTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
