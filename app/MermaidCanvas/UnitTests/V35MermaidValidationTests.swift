@@ -378,4 +378,93 @@ final class V35MermaidValidationTests: XCTestCase {
         XCTAssertTrue(labels2.contains("tillbaka 🔄"),
                       "Edge-label med emoji ska överleva två cykler")
     }
+
+    // MARK: - 8. Layout hints (v35.1)
+
+    /// Verifierar att osynliga ~~~-layout-hints genereras för ouppkopplade former
+    /// i ett 2×2-mönster (Kims rapporterade use-case).
+    func testGenerator_LayoutHints_TwoColumnGrid() throws {
+        // 4 former i 2×2-arrangemang — exakt som Kims V35 1.md-fil
+        // Kolumn 1 (x≈1950): circle (y=1775), rect (y=1922)
+        // Kolumn 2 (x≈2060): rect (y=1835), diamond (y=1932)
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .circle,    position: CGPoint(x: 1963, y: 1775), label: ""),
+            ShapeNode(type: .rectangle, position: CGPoint(x: 2058, y: 1835), label: ""),
+            ShapeNode(type: .rectangle, position: CGPoint(x: 1934, y: 1922), label: ""),
+            ShapeNode(type: .diamond,   position: CGPoint(x: 2061, y: 1932), label: "")
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes,
+            edges: [],
+            canvasSize: CGSize(width: 3000, height: 3000),
+            specType: .general
+        )
+
+        // Ska innehålla ~~~-hints
+        XCTAssertTrue(code.contains("~~~"),
+                      "Genererad kod ska innehålla ~~~-hints för 2×2-layouten:\n\(code)")
+
+        // Ska innehålla exakt 2 ~~~-hintar (en per kolumn, en länk per kolumn)
+        let hintCount = code.components(separatedBy: "~~~").count - 1
+        XCTAssertEqual(hintCount, 2,
+                       "2×2-grid ska ge exakt 2 ~~~-hintar (en per kolumn), fick \(hintCount):\n\(code)")
+
+        // Kolumn 1: circle (N0) ovanför rect (N2) → ui_N0 ~~~ ui_N2
+        // Kolumn 2: rect (N1) ovanför diamond (N3) → ui_N1 ~~~ ui_N3
+        // (ordning baseras på shapes-index, kategori="ui")
+        XCTAssertTrue(code.contains("ui_N0 ~~~ ui_N2"),
+                      "Kolumn 1: circle ska vara ovanför rect (ui_N0 ~~~ ui_N2):\n\(code)")
+        XCTAssertTrue(code.contains("ui_N1 ~~~ ui_N3"),
+                      "Kolumn 2: rect ska vara ovanför diamond (ui_N1 ~~~ ui_N3):\n\(code)")
+    }
+
+    /// Verifierar att ~~~-hints INTE genereras när det finns kanter —
+    /// kanterna definierar redan strukturen.
+    func testGenerator_LayoutHints_SkippedWhenEdgesExist() throws {
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .circle,    position: CGPoint(x: 100, y: 100), label: "A"),
+            ShapeNode(type: .rectangle, position: CGPoint(x: 300, y: 400), label: "B")
+        ]
+        let edges = [
+            EdgeConnection(from: shapes[0].id, to: shapes[1].id,
+                           label: "", bidirectional: false, style: .solid)
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes,
+            edges: edges,
+            canvasSize: CGSize(width: 800, height: 600),
+            specType: .general
+        )
+
+        XCTAssertFalse(code.contains("~~~"),
+                       "Ska INTE innehålla ~~~-hints när kanter finns:\n\(code)")
+    }
+
+    /// Verifierar att shapes i en enda kolumn (alla ungefär samma X)
+    /// får en vertikal kedja av ~~~-hintar.
+    func testGenerator_LayoutHints_SingleColumnChain() throws {
+        let shapes: [ShapeNode] = [
+            ShapeNode(type: .circle,    position: CGPoint(x: 500, y: 100), label: "Top"),
+            ShapeNode(type: .rectangle, position: CGPoint(x: 510, y: 300), label: "Mid"),
+            ShapeNode(type: .diamond,   position: CGPoint(x: 495, y: 500), label: "Bot")
+        ]
+        let code = MermaidGenerator.generate(
+            shapes: shapes,
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 600),
+            specType: .general
+        )
+
+        // En kolumn med 3 shapes → 2 ~~~-hintar (top→mid, mid→bot)
+        let hintCount = code.components(separatedBy: "~~~").count - 1
+        XCTAssertEqual(hintCount, 2,
+                       "3 shapes i en kolumn ska ge 2 ~~~-hintar, fick \(hintCount):\n\(code)")
+
+        // Vertikal ordning: top (y=100) → mid (y=300) → bot (y=500)
+        // shapes-index: circle=N0, rect=N1, diamond=N2
+        XCTAssertTrue(code.contains("ui_N0 ~~~ ui_N1"),
+                      "Top → Mid:\n\(code)")
+        XCTAssertTrue(code.contains("ui_N1 ~~~ ui_N2"),
+                      "Mid → Bot:\n\(code)")
+    }
 }

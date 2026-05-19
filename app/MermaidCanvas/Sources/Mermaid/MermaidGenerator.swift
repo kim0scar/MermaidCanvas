@@ -68,6 +68,11 @@ enum MermaidGenerator {
             lines.append("\(indent)%% \(id) pos: \(Int(shape.position.x.rounded())),\(Int(shape.position.y.rounded()))")
         }
 
+        // v35.1: Layout-hints för ouppkopplade former — osynliga ~~~-länkar
+        // som tvingar Mermaid att rendera i rätt kolumner/rader baserat på position.
+        let hints = layoutHints(shapes: shapes, edges: edges, mermaidIds: mermaidIds, indent: indent)
+        for hint in hints { lines.append(hint) }
+
         // Edges
         for (i, edge) in edges.enumerated() {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
@@ -204,6 +209,53 @@ enum MermaidGenerator {
     }
 
     // MARK: - Privata helpers
+
+    // MARK: - Layout hints (v35.1)
+
+    /// Genererar osynliga `~~~`-länkar för att hjälpa Mermaid att rendera
+    /// ouppkopplade former i samma rumsliga arrangemang som på canvas.
+    ///
+    /// Algoritm:
+    /// 1. Sortera shapes efter X → gruppera i kolumner (gap > 80pt = ny kolumn)
+    /// 2. Inom varje kolumn, sortera efter Y
+    /// 3. Lägg till `A ~~~ B` mellan konsekutiva shapes i samma kolumn
+    ///
+    /// Hoppas över om det finns kanter — kanterna definierar redan strukturen.
+    private static func layoutHints(shapes: [ShapeNode],
+                                     edges: [EdgeConnection],
+                                     mermaidIds: [UUID: String],
+                                     indent: String) -> [String] {
+        guard shapes.count >= 2, edges.isEmpty else { return [] }
+
+        let sortedByX = shapes.sorted { $0.position.x < $1.position.x }
+
+        // Dela upp i kolumner: X-gap > 80pt = ny kolumn
+        let threshold: CGFloat = 80
+        var columns: [[ShapeNode]] = []
+        var current: [ShapeNode] = [sortedByX[0]]
+        for i in 1..<sortedByX.count {
+            let gap = sortedByX[i].position.x - sortedByX[i - 1].position.x
+            if gap > threshold {
+                columns.append(current)
+                current = [sortedByX[i]]
+            } else {
+                current.append(sortedByX[i])
+            }
+        }
+        columns.append(current)
+
+        // Generera ~~~ per kolumn (top → bottom)
+        var hints: [String] = []
+        for column in columns where column.count >= 2 {
+            let col = column.sorted { $0.position.y < $1.position.y }
+            for i in 0..<col.count - 1 {
+                guard let a = mermaidIds[col[i].id],
+                      let b = mermaidIds[col[i + 1].id] else { continue }
+                hints.append("\(indent)\(a) ~~~ \(b)")
+            }
+        }
+        return hints
+    }
 
     private static func makeMermaidIds(for shapes: [ShapeNode]) -> [UUID: String] {
         var ids: [UUID: String] = [:]
