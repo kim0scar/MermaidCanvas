@@ -221,8 +221,8 @@ struct ToolbarView: View {
                 shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
                     ZStack {
                         DiamondShape()
-                            .stroke(Color.primary, lineWidth: 1.8)
-                            .frame(width: 22, height: 24)
+                            .stroke(Color.primary, lineWidth: 2)
+                            .frame(width: 26, height: 20)  // bredare än hög = matchar canvas
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -232,8 +232,16 @@ struct ToolbarView: View {
                 shapeChip(.pill,         "capsule",          accId: "chip.pill") {
                     model.addShape(.pill, at: canvasCenter)
                 }
-                shapeChip(.processArrow, "arrowshape.right", accId: "chip.processArrow") {
-                    model.addShape(.processArrow, at: canvasCenter)
+                shapeChipGeneric(type: .processArrow, accId: "chip.processArrow", onTap: { model.addShape(.processArrow, at: canvasCenter) }) {
+                    ZStack {
+                        ProcessArrowShape()
+                            .stroke(Color.primary, lineWidth: 2)
+                            .frame(width: 26, height: 18)  // matchar canvas-proportion
+                    }
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    .contentShape(Circle())
                 }
             }
             // Rad B — 5 special-typer + anteckning-popup

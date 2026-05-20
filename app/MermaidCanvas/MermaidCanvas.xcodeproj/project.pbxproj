@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0320F7EB8A111772BE23366A /* CanvasFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DBE1118CB6B8E7AD3B7E51 /* CanvasFileManager.swift */; };
+		04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */; };
 		04F6EA93B52298C165CEB0DE /* MermaidImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */; };
 		07E3490A9963968FB98F7B44 /* V28VisualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */; };
 		084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */; };
@@ -26,6 +27,7 @@
 		283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228F689846F0D1503749250D /* CanvasView.swift */; };
 		2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D164BF747C4ACF00F0921D /* ToolbarView.swift */; };
 		2FB60923F478B3E69A314A91 /* V34PanSymmetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */; };
+		31D4EC6627E7EC70A9128DE9 /* CanvasShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC011658EA5250E6227B5D1 /* CanvasShapes.swift */; };
 		36044040C55FCA0697F0BC79 /* PreviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35F5529A9079DF8958E486C /* PreviewSheet.swift */; };
 		37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC13BC52408F5BEC68F4C2 /* FlowRenderer.swift */; };
 		39C4BE0D9F1D7F0A3221BA24 /* MermaidCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */; };
@@ -114,6 +116,8 @@
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
 		37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPack.swift; sourceTree = "<group>"; };
+		3EC011658EA5250E6227B5D1 /* CanvasShapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasShapes.swift; sourceTree = "<group>"; };
+		4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeResizeIcon.swift; sourceTree = "<group>"; };
 		48D49F47552871CE2D445E1F /* V34DropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V34DropTests.swift; sourceTree = "<group>"; };
 		4913E980F026A3D6E49070B7 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
@@ -226,6 +230,7 @@
 				2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */,
 				23D164BF747C4ACF00F0921D /* ToolbarView.swift */,
 				5B2E47D263E03FC15133D9E0 /* Handles */,
+				C3AE557F7872664DCFECA2B6 /* Shapes */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -253,6 +258,7 @@
 		5B2E47D263E03FC15133D9E0 /* Handles */ = {
 			isa = PBXGroup;
 			children = (
+				4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */,
 				74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */,
 			);
 			path = Handles;
@@ -342,6 +348,14 @@
 				39D256FE7DA9ACB022D0527D /* Views */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		C3AE557F7872664DCFECA2B6 /* Shapes */ = {
+			isa = PBXGroup;
+			children = (
+				3EC011658EA5250E6227B5D1 /* CanvasShapes.swift */,
+			);
+			path = Shapes;
 			sourceTree = "<group>";
 		};
 		E3D18F6332B423EFA76528CE /* UITests */ = {
@@ -491,6 +505,7 @@
 				11BE53EC33154017D1148891 /* CanvasDocument.swift in Sources */,
 				0320F7EB8A111772BE23366A /* CanvasFileManager.swift in Sources */,
 				17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */,
+				31D4EC6627E7EC70A9128DE9 /* CanvasShapes.swift in Sources */,
 				283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */,
 				5502DC1063808D7E976CD568 /* CanvasViewportState.swift in Sources */,
 				3CB3443CCE6C72AEF0804D20 /* CollapseBadge.swift in Sources */,
@@ -503,6 +518,7 @@
 				8426638A65B4BA49FF8F7992 /* EditShapeSheet.swift in Sources */,
 				E59147BD729B4A37CFCD70F5 /* FloatingChipPreview.swift in Sources */,
 				37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */,
+				04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */,
 				9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */,
 				B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */,
 				D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */,

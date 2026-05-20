@@ -85,6 +85,28 @@ final class CanvasModel: ObservableObject {
         edges.contains { $0.from == id }
     }
 
+    /// v42: returnerar genomsnittlig riktning från shape till alla utgående kant-targets.
+    /// nil om inga utgående kanter. Används för att placera collapse-badge vid kant-startpunkten.
+    func averageOutgoingDirection(from shapeId: UUID) -> CGVector? {
+        guard let from = shapes.first(where: { $0.id == shapeId }) else { return nil }
+        let outgoing = edges.filter { $0.from == shapeId }
+        guard !outgoing.isEmpty else { return nil }
+        var sumX: CGFloat = 0
+        var sumY: CGFloat = 0
+        for edge in outgoing {
+            guard let to = shapes.first(where: { $0.id == edge.to }) else { continue }
+            let dx = to.position.x - from.position.x
+            let dy = to.position.y - from.position.y
+            let len = sqrt(dx*dx + dy*dy)
+            guard len > 0.001 else { continue }
+            sumX += dx / len
+            sumY += dy / len
+        }
+        let norm = sqrt(sumX*sumX + sumY*sumY)
+        guard norm > 0.001 else { return nil }
+        return CGVector(dx: sumX / norm, dy: sumY / norm)
+    }
+
     // MARK: - Snapshot för undo
 
     private func snapshotForUndo() {

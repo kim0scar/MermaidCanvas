@@ -67,15 +67,9 @@ struct SelectionHandles: View {
             Circle()
                 .fill(Color.white)
                 .overlay(Circle().stroke(Color.accentColor, lineWidth: 2))
-            // v41: Två överlappande pilar → ↖↘ + ↗↙ = 4 diagonala pilar
-            ZStack {
-                Image(systemName: "arrow.up.left.and.arrow.down.right")
-                    .font(.system(size: size * 0.38, weight: .bold))
-                    .foregroundStyle(Color.accentColor)
-                Image(systemName: "arrow.up.right.and.arrow.down.left")
-                    .font(.system(size: size * 0.38, weight: .bold))
-                    .foregroundStyle(Color.accentColor)
-            }
+            // v42: Custom-ritad 4-pilars-ikon — tydligt diagonala pilar
+            FreeResizeIcon(color: Color.accentColor)
+                .frame(width: size * 0.65, height: size * 0.65)
         }
         .frame(width: size, height: size)
         .contentShape(Circle().inset(by: -size * 0.5))

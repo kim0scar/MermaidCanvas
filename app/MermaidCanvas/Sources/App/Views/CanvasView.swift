@@ -76,6 +76,8 @@ struct CanvasView: View {
     @State private var zoomScale: CGFloat = 1.0
     @State private var centerOnPoint: CGPoint? = nil
     @State private var connectionDrag: ConnectionDrag? = nil
+    /// v42: när användaren long-pressar en vald form aktiveras edge-läget bara för den
+    @State private var edgeIntentShapeId: UUID? = nil
 
     var body: some View {
         ZoomableCanvas(
@@ -96,6 +98,12 @@ struct CanvasView: View {
                         .stroke(Color.primary.opacity(0.18), lineWidth: 1)
                 )
                 .coordinateSpace(name: "canvas")
+                // v42: rensa edge-intent när användaren byter vald form
+                .onChange(of: model.selectedShapeId) { _, newId in
+                    if newId != edgeIntentShapeId {
+                        edgeIntentShapeId = nil
+                    }
+                }
         }
         .ignoresSafeArea()
         .accessibilityIdentifier("canvas")
@@ -211,7 +219,18 @@ struct CanvasView: View {
                         onMoveMultiSelection: { delta in
                             model.moveSelection(by: delta)
                         },
-                        isInMultiSelection: model.multiSelection.contains(shape.id)
+                        isInMultiSelection: model.multiSelection.contains(shape.id),
+                        outgoingDirection: model.averageOutgoingDirection(from: shape.id),
+                        onLongPress: {
+                            if model.selectedShapeId == shape.id {
+                                // togglar edge-intent för den valda formen
+                                edgeIntentShapeId = (edgeIntentShapeId == shape.id) ? nil : shape.id
+                            } else {
+                                // välj formen OCH aktivera edge-mode i en gest
+                                model.selectShape(shape.id)
+                                edgeIntentShapeId = shape.id
+                            }
+                        }
                     )
                 }
             }
@@ -236,22 +255,26 @@ struct CanvasView: View {
                     shape: $model.shapes[idx],
                     canvasScale: zoomScale
                 )
-                ConnectionHandles(
-                    shape: s,
-                    canvasScale: zoomScale,
-                    onDragChanged: { canvasPoint in
-                        connectionDrag = ConnectionDrag(fromShapeId: s.id,
-                                                       currentCanvasLocation: canvasPoint)
-                    },
-                    onDragEnded: { canvasPoint in
-                        if let target = ShapeGeometry.hitTest(canvasPoint,
-                                                              shapes: model.shapes,
-                                                              excludingId: s.id) {
-                            model.addEdge(from: s.id, to: target.id)
+                // v42: ConnectionHandles bara om användaren signalerat edge-intent (long-press)
+                if edgeIntentShapeId == selectedId || model.pendingEdgeFrom == selectedId {
+                    ConnectionHandles(
+                        shape: s,
+                        canvasScale: zoomScale,
+                        onDragChanged: { canvasPoint in
+                            connectionDrag = ConnectionDrag(fromShapeId: s.id,
+                                                           currentCanvasLocation: canvasPoint)
+                        },
+                        onDragEnded: { canvasPoint in
+                            if let target = ShapeGeometry.hitTest(canvasPoint,
+                                                                  shapes: model.shapes,
+                                                                  excludingId: s.id) {
+                                model.addEdge(from: s.id, to: target.id)
+                            }
+                            connectionDrag = nil
+                            edgeIntentShapeId = nil   // ut ur edge-läget när pilen ritats
                         }
-                        connectionDrag = nil
-                    }
-                )
+                    )
+                }
             }
 
             if model.markerMode && model.multiSelection.isEmpty {
@@ -363,6 +386,10 @@ struct ShapeView: View {
     var onMoveMultiSelection: ((CGSize) -> Void)? = nil
     /// v40: sann om denna form ingår i multiSelection
     var isInMultiSelection: Bool = false
+    /// v42: genomsnittlig riktning för utgående kanter — används för badge-position.
+    var outgoingDirection: CGVector? = nil
+    /// v42: long-press togglar edge-intent (kedje-handtagen) för formen.
+    var onLongPress: (() -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
@@ -429,13 +456,19 @@ struct ShapeView: View {
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
-        // v39: collapse-badge vid bottom-center (nära kant-utgångspunkten)
-        .overlay(alignment: .bottom) {
-            if showCollapseBadge && !markerMode {
+        // v42: collapse-badge vid kant-startpunkten (riktning mot utgående pilar)
+        .overlay {
+            if showCollapseBadge && !markerMode, let dir = outgoingDirection {
+                let w = ShapeGeometry.width(for: shape)
+                let h = ShapeGeometry.height(for: shape)
+                // Placera badge precis innanför kanten i riktning mot pilen
+                let badgeOffset: CGFloat = 18 / canvasScale
+                let edgeX = dir.dx * (w / 2 - badgeOffset)
+                let edgeY = dir.dy * (h / 2 - badgeOffset)
                 CollapseBadge(collapsed: isCollapsed,
                               canvasScale: canvasScale,
                               onTap: onToggleCollapse)
-                    .offset(y: -14 / canvasScale)   // v40: inuti formen, ej överlapp med kant-linje
+                    .offset(x: edgeX, y: edgeY)
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
@@ -463,6 +496,10 @@ struct ShapeView: View {
             } else {
                 onSelect()
             }
+        }
+        // v42: long-press togglar edge-intent (visar kedje-handtagen)
+        .onLongPressGesture(minimumDuration: 0.5) {
+            onLongPress?()
         }
         // v40: drag aktiverat i markerMode OM formen ingår i multiSelection.
         // Utan mask .none läggs inget gesture-recognizer på (undviker UIScrollView-kollision).
@@ -688,78 +725,9 @@ private struct JumpLinkShapeBackground: View {
     }
 }
 
-/// v28: rundad romb/diamant — mjuka hörn istället för vassa spetsar.
-/// v35.1: fyller hela ramen (120×80) → bredare-än-hög romb som matchar Mermaid's {} render.
-struct DiamondShape: Shape {
-    var cornerRadius: CGFloat = 8
-
-    func path(in rect: CGRect) -> Path {
-        let top    = CGPoint(x: rect.midX, y: rect.minY)
-        let right  = CGPoint(x: rect.maxX, y: rect.midY)
-        let bottom = CGPoint(x: rect.midX, y: rect.maxY)
-        let left   = CGPoint(x: rect.minX, y: rect.midY)
-
-        let r = min(cornerRadius, min(rect.width, rect.height) / 4)
-        // För varje hörn: gå r-pt åt vardera håll längs kanten innan hörnet
-        // och rita en quad-curve runt själva hörnet.
-        let topToRightDir = unitVector(from: top, to: right)
-        let rightToBottomDir = unitVector(from: right, to: bottom)
-        let bottomToLeftDir = unitVector(from: bottom, to: left)
-        let leftToTopDir = unitVector(from: left, to: top)
-
-        var p = Path()
-        p.move(to: offset(top, by: topToRightDir, amount: r))
-        p.addLine(to: offset(right, by: topToRightDir, amount: -r))
-        p.addQuadCurve(to: offset(right, by: rightToBottomDir, amount: r), control: right)
-        p.addLine(to: offset(bottom, by: rightToBottomDir, amount: -r))
-        p.addQuadCurve(to: offset(bottom, by: bottomToLeftDir, amount: r), control: bottom)
-        p.addLine(to: offset(left, by: bottomToLeftDir, amount: -r))
-        p.addQuadCurve(to: offset(left, by: leftToTopDir, amount: r), control: left)
-        p.addLine(to: offset(top, by: leftToTopDir, amount: -r))
-        p.addQuadCurve(to: offset(top, by: topToRightDir, amount: r), control: top)
-        p.closeSubpath()
-        return p
-    }
-
-    private func unitVector(from a: CGPoint, to b: CGPoint) -> CGVector {
-        let dx = b.x - a.x
-        let dy = b.y - a.y
-        let len = sqrt(dx * dx + dy * dy)
-        guard len > 0.001 else { return CGVector(dx: 0, dy: 0) }
-        return CGVector(dx: dx / len, dy: dy / len)
-    }
-
-    private func offset(_ p: CGPoint, by v: CGVector, amount: CGFloat) -> CGPoint {
-        CGPoint(x: p.x + v.dx * amount, y: p.y + v.dy * amount)
-    }
-}
-
-// MARK: - Nya grundformer v35.1
-
-/// Liksidig kvadrat med rundade hörn — identisk med RoundedRectangle men kvadratisk.
-/// ShapeGeometry ger 80×80-ram; formen fyller den.
-struct SquareShape: Shape {
-    var cornerRadius: CGFloat = 14
-    func path(in rect: CGRect) -> Path {
-        Path(roundedRect: rect, cornerRadius: cornerRadius, style: .continuous)
-    }
-}
-
-/// Processsteg-pil — pentagon med rak vänsterkant och spetsig högerände.
-/// v41: platt vänsterkant → matchar arrowshape.right-ikonen exakt.
-struct ProcessArrowShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        let tip: CGFloat = rect.width * 0.35   // spets = 35% av bredden
-        var p = Path()
-        p.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.minY))
-        p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.maxY))
-        p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-        p.closeSubpath()
-        return p
-    }
-}
+// v42: DiamondShape, SquareShape och ProcessArrowShape är flyttade till
+// Sources/App/Views/Shapes/CanvasShapes.swift så att ToolbarView kan rendera
+// EXAKT samma former i chip-vyn. Inga duplicerade definitioner längre.
 
 // MARK: - FreeLineView
 
