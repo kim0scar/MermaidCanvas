@@ -447,8 +447,9 @@ struct ShapeView: View {
                 onSelect()
             }
         }
-        // v40: drag aktiverat i markerMode OM formen ingår i multiSelection
-        .gesture(edgeMode ? nil : unifiedDragGesture)
+        // v40: drag aktiverat i markerMode OM formen ingår i multiSelection.
+        // Utan mask .none läggs inget gesture-recognizer på (undviker UIScrollView-kollision).
+        .gesture(unifiedDragGesture, including: gestureActive ? .all : .none)
         .contextMenu {
             Button { onEdit() } label: { Label("Redigera", systemImage: "pencil") }
             Button { onDuplicate() } label: { Label("Duplicera", systemImage: "plus.square.on.square") }
@@ -459,6 +460,11 @@ struct ShapeView: View {
             Divider()
             Button(role: .destructive) { onDelete() } label: { Label("Ta bort", systemImage: "trash") }
         }
+    }
+
+    /// Sann när drag-gesten ska vara aktiv: normalt läge, eller markeringsläge med multiSelection.
+    private var gestureActive: Bool {
+        !edgeMode && (!markerMode || isInMultiSelection)
     }
 
     /// v40: Enhetlig drag-gest — hanterar normal drag, multi-select drag och inaktivt läge.
