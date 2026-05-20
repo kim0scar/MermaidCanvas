@@ -67,10 +67,11 @@ struct SelectionHandles: View {
             Circle()
                 .fill(Color.white)
                 .overlay(Circle().stroke(Color.accentColor, lineWidth: 2))
-            // diagonal pil — kommunicerar "ändra storlek fritt"
-            Image(systemName: "arrow.down.left.and.arrow.up.right")
-                .font(.system(size: size * 0.42, weight: .bold))
+            // v40: 4 pilar roterade 45° → ↖↗↙↘ — kommunicerar "ändra fritt åt alla håll"
+            Image(systemName: "arrows.up.down.left.right")
+                .font(.system(size: size * 0.40, weight: .bold))
                 .foregroundStyle(Color.accentColor)
+                .rotationEffect(.degrees(45))
         }
         .frame(width: size, height: size)
         .contentShape(Circle().inset(by: -size * 0.5))

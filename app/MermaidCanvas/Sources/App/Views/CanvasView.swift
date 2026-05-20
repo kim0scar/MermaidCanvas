@@ -205,7 +205,11 @@ struct CanvasView: View {
                         onToggleCollapse: { model.toggleCollapse(id: shape.id) },
                         onDragUpdate: { canvasPoint in
                             updateAutoScroll(at: canvasPoint)
-                        }
+                        },
+                        onMoveMultiSelection: { delta in
+                            model.moveSelection(by: delta)
+                        },
+                        isInMultiSelection: model.multiSelection.contains(shape.id)
                     )
                 }
             }
@@ -342,8 +346,13 @@ struct ShapeView: View {
     let onToggleCollapse: () -> Void
     /// v39: rapporterar drag-position (canvas-koord) för auto-scroll. nil = drag avslutad.
     var onDragUpdate: ((CGPoint?) -> Void)? = nil
+    /// v40: callback för att flytta ALLA markerade former (multi-select drag).
+    var onMoveMultiSelection: ((CGSize) -> Void)? = nil
+    /// v40: sann om denna form ingår i multiSelection
+    var isInMultiSelection: Bool = false
 
     @State private var dragOffset: CGSize = .zero
+    @State private var lastMultiDragTranslation: CGSize? = nil
 
     private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
     private var effectiveFill: Color { pack.fillColor }
@@ -413,7 +422,7 @@ struct ShapeView: View {
                 CollapseBadge(collapsed: isCollapsed,
                               canvasScale: canvasScale,
                               onTap: onToggleCollapse)
-                    .offset(y: 10 / canvasScale)
+                    .offset(y: -14 / canvasScale)   // v40: inuti formen, ej överlapp med kant-linje
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
@@ -428,14 +437,18 @@ struct ShapeView: View {
             onEdit()
         }
         .onTapGesture(count: 1) {
-            if markerMode { return }
+            if markerMode {
+                onSelect()   // v40: markerMode → toggla i multiSelection
+                return
+            }
             if edgeMode {
                 onEdgeTap()
             } else {
                 onSelect()
             }
         }
-        .gesture((edgeMode || markerMode) ? nil : dragGesture)
+        // v40: drag aktiverat i markerMode OM formen ingår i multiSelection
+        .gesture(edgeMode ? nil : unifiedDragGesture)
         .contextMenu {
             Button { onEdit() } label: { Label("Redigera", systemImage: "pencil") }
             Button { onDuplicate() } label: { Label("Duplicera", systemImage: "plus.square.on.square") }
@@ -448,22 +461,41 @@ struct ShapeView: View {
         }
     }
 
-    private var dragGesture: some Gesture {
-        DragGesture(minimumDistance: 10, coordinateSpace: .named("canvas"))
+    /// v40: Enhetlig drag-gest — hanterar normal drag, multi-select drag och inaktivt läge.
+    private var unifiedDragGesture: some Gesture {
+        DragGesture(minimumDistance: isInMultiSelection ? 6 : 10,
+                    coordinateSpace: .named("canvas"))
             .onChanged { v in
-                dragOffset = CGSize(
-                    width: v.location.x - v.startLocation.x,
-                    height: v.location.y - v.startLocation.y
-                )
-                // v39: rapportera drag-position för auto-scroll-detektion
-                onDragUpdate?(v.location)
+                if isInMultiSelection {
+                    // Multi-select: flytta ALLA markerade former via delta
+                    let prev = lastMultiDragTranslation ?? .zero
+                    let delta = CGSize(
+                        width: v.translation.width - prev.width,
+                        height: v.translation.height - prev.height
+                    )
+                    lastMultiDragTranslation = v.translation
+                    onMoveMultiSelection?(delta)
+                    onDragUpdate?(v.location)
+                } else if !markerMode {
+                    // Normal drag: visa visuell offset
+                    dragOffset = CGSize(
+                        width: v.location.x - v.startLocation.x,
+                        height: v.location.y - v.startLocation.y
+                    )
+                    onDragUpdate?(v.location)
+                }
+                // markerMode utan multiSelection: ignorera drag (scrollview tar över)
             }
             .onEnded { v in
-                shape.position.x += v.translation.width
-                shape.position.y += v.translation.height
-                dragOffset = .zero
-                // v39: avsluta auto-scroll
-                onDragUpdate?(nil)
+                if isInMultiSelection {
+                    lastMultiDragTranslation = nil
+                    onDragUpdate?(nil)
+                } else if !markerMode {
+                    shape.position.x += v.translation.width
+                    shape.position.y += v.translation.height
+                    dragOffset = .zero
+                    onDragUpdate?(nil)
+                }
             }
     }
 
@@ -495,6 +527,7 @@ struct ShapeView: View {
                                  stroke: effectiveStroke)
         case .link:
             JumpLinkShapeBackground(number: shape.linkNumber ?? 0)
+                .opacity(0.55)   // v40: halvt transparent
         case .square:
             SquareShape()
                 .fill(effectiveFill)
@@ -669,19 +702,32 @@ struct SquareShape: Shape {
     }
 }
 
-/// Processsteg-pil — pentagon med platt vänsterkant och spetsig högerände.
-/// v36.1: spets = 40% av bredden → matchar SF-symbolen arrowshape.right visuellt.
-/// Bredd 110×80 — kompakt nog att se ut som en "pil", inte ett "block".
+/// Processsteg-pil — pentagon med avrundade vänsterhörn och spetsig högerände.
+/// v40: spets = 35% av bredden + rundade vänsterhörn (r=4pt) → matchar arrowshape.right bättre.
 struct ProcessArrowShape: Shape {
     func path(in rect: CGRect) -> Path {
-        let tip: CGFloat = rect.width * 0.40   // 40% av bredden = tydlig spets
+        let tip: CGFloat = rect.width * 0.35   // v40: 35% → kroppen mer framträdande, spets tydligare
+        let r: CGFloat = 4                     // hörnradie vänsterkant
 
         var p = Path()
-        p.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        // övre-vänster hörn (avrundat)
+        p.move(to: CGPoint(x: rect.minX + r, y: rect.minY))
+        // övre kanten → spetsbas
         p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.minY))
+        // spets höger
         p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        // spets ner → nedre kanten
         p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.maxY))
-        p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        // nedre kanten → undre-vänster hörn
+        p.addLine(to: CGPoint(x: rect.minX + r, y: rect.maxY))
+        // undre-vänster rundning
+        p.addQuadCurve(to: CGPoint(x: rect.minX, y: rect.maxY - r),
+                       control: CGPoint(x: rect.minX, y: rect.maxY))
+        // vänster kant upp
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY + r))
+        // övre-vänster rundning
+        p.addQuadCurve(to: CGPoint(x: rect.minX + r, y: rect.minY),
+                       control: CGPoint(x: rect.minX, y: rect.minY))
         p.closeSubpath()
         return p
     }
@@ -807,7 +853,7 @@ struct EdgesView: View {
             switch direction {
             case .forward:       return "arrow.right"
             case .backward:      return "arrow.left"
-            case .bidirectional: return "arrow.left.arrow.right"
+            case .bidirectional: return "arrow.left.and.right"
             case .none:          return "minus"
             }
         }()
@@ -1007,29 +1053,45 @@ struct EdgesView: View {
         }
     }
 
-    /// v39: Kant-utgångspunkt — alltid sidans MITT (top/bottom/left/right).
-    /// Renare och mer Lucidchart-likt än hörn-intersect.
+    /// v40: Kant-utgångspunkt med rotationsstöd.
+    /// Roterar target-punkten bakåt (−rotation) för att beräkna sida i lokalt koordinatsystem,
+    /// sedan roteras resultatet framåt (+rotation) till world-space.
     private func edgePoint(for shape: ShapeNode, towards target: CGPoint) -> CGPoint {
         let center = shape.position
-        let dx = target.x - center.x
-        let dy = target.y - center.y
+        // Rotera target bakåt för att jobba i formens lokala koordinatsystem
+        let unrotatedTarget = canvasRotatePoint(target, around: center, byDegrees: -shape.rotation)
+        let dx = unrotatedTarget.x - center.x
+        let dy = unrotatedTarget.y - center.y
         guard abs(dx) > 0.001 || abs(dy) > 0.001 else { return center }
 
+        let localPoint: CGPoint
         switch shape.type {
         case .circle, .link:
-            // Cirklar: punkt på omkretsen rakt mot målet (korrekt för cirklar)
+            // Cirklar: rotation spelar ingen roll, men vi håller konsistens
             let r = ShapeGeometry.circleRadius(for: shape)
             let length = sqrt(dx * dx + dy * dy)
-            return CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
+            localPoint = CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
         case .diamond:
-            // Diamant: snäpp till närmaste spets (top/bottom/left/right)
-            return diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
+            localPoint = diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .rectangle, .text, .table, .pill, .square, .processArrow:
-            // Rektangulära former: mitt på närmaste sida
-            return rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
+            localPoint = rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
             return center
         }
+        // Rotera resultatet tillbaka till world-space
+        return canvasRotatePoint(localPoint, around: center, byDegrees: shape.rotation)
+    }
+
+    /// Hjälpfunktion: rotera en punkt runt ett center med grader.
+    private func canvasRotatePoint(_ p: CGPoint, around c: CGPoint, byDegrees deg: Double) -> CGPoint {
+        guard abs(deg) > 0.5 else { return p }
+        let r = deg * .pi / 180
+        let dx = p.x - c.x
+        let dy = p.y - c.y
+        return CGPoint(
+            x: c.x + dx * cos(r) - dy * sin(r),
+            y: c.y + dx * sin(r) + dy * cos(r)
+        )
     }
 
     /// Mitten på närmaste sida för rektangulära former.

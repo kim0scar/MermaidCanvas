@@ -52,6 +52,7 @@ struct ToolbarView: View {
     var onAlignVertical: () -> Void
 
     @State private var secondaryRow: SecondaryToolbarRow? = nil
+    @State private var showSizePicker = false   // v40: textstorlek-popup
 
     var body: some View {
         VStack(spacing: 0) {
@@ -217,7 +218,7 @@ struct ToolbarView: View {
                 shapeChip(.square,       "square",           accId: "chip.square") {
                     model.addShape(.square, at: canvasCenter)
                 }
-                shapeChip(.diamond,      "diamond",          accId: "chip.diamond") {
+                shapeChip(.diamond,      "diamond.fill",     accId: "chip.diamond") {
                     model.addShape(.diamond, at: canvasCenter)
                 }
                 shapeChip(.pill,         "capsule",          accId: "chip.pill") {
@@ -451,15 +452,43 @@ struct ToolbarView: View {
         model.shapes[idx].colorPackId = pack.id == "none" ? nil : pack.id
     }
 
-    // MARK: - Textstil-rad (v39 utökad)
+    // MARK: - Textstil-rad (v40: storlek som popup + fet-knapp)
 
     @ViewBuilder
     private var textStylesSecondary: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                // Storlek: R1 / R2 / R3 / Aa
-                ForEach(TextStyle.allCases) { st in
-                    textStyleChip(st)
+                // v40: En storlek-knapp → popup med R1/R2/R3/Aa
+                let currentStyle = selectedShape?.textStyle ?? .body
+                Button { showSizePicker = true } label: {
+                    HStack(spacing: 3) {
+                        Image(systemName: "textformat.size")
+                            .font(.system(size: 15, weight: .medium))
+                        Text(stylePreview(currentStyle))
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Color.accentColor.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .confirmationDialog("Textstorlek", isPresented: $showSizePicker, titleVisibility: .visible) {
+                    ForEach(TextStyle.allCases) { st in
+                        Button(st.displayName) { applyTextStyle(st) }
+                    }
+                    Button("Avbryt", role: .cancel) {}
+                }
+
+                // v40: Fet-knapp (togglar mellan r1 och body)
+                textActionButton(
+                    icon: "bold",
+                    label: "Fet",
+                    active: selectedShape?.textStyle == .r1
+                ) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    let current = model.shapes[idx].textStyle
+                    model.shapes[idx].textStyle = current == .r1 ? .body : .r1
                 }
 
                 Divider().frame(height: 28).padding(.horizontal, 2)

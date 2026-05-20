@@ -207,13 +207,13 @@ final class CanvasModel: ObservableObject {
         let a = ShapeNode(type: .link,
                           position: CGPoint(x: position.x - 80, y: position.y),
                           label: "",
-                          sizeMultiplier: 1.0,
+                          sizeMultiplier: 0.55,   // v40: halverad storlek
                           category: .note,
                           linkNumber: next)
         let b = ShapeNode(type: .link,
                           position: CGPoint(x: position.x + 80, y: position.y),
                           label: "",
-                          sizeMultiplier: 1.0,
+                          sizeMultiplier: 0.55,   // v40: halverad storlek
                           category: .note,
                           linkNumber: next)
         shapes.append(a)
@@ -335,8 +335,28 @@ final class CanvasModel: ObservableObject {
     }
 
     func selectShape(_ id: UUID) {
-        selectedShapeId = id
-        multiSelection.removeAll()
+        if markerMode {
+            // v40: markeringsläge — toggla formen i multiSelection
+            if multiSelection.contains(id) {
+                multiSelection.remove(id)
+            } else {
+                multiSelection.insert(id)
+            }
+        } else {
+            selectedShapeId = id
+            multiSelection.removeAll()
+        }
+    }
+
+    /// v40: Flytta alla markerade former med ett delta (px i canvas-koordinater).
+    func moveSelection(by delta: CGSize) {
+        guard !multiSelection.isEmpty else { return }
+        for i in shapes.indices {
+            if multiSelection.contains(shapes[i].id) {
+                shapes[i].position.x += delta.width
+                shapes[i].position.y += delta.height
+            }
+        }
     }
 
     func deselect() {

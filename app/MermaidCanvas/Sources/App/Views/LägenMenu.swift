@@ -19,18 +19,20 @@ struct LägenMenu: View {
 
     var body: some View {
         Menu {
-            // Aktuell plattform — INFO, inte picker (låses vid Ny canvas)
-            Section(header: Text("Plattform")) {
-                Label("\(model.platform.displayName) (låst för denna canvas)",
+            // v40: Ny canvas överst + kompakt plattform-rad
+            Button { onNewCanvas() } label: {
+                Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
+            }
+            Button(action: {}) {
+                Label("Aktuell plattform: \(model.platform.displayName)",
                       systemImage: model.platform.badgeSystemImage)
-                    .disabled(true)
-                if model.platform == .godot {
-                    Button(action: onShowRules) {
-                        Label("Visa regler för Godot", systemImage: "book")
-                    }
+            }
+            .disabled(true)
+            if model.platform == .godot {
+                Button(action: onShowRules) {
+                    Label("Visa regler för Godot", systemImage: "book")
                 }
             }
-            // v36.1: Form-paketer flyttade till swatchpalette-knappen i toolbar
             Divider()
             Button { onSave() } label: {
                 Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
@@ -43,9 +45,6 @@ struct LägenMenu: View {
             }
             Button { onImportMermaid() } label: {
                 Label("Importera Mermaid…", systemImage: "arrow.down.doc")
-            }
-            Button { onNewCanvas() } label: {
-                Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
             }
             Divider()
             // v32: Preview-knapp borttagen — kommer tillbaka när Godot-flödet är moget.
