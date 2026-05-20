@@ -289,6 +289,12 @@ struct CanvasView: View {
                         model.multiSelection.removeAll()
                     }
             }
+
+            // v43: Samlat resize-handtag när flera former är markerade.
+            // Krav >= 2: en enskilt vald form har redan sina egna SelectionHandles.
+            if model.multiSelection.count >= 2 {
+                MultiSelectResizeHandle(model: model, canvasScale: zoomScale)
+            }
         }
     }
 }
@@ -1006,8 +1012,34 @@ struct EdgesView: View {
         let n2 = outwardNormal(for: toShape,   at: end)
         let dist    = hypot(end.x - start.x, end.y - start.y)
         let tension = min(dist * 0.42, 95)
-        let cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
-        let cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
+        var cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
+        var cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
+
+        // v43: D5 — routa runt obstacles (andra former som ligger i vägen).
+        // Bara aktivt när användaren inte själv satt waypoint (waypoint = manuell routing).
+        // Behåller default normal-baserade Lucidchart-cps när ingen krock finns;
+        // bytar ut till sid-pushade cps endast vid faktisk obstacle.
+        if edge.waypoints.isEmpty {
+            let obstacleBboxes: [CGRect] = shapes.compactMap { obstacle in
+                // Hoppa över source och target själva
+                guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }
+                // Hoppa även dolda noder (de syns inte, ska inte routa runt)
+                guard !hiddenShapeIds.contains(obstacle.id) else { return nil }
+                let w = ShapeGeometry.width(for: obstacle)
+                let h = ShapeGeometry.height(for: obstacle)
+                // Lägg till lite margin runt obstacle för andningsutrymme
+                let margin: CGFloat = 12
+                return CGRect(x: obstacle.position.x - w/2 - margin,
+                              y: obstacle.position.y - h/2 - margin,
+                              width: w + margin * 2,
+                              height: h + margin * 2)
+            }
+            if EdgeRouting.hasObstacle(from: start, to: end, obstacles: obstacleBboxes) {
+                let routed = EdgeRouting.controlPoints(from: start, to: end, obstacles: obstacleBboxes)
+                cp1 = routed.cp1
+                cp2 = routed.cp2
+            }
+        }
 
         var path = Path()
         path.move(to: start)

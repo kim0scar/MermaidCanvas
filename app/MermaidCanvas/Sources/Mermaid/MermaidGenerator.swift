@@ -1,5 +1,9 @@
 import Foundation
 
+// v43: Routing runt obstacles görs visuellt i appen (EdgeRouting.swift) — Mermaid sköter
+// sin egen layout via "curve: basis"-direktivet (init-raden i generate(...)). Vi behöver
+// alltså INTE serialisera waypoints eller routing-info per kant; appens routing är endast
+// renderings-overlay och påverkar inte filens innehåll.
 enum MermaidGenerator {
     static func generate(shapes: [ShapeNode],
                          edges: [EdgeConnection],
