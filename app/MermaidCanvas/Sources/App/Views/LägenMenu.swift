@@ -28,26 +28,7 @@ struct LägenMenu: View {
                     }
                 }
             }
-            // Form-paketer — togglar
-            Section(header: Text("Form-paketer")) {
-                ForEach(ShapePack.allCases) { pack in
-                    if pack == .basic {
-                        Label("Basformer (alltid på)", systemImage: pack.systemImage)
-                            .disabled(true)
-                    } else {
-                        Button {
-                            model.toggleShapePack(pack)
-                        } label: {
-                            if model.activeShapePacks.contains(pack) {
-                                Label("\(pack.displayName) ✓", systemImage: pack.systemImage)
-                            } else {
-                                Label(pack.displayName, systemImage: pack.systemImage)
-                            }
-                        }
-                        .accessibilityIdentifier("pack.\(pack.rawValue)")
-                    }
-                }
-            }
+            // v36.1: Form-paketer flyttade till swatchpalette-knappen i toolbar
             Divider()
             Button { onSave() } label: {
                 Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")

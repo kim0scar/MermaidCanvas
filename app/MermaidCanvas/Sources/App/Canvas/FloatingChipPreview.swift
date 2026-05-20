@@ -29,9 +29,8 @@ struct FloatingChipPreview: View {
         case .link:         return "link"
         case .line:         return "minus"
         case .arrow:        return "arrow.right"
-        // v35.1
+        // v35.1/v36
         case .square:       return "square"
-        case .triangle:     return "triangle"
         case .processArrow: return "arrowshape.right"
         }
     }

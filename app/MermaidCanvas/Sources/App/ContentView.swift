@@ -332,7 +332,6 @@ struct ContentView: View {
         case .line:         return "minus"
         case .arrow:        return "arrow.right"
         case .square:       return "square"
-        case .triangle:     return "triangle"
         case .processArrow: return "arrowshape.right"
         }
     }

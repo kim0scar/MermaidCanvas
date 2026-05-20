@@ -9,17 +9,15 @@ enum ShapeGeometry {
     static func typeBaseWidth(for type: ShapeType) -> CGFloat {
         switch type {
         case .pill:         return 150   // 25% bredare oval
-        case .square:       return 80    // liksidig
-        case .triangle:     return 88    // liksidig triangel
-        case .processArrow: return 140   // bredare pil-form
+        case .square:       return 80    // liksidig kvadrat
+        case .processArrow: return 110   // kompakt pil (spets 40% av bredden)
         default:            return baseWidth
         }
     }
     static func typeBaseHeight(for type: ShapeType) -> CGFloat {
         switch type {
-        case .square:    return 80   // liksidig kvadrat
-        case .triangle:  return 88   // v36: liksidig triangel (88×88 = alla sidor lika)
-        default:         return baseHeight
+        case .square: return 80   // liksidig kvadrat
+        default:      return baseHeight
         }
     }
 
@@ -438,10 +436,6 @@ struct ShapeView: View {
             SquareShape()
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
-        case .triangle:
-            TriangleShape()
-                .fill(effectiveFill)
-                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .processArrow:
             ProcessArrowShape()
                 .fill(effectiveFill)
@@ -464,8 +458,6 @@ struct ShapeView: View {
             Capsule(style: .continuous).stroke(effectiveStroke, lineWidth: 1.5)
         case .square:
             SquareShape().stroke(effectiveStroke, lineWidth: 1.5)
-        case .triangle:
-            TriangleShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .processArrow:
             ProcessArrowShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .text, .table, .link, .line, .arrow:
@@ -487,8 +479,6 @@ struct ShapeView: View {
                 Capsule(style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .square:
                 SquareShape().stroke(Color.accentColor, lineWidth: 3.5)
-            case .triangle:
-                TriangleShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .processArrow:
                 ProcessArrowShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .text:
@@ -616,47 +606,12 @@ struct SquareShape: Shape {
     }
 }
 
-/// Liksidig triangel med mjuka hörn.
-/// Spets uppåt, bas nedåt. Hörnradien är ~10 % av sidan.
-struct TriangleShape: Shape {
-    var cornerRadius: CGFloat = 10
-
-    func path(in rect: CGRect) -> Path {
-        // Tre hörn för liksidig triangel inom rect
-        let top    = CGPoint(x: rect.midX,  y: rect.minY)
-        let right  = CGPoint(x: rect.maxX,  y: rect.maxY)
-        let left   = CGPoint(x: rect.minX,  y: rect.maxY)
-        let r = min(cornerRadius, rect.height / 5)
-
-        func uv(from a: CGPoint, to b: CGPoint) -> CGVector {
-            let dx = b.x - a.x; let dy = b.y - a.y
-            let l = sqrt(dx*dx + dy*dy)
-            return l > 0.001 ? CGVector(dx: dx/l, dy: dy/l) : .zero
-        }
-        func pt(_ p: CGPoint, _ v: CGVector, _ d: CGFloat) -> CGPoint {
-            CGPoint(x: p.x + v.dx*d, y: p.y + v.dy*d)
-        }
-        let tr = uv(from: top, to: right);   let rt = uv(from: right, to: left)
-        let lr = uv(from: left, to: top)
-
-        var p = Path()
-        p.move(to: pt(top, tr, r))
-        p.addLine(to: pt(right, tr, -r))
-        p.addQuadCurve(to: pt(right, rt, r), control: right)
-        p.addLine(to: pt(left,  rt, -r))
-        p.addQuadCurve(to: pt(left,  lr, r), control: left)
-        p.addLine(to: pt(top, lr, -r))
-        p.addQuadCurve(to: pt(top, tr, r), control: top)
-        p.closeSubpath()
-        return p
-    }
-}
-
-/// Processsteg-pil — pentagon med PLATT vänsterkant och spetsig högerände.
-/// v36: matchar SF-symbolen arrowshape.right (rak vänster, spets höger).
+/// Processsteg-pil — pentagon med platt vänsterkant och spetsig högerände.
+/// v36.1: spets = 40% av bredden → matchar SF-symbolen arrowshape.right visuellt.
+/// Bredd 110×80 — kompakt nog att se ut som en "pil", inte ett "block".
 struct ProcessArrowShape: Shape {
     func path(in rect: CGRect) -> Path {
-        let tip: CGFloat = rect.height * 0.45   // hur djup spetsen är
+        let tip: CGFloat = rect.width * 0.40   // 40% av bredden = tydlig spets
 
         var p = Path()
         p.move(to: CGPoint(x: rect.minX, y: rect.minY))
@@ -682,20 +637,23 @@ struct FreeLineView: View {
         Canvas { ctx, size in
             guard let end = shape.lineEnd else { return }
             let from = CGPoint(x: size.width / 2, y: size.height / 2)
-            let to   = CGPoint(x: size.width / 2 + end.x,
-                               y: size.height / 2 + end.y)
+            // v36.1: lineEnd normaliseras mot basvärdet 60pt → skalas med halv-bredden.
+            // Effekt: resize-handtag ändrar linjens längd proportionellt.
+            let scaledX = (end.x / 60.0) * (size.width  / 2.0)
+            let scaledY = (end.y / 60.0) * (size.height / 2.0)
+            let to = CGPoint(x: size.width / 2 + scaledX, y: size.height / 2 + scaledY)
 
-            // Linje
+            // Linje — 1.5pt matchar EdgesView kant-linjer
             var path = Path()
             path.move(to: from)
             path.addLine(to: to)
             ctx.stroke(path, with: .color(stroke),
-                       style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                       style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
 
             // Pilhuvud (endast .arrow)
             if shape.type == .arrow {
-                let angle = atan2(end.y, end.x)
-                let headLen: CGFloat = 14
+                let angle = atan2(scaledY, scaledX)
+                let headLen: CGFloat = 12
                 let headAngle: CGFloat = .pi / 6   // 30°
 
                 let a1 = CGPoint(
@@ -711,11 +669,9 @@ struct FreeLineView: View {
                 head.move(to: to)
                 head.addLine(to: a2)
                 ctx.stroke(head, with: .color(stroke),
-                           style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                           style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
             }
         }
-        // Ramen måste täcka hela sträckan. lineEnd kan peka åt valfritt håll.
-        // ShapeGeometry.width/height ger rätt ram om lineEnd är satt korrekt.
         .frame(width: ShapeGeometry.width(for: shape),
                height: ShapeGeometry.height(for: shape))
         .allowsHitTesting(false)
@@ -906,9 +862,6 @@ struct EdgesView: View {
             let t = 1.0 / denom
             return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
         case .text, .table, .pill, .square, .processArrow:
-            return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
-        case .triangle:
-            // Approximera med bounding box — bra nog för kant-ankare
             return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
         case .link:
             let r = ShapeGeometry.circleRadius(for: shape)

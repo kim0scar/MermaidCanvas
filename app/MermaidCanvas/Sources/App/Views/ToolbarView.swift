@@ -210,9 +210,6 @@ struct ToolbarView: View {
                 shapeChip(.pill,         "capsule",          accId: "chip.pill") {
                     model.addShape(.pill, at: canvasCenter)
                 }
-                shapeChip(.triangle,     "triangle",         accId: "chip.triangle") {
-                    model.addShape(.triangle, at: canvasCenter)
-                }
                 shapeChip(.processArrow, "arrowshape.right", accId: "chip.processArrow") {
                     model.addShape(.processArrow, at: canvasCenter)
                 }

@@ -354,9 +354,8 @@ enum MermaidGenerator {
         case .line:         return "[\"\(label)\"]"    // lös linje — endpoints i %% line-kommentar
         case .arrow:        return "[\"\(label)\"]"    // lös pil — som line + arrow-flagga
         // v35.1: nya grundformer
-        case .square:       return "(\"\(label)\")"    // rundad rektangel — närmast Mermaid har en kvadrat
-        case .triangle:     return "[\"\(label)\"]"    // Mermaid har ingen triangel-native; rektangel tills vidare
-        case .processArrow: return "[\"\(label)\"]"    // Mermaid saknar pentagon-form; rektangel
+        case .square:       return "(\"\(label)\")"    // kvadrat — Mermaid visar som rundad rektangel
+        case .processArrow: return "[\"\(label)\"]"    // processpil — Mermaid saknar pentagon-form; rektangel
         }
     }
 
