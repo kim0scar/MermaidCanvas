@@ -221,8 +221,8 @@ struct ToolbarView: View {
                 shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
                     ZStack {
                         DiamondShape()
-                            .stroke(Color.primary, lineWidth: 2)
-                            .frame(width: 26, height: 20)  // bredare än hög = matchar canvas
+                            .stroke(Color.primary, lineWidth: 1.3)   // v44: slimmare stroke matchar SF symbols
+                            .frame(width: 26, height: 20)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -235,8 +235,8 @@ struct ToolbarView: View {
                 shapeChipGeneric(type: .processArrow, accId: "chip.processArrow", onTap: { model.addShape(.processArrow, at: canvasCenter) }) {
                     ZStack {
                         ProcessArrowShape()
-                            .stroke(Color.primary, lineWidth: 2)
-                            .frame(width: 26, height: 18)  // matchar canvas-proportion
+                            .stroke(Color.primary, lineWidth: 1.3)   // v44: slimmare stroke matchar SF symbols
+                            .frame(width: 26, height: 18)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -244,10 +244,10 @@ struct ToolbarView: View {
                     .contentShape(Circle())
                 }
             }
-            // Rad B — 5 special-typer + anteckning-popup
+            // v44: Rad B — text-chipet borttaget. container ersätter slot.
             HStack(spacing: 8) {
-                shapeChip(.text,  "character.textbox", accId: "chip.text") {
-                    model.addShape(.text, at: canvasCenter)
+                shapeChip(.container, "rectangle.dashed", accId: "chip.container") {
+                    model.addShape(.container, at: canvasCenter)
                 }
                 shapeChip(.table, "tablecells",        accId: "chip.table", onTap: onAddTable)
                 shapeChip(.link,  "link",              accId: "chip.link",  onTap: onAddJumpLink)

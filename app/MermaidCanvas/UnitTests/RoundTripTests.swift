@@ -9,12 +9,12 @@ import CoreGraphics
 final class RoundTripTests: XCTestCase {
 
     func testRoundTrip_AllSixShapeTypes() throws {
-        // 1. Skapa former — en av varje typ
+        // v44: .text borttagen — pill ersätter slot
         let originalShapes: [ShapeNode] = [
             ShapeNode(type: .circle,    position: CGPoint(x: 100, y: 100), label: "Cirkel"),
             ShapeNode(type: .rectangle, position: CGPoint(x: 200, y: 150), label: "Rektangel"),
             ShapeNode(type: .diamond,   position: CGPoint(x: 300, y: 200), label: "Diamant"),
-            ShapeNode(type: .text,      position: CGPoint(x: 400, y: 250), label: "En text"),
+            ShapeNode(type: .pill,      position: CGPoint(x: 400, y: 250), label: "Pill"),
             ShapeNode(type: .table,     position: CGPoint(x: 500, y: 300), label: "Tabell",
                       tableRows: 3, tableCols: 4),
             ShapeNode(type: .link,      position: CGPoint(x: 600, y: 350), label: "Link",

@@ -369,7 +369,6 @@ struct ContentView: View {
         case .circle:       return "circle"
         case .rectangle:    return "rectangle"
         case .diamond:      return "diamond"
-        case .text:         return "character.textbox"
         case .table:        return "tablecells"
         case .link:         return "link"
         case .pill:         return "capsule"
@@ -377,6 +376,8 @@ struct ContentView: View {
         case .arrow:        return "arrow.right"
         case .square:       return "square"
         case .processArrow: return "arrowshape.right"
+        // v44
+        case .container:    return "rectangle.dashed"
         }
     }
 }

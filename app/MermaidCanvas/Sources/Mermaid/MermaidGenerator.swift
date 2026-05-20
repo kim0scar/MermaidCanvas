@@ -32,8 +32,8 @@ enum MermaidGenerator {
             lines.append("        direction TB")
         }
 
-        // Nodes
-        for shape in shapes {
+        // Nodes — alla utom containrar (containrar emitteras nedan som subgraph)
+        for shape in shapes where shape.type != .container {
             let id = mermaidIds[shape.id]!
             let label = shape.showLabel ? (shape.label.isEmpty ? " " : shape.label) : " "
             let safe = escape(label)
@@ -89,6 +89,33 @@ enum MermaidGenerator {
             lines.append("\(indent)%% \(id) pos: \(Int(shape.position.x.rounded())),\(Int(shape.position.y.rounded()))")
         }
 
+        // v44: containrar exporteras som subgraph-block — referens till
+        // tidigare definierade noder (Mermaid stödjer det). Inneliggande noder
+        // måste finnas i diagrammet före subgraph-blocket.
+        let containerShapes = shapes.filter { $0.type == .container }
+        for container in containerShapes {
+            let cid = mermaidIds[container.id]!
+            let rawLabel = container.label.isEmpty ? "Grupp" : container.label
+            let safeLabel = escape(rawLabel)
+            let inside = containerChildrenIds(container: container, allShapes: shapes)
+            lines.append("\(indent)subgraph \(cid) [\"\(safeLabel)\"]")
+            for childId in inside {
+                if let cidStr = mermaidIds[childId] {
+                    lines.append("\(indent)    \(cidStr)")
+                }
+            }
+            lines.append("\(indent)end")
+            // Position-kommentar (synlig metadata) så Claude kan hitta tillbaka container
+            lines.append("\(indent)%% \(cid) container-pos: \(Int(container.position.x.rounded())),\(Int(container.position.y.rounded()))")
+            // Storlek om container är fri-resize:ad
+            if let w = container.widthMultiplier {
+                lines.append("\(indent)%% \(cid) width: \(String(format: "%.2f", w))")
+            }
+            if let h = container.heightMultiplier {
+                lines.append("\(indent)%% \(cid) height: \(String(format: "%.2f", h))")
+            }
+        }
+
         // v35.1: Layout-hints för ouppkopplade former — osynliga ~~~-länkar
         // som tvingar Mermaid att rendera i rätt kolumner/rader baserat på position.
         let hints = layoutHints(shapes: shapes, edges: edges, mermaidIds: mermaidIds, indent: indent)
@@ -139,11 +166,6 @@ enum MermaidGenerator {
                 styleProps.append("fill:\(hex.fill)")
                 styleProps.append("stroke:\(hex.stroke)")
                 styleProps.append("color:\(hex.text)")
-            } else if shape.type == .text {
-                // Text-shapes ska vara transparenta — classDef textOnly är definierad
-                // men appliceras aldrig automatiskt; inline style tar prioritet.
-                styleProps.append("fill:transparent")
-                styleProps.append("stroke:transparent")
             }
 
             guard !styleProps.isEmpty else { continue }
@@ -185,10 +207,6 @@ enum MermaidGenerator {
         lines.append("")
         for cat in ShapeCategory.allCases where used.contains(cat) {
             lines.append("    classDef \(cat.rawValue) \(cat.mermaidClassDef);")
-        }
-        // Transparent klass för text-shapes så de inte ärver fyllning.
-        if shapes.contains(where: { $0.type == .text }) {
-            lines.append("    classDef textOnly fill:transparent,stroke:transparent,color:#111827;")
         }
         if needsFrame {
             lines.append("    classDef iphone fill:#f8fafc,stroke:#0f172a,stroke-width:2px,color:#0f172a;")
@@ -352,6 +370,23 @@ enum MermaidGenerator {
         return hints
     }
 
+    /// v44: returnerar UUIDs för shapes vars position ligger innanför en container's bounds.
+    /// Lokal implementation — vi importerar inte CanvasModel i Mermaid-paketet.
+    private static func containerChildrenIds(container: ShapeNode, allShapes: [ShapeNode]) -> [UUID] {
+        // Replicera ShapeGeometry-bredd/-höjd-beräkning lokalt (typ-specifik base × multipliers)
+        let baseW: CGFloat = container.type == .container ? 280 : 120
+        let baseH: CGFloat = container.type == .container ? 200 : 80
+        let w = baseW * (container.widthMultiplier ?? container.sizeMultiplier)
+        let h = baseH * (container.heightMultiplier ?? container.sizeMultiplier)
+        let rect = CGRect(x: container.position.x - w/2,
+                          y: container.position.y - h/2,
+                          width: w, height: h)
+        return allShapes.compactMap { s in
+            guard s.id != container.id, s.type != .container else { return nil }
+            return rect.contains(s.position) ? s.id : nil
+        }
+    }
+
     private static func makeMermaidIds(for shapes: [ShapeNode]) -> [UUID: String] {
         var ids: [UUID: String] = [:]
         for (i, s) in shapes.enumerated() {
@@ -365,7 +400,6 @@ enum MermaidGenerator {
         case .circle:       return "((\"\(label)\"))"
         case .rectangle:    return "(\"\(label)\")"  // v35.1: rundade hörn matchar RoundedRectangle i appen
         case .diamond:      return "{\"\(label)\"}"
-        case .text:         return "[\"\(label)\"]"
         case .table:        return "[\"\(label)\"]"
         case .link:         return "((\"\(label)\"))"
         // v31:
@@ -375,6 +409,8 @@ enum MermaidGenerator {
         // v35.1: nya grundformer
         case .square:       return "(\"\(label)\")"    // kvadrat — Mermaid visar som rundad rektangel
         case .processArrow: return "[\"\(label)\"]"    // processpil — Mermaid saknar pentagon-form; rektangel
+        // v44: container — renderas som subgraph i en separat loop (se generate())
+        case .container:    return "(\"\(label)\")"    // fallback om någon container skulle hamna i shape-loop
         }
     }
 

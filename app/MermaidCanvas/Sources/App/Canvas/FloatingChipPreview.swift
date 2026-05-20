@@ -24,7 +24,6 @@ struct FloatingChipPreview: View {
         case .rectangle:    return "rectangle"
         case .diamond:      return "diamond"
         case .pill:         return "capsule"
-        case .text:         return "character.textbox"
         case .table:        return "tablecells"
         case .link:         return "link"
         case .line:         return "minus"
@@ -32,6 +31,8 @@ struct FloatingChipPreview: View {
         // v35.1/v36
         case .square:       return "square"
         case .processArrow: return "arrowshape.right"
+        // v44
+        case .container:    return "rectangle.dashed"
         }
     }
 }

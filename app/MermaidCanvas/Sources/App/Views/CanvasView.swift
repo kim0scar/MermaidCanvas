@@ -11,13 +11,15 @@ enum ShapeGeometry {
         case .pill:         return 150   // 25% bredare oval
         case .square:       return 80    // liksidig kvadrat
         case .processArrow: return 110   // kompakt pil (spets 40% av bredden)
+        case .container:    return 280   // v44: grupperande container ska rymma flera former
         default:            return baseWidth
         }
     }
     static func typeBaseHeight(for type: ShapeType) -> CGFloat {
         switch type {
-        case .square: return 80   // liksidig kvadrat
-        default:      return baseHeight
+        case .square:    return 80    // liksidig kvadrat
+        case .container: return 200   // v44: container — högre default-höjd
+        default:         return baseHeight
         }
     }
 
@@ -76,8 +78,6 @@ struct CanvasView: View {
     @State private var zoomScale: CGFloat = 1.0
     @State private var centerOnPoint: CGPoint? = nil
     @State private var connectionDrag: ConnectionDrag? = nil
-    /// v42: när användaren long-pressar en vald form aktiveras edge-läget bara för den
-    @State private var edgeIntentShapeId: UUID? = nil
 
     var body: some View {
         ZoomableCanvas(
@@ -98,12 +98,6 @@ struct CanvasView: View {
                         .stroke(Color.primary.opacity(0.18), lineWidth: 1)
                 )
                 .coordinateSpace(name: "canvas")
-                // v42: rensa edge-intent när användaren byter vald form
-                .onChange(of: model.selectedShapeId) { _, newId in
-                    if newId != edgeIntentShapeId {
-                        edgeIntentShapeId = nil
-                    }
-                }
         }
         .ignoresSafeArea()
         .accessibilityIdentifier("canvas")
@@ -221,14 +215,10 @@ struct CanvasView: View {
                         },
                         isInMultiSelection: model.multiSelection.contains(shape.id),
                         outgoingDirection: model.averageOutgoingDirection(from: shape.id),
-                        onLongPress: {
-                            if model.selectedShapeId == shape.id {
-                                // togglar edge-intent för den valda formen
-                                edgeIntentShapeId = (edgeIntentShapeId == shape.id) ? nil : shape.id
-                            } else {
-                                // välj formen OCH aktivera edge-mode i en gest
-                                model.selectShape(shape.id)
-                                edgeIntentShapeId = shape.id
+                        onContainerMove: { delta in
+                            // v44: när en container dras flyttas alla former inuti med
+                            if shape.type == .container {
+                                model.moveContainerChildren(containerId: shape.id, by: delta)
                             }
                         }
                     )
@@ -255,39 +245,31 @@ struct CanvasView: View {
                     shape: $model.shapes[idx],
                     canvasScale: zoomScale
                 )
-                // v42: ConnectionHandles bara om användaren signalerat edge-intent (long-press)
-                if edgeIntentShapeId == selectedId || model.pendingEdgeFrom == selectedId {
-                    ConnectionHandles(
-                        shape: s,
-                        canvasScale: zoomScale,
-                        onDragChanged: { canvasPoint in
-                            connectionDrag = ConnectionDrag(fromShapeId: s.id,
-                                                           currentCanvasLocation: canvasPoint)
-                        },
-                        onDragEnded: { canvasPoint in
-                            if let target = ShapeGeometry.hitTest(canvasPoint,
-                                                                  shapes: model.shapes,
-                                                                  excludingId: s.id) {
-                                model.addEdge(from: s.id, to: target.id)
-                            }
-                            connectionDrag = nil
-                            edgeIntentShapeId = nil   // ut ur edge-läget när pilen ritats
+                // v44: ConnectionHandle är ALLTID synlig på vald form — ett enskilt
+                // handtag i högerkanten. Drag från det skapar en pil.
+                ConnectionHandles(
+                    shape: s,
+                    canvasScale: zoomScale,
+                    onDragChanged: { canvasPoint in
+                        connectionDrag = ConnectionDrag(fromShapeId: s.id,
+                                                       currentCanvasLocation: canvasPoint)
+                    },
+                    onDragEnded: { canvasPoint in
+                        if let target = ShapeGeometry.hitTest(canvasPoint,
+                                                              shapes: model.shapes,
+                                                              excludingId: s.id) {
+                            model.addEdge(from: s.id, to: target.id)
                         }
-                    )
-                }
+                        connectionDrag = nil
+                    }
+                )
             }
 
-            if model.markerMode && model.multiSelection.isEmpty {
-                // Marquee-selection overlay (bara aktiv när inget är markerat)
+            // v44: MarkerOverlay alltid synlig i markerMode — löser låsning vid
+            // mid-drag selection-change (MarkerOverlay byttes ut mot Color.clear
+            // när multiSelection blev non-empty, vilket dödade pågående drag).
+            if model.markerMode {
                 MarkerOverlay(model: model, canvasContentSize: model.contentSize)
-            } else if model.markerMode && !model.multiSelection.isEmpty {
-                // Bakgrunds-tap rensar urval (så man kan starta ny marquee-selektion)
-                Color.clear
-                    .contentShape(Rectangle())
-                    .frame(width: model.contentSize.width, height: model.contentSize.height)
-                    .onTapGesture {
-                        model.multiSelection.removeAll()
-                    }
             }
 
             // v43: Samlat resize-handtag när flera former är markerade.
@@ -324,7 +306,8 @@ struct ConnectionRubberBand: View {
 
 // MARK: - ConnectionHandles
 
-/// v25: 4 små handtag som syns på vald form. Drag drar en pil till annan form.
+/// v44: ETT enskilt connection-handtag (höger sida) — alltid synligt på vald form.
+/// Drag från handtaget till annan form skapar en pil.
 struct ConnectionHandles: View {
     let shape: ShapeNode
     let canvasScale: CGFloat
@@ -334,25 +317,21 @@ struct ConnectionHandles: View {
     var body: some View {
         let w = ShapeGeometry.width(for: shape)
         let h = ShapeGeometry.height(for: shape)
-        let size: CGFloat = max(16, 18 / canvasScale)
+        let size: CGFloat = max(20, 22 / canvasScale)
         ZStack {
-            handle(offset: CGPoint(x: 0,     y: -h/2 - size/2 - 4 / canvasScale), size: size)
-            handle(offset: CGPoint(x: w/2 + size/2 + 4 / canvasScale, y: 0),       size: size)
-            handle(offset: CGPoint(x: 0,     y:  h/2 + size/2 + 4 / canvasScale),  size: size)
-            handle(offset: CGPoint(x: -w/2 - size/2 - 4 / canvasScale, y: 0),      size: size)
+            handle(offset: CGPoint(x: w/2 + size/2 + 6 / canvasScale, y: 0), size: size)
         }
         .frame(width: w, height: h)
         .position(shape.position)
         .rotationEffect(.degrees(shape.rotation))
     }
 
-    /// v28: stilren beroendepil-ikon (link) istället för arrow.up.right.
     @ViewBuilder
     private func handle(offset: CGPoint, size: CGFloat) -> some View {
         ZStack {
             Circle().fill(Color.accentColor)
-            Image(systemName: "link")
-                .font(.system(size: size * 0.42, weight: .semibold))
+            Image(systemName: "arrow.right")
+                .font(.system(size: size * 0.50, weight: .bold))
                 .foregroundStyle(Color.white)
         }
         .frame(width: size, height: size)
@@ -364,6 +343,7 @@ struct ConnectionHandles: View {
                 .onChanged { v in onDragChanged(v.location) }
                 .onEnded { v in onDragEnded(v.location) }
         )
+        .accessibilityIdentifier("connection.handle")
     }
 }
 
@@ -394,11 +374,12 @@ struct ShapeView: View {
     var isInMultiSelection: Bool = false
     /// v42: genomsnittlig riktning för utgående kanter — används för badge-position.
     var outgoingDirection: CGVector? = nil
-    /// v42: long-press togglar edge-intent (kedje-handtagen) för formen.
-    var onLongPress: (() -> Void)? = nil
+    /// v44: rapporterar drag-delta för container — så inneliggande former kan flyttas med.
+    var onContainerMove: ((CGSize) -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
+    @State private var lastContainerDragTranslation: CGSize = .zero
 
     private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
     private var effectiveFill: Color { pack.fillColor }
@@ -448,7 +429,7 @@ struct ShapeView: View {
                     .multilineTextAlignment(textAlignment)
                     .lineLimit(6)
                     .minimumScaleFactor(0.6)
-                    .padding(.horizontal, shape.type == .text ? 2 : 8)
+                    .padding(.horizontal, 8)
             }
         }
         .frame(width: ShapeGeometry.width(for: shape),
@@ -503,10 +484,7 @@ struct ShapeView: View {
                 onSelect()
             }
         }
-        // v42: long-press togglar edge-intent (visar kedje-handtagen)
-        .onLongPressGesture(minimumDuration: 0.5) {
-            onLongPress?()
-        }
+        // v44: long-press borttaget — ConnectionHandle ersätter mekanismen.
         // v40: drag aktiverat i markerMode OM formen ingår i multiSelection.
         // Utan mask .none läggs inget gesture-recognizer på (undviker UIScrollView-kollision).
         .gesture(unifiedDragGesture, including: gestureActive ? .all : .none)
@@ -528,6 +506,7 @@ struct ShapeView: View {
     }
 
     /// v40: Enhetlig drag-gest — hanterar normal drag, multi-select drag och inaktivt läge.
+    /// v44: rapporterar container-deltan live så inneliggande former följer med under drag.
     private var unifiedDragGesture: some Gesture {
         DragGesture(minimumDistance: isInMultiSelection ? 6 : 10,
                     coordinateSpace: .named("canvas"))
@@ -548,6 +527,17 @@ struct ShapeView: View {
                         width: v.location.x - v.startLocation.x,
                         height: v.location.y - v.startLocation.y
                     )
+                    // v44: container — flytta inneliggande former live med samma delta
+                    if shape.type == .container {
+                        let delta = CGSize(
+                            width: dragOffset.width - lastContainerDragTranslation.width,
+                            height: dragOffset.height - lastContainerDragTranslation.height
+                        )
+                        lastContainerDragTranslation = dragOffset
+                        if delta.width != 0 || delta.height != 0 {
+                            onContainerMove?(delta)
+                        }
+                    }
                     onDragUpdate?(v.location)
                 }
                 // markerMode utan multiSelection: ignorera drag (scrollview tar över)
@@ -560,6 +550,7 @@ struct ShapeView: View {
                     shape.position.x += v.translation.width
                     shape.position.y += v.translation.height
                     dragOffset = .zero
+                    lastContainerDragTranslation = .zero   // v44: reset för container-tracking
                     onDragUpdate?(nil)
                 }
             }
@@ -584,8 +575,15 @@ struct ShapeView: View {
             Capsule(style: .continuous)
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
-        case .text:
-            EmptyView()
+        case .container:
+            // v44: container — grupperande rektangel med streckad ram (Mermaid subgraph)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(effectiveFill.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(effectiveStroke,
+                                style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+                )
         case .table:
             TableShapeBackground(rows: shape.tableRows ?? 3,
                                  cols: shape.tableCols ?? 3,
@@ -623,7 +621,10 @@ struct ShapeView: View {
             SquareShape().stroke(effectiveStroke, lineWidth: 1.5)
         case .processArrow:
             ProcessArrowShape().stroke(effectiveStroke, lineWidth: 1.5)
-        case .text, .table, .link, .line, .arrow:
+        case .container:
+            // v44: container — streckad ram redan ritad i background
+            EmptyView()
+        case .table, .link, .line, .arrow:
             EmptyView()
         }
     }
@@ -644,8 +645,8 @@ struct ShapeView: View {
                 SquareShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .processArrow:
                 ProcessArrowShape().stroke(Color.accentColor, lineWidth: 3.5)
-            case .text:
-                RoundedRectangle(cornerRadius: 8).stroke(Color.accentColor, lineWidth: 3.5)
+            case .container:
+                RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
                 Circle().stroke(Color.accentColor, lineWidth: 3.5)
             case .line, .arrow:
@@ -748,10 +749,12 @@ struct FreeLineView: View {
         Canvas { ctx, size in
             guard let end = shape.lineEnd else { return }
             let from = CGPoint(x: size.width / 2, y: size.height / 2)
-            // v36.1: lineEnd normaliseras mot basvärdet 60pt → skalas med halv-bredden.
-            // Effekt: resize-handtag ändrar linjens längd proportionellt.
-            let scaledX = (end.x / 60.0) * (size.width  / 2.0)
-            let scaledY = (end.y / 60.0) * (size.height / 2.0)
+            // v44: skala lineEnd direkt med effectiveWidth/effectiveHeight så att
+            // fri-resize gör linjen längre/bredare även när bounding-boxen sträcks.
+            // Tidigare logik (v36.1) hade samma effekt via size.width/2 men föll
+            // ibland tillbaka när Canvas-storleken inte uppdaterades synkat.
+            let scaledX = end.x * shape.effectiveWidth
+            let scaledY = end.y * shape.effectiveHeight
             let to = CGPoint(x: size.width / 2 + scaledX, y: size.height / 2 + scaledY)
 
             // Linje — 1.5pt matchar EdgesView kant-linjer
@@ -801,9 +804,8 @@ struct EdgesView: View {
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
     var onEdgeRename: (UUID, String) -> Void
 
-    // v38: kant-namngivning via alert
+    // v44: kant-namngivning via EdgeLabelSheet (ersätter v38-alerten).
     @State private var renamingEdgeId: UUID? = nil
-    @State private var renameText: String = ""
 
     private func isVisible(_ edge: EdgeConnection) -> Bool {
         !hiddenShapeIds.contains(edge.from) && !hiddenShapeIds.contains(edge.to)
@@ -829,18 +831,22 @@ struct EdgesView: View {
                 }
             }
         }
-        .alert("Döp kant", isPresented: Binding(
+        // v44: byt alert mot EdgeLabelSheet — mer rymligt för längre etiketter.
+        .sheet(isPresented: Binding(
             get: { renamingEdgeId != nil },
             set: { if !$0 { renamingEdgeId = nil } }
         )) {
-            TextField("Namn på kanten", text: $renameText)
-            Button("Spara") {
-                if let id = renamingEdgeId { onEdgeRename(id, renameText) }
-                renamingEdgeId = nil
+            if let id = renamingEdgeId,
+               let edge = edges.first(where: { $0.id == id }) {
+                EdgeLabelSheet(
+                    initial: edge.label,
+                    onSave: { newLabel in
+                        onEdgeRename(id, newLabel)
+                        renamingEdgeId = nil
+                    },
+                    onCancel: { renamingEdgeId = nil }
+                )
             }
-            Button("Avbryt", role: .cancel) { renamingEdgeId = nil }
-        } message: {
-            Text("Visas bredvid pilens mittpunkt.")
         }
     }
 
@@ -883,12 +889,11 @@ struct EdgesView: View {
         .position(mid)
         .gesture(midpointGesture(edge: edge))
         .contextMenu {
-            // v38: döp kant
+            // v44: redigera text på pilen via EdgeLabelSheet
             Button {
                 renamingEdgeId = edge.wrappedValue.id
-                renameText = edge.wrappedValue.label
             } label: {
-                Label("Döp kant", systemImage: "pencil")
+                Label("Redigera text", systemImage: "textformat")
             }
             Divider()
             // v37: 4 riktningsval
@@ -1101,7 +1106,7 @@ struct EdgesView: View {
             localPoint = CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
         case .diamond:
             localPoint = diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
-        case .rectangle, .text, .table, .pill, .square, .processArrow:
+        case .rectangle, .table, .pill, .square, .processArrow, .container:
             localPoint = rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
             return center

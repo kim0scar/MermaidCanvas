@@ -288,6 +288,22 @@ enum MermaidParser {
             }
         }
 
+        // v44: Parsa subgraph-block — varje subgraph blir en container-form med label.
+        // Syntax: subgraph ID ["Label"] ... end
+        let subgraphPattern = #"subgraph\s+(\w+)\s*\[\s*\"([^\"]*?)\"\s*\]"#
+        if let regex = try? NSRegularExpression(pattern: subgraphPattern) {
+            let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
+            for m in matches where m.numberOfRanges >= 3 {
+                let id = ns.substring(with: m.range(at: 1))
+                guard !seen.contains(id) else { continue }
+                seen.insert(id)
+                let label = ns.substring(with: m.range(at: 2))
+                    .replacingOccurrences(of: "#quot;", with: "\"")
+                    .replacingOccurrences(of: "<br/>", with: "\n")
+                nodes.append(ParsedNode(mermaidId: id, type: .container, label: label, category: .ui))
+            }
+        }
+
         let positioned = autoPosition(nodes)
         var idMap: [String: UUID] = [:]
         let shapes: [ShapeNode] = positioned.map { entry in

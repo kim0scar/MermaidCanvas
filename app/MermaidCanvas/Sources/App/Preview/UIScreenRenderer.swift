@@ -12,7 +12,7 @@ import SwiftUI
 ///     - label innehåller "titel"/"rubrik"/"heading"/"header" → bold Title
 ///     - label innehåller "ikon"/"icon" → SF Symbol
 ///     - annars → panel-box med text
-/// - type=.text → ren text (ingen ram, ingen färg)
+/// v44: .text-formen är borttagen — UI-zone-text använder andra former.
 struct UIScreenRenderer: View {
     let shapes: [ShapeNode]
     let canvasSize: CGSize
@@ -90,9 +90,7 @@ struct UIScreenRenderer: View {
         case .overlay:
             overlayChip(label: label)
         case .ui:
-            if shape.type == .text {
-                Text(label).font(.body).foregroundStyle(.primary)
-            } else if matches(lower, any: ["knapp", "button", "btn"]) {
+            if matches(lower, any: ["knapp", "button", "btn"]) {
                 Button(label) {}
                     .buttonStyle(.borderedProminent)
                     .controlSize(.regular)

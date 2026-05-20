@@ -16,6 +16,11 @@ struct MarkerOverlay: View {
                 .contentShape(Rectangle())
                 .frame(width: canvasContentSize.width, height: canvasContentSize.height)
                 .gesture(dragGesture)
+                .onTapGesture {
+                    // v44: tap på tom canvas-yta rensar selection (så man kan starta
+                    // ny marquee-selektion direkt utan att toggla markerMode).
+                    model.multiSelection.removeAll()
+                }
 
             // Rita markerings-rektangel om vi drar
             if let start = startCanvas, let current = currentCanvas {

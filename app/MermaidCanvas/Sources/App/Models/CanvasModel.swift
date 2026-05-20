@@ -177,7 +177,9 @@ final class CanvasModel: ObservableObject {
         snapshotForUndo()
         let cat = specType.defaultCategory
         // v23: tom label från start — Kim vill skriva själv
-        shapes.append(ShapeNode(type: type, position: position, label: "", category: cat))
+        // v44: container får default-label "Grupp" (Kim vet då vad formen är)
+        let defaultLabel = type == .container ? "Grupp" : ""
+        shapes.append(ShapeNode(type: type, position: position, label: defaultLabel, category: cat))
         expandCanvasIfNeeded(near: position)
     }
 
@@ -385,6 +387,33 @@ final class CanvasModel: ObservableObject {
         guard !multiSelection.isEmpty else { return }
         for i in shapes.indices {
             if multiSelection.contains(shapes[i].id) {
+                shapes[i].position.x += delta.width
+                shapes[i].position.y += delta.height
+            }
+        }
+    }
+
+    /// v44: returnerar former vars position är innanför en container's bounds.
+    /// Containrar själva räknas inte med (för att undvika rekursion).
+    func shapesInside(container: ShapeNode) -> [ShapeNode] {
+        let w = ShapeGeometry.width(for: container)
+        let h = ShapeGeometry.height(for: container)
+        let rect = CGRect(x: container.position.x - w/2,
+                          y: container.position.y - h/2,
+                          width: w, height: h)
+        return shapes.filter { s in
+            s.id != container.id && s.type != .container &&
+            rect.contains(s.position)
+        }
+    }
+
+    /// v44: flytta alla former inuti en container med givet delta.
+    /// Anropas live under drag av container så inneliggande former följer med.
+    func moveContainerChildren(containerId: UUID, by delta: CGSize) {
+        guard let container = shapes.first(where: { $0.id == containerId }) else { return }
+        let inside = shapesInside(container: container)
+        for child in inside {
+            if let i = shapes.firstIndex(where: { $0.id == child.id }) {
                 shapes[i].position.x += delta.width
                 shapes[i].position.y += delta.height
             }

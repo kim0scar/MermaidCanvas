@@ -13,7 +13,6 @@ enum ShapeType: String, Codable, CaseIterable {
     case circle
     case rectangle
     case diamond
-    case text
     case table
     case link
     /// v31: avlång rektangel med fullständigt rundade ändar (Capsule).
@@ -27,6 +26,8 @@ enum ShapeType: String, Codable, CaseIterable {
     case square
     /// Processsteg-pil (pentagon) — rektangel med spetsig högerände. Kan ha label.
     case processArrow
+    /// v44: container — grupperande rektangel (Mermaid subgraph). Andra former kan vara inuti.
+    case container
 }
 
 extension ShapeType: Transferable {
@@ -143,7 +144,16 @@ extension ShapeNode {
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         id              = try c.decode(UUID.self, forKey: .id)
-        type            = try c.decode(ShapeType.self, forKey: .type)
+        // v44: .text borttaget — migrera gamla JSON-filer som har type:"text" till .rectangle
+        let rawType = try c.decode(String.self, forKey: .type)
+        if let t = ShapeType(rawValue: rawType) {
+            type = t
+        } else if rawType == "text" {
+            type = .rectangle
+        } else {
+            throw DecodingError.dataCorruptedError(forKey: .type, in: c,
+                                                   debugDescription: "Okänd ShapeType: \(rawType)")
+        }
         position        = try c.decode(CGPoint.self, forKey: .position)
         label           = try c.decode(String.self, forKey: .label)
         showLabel       = try c.decodeIfPresent(Bool.self, forKey: .showLabel) ?? true

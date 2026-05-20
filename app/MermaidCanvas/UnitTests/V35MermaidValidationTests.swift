@@ -12,12 +12,12 @@ final class V35MermaidValidationTests: XCTestCase {
     // MARK: - 1. Alla shape-typer → korrekt mermaid-syntax (v36.1: 11 typer, chevron+triangel borttagna)
 
     func testGenerator_AllNineShapeTypes_ProducesValidSyntax() throws {
+        // v44: .text borttagen, .container tillagd
         let shapes: [ShapeNode] = [
             ShapeNode(type: .circle,       position: CGPoint(x: 100, y: 100), label: "Cirkel"),
             ShapeNode(type: .rectangle,    position: CGPoint(x: 200, y: 100), label: "Rektangel"),
             ShapeNode(type: .diamond,      position: CGPoint(x: 300, y: 100), label: "Diamant"),
             ShapeNode(type: .pill,         position: CGPoint(x: 400, y: 100), label: "Pill"),
-            ShapeNode(type: .text,         position: CGPoint(x: 500, y: 100), label: "Text"),
             ShapeNode(type: .table,        position: CGPoint(x: 600, y: 100), label: "Tabell",
                       tableRows: 3, tableCols: 4),
             ShapeNode(type: .link,         position: CGPoint(x: 700, y: 100), label: "Länk",
@@ -28,7 +28,9 @@ final class V35MermaidValidationTests: XCTestCase {
                       lineEnd: CGPoint(x: 50, y: 50)),
             // v35.1/v36 grundformer (triangle och chevron borttagna — fungerar ej i Mermaid)
             ShapeNode(type: .square,       position: CGPoint(x: 1000, y: 100), label: "Fyrkant"),
-            ShapeNode(type: .processArrow, position: CGPoint(x: 1100, y: 100), label: "Processpil")
+            ShapeNode(type: .processArrow, position: CGPoint(x: 1100, y: 100), label: "Processpil"),
+            // v44 — container (subgraph i Mermaid)
+            ShapeNode(type: .container,    position: CGPoint(x: 1200, y: 100), label: "Container")
         ]
         XCTAssertEqual(shapes.count, ShapeType.allCases.count, "Testet ska täcka alla ShapeType-fall")
         // Sanity check: alla ShapeType-fall ska finnas representerade
@@ -55,8 +57,6 @@ final class V35MermaidValidationTests: XCTestCase {
         let diamondSyntax = "{\"Diamant\"}"
         let pillSyntax = "([\"Pill\"])"
         let tableSyntax = "[\"Tabell\"]"
-        // text/link/line/arrow renderas också med [...] resp ((...))
-        let textSyntax = "[\"Text\"]"
         let linkSyntax = "((\"Länk\"))"
         let lineSyntax = "[\"Linje\"]"
         let arrowSyntax = "[\"Pil\"]"
@@ -65,7 +65,6 @@ final class V35MermaidValidationTests: XCTestCase {
         XCTAssertTrue(mermaid.contains(rectSyntax), "Rektangel-syntax saknas: '\(rectSyntax)'")
         XCTAssertTrue(mermaid.contains(diamondSyntax), "Diamant-syntax saknas: '\(diamondSyntax)'")
         XCTAssertTrue(mermaid.contains(pillSyntax), "Pill-syntax saknas: '\(pillSyntax)'")
-        XCTAssertTrue(mermaid.contains(textSyntax), "Text-syntax saknas: '\(textSyntax)'")
         XCTAssertTrue(mermaid.contains(tableSyntax), "Tabell-syntax saknas: '\(tableSyntax)'")
         XCTAssertTrue(mermaid.contains(linkSyntax), "Länk-syntax saknas: '\(linkSyntax)'")
         XCTAssertTrue(mermaid.contains(lineSyntax), "Line-syntax saknas: '\(lineSyntax)'")
@@ -73,6 +72,8 @@ final class V35MermaidValidationTests: XCTestCase {
         // v35.1/v36.1: grundformer — renderas med [...] i Mermaid. Triangel+Chevron borttagna.
         XCTAssertTrue(mermaid.contains("\"Fyrkant\""), "Fyrkant-label saknas i output")
         XCTAssertTrue(mermaid.contains("\"Processpil\""), "Processpil-label saknas i output")
+        // v44: container renderas som subgraph
+        XCTAssertTrue(mermaid.contains("\"Container\""), "Container-label saknas i output")
 
         // Tabell-metadata ska finnas som mermaid-kommentar
         XCTAssertTrue(mermaid.contains("table: 3×4"),
@@ -470,21 +471,13 @@ final class V35MermaidValidationTests: XCTestCase {
                        "Nod utan colorOverride/size ska inte ha style-tag:\n\(code)")
     }
 
-    /// Verifierar att text-shapes får transparent fill/stroke i Mermaid
-    /// (inte kategori-fyllning som skulle täcka texten).
-    func testGenerator_TextShape_HasTransparentStyle() throws {
-        let shapes: [ShapeNode] = [
-            ShapeNode(type: .text, position: CGPoint(x: 200, y: 200), label: "Rubrik")
-        ]
-        let code = MermaidGenerator.generate(
-            shapes: shapes,
-            edges: [],
-            canvasSize: CGSize(width: 800, height: 600),
-            specType: .general
-        )
-
-        XCTAssertTrue(code.contains("fill:transparent") && code.contains("stroke:transparent"),
-                      "Text-shape ska ha transparent fill + stroke:\n\(code)")
+    /// v44: .text-formen är borttagen — alla former kan ha label.
+    /// Testet hålls kvar som no-op markör så test-räkning är stabil; verifierar
+    /// bara att ShapeType.text inte längre finns i enumet.
+    func testGenerator_TextShape_RemovedInV44() throws {
+        let allRaw = ShapeType.allCases.map { $0.rawValue }
+        XCTAssertFalse(allRaw.contains("text"),
+                       ".text ska inte längre vara en giltig ShapeType i v44 (\(allRaw))")
     }
 
     /// Verifierar att lineEnd för lösa linjer/pilar round-trippar via JSON-state.
