@@ -386,6 +386,13 @@ final class CanvasModel: ObservableObject {
         edges[idx].direction = direction
     }
 
+    /// v38: sätt kant-etikett (visas bredvid midpoint-handtaget).
+    func setEdgeLabel(id: UUID, label: String) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        edges[idx].label = label
+    }
+
     /// v27: hel eller streckad linje.
     func setEdgeStyle(id: UUID, _ style: EdgeStyle) {
         guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }

@@ -8,9 +8,13 @@ enum MermaidGenerator {
                          collapsedIds: Set<UUID> = []) -> String {
         guard !shapes.isEmpty else {
             // v32: bara header — inget diagnostiskt "Tom canvas"-meddelande som kan tolkas som fel.
-            return "flowchart TD\n"
+            return "%%{init: {\"flowchart\": {\"curve\": \"basis\"}}}%%\nflowchart TD\n"
         }
-        var lines: [String] = ["flowchart TD"]
+        // v38: curve:basis ger mjuka bezier-kurvor i Mermaid Live (speglar in-app-utseendet).
+        var lines: [String] = [
+            "%%{init: {\"flowchart\": {\"curve\": \"basis\"}}}%%",
+            "flowchart TD"
+        ]
         let mermaidIds = makeMermaidIds(for: shapes)
 
         // Per-mode "ram"-wrapper. UI-läge får iPhone-subgraph; övriga utan wrapper.

@@ -145,7 +145,8 @@ struct CanvasView: View {
                       hiddenShapeIds: hiddenForEdges,
                       onEdgeDelete: onEdgeDelete,
                       onEdgeSetDirection: { id, dir in model.setEdgeDirection(id: id, direction: dir) },
-                      onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) })
+                      onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) },
+                      onEdgeRename: { id, label in model.setEdgeLabel(id: id, label: label) })
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
 
@@ -442,7 +443,7 @@ struct ShapeView: View {
                                  fill: effectiveFill,
                                  stroke: effectiveStroke)
         case .link:
-            JumpLinkShapeBackground(number: shape.linkNumber ?? 0, fill: effectiveFill)
+            JumpLinkShapeBackground(number: shape.linkNumber ?? 0)
         case .square:
             SquareShape()
                 .fill(effectiveFill)
@@ -540,20 +541,20 @@ private struct TableShapeBackground: View {
     }
 }
 
+/// v38: länk-bubbla — alltid accentfärg (tidigare vit-på-vit osynlig).
 private struct JumpLinkShapeBackground: View {
     var number: Int
-    var fill: Color
 
     var body: some View {
         ZStack {
-            Circle().fill(fill)
-            Circle().stroke(Color.white, lineWidth: 2)
-            VStack(spacing: 0) {
+            Circle().fill(Color.accentColor)
+            Circle().stroke(Color.white.opacity(0.35), lineWidth: 1.5)
+            VStack(spacing: 1) {
                 Image(systemName: "link")
-                    .font(.caption.weight(.bold))
+                    .font(.caption2.weight(.bold))
                     .foregroundStyle(.white)
                 Text("\(number)")
-                    .font(.callout.weight(.heavy))
+                    .font(.caption.weight(.heavy))
                     .foregroundStyle(.white)
             }
         }
@@ -699,6 +700,11 @@ struct EdgesView: View {
     var onEdgeDelete: (UUID) -> Void
     var onEdgeSetDirection: (UUID, EdgeDirection) -> Void
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
+    var onEdgeRename: (UUID, String) -> Void
+
+    // v38: kant-namngivning via alert
+    @State private var renamingEdgeId: UUID? = nil
+    @State private var renameText: String = ""
 
     private func isVisible(_ edge: EdgeConnection) -> Bool {
         !hiddenShapeIds.contains(edge.from) && !hiddenShapeIds.contains(edge.to)
@@ -723,6 +729,19 @@ struct EdgesView: View {
                     midpointHandle(edge: $edge, fromShape: fromShape, toShape: toShape)
                 }
             }
+        }
+        .alert("Döp kant", isPresented: Binding(
+            get: { renamingEdgeId != nil },
+            set: { if !$0 { renamingEdgeId = nil } }
+        )) {
+            TextField("Namn på kanten", text: $renameText)
+            Button("Spara") {
+                if let id = renamingEdgeId { onEdgeRename(id, renameText) }
+                renamingEdgeId = nil
+            }
+            Button("Avbryt", role: .cancel) { renamingEdgeId = nil }
+        } message: {
+            Text("Visas bredvid pilens mittpunkt.")
         }
     }
 
@@ -749,6 +768,8 @@ struct EdgesView: View {
             )
         }()
         let size: CGFloat = max(14, 18 / canvasScale)
+        let label = edge.wrappedValue.label
+        // Handle
         ZStack {
             Circle()
                 .fill(hasWaypoint ? Color.accentColor : Color.white)
@@ -763,6 +784,14 @@ struct EdgesView: View {
         .position(mid)
         .gesture(midpointGesture(edge: edge))
         .contextMenu {
+            // v38: döp kant
+            Button {
+                renamingEdgeId = edge.wrappedValue.id
+                renameText = edge.wrappedValue.label
+            } label: {
+                Label("Döp kant", systemImage: "pencil")
+            }
+            Divider()
             // v37: 4 riktningsval
             Button {
                 onEdgeSetDirection(edge.wrappedValue.id, .forward)
@@ -810,6 +839,19 @@ struct EdgesView: View {
                 Label("Ta bort pil", systemImage: "trash")
             }
         }
+        // v38: kant-etikett under midpoint
+        if !label.isEmpty {
+            Text(label)
+                .font(.system(size: max(8, 10 / canvasScale), weight: .medium, design: .rounded))
+                .foregroundStyle(Color.accentColor)
+                .lineLimit(1)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .background(Color(.systemBackground).opacity(0.88))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .allowsHitTesting(false)
+                .position(CGPoint(x: mid.x, y: mid.y + size * 0.85 + 8 / canvasScale))
+        }
     }
 
     private func midpointGesture(edge: Binding<EdgeConnection>) -> some Gesture {
@@ -826,37 +868,83 @@ struct EdgesView: View {
 
     // MARK: - Drawing
 
+    /// v38: utåtriktad normalvektor för en forms yta vid en given kant-punkt.
+    /// Avgör vilken yta (V/H/T/B) som är närmast och returnerar ortogonal riktning därifrån.
+    private func outwardNormal(for shape: ShapeNode, at point: CGPoint) -> CGPoint {
+        let dx = point.x - shape.position.x
+        let dy = point.y - shape.position.y
+        switch shape.type {
+        case .circle, .link:
+            let len = hypot(dx, dy)
+            return len > 0.01 ? CGPoint(x: dx / len, y: dy / len) : CGPoint(x: 1, y: 0)
+        default:
+            let hw = ShapeGeometry.halfWidth(for: shape)
+            let hh = ShapeGeometry.halfHeight(for: shape)
+            let tx = hw > 0.01 ? abs(dx) / hw : 0
+            let ty = hh > 0.01 ? abs(dy) / hh : 0
+            if tx >= ty {
+                return dx > 0 ? CGPoint(x: 1, y: 0) : CGPoint(x: -1, y: 0)
+            } else {
+                return dy > 0 ? CGPoint(x: 0, y: 1) : CGPoint(x: 0, y: -1)
+            }
+        }
+    }
+
+    /// v38: bezier-kurva för en kant — mjuk S-kurva utan waypoint, smidig böj med waypoint.
     private func drawEdge(context: GraphicsContext,
                           edge: EdgeConnection,
                           fromShape: ShapeNode,
                           toShape: ShapeNode) {
         let strokeStyle = Self.strokeStyle(for: edge.style)
+
+        // Start-/slutpunkter på formernas ytor
+        let start: CGPoint
+        let end: CGPoint
         if let wp = edge.waypoints.first {
-            let firstSeg = edgePoint(for: fromShape, towards: wp.point)
-            let lastSeg = edgePoint(for: toShape, towards: wp.point)
-
-            var line = Path()
-            line.move(to: firstSeg)
-            line.addLine(to: wp.point)
-            line.addLine(to: lastSeg)
-            context.stroke(line, with: .color(.primary.opacity(0.7)), style: strokeStyle)
-
-            // v37: pilhuvuden baserat på riktning
-            let endAngle   = atan2(lastSeg.y  - wp.point.y, lastSeg.x  - wp.point.x)
-            let startAngle = atan2(firstSeg.y - wp.point.y, firstSeg.x - wp.point.x)
-            switch edge.direction {
-            case .forward:       drawArrowHead(context: context, tip: lastSeg,  angle: endAngle)
-            case .backward:      drawArrowHead(context: context, tip: firstSeg, angle: startAngle)
-            case .bidirectional:
-                drawArrowHead(context: context, tip: lastSeg,  angle: endAngle)
-                drawArrowHead(context: context, tip: firstSeg, angle: startAngle)
-            case .none: break
-            }
+            start = edgePoint(for: fromShape, towards: wp.point)
+            end   = edgePoint(for: toShape,   towards: wp.point)
         } else {
-            let start = edgePoint(for: fromShape, towards: toShape.position)
-            let end = edgePoint(for: toShape, towards: fromShape.position)
-            drawArrow(context: context, from: start, to: end,
-                      direction: edge.direction, style: strokeStyle)
+            start = edgePoint(for: fromShape, towards: toShape.position)
+            end   = edgePoint(for: toShape,   towards: fromShape.position)
+        }
+
+        // Bezier-kontrollpunkter baserade på ytornas normalvektorer (Lucidchart-stil)
+        let n1 = outwardNormal(for: fromShape, at: start)
+        let n2 = outwardNormal(for: toShape,   at: end)
+        let dist    = hypot(end.x - start.x, end.y - start.y)
+        let tension = min(dist * 0.42, 95)
+        let cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
+        let cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
+
+        var path = Path()
+        path.move(to: start)
+        if let wp = edge.waypoints.first {
+            // Mjuk böj via waypoint (quadratic → quadratic)
+            path.addQuadCurve(to: wp.point, control: cp1)
+            path.addQuadCurve(to: end,      control: cp2)
+        } else {
+            // Klassisk S-kurva (cubic bezier)
+            path.addCurve(to: end, control1: cp1, control2: cp2)
+        }
+        context.stroke(path, with: .color(.primary.opacity(0.7)), style: strokeStyle)
+
+        // Pilhuvuden — vinkel från bezier-tangenten vid endpoint
+        let endAngle: CGFloat
+        let startAngle: CGFloat
+        if let wp = edge.waypoints.first {
+            endAngle   = atan2(end.y   - wp.point.y, end.x   - wp.point.x)
+            startAngle = atan2(start.y - wp.point.y, start.x - wp.point.x)
+        } else {
+            endAngle   = atan2(end.y   - cp2.y, end.x   - cp2.x)
+            startAngle = atan2(start.y - cp1.y, start.x - cp1.x)
+        }
+        switch edge.direction {
+        case .forward:       drawArrowHead(context: context, tip: end,   angle: endAngle)
+        case .backward:      drawArrowHead(context: context, tip: start, angle: startAngle)
+        case .bidirectional:
+            drawArrowHead(context: context, tip: end,   angle: endAngle)
+            drawArrowHead(context: context, tip: start, angle: startAngle)
+        case .none: break
         }
     }
 
@@ -910,28 +998,6 @@ struct EdgesView: View {
         let ty = absY > 0.001 ? hh / absY : .greatestFiniteMagnitude
         let t = min(tx, ty)
         return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
-    }
-
-    private func drawArrow(context: GraphicsContext,
-                           from: CGPoint,
-                           to: CGPoint,
-                           direction: EdgeDirection,
-                           style: StrokeStyle) {
-        var line = Path()
-        line.move(to: from)
-        line.addLine(to: to)
-        context.stroke(line, with: .color(.primary.opacity(0.7)), style: style)
-
-        let angle = atan2(to.y - from.y, to.x - from.x)
-        // v37: pilhuvuden baserat på riktning
-        switch direction {
-        case .forward:       drawArrowHead(context: context, tip: to,   angle: angle)
-        case .backward:      drawArrowHead(context: context, tip: from, angle: angle + .pi)
-        case .bidirectional:
-            drawArrowHead(context: context, tip: to,   angle: angle)
-            drawArrowHead(context: context, tip: from, angle: angle + .pi)
-        case .none: break
-        }
     }
 
     /// v28: pilhuvuden med rundade hörn — stroke + fyllning med lineJoin: .round
