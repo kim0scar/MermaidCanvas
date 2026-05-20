@@ -145,13 +145,17 @@ enum MermaidGenerator {
         // Edges
         for (i, edge) in edges.enumerated() {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
-            // v27: linje-stil + riktning round-trip
+            // v37: linje-stil × riktning — 8 kombinationer
             let arrow: String
-            switch (edge.style, edge.bidirectional) {
-            case (.solid, false):  arrow = "-->"
-            case (.solid, true):   arrow = "<-->"
-            case (.dashed, false): arrow = "-.->"
-            case (.dashed, true):  arrow = "<-.->"
+            switch (edge.direction, edge.style) {
+            case (.forward,       .solid):  arrow = "-->"
+            case (.forward,       .dashed): arrow = "-.->"
+            case (.backward,      .solid):  arrow = "<--"
+            case (.backward,      .dashed): arrow = "<-.-"
+            case (.bidirectional, .solid):  arrow = "<-->"
+            case (.bidirectional, .dashed): arrow = "<-.->"
+            case (.none,          .solid):  arrow = "---"
+            case (.none,          .dashed): arrow = "-.-"
             }
             if edge.label.isEmpty {
                 lines.append("\(indent)\(from) \(arrow) \(to)")
@@ -227,6 +231,13 @@ enum MermaidGenerator {
             if let end = shape.lineEnd {
                 n["lineEnd"] = ["x": Double(end.x), "y": Double(end.y)]
             }
+            // v37: textjustering + punktlista (sparas bara om ej default)
+            if shape.textAlignment != .center {
+                n["textAlignment"] = shape.textAlignment.rawValue
+            }
+            if shape.hasBullets {
+                n["hasBullets"] = true
+            }
             return n
         }
         let edgeArr: [[String: Any]] = edges.compactMap { edge in
@@ -235,7 +246,7 @@ enum MermaidGenerator {
                 "from": f,
                 "to": t,
                 "label": edge.label,
-                "bidirectional": edge.bidirectional,
+                "direction": edge.direction.rawValue,
                 "style": edge.style.rawValue
             ]
             if !edge.waypoints.isEmpty {

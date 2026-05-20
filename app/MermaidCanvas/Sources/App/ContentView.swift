@@ -35,6 +35,8 @@ struct ContentView: View {
     @State private var zoomPercent: Int = 100
     @State private var resetZoomTrigger: Int = 0
     @State private var showNotePopup: Bool = false
+    /// v37: Mermaid-import från AI
+    @State private var showMermaidImport: Bool = false
 
     var body: some View {
         ZStack {
@@ -66,7 +68,8 @@ struct ContentView: View {
                         }
                     },
                     onResetZoom: { resetZoomTrigger &+= 1 },
-                    onShowNotePopup: { showNotePopup = true }
+                    onShowNotePopup: { showNotePopup = true },
+                    onImportMermaid: { showMermaidImport = true }
                 )
 
                 CanvasView(
@@ -105,7 +108,9 @@ struct ContentView: View {
                         label: shape.label,
                         showLabel: shape.showLabel,
                         note: shape.note,
-                        textStyle: shape.textStyle
+                        textStyle: shape.textStyle,
+                        textAlignment: shape.textAlignment,
+                        hasBullets: shape.hasBullets
                     ),
                     onSave: { edit in
                         model.updateShape(
@@ -113,7 +118,9 @@ struct ContentView: View {
                             label: edit.label,
                             showLabel: edit.showLabel,
                             note: edit.note,
-                            textStyle: edit.textStyle
+                            textStyle: edit.textStyle,
+                            textAlignment: edit.textAlignment,
+                            hasBullets: edit.hasBullets
                         )
                         editingShapeId = nil
                     },
@@ -158,6 +165,12 @@ struct ContentView: View {
         .sheet(isPresented: $showRulesSheet) {
             PlatformRulesSheet(platform: model.platform,
                                onClose: { showRulesSheet = false })
+        }
+        // v37: Importera Mermaid från AI
+        .sheet(isPresented: $showMermaidImport) {
+            MermaidImportSheet(model: model) {
+                showMermaidImport = false
+            }
         }
         .fileImporter(
             isPresented: $showImporter,

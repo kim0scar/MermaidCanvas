@@ -148,6 +148,10 @@ enum MermaidParser {
                let lx = leDict["x"], let ly = leDict["y"] {
                 lineEnd = CGPoint(x: numberValue(lx), y: numberValue(ly))
             }
+            // v37: textjustering + punktlista
+            let textAlignRaw = (node["textAlignment"] as? String) ?? TextAlignMode.center.rawValue
+            let textAlignment = TextAlignMode(rawValue: textAlignRaw) ?? .center
+            let hasBullets = (node["hasBullets"] as? Bool) ?? false
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
@@ -165,7 +169,9 @@ enum MermaidParser {
                 tableCols: tableCols,
                 textStyle: textStyle,
                 colorPackId: colorPackId,
-                lineEnd: lineEnd
+                lineEnd: lineEnd,
+                textAlignment: textAlignment,
+                hasBullets: hasBullets
             )
             idMap[mid] = shape.id
             shapes.append(shape)
@@ -179,7 +185,15 @@ enum MermaidParser {
                   let toId = idMap[toMid]
             else { continue }
             let label = (edge["label"] as? String) ?? ""
+            // v37: läs direction (ny) med fallback till bidirectional: Bool (gammal data)
+            let directionRaw = edge["direction"] as? String
             let bidi = (edge["bidirectional"] as? Bool) ?? false
+            let direction: EdgeDirection
+            if let dr = directionRaw, let d = EdgeDirection(rawValue: dr) {
+                direction = d
+            } else {
+                direction = bidi ? .bidirectional : .forward
+            }
             let styleRaw = (edge["style"] as? String) ?? EdgeStyle.solid.rawValue
             let style = EdgeStyle(rawValue: styleRaw) ?? .solid
             var waypoints: [EdgeWaypoint] = []
@@ -191,7 +205,7 @@ enum MermaidParser {
                 }
             }
             edgeList.append(EdgeConnection(from: fromId, to: toId, label: label,
-                                            bidirectional: bidi, style: style,
+                                            direction: direction, style: style,
                                             waypoints: waypoints))
         }
 
@@ -282,8 +296,10 @@ enum MermaidParser {
         }
 
         var edges: [EdgeConnection] = []
-        // v27: Matchar A --> B, A <--> B, A -.-> B, A <-.-> B + med ev. label: A -->|"x"| B
-        let edgePattern = #"(\w+)\s*(<-+\.->|-+\.->|<-+->|-+->)\s*(?:\|\s*\"?([^\"|]*?)\"?\s*\|\s*)?(\w+)"#
+        // v37: Matchar alla 8 pil-kombinationer:
+        // --> <-- <--> --- -.-> <-.-> <-.- -.-
+        // Längre/mer-specifika alternativ testas först för att undvika överlapp.
+        let edgePattern = #"(\w+)\s*(<-+\.->|<-+->|-+\.->|-+->|<-+\.-+|<-+|-+\.-+|-{3,})\s*(?:\|\s*\"?([^\"|]*?)\"?\s*\|\s*)?(\w+)"#
         if let regex = try? NSRegularExpression(pattern: edgePattern) {
             let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
             for m in matches where m.numberOfRanges >= 5 {
@@ -297,10 +313,22 @@ enum MermaidParser {
                     label = ""
                 }
                 guard let from = idMap[fromMid], let to = idMap[toMid] else { continue }
-                let bidi = arrowStr.hasPrefix("<")
+                // Bestäm riktning baserat på prefix/suffix
+                let direction: EdgeDirection
+                let startsWithArrow = arrowStr.hasPrefix("<")
+                let endsWithArrow   = arrowStr.hasSuffix(">")
+                if startsWithArrow && endsWithArrow {
+                    direction = .bidirectional
+                } else if endsWithArrow {
+                    direction = .forward
+                } else if startsWithArrow {
+                    direction = .backward
+                } else {
+                    direction = .none
+                }
                 let dashed = arrowStr.contains(".")
                 edges.append(EdgeConnection(from: from, to: to, label: label,
-                                             bidirectional: bidi,
+                                             direction: direction,
                                              style: dashed ? .dashed : .solid))
             }
         }

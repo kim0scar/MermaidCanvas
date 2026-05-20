@@ -1,12 +1,14 @@
 import SwiftUI
 
 /// Slimmad ShapeEdit (v23) — bara namn, toggle, textstil, anteckning.
-/// Storlek/rotation hanteras via handtag på canvas. Kategori sätts via plattform-läget.
+/// v37: textAlignment + hasBullets tillagda.
 struct ShapeEdit {
     var label: String
     var showLabel: Bool
     var note: String
     var textStyle: TextStyle
+    var textAlignment: TextAlignMode
+    var hasBullets: Bool
 }
 
 struct EditShapeSheet: View {
@@ -48,6 +50,21 @@ struct EditShapeSheet: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    // v37: textjustering + punktlista — kompakt rad
+                    HStack(spacing: 12) {
+                        Picker("Justering", selection: $draft.textAlignment) {
+                            Image(systemName: "text.alignleft").tag(TextAlignMode.leading)
+                            Image(systemName: "text.aligncenter").tag(TextAlignMode.center)
+                            Image(systemName: "text.alignright").tag(TextAlignMode.trailing)
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(maxWidth: 130)
+                        Spacer()
+                        Toggle(isOn: $draft.hasBullets) {
+                            Image(systemName: "list.bullet")
+                        }
+                        .toggleStyle(.button)
+                    }
                 }
 
                 Section("Anteckning (osynlig på canvasen)") {

@@ -2,6 +2,13 @@ import Foundation
 import CoreGraphics
 import CoreTransferable
 
+/// v37: textjustering per form. Lagras som sträng-enum (Foundation-only, ej SwiftUI-beroende).
+enum TextAlignMode: String, Codable, CaseIterable {
+    case leading
+    case center
+    case trailing
+}
+
 enum ShapeType: String, Codable, CaseIterable {
     case circle
     case rectangle
@@ -57,6 +64,10 @@ struct ShapeNode: Identifiable, Codable {
     var colorPackId: String?
     /// v31: endpoint för lösa linjer/pilar (relativ från `position`). nil för icke-line.
     var lineEnd: CGPoint?
+    /// v37: textjustering (L/C/R) per form. Default = .center.
+    var textAlignment: TextAlignMode
+    /// v37: visa text med • per rad. Default = false.
+    var hasBullets: Bool
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -75,7 +86,9 @@ struct ShapeNode: Identifiable, Codable {
          tableCols: Int? = nil,
          textStyle: TextStyle = .body,
          colorPackId: String? = nil,
-         lineEnd: CGPoint? = nil) {
+         lineEnd: CGPoint? = nil,
+         textAlignment: TextAlignMode = .center,
+         hasBullets: Bool = false) {
         self.id = id
         self.type = type
         self.position = position
@@ -94,6 +107,8 @@ struct ShapeNode: Identifiable, Codable {
         self.textStyle = textStyle
         self.colorPackId = colorPackId
         self.lineEnd = lineEnd
+        self.textAlignment = textAlignment
+        self.hasBullets = hasBullets
     }
 
     /// v31: effective width-multiplier (fallback till sizeMultiplier).

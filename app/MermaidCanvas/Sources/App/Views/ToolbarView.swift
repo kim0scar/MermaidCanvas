@@ -41,6 +41,8 @@ struct ToolbarView: View {
     var onResetZoom: () -> Void
     /// v31: visa anteckning-popup-sheet med all canvas-text.
     var onShowNotePopup: () -> Void
+    /// v37: importera Mermaid från AI.
+    var onImportMermaid: () -> Void
 
     @State private var secondaryRow: SecondaryToolbarRow? = nil
 
@@ -82,7 +84,8 @@ struct ToolbarView: View {
                 onNewCanvas: onNewCanvas,
                 onShowCode: onShowCode,
                 onShowRules: onShowRules,
-                onToggleMarker: onToggleMarker
+                onToggleMarker: onToggleMarker,
+                onImportMermaid: onImportMermaid
             )
         }
         .padding(.horizontal, 10)

@@ -70,11 +70,9 @@ final class V35MermaidValidationTests: XCTestCase {
         XCTAssertTrue(mermaid.contains(linkSyntax), "Länk-syntax saknas: '\(linkSyntax)'")
         XCTAssertTrue(mermaid.contains(lineSyntax), "Line-syntax saknas: '\(lineSyntax)'")
         XCTAssertTrue(mermaid.contains(arrowSyntax), "Arrow-syntax saknas: '\(arrowSyntax)'")
-        // v35.1: nya grundformer — alla renderas med [...] eller (...) i Mermaid
+        // v35.1/v36.1: grundformer — renderas med [...] i Mermaid. Triangel+Chevron borttagna.
         XCTAssertTrue(mermaid.contains("\"Fyrkant\""), "Fyrkant-label saknas i output")
-        XCTAssertTrue(mermaid.contains("\"Triangel\""), "Triangel-label saknas i output")
         XCTAssertTrue(mermaid.contains("\"Processpil\""), "Processpil-label saknas i output")
-        XCTAssertTrue(mermaid.contains("\"Chevron\""), "Chevron-label saknas i output")
 
         // Tabell-metadata ska finnas som mermaid-kommentar
         XCTAssertTrue(mermaid.contains("table: 3×4"),
@@ -213,11 +211,11 @@ final class V35MermaidValidationTests: XCTestCase {
 
         let edges = [
             EdgeConnection(from: s1.id, to: s2.id, label: "godkänner",
-                           bidirectional: false, style: .solid),
+                           direction: .forward, style: .solid),
             EdgeConnection(from: s2.id, to: s3.id, label: "skickar till",
-                           bidirectional: true, style: .dashed),
+                           direction: .bidirectional, style: .dashed),
             EdgeConnection(from: s1.id, to: s3.id, label: "",
-                           bidirectional: false, style: .solid)
+                           direction: .forward, style: .solid)
         ]
         let doc = CanvasDocument(
             title: "Edge-label-test",
@@ -255,7 +253,7 @@ final class V35MermaidValidationTests: XCTestCase {
                       "Solid edge-style ska bevaras")
         XCTAssertTrue(parsed.edges.contains { $0.style == .dashed },
                       "Dashed edge-style ska bevaras")
-        XCTAssertTrue(parsed.edges.contains { $0.bidirectional },
+        XCTAssertTrue(parsed.edges.contains { $0.direction == .bidirectional },
                       "Bidirectional edge ska bevaras")
     }
 
@@ -340,11 +338,11 @@ final class V35MermaidValidationTests: XCTestCase {
 
         let edges = [
             EdgeConnection(from: a.id, to: b.id, label: "först",
-                           bidirectional: false, style: .solid),
+                           direction: .forward, style: .solid),
             EdgeConnection(from: b.id, to: c.id, label: "sedan",
-                           bidirectional: false, style: .dashed),
+                           direction: .forward, style: .dashed),
             EdgeConnection(from: c.id, to: a.id, label: "tillbaka 🔄",
-                           bidirectional: true, style: .solid)
+                           direction: .bidirectional, style: .solid)
         ]
 
         // Cycle 1
@@ -435,7 +433,7 @@ final class V35MermaidValidationTests: XCTestCase {
         ]
         let edges = [
             EdgeConnection(from: shapes[0].id, to: shapes[1].id,
-                           label: "", bidirectional: false, style: .solid)
+                           label: "", direction: .forward, style: .solid)
         ]
         let code = MermaidGenerator.generate(
             shapes: shapes,

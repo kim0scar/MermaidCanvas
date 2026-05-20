@@ -14,6 +14,8 @@ struct LägenMenu: View {
     var onShowRules: () -> Void
     /// v33: markerButton flyttad hit från primary toolbar för att rymma 44pt-knappar.
     var onToggleMarker: () -> Void
+    /// v37: importera Mermaid-kod från AI.
+    var onImportMermaid: () -> Void
 
     var body: some View {
         Menu {
@@ -38,6 +40,9 @@ struct LägenMenu: View {
             }
             Button { onOpen() } label: {
                 Label("Öppna fil…", systemImage: "folder")
+            }
+            Button { onImportMermaid() } label: {
+                Label("Importera Mermaid…", systemImage: "arrow.down.doc")
             }
             Button { onNewCanvas() } label: {
                 Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")

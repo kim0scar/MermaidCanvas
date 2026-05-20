@@ -144,8 +144,7 @@ struct CanvasView: View {
                       canvasScale: zoomScale,
                       hiddenShapeIds: hiddenForEdges,
                       onEdgeDelete: onEdgeDelete,
-                      onEdgeReverse: { id in model.reverseEdge(id: id) },
-                      onEdgeSetBidi: { id, v in model.setEdgeBidirectional(id: id, v) },
+                      onEdgeSetDirection: { id, dir in model.setEdgeDirection(id: id, direction: dir) },
                       onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) })
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
@@ -332,12 +331,24 @@ struct ShapeView: View {
                 FreeLineView(shape: shape, stroke: effectiveStroke)
             }
             if shape.showLabel {
-                Text(shape.label)
+                // v37: punktlista + textjustering
+                let displayLabel: String = shape.hasBullets
+                    ? shape.label.split(separator: "\n", omittingEmptySubsequences: false)
+                        .map { "• \($0)" }.joined(separator: "\n")
+                    : shape.label
+                let multiAlign: TextAlignment = {
+                    switch shape.textAlignment {
+                    case .leading:  return .leading
+                    case .trailing: return .trailing
+                    case .center:   return .center
+                    }
+                }()
+                Text(displayLabel)
                     .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
                                   weight: shape.textStyle.fontWeight,
                                   design: .rounded))
                     .foregroundStyle(effectiveTextColor)
-                    .multilineTextAlignment(.center)
+                    .multilineTextAlignment(multiAlign)
                     .lineLimit(6)
                     .minimumScaleFactor(0.6)
                     .padding(.horizontal, shape.type == .text ? 2 : 8)
@@ -686,8 +697,7 @@ struct EdgesView: View {
     let canvasScale: CGFloat
     let hiddenShapeIds: Set<UUID>
     var onEdgeDelete: (UUID) -> Void
-    var onEdgeReverse: (UUID) -> Void
-    var onEdgeSetBidi: (UUID, Bool) -> Void
+    var onEdgeSetDirection: (UUID, EdgeDirection) -> Void
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
 
     private func isVisible(_ edge: EdgeConnection) -> Bool {
@@ -721,7 +731,16 @@ struct EdgesView: View {
                                 fromShape: ShapeNode,
                                 toShape: ShapeNode) -> some View {
         let hasWaypoint = !edge.wrappedValue.waypoints.isEmpty
-        let isBidi = edge.wrappedValue.bidirectional
+        let direction = edge.wrappedValue.direction
+        // v37: ikon speglar aktuell riktning
+        let icon: String = {
+            switch direction {
+            case .forward:       return "arrow.right"
+            case .backward:      return "arrow.left"
+            case .bidirectional: return "arrow.left.arrow.right"
+            case .none:          return "minus"
+            }
+        }()
         let mid: CGPoint = {
             if hasWaypoint { return edge.wrappedValue.waypoints[0].point }
             return CGPoint(
@@ -736,7 +755,7 @@ struct EdgesView: View {
                 .overlay(Circle().stroke(Color.accentColor,
                                          lineWidth: max(1.0, 1.5 / canvasScale)))
                 .frame(width: size, height: size)
-            Image(systemName: isBidi ? "arrow.left.arrow.right" : "arrow.right")
+            Image(systemName: icon)
                 .font(.system(size: size * 0.45, weight: .bold))
                 .foregroundStyle(hasWaypoint ? Color.white : Color.accentColor)
         }
@@ -744,21 +763,26 @@ struct EdgesView: View {
         .position(mid)
         .gesture(midpointGesture(edge: edge))
         .contextMenu {
-            // v25: pil-riktning
+            // v37: 4 riktningsval
             Button {
-                onEdgeSetBidi(edge.wrappedValue.id, false)
+                onEdgeSetDirection(edge.wrappedValue.id, .forward)
             } label: {
-                Label("Pil åt ett håll →", systemImage: "arrow.right")
+                Label("→ Pil åt höger", systemImage: "arrow.right")
             }
             Button {
-                onEdgeReverse(edge.wrappedValue.id)
+                onEdgeSetDirection(edge.wrappedValue.id, .backward)
             } label: {
-                Label("Byt riktning ←", systemImage: "arrow.uturn.left")
+                Label("← Pil åt vänster", systemImage: "arrow.left")
             }
             Button {
-                onEdgeSetBidi(edge.wrappedValue.id, true)
+                onEdgeSetDirection(edge.wrappedValue.id, .bidirectional)
             } label: {
-                Label("Båda hållen ↔", systemImage: "arrow.left.arrow.right")
+                Label("↔ Båda hållen", systemImage: "arrow.left.arrow.right")
+            }
+            Button {
+                onEdgeSetDirection(edge.wrappedValue.id, .none)
+            } label: {
+                Label("— Ingen pil", systemImage: "minus")
             }
             Divider()
             // v27: linje-stil
@@ -817,17 +841,22 @@ struct EdgesView: View {
             line.addLine(to: lastSeg)
             context.stroke(line, with: .color(.primary.opacity(0.7)), style: strokeStyle)
 
-            let angle = atan2(lastSeg.y - wp.point.y, lastSeg.x - wp.point.x)
-            drawArrowHead(context: context, tip: lastSeg, angle: angle)
-            if edge.bidirectional {
-                let startAngle = atan2(firstSeg.y - wp.point.y, firstSeg.x - wp.point.x)
+            // v37: pilhuvuden baserat på riktning
+            let endAngle   = atan2(lastSeg.y  - wp.point.y, lastSeg.x  - wp.point.x)
+            let startAngle = atan2(firstSeg.y - wp.point.y, firstSeg.x - wp.point.x)
+            switch edge.direction {
+            case .forward:       drawArrowHead(context: context, tip: lastSeg,  angle: endAngle)
+            case .backward:      drawArrowHead(context: context, tip: firstSeg, angle: startAngle)
+            case .bidirectional:
+                drawArrowHead(context: context, tip: lastSeg,  angle: endAngle)
                 drawArrowHead(context: context, tip: firstSeg, angle: startAngle)
+            case .none: break
             }
         } else {
             let start = edgePoint(for: fromShape, towards: toShape.position)
             let end = edgePoint(for: toShape, towards: fromShape.position)
             drawArrow(context: context, from: start, to: end,
-                      bidirectional: edge.bidirectional, style: strokeStyle)
+                      direction: edge.direction, style: strokeStyle)
         }
     }
 
@@ -886,7 +915,7 @@ struct EdgesView: View {
     private func drawArrow(context: GraphicsContext,
                            from: CGPoint,
                            to: CGPoint,
-                           bidirectional: Bool,
+                           direction: EdgeDirection,
                            style: StrokeStyle) {
         var line = Path()
         line.move(to: from)
@@ -894,9 +923,14 @@ struct EdgesView: View {
         context.stroke(line, with: .color(.primary.opacity(0.7)), style: style)
 
         let angle = atan2(to.y - from.y, to.x - from.x)
-        drawArrowHead(context: context, tip: to, angle: angle)
-        if bidirectional {
+        // v37: pilhuvuden baserat på riktning
+        switch direction {
+        case .forward:       drawArrowHead(context: context, tip: to,   angle: angle)
+        case .backward:      drawArrowHead(context: context, tip: from, angle: angle + .pi)
+        case .bidirectional:
+            drawArrowHead(context: context, tip: to,   angle: angle)
             drawArrowHead(context: context, tip: from, angle: angle + .pi)
+        case .none: break
         }
     }
 

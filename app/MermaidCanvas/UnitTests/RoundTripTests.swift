@@ -86,8 +86,8 @@ final class RoundTripTests: XCTestCase {
         let s1 = ShapeNode(type: .circle, position: CGPoint(x: 100, y: 100), label: "A")
         let s2 = ShapeNode(type: .circle, position: CGPoint(x: 300, y: 100), label: "B")
         let edges = [
-            EdgeConnection(from: s1.id, to: s2.id, bidirectional: false, style: .solid),
-            EdgeConnection(from: s2.id, to: s1.id, bidirectional: true,  style: .dashed)
+            EdgeConnection(from: s1.id, to: s2.id, direction: .forward,      style: .solid),
+            EdgeConnection(from: s2.id, to: s1.id, direction: .bidirectional, style: .dashed)
         ]
 
         let doc = CanvasDocument(
@@ -107,7 +107,7 @@ final class RoundTripTests: XCTestCase {
                       "Solid edge-style ska bevaras")
         XCTAssertTrue(parsed.edges.contains { $0.style == .dashed },
                       "Dashed edge-style ska bevaras")
-        XCTAssertTrue(parsed.edges.contains { $0.bidirectional },
+        XCTAssertTrue(parsed.edges.contains { $0.direction == .bidirectional },
                       "Bidirectional edge ska bevaras")
     }
 

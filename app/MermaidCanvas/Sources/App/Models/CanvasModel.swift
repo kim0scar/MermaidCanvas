@@ -252,7 +252,9 @@ final class CanvasModel: ObservableObject {
             tableRows: o.tableRows,
             tableCols: o.tableCols,
             textStyle: o.textStyle,
-            colorPackId: o.colorPackId
+            colorPackId: o.colorPackId,
+            textAlignment: o.textAlignment,
+            hasBullets: o.hasBullets
         )
         shapes.append(copy)
         return copy.id
@@ -307,13 +309,17 @@ final class CanvasModel: ObservableObject {
                      label: String,
                      showLabel: Bool,
                      note: String,
-                     textStyle: TextStyle) {
+                     textStyle: TextStyle,
+                     textAlignment: TextAlignMode = .center,
+                     hasBullets: Bool = false) {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         snapshotForUndo()
         shapes[index].label = label
         shapes[index].showLabel = showLabel
         shapes[index].note = note
         shapes[index].textStyle = textStyle
+        shapes[index].textAlignment = textAlignment
+        shapes[index].hasBullets = hasBullets
     }
 
     func deleteShape(id: UUID) {
@@ -364,29 +370,20 @@ final class CanvasModel: ObservableObject {
     }
 
     /// v25: lägg pil direkt från drag-handtag (ej via tap-flow).
-    func addEdge(from: UUID, to: UUID, bidirectional: Bool = false) {
+    func addEdge(from: UUID, to: UUID, direction: EdgeDirection = .forward) {
         guard from != to else { return }
         // Förhindra dubbletter åt samma håll
         if edges.contains(where: { $0.from == from && $0.to == to }) { return }
         snapshotForUndo()
-        edges.append(EdgeConnection(from: from, to: to, bidirectional: bidirectional))
+        edges.append(EdgeConnection(from: from, to: to, direction: direction))
     }
 
-    /// v25: byt riktning på en pil.
-    func reverseEdge(id: UUID) {
+    /// v37: sätt pilriktning (ersätter reverseEdge + setEdgeBidirectional).
+    func setEdgeDirection(id: UUID, direction: EdgeDirection) {
         guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        guard edges[idx].direction != direction else { return }
         snapshotForUndo()
-        let old = edges[idx]
-        edges[idx].from = old.to
-        edges[idx].to = old.from
-    }
-
-    /// v25: sätt pil till en/båda riktningar utan att ändra ändpunkter.
-    func setEdgeBidirectional(id: UUID, _ value: Bool) {
-        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
-        guard edges[idx].bidirectional != value else { return }
-        snapshotForUndo()
-        edges[idx].bidirectional = value
+        edges[idx].direction = direction
     }
 
     /// v27: hel eller streckad linje.
@@ -406,9 +403,9 @@ final class CanvasModel: ObservableObject {
                 edgeCreationMode = .off
                 return false
             }
-            let bidi = edgeCreationMode == .bidirectional
+            let direction: EdgeDirection = edgeCreationMode == .bidirectional ? .bidirectional : .forward
             snapshotForUndo()
-            edges.append(EdgeConnection(from: from, to: shapeId, bidirectional: bidi))
+            edges.append(EdgeConnection(from: from, to: shapeId, direction: direction))
             edgeCreationMode = .off
             return true
         }
