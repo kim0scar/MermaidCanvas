@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import Combine
 
 /// v34 — UIScrollView-wrap för canvasen. Ersätter ren-SwiftUI-implementationen
 /// med transformEffect + DragGesture + MagnifyGesture som hade tre grundbuggar:
@@ -166,6 +167,9 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         var contentSize: CGSize = .zero
         var lastResetTrigger: Int = 0
         private var hasDoneInitialFit = false
+        /// v39: auto-scroll timer (kör vid shape-drag nära kant)
+        private var autoScrollTimer: Timer?
+        private var autoScrollCancellable: AnyCancellable?
 
         init(
             hostingController: UIHostingController<Content>,
@@ -182,6 +186,36 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
             super.init()
             // Gör hostingController-vyn transparent och utan auto-resize-magi
             hostingController.view.backgroundColor = .clear
+
+            // v39: Observera autoScrollVelocity — när det är non-zero, starta timer
+            autoScrollCancellable = viewportState.$autoScrollVelocity
+                .receive(on: RunLoop.main)
+                .sink { [weak self] velocity in
+                    self?.handleAutoScrollVelocity(velocity)
+                }
+        }
+
+        private func handleAutoScrollVelocity(_ velocity: CGSize) {
+            if velocity == .zero {
+                autoScrollTimer?.invalidate()
+                autoScrollTimer = nil
+            } else if autoScrollTimer == nil {
+                autoScrollTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+                    guard let self, let sv = self.scrollView else { return }
+                    let vel = self.viewportState.autoScrollVelocity
+                    guard vel != .zero else { return }
+                    let dt: CGFloat = 1.0 / 60.0
+                    let dx = vel.width * dt
+                    let dy = vel.height * dt
+                    let maxX = max(0, sv.contentSize.width - sv.bounds.width)
+                    let maxY = max(0, sv.contentSize.height - sv.bounds.height)
+                    let newOffset = CGPoint(
+                        x: min(max(0, sv.contentOffset.x + dx), maxX),
+                        y: min(max(0, sv.contentOffset.y + dy), maxY)
+                    )
+                    sv.setContentOffset(newOffset, animated: false)
+                }
+            }
         }
 
         /// Synkron spegling av scrollViewens state → CanvasViewportState.

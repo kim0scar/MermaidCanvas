@@ -10,6 +10,8 @@ enum SecondaryToolbarRow: Equatable {
     case textStyles
     /// v31: form-paket-rad (visar UI-pack + Prompt-Process-pack-toggles)
     case packs
+    /// v39: multi-select-operationer (duplicera, ta bort, align)
+    case multiSelect
 }
 
 struct ToolbarView: View {
@@ -43,15 +45,21 @@ struct ToolbarView: View {
     var onShowNotePopup: () -> Void
     /// v37: importera Mermaid från AI.
     var onImportMermaid: () -> Void
+    /// v39: multi-select-operationer
+    var onDuplicateSelection: () -> Void
+    var onDeleteSelection: () -> Void
+    var onAlignHorizontal: () -> Void
+    var onAlignVertical: () -> Void
 
     @State private var secondaryRow: SecondaryToolbarRow? = nil
 
     var body: some View {
         VStack(spacing: 0) {
             primaryRow
-            if let row = secondaryRow {
+            // v39: visa multi-select-operationer automatiskt när markerMode är aktivt
+            let activeRow: SecondaryToolbarRow? = model.markerMode ? .multiSelect : secondaryRow
+            if let row = activeRow {
                 secondaryRowView(row)
-                    // v33 Apple-nivå: smooth opacity+slide-transition vid expand
                     .transition(.asymmetric(
                         insertion: .opacity.combined(with: .move(edge: .top)),
                         removal: .opacity.combined(with: .move(edge: .top))
@@ -65,13 +73,14 @@ struct ToolbarView: View {
 
     @ViewBuilder
     private var primaryRow: some View {
-        // v33: 44pt-knappar enligt Apple HIG. markerButton flyttad till Lägen-menyn
-        // så 8 toggle-knappar + zoom + undo + menyknapp ryms på iPhone-bredd.
+        // v39: multi-select-knapp (rectangle.dashed) i primär toolbar.
         HStack(spacing: 4) {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
             toggleButton("swatchpalette", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
+            // v39: multi-select direkt i toolbar
+            markerButton
             Spacer(minLength: 0)
             zoomBadge
             undoButton
@@ -175,10 +184,11 @@ struct ToolbarView: View {
     private func secondaryRowView(_ row: SecondaryToolbarRow) -> some View {
         HStack(spacing: 8) {
             switch row {
-            case .shapes:     shapesSecondary
-            case .colors:     colorsSecondary
-            case .textStyles: textStylesSecondary
-            case .packs:      packsSecondary
+            case .shapes:      shapesSecondary
+            case .colors:      colorsSecondary
+            case .textStyles:  textStylesSecondary
+            case .packs:       packsSecondary
+            case .multiSelect: multiSelectSecondary
             }
         }
         .padding(.horizontal, 10)
@@ -289,6 +299,61 @@ struct ToolbarView: View {
         .accessibilityIdentifier("toggle.pack.\(pack.rawValue)")
     }
 
+    // MARK: - Multi-select-rad (v39)
+
+    /// Operationsrad som visas automatiskt när markerMode är aktivt.
+    @ViewBuilder
+    private var multiSelectSecondary: some View {
+        let count = model.multiSelection.count
+        HStack(spacing: 10) {
+            // Räknare — hur många former är markerade
+            Text("\(count) markerade")
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+                .frame(minWidth: 70)
+
+            Divider().frame(height: 28)
+
+            // Duplicera
+            multiSelectButton("plus.square.on.square", label: "Duplicera",
+                               disabled: count == 0) { onDuplicateSelection() }
+
+            // Ta bort
+            multiSelectButton("trash", label: "Ta bort",
+                               disabled: count == 0, destructive: true) { onDeleteSelection() }
+
+            Divider().frame(height: 28)
+
+            // Align horisontellt (dela vertikalt centrallinje)
+            multiSelectButton("align.horizontal.center", label: "Centrera H",
+                               disabled: count < 2) { onAlignHorizontal() }
+
+            // Align vertikalt (dela horisontellt centrallinje)
+            multiSelectButton("align.vertical.center", label: "Centrera V",
+                               disabled: count < 2) { onAlignVertical() }
+        }
+    }
+
+    @ViewBuilder
+    private func multiSelectButton(_ icon: String,
+                                   label: String,
+                                   disabled: Bool,
+                                   destructive: Bool = false,
+                                   action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 2) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                Text(label)
+                    .font(.system(size: 9, weight: .medium))
+            }
+            .foregroundStyle(disabled ? .secondary.opacity(0.4) : (destructive ? .red : Color.primary))
+            .frame(minWidth: 44, minHeight: 44)
+        }
+        .buttonStyle(.plain)
+        .disabled(disabled)
+    }
+
     /// v34: shapeChip använder MANUELL DragGesture(coordinateSpace: .global)
     /// — Apple's .draggable + .dropDestination fungerar inte pålitligt inuti
     /// UIViewRepresentable runt UIScrollView (iOS drag-system kan inte alltid
@@ -386,15 +451,68 @@ struct ToolbarView: View {
         model.shapes[idx].colorPackId = pack.id == "none" ? nil : pack.id
     }
 
-    // MARK: - Textstil-rad
+    // MARK: - Textstil-rad (v39 utökad)
 
     @ViewBuilder
     private var textStylesSecondary: some View {
-        HStack(spacing: 8) {
-            ForEach(TextStyle.allCases) { st in
-                textStyleChip(st)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                // Storlek: R1 / R2 / R3 / Aa
+                ForEach(TextStyle.allCases) { st in
+                    textStyleChip(st)
+                }
+
+                Divider().frame(height: 28).padding(.horizontal, 2)
+
+                // Punktlista
+                textActionButton(
+                    icon: "list.bullet",
+                    label: "Punkter",
+                    active: selectedShape?.hasBullets == true && selectedShape?.hasNumberedList == false
+                ) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    let on = !(model.shapes[idx].hasBullets)
+                    model.shapes[idx].hasBullets = on
+                    if on { model.shapes[idx].hasNumberedList = false }
+                }
+
+                // Numrerad lista
+                textActionButton(
+                    icon: "list.number",
+                    label: "Numrerad",
+                    active: selectedShape?.hasNumberedList == true
+                ) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    let on = !(model.shapes[idx].hasNumberedList)
+                    model.shapes[idx].hasNumberedList = on
+                    if on { model.shapes[idx].hasBullets = false }
+                }
+
+                Divider().frame(height: 28).padding(.horizontal, 2)
+
+                // Indrag vänster (minska)
+                textActionButton(icon: "decrease.indent", label: "Indrag–", active: false) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    model.shapes[idx].indentLevel = max(0, model.shapes[idx].indentLevel - 1)
+                }
+
+                // Indrag höger (öka)
+                textActionButton(icon: "increase.indent", label: "Indrag+", active: false) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    model.shapes[idx].indentLevel = min(3, model.shapes[idx].indentLevel + 1)
+                }
             }
+            .padding(.horizontal, 2)
         }
+    }
+
+    private var selectedShape: ShapeNode? {
+        guard let id = model.selectedShapeId else { return nil }
+        return model.shapes.first(where: { $0.id == id })
     }
 
     @ViewBuilder
@@ -415,6 +533,28 @@ struct ToolbarView: View {
                 .padding(.vertical, 6)
                 .background(Capsule().fill(isCurrent ? Color.accentColor : Color(.systemBackground)))
                 .overlay(Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func textActionButton(icon: String,
+                                  label: String,
+                                  active: Bool,
+                                  action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(active ? Color.white : Color.primary)
+                .frame(width: 38, height: 36)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(active ? Color.accentColor : Color(.systemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                )
         }
         .buttonStyle(.plain)
     }

@@ -1,9 +1,9 @@
 import SwiftUI
 
-/// v31: Markeringshandtag på vald form.
-/// - ETT proportional-resize-handtag i bottom-right (bevarar aspect ratio)
-/// - ETT fri-resize-handtag staplat under (modifierar width/height oberoende)
-/// - ETT rotation-handtag ovanför formen
+/// v39: Markeringshandtag på vald form.
+/// - Proportional-resize: bottom-right (bevarar aspect ratio)
+/// - Fri resize (diagonal): bottom-left (tydlig resize-ikon)
+/// - Rotation: top-left, transparent bakgrund
 struct SelectionHandles: View {
     @Binding var shape: ShapeNode
     let canvasScale: CGFloat
@@ -14,8 +14,7 @@ struct SelectionHandles: View {
         let center = shape.position
         let handleSize: CGFloat = max(24, 28 / canvasScale)
         let strokeWidth: CGFloat = max(1.5, 2.0 / canvasScale)
-        let rotationOffset: CGFloat = 40 / canvasScale
-        let stackSpacing: CGFloat = max(4, 6 / canvasScale)
+        let rotationOffset: CGFloat = 36 / canvasScale
 
         ZStack {
             // Streckad markeringsram runt formen
@@ -28,23 +27,23 @@ struct SelectionHandles: View {
                 .position(center)
                 .allowsHitTesting(false)
 
-            // Bottom-right hörn: två handles staplade vertikalt
-            // 1) Proportional resize (övre) — bevarar aspect ratio
-            // 2) Fri resize (under) — modifierar bredd och höjd oberoende
-            proportionalHandle(size: handleSize, w: w, h: h, spacing: stackSpacing)
-            freeResizeHandle(size: handleSize, w: w, h: h, spacing: stackSpacing)
+            // Bottom-right: proportional resize (bevarar aspect ratio)
+            proportionalHandle(size: handleSize, w: w, h: h)
 
-            // Rotation-handtag (ovanför topp-mitten)
-            rotationHandle(size: handleSize, offset: rotationOffset, halfH: h / 2)
+            // Bottom-left: fri resize med diagonal ikon
+            freeResizeHandle(size: handleSize, w: w, h: h)
+
+            // Top-left: rotation med transparent bakgrund
+            rotationHandle(size: handleSize, offset: rotationOffset, w: w, h: h)
         }
     }
 
     // MARK: - Handle-views
 
-    /// Proportional — bevarar aspect ratio. Placerad i bottom-right hörn.
+    /// Proportional resize — bottom-right hörn.
     @ViewBuilder
-    private func proportionalHandle(size: CGFloat, w: CGFloat, h: CGFloat, spacing: CGFloat) -> some View {
-        let pos = handlePosition(forBottomRight: true, w: w, h: h, extraDown: 0)
+    private func proportionalHandle(size: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+        let pos = cornerPosition(dx: w / 2, dy: h / 2)
         ZStack {
             Circle()
                 .fill(Color.white)
@@ -60,15 +59,16 @@ struct SelectionHandles: View {
         .accessibilityIdentifier("resize.proportional")
     }
 
-    /// Fri resize — width och height oberoende. Placerad under proportional-handle.
+    /// Fri resize — bottom-left hörn, diagonal ikon (tydlig resize-signal).
     @ViewBuilder
-    private func freeResizeHandle(size: CGFloat, w: CGFloat, h: CGFloat, spacing: CGFloat) -> some View {
-        let pos = handlePosition(forBottomRight: true, w: w, h: h, extraDown: size + spacing)
+    private func freeResizeHandle(size: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+        let pos = cornerPosition(dx: -w / 2, dy: h / 2)
         ZStack {
             Circle()
                 .fill(Color.white)
                 .overlay(Circle().stroke(Color.accentColor, lineWidth: 2))
-            Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+            // diagonal pil — kommunicerar "ändra storlek fritt"
+            Image(systemName: "arrow.down.left.and.arrow.up.right")
                 .font(.system(size: size * 0.42, weight: .bold))
                 .foregroundStyle(Color.accentColor)
         }
@@ -79,29 +79,32 @@ struct SelectionHandles: View {
         .accessibilityIdentifier("resize.free")
     }
 
+    /// Rotation — top-left hörn, transparent bakgrund (som övriga handles).
     @ViewBuilder
-    private func rotationHandle(size: CGFloat, offset: CGFloat, halfH: CGFloat) -> some View {
-        let baseTop = CGPoint(x: shape.position.x, y: shape.position.y - halfH - offset)
-        let rotated = rotatePoint(baseTop, around: shape.position, byDegrees: shape.rotation)
+    private func rotationHandle(size: CGFloat, offset: CGFloat, w: CGFloat, h: CGFloat) -> some View {
+        let pos = cornerPosition(dx: -w / 2 - offset / 2, dy: -h / 2 - offset / 2)
 
-        Image(systemName: "arrow.clockwise")
-            .font(.system(size: size * 0.5, weight: .bold))
-            .foregroundStyle(Color.white)
-            .frame(width: size, height: size)
-            .background(Color.accentColor)
-            .clipShape(Circle())
-            .contentShape(Circle().inset(by: -size * 0.5))
-            .position(rotated)
-            .gesture(rotationGesture)
-            .accessibilityIdentifier("resize.rotate")
+        ZStack {
+            Circle()
+                .fill(Color.white.opacity(0.0))  // transparent
+                .overlay(Circle().stroke(Color.accentColor, lineWidth: 2))
+            Image(systemName: "arrow.clockwise")
+                .font(.system(size: size * 0.48, weight: .bold))
+                .foregroundStyle(Color.accentColor)
+        }
+        .frame(width: size, height: size)
+        .contentShape(Circle().inset(by: -size * 0.5))
+        .position(pos)
+        .gesture(rotationGesture)
+        .accessibilityIdentifier("resize.rotate")
     }
 
     // MARK: - Positioner
 
-    private func handlePosition(forBottomRight: Bool, w: CGFloat, h: CGFloat, extraDown: CGFloat) -> CGPoint {
-        let local = CGPoint(x: w / 2, y: h / 2 + extraDown)
-        return rotatePoint(
-            CGPoint(x: shape.position.x + local.x, y: shape.position.y + local.y),
+    /// Beräknar en hörn-position relativt formens center, med rotation.
+    private func cornerPosition(dx: CGFloat, dy: CGFloat) -> CGPoint {
+        rotatePoint(
+            CGPoint(x: shape.position.x + dx, y: shape.position.y + dy),
             around: shape.position,
             byDegrees: shape.rotation
         )

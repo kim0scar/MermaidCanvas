@@ -69,7 +69,11 @@ struct ContentView: View {
                     },
                     onResetZoom: { resetZoomTrigger &+= 1 },
                     onShowNotePopup: { showNotePopup = true },
-                    onImportMermaid: { showMermaidImport = true }
+                    onImportMermaid: { showMermaidImport = true },
+                    onDuplicateSelection: { model.duplicateSelection() },
+                    onDeleteSelection: { model.deleteSelection() },
+                    onAlignHorizontal: { model.alignSelectionHorizontally() },
+                    onAlignVertical: { model.alignSelectionVertically() }
                 )
 
                 CanvasView(

@@ -420,6 +420,66 @@ final class CanvasModel: ObservableObject {
         return false
     }
 
+    // MARK: - v39 Multi-select operationer
+
+    /// Duplicera alla markerade former. Kopiorna placeras 30pt nedåt-höger.
+    func duplicateSelection() {
+        guard !multiSelection.isEmpty else { return }
+        snapshotForUndo()
+        var newShapes: [ShapeNode] = []
+        for shape in shapes where multiSelection.contains(shape.id) {
+            var copy = shape
+            copy = ShapeNode(
+                id: UUID(),
+                type: shape.type, position: CGPoint(x: shape.position.x + 30, y: shape.position.y + 30),
+                label: shape.label, showLabel: shape.showLabel,
+                sizeMultiplier: shape.sizeMultiplier, widthMultiplier: shape.widthMultiplier,
+                heightMultiplier: shape.heightMultiplier, note: shape.note,
+                category: shape.category, rotation: shape.rotation,
+                colorOverride: shape.colorOverride, linkNumber: shape.linkNumber,
+                tableRows: shape.tableRows, tableCols: shape.tableCols,
+                textStyle: shape.textStyle, colorPackId: shape.colorPackId,
+                lineEnd: shape.lineEnd, textAlignment: shape.textAlignment,
+                hasBullets: shape.hasBullets
+            )
+            newShapes.append(copy)
+        }
+        let newIds = Set(newShapes.map { $0.id })
+        shapes.append(contentsOf: newShapes)
+        multiSelection = newIds
+    }
+
+    /// Ta bort alla markerade former och kanter som pekar på dem.
+    func deleteSelection() {
+        guard !multiSelection.isEmpty else { return }
+        snapshotForUndo()
+        shapes.removeAll { multiSelection.contains($0.id) }
+        edges.removeAll { multiSelection.contains($0.from) || multiSelection.contains($0.to) }
+        multiSelection.removeAll()
+    }
+
+    /// Align horisontellt: alla markerade former delar vertikal centrallinje (snäpp till median Y).
+    func alignSelectionHorizontally() {
+        guard multiSelection.count >= 2 else { return }
+        let selected = shapes.filter { multiSelection.contains($0.id) }
+        let medianY = selected.map { $0.position.y }.sorted()[selected.count / 2]
+        snapshotForUndo()
+        for i in shapes.indices where multiSelection.contains(shapes[i].id) {
+            shapes[i].position.y = medianY
+        }
+    }
+
+    /// Align vertikalt: alla markerade former delar horisontell centrallinje (snäpp till median X).
+    func alignSelectionVertically() {
+        guard multiSelection.count >= 2 else { return }
+        let selected = shapes.filter { multiSelection.contains($0.id) }
+        let medianX = selected.map { $0.position.x }.sorted()[selected.count / 2]
+        snapshotForUndo()
+        for i in shapes.indices where multiSelection.contains(shapes[i].id) {
+            shapes[i].position.x = medianX
+        }
+    }
+
     // MARK: - Bulk replace (vid fil-öppning)
 
     func replaceAll(shapes: [ShapeNode],

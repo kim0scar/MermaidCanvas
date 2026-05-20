@@ -106,6 +106,33 @@ struct CanvasView: View {
         )
     }
 
+    /// v39: Auto-scroll när form dras nära viewport-kant. canvasPoint=nil = avsluta scroll.
+    private func updateAutoScroll(at canvasPoint: CGPoint?) {
+        guard let point = canvasPoint else {
+            viewportState.autoScrollVelocity = .zero
+            return
+        }
+        // Beräkna synlig viewport i canvas-koordinater
+        let scale = viewportState.zoomScale
+        guard scale > 0.001 else { return }
+        let visLeft   = viewportState.contentOffset.width / scale
+        let visTop    = viewportState.contentOffset.height / scale
+        let visRight  = visLeft + viewportState.globalFrame.width / scale
+        let visBottom = visTop  + viewportState.globalFrame.height / scale
+
+        let threshold: CGFloat = 80 / scale   // 80 screen-pt tröskel
+        let maxSpeed: CGFloat = 300            // scroll-koordinater/sek
+
+        var vx: CGFloat = 0
+        var vy: CGFloat = 0
+        if point.x < visLeft + threshold   { vx = -maxSpeed * (1 - (point.x - visLeft) / threshold) }
+        if point.x > visRight - threshold  { vx =  maxSpeed * (1 - (visRight - point.x) / threshold) }
+        if point.y < visTop + threshold    { vy = -maxSpeed * (1 - (point.y - visTop) / threshold) }
+        if point.y > visBottom - threshold { vy =  maxSpeed * (1 - (visBottom - point.y) / threshold) }
+
+        viewportState.autoScrollVelocity = CGSize(width: vx, height: vy)
+    }
+
     private func handleShapeSelect(id: UUID) {
         if let shape = model.shapes.first(where: { $0.id == id }),
            shape.type == .link,
@@ -175,7 +202,10 @@ struct CanvasView: View {
                         onDelete: { onShapeDelete(shape.id) },
                         onDuplicate: { onShapeDuplicate(shape.id) },
                         onShowNote: { onShapeShowNote(shape.id) },
-                        onToggleCollapse: { model.toggleCollapse(id: shape.id) }
+                        onToggleCollapse: { model.toggleCollapse(id: shape.id) },
+                        onDragUpdate: { canvasPoint in
+                            updateAutoScroll(at: canvasPoint)
+                        }
                     )
                 }
             }
@@ -310,17 +340,40 @@ struct ShapeView: View {
     let onDuplicate: () -> Void
     let onShowNote: () -> Void
     let onToggleCollapse: () -> Void
+    /// v39: rapporterar drag-position (canvas-koord) för auto-scroll. nil = drag avslutad.
+    var onDragUpdate: ((CGPoint?) -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
 
     private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
     private var effectiveFill: Color { pack.fillColor }
-    // v35.1: pack.strokeColor när pack är satt, annars kategori-stroke.
-    // (Tidigare: alltid Color.primary = svart — ignorerade pack-färgen.)
     private var effectiveStroke: Color {
         pack.id != "none" ? pack.strokeColor : shape.category.strokeColor
     }
     private var effectiveTextColor: Color { pack.textColor }
+
+    /// v39: formatterat label med bullets/numrering + indrag.
+    private var formattedLabel: String {
+        let indent = String(repeating: "  ", count: max(0, shape.indentLevel))
+        let lines = shape.label.split(separator: "\n", omittingEmptySubsequences: false)
+        if shape.hasNumberedList {
+            return lines.enumerated()
+                .map { "\(indent)\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
+        } else if shape.hasBullets {
+            return lines.map { "\(indent)• \($0)" }.joined(separator: "\n")
+        } else if shape.indentLevel > 0 {
+            return lines.map { "\(indent)\($0)" }.joined(separator: "\n")
+        }
+        return shape.label
+    }
+
+    private var textAlignment: TextAlignment {
+        switch shape.textAlignment {
+        case .leading:  return .leading
+        case .trailing: return .trailing
+        case .center:   return .center
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -332,24 +385,12 @@ struct ShapeView: View {
                 FreeLineView(shape: shape, stroke: effectiveStroke)
             }
             if shape.showLabel {
-                // v37: punktlista + textjustering
-                let displayLabel: String = shape.hasBullets
-                    ? shape.label.split(separator: "\n", omittingEmptySubsequences: false)
-                        .map { "• \($0)" }.joined(separator: "\n")
-                    : shape.label
-                let multiAlign: TextAlignment = {
-                    switch shape.textAlignment {
-                    case .leading:  return .leading
-                    case .trailing: return .trailing
-                    case .center:   return .center
-                    }
-                }()
-                Text(displayLabel)
+                Text(formattedLabel)
                     .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
                                   weight: shape.textStyle.fontWeight,
                                   design: .rounded))
                     .foregroundStyle(effectiveTextColor)
-                    .multilineTextAlignment(multiAlign)
+                    .multilineTextAlignment(textAlignment)
                     .lineLimit(6)
                     .minimumScaleFactor(0.6)
                     .padding(.horizontal, shape.type == .text ? 2 : 8)
@@ -366,12 +407,13 @@ struct ShapeView: View {
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
-        .overlay(alignment: .bottomTrailing) {
+        // v39: collapse-badge vid bottom-center (nära kant-utgångspunkten)
+        .overlay(alignment: .bottom) {
             if showCollapseBadge && !markerMode {
                 CollapseBadge(collapsed: isCollapsed,
                               canvasScale: canvasScale,
                               onTap: onToggleCollapse)
-                    .offset(x: 8 / canvasScale, y: 8 / canvasScale)
+                    .offset(y: 10 / canvasScale)
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
@@ -407,12 +449,21 @@ struct ShapeView: View {
     }
 
     private var dragGesture: some Gesture {
-        DragGesture(minimumDistance: 10)
-            .onChanged { v in dragOffset = v.translation }
+        DragGesture(minimumDistance: 10, coordinateSpace: .named("canvas"))
+            .onChanged { v in
+                dragOffset = CGSize(
+                    width: v.location.x - v.startLocation.x,
+                    height: v.location.y - v.startLocation.y
+                )
+                // v39: rapportera drag-position för auto-scroll-detektion
+                onDragUpdate?(v.location)
+            }
             .onEnded { v in
                 shape.position.x += v.translation.width
                 shape.position.y += v.translation.height
                 dragOffset = .zero
+                // v39: avsluta auto-scroll
+                onDragUpdate?(nil)
             }
     }
 
@@ -956,48 +1007,59 @@ struct EdgesView: View {
         }
     }
 
+    /// v39: Kant-utgångspunkt — alltid sidans MITT (top/bottom/left/right).
+    /// Renare och mer Lucidchart-likt än hörn-intersect.
     private func edgePoint(for shape: ShapeNode, towards target: CGPoint) -> CGPoint {
         let center = shape.position
         let dx = target.x - center.x
         let dy = target.y - center.y
-        let length = sqrt(dx * dx + dy * dy)
-        guard length > 0.001 else { return center }
+        guard abs(dx) > 0.001 || abs(dy) > 0.001 else { return center }
 
         switch shape.type {
-        case .circle:
+        case .circle, .link:
+            // Cirklar: punkt på omkretsen rakt mot målet (korrekt för cirklar)
             let r = ShapeGeometry.circleRadius(for: shape)
+            let length = sqrt(dx * dx + dy * dy)
             return CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
-        case .rectangle:
-            return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
         case .diamond:
-            let absX = abs(dx)
-            let absY = abs(dy)
-            let hw = ShapeGeometry.halfWidth(for: shape)
-            let hh = ShapeGeometry.halfHeight(for: shape)
-            let denom = absX / hw + absY / hh
-            guard denom > 0.001 else { return center }
-            let t = 1.0 / denom
-            return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
-        case .text, .table, .pill, .square, .processArrow:
-            return rectEdge(center: center, dx: dx, dy: dy, shape: shape)
-        case .link:
-            let r = ShapeGeometry.circleRadius(for: shape)
-            return CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
+            // Diamant: snäpp till närmaste spets (top/bottom/left/right)
+            return diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
+        case .rectangle, .text, .table, .pill, .square, .processArrow:
+            // Rektangulära former: mitt på närmaste sida
+            return rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
-            // v31: lösa linjer/pilar är inte normala edge-targets — använd center.
             return center
         }
     }
 
-    private func rectEdge(center: CGPoint, dx: CGFloat, dy: CGFloat, shape: ShapeNode) -> CGPoint {
-        let absX = abs(dx)
-        let absY = abs(dy)
+    /// Mitten på närmaste sida för rektangulära former.
+    private func rectSideCenter(center: CGPoint, dx: CGFloat, dy: CGFloat, shape: ShapeNode) -> CGPoint {
         let hw = ShapeGeometry.halfWidth(for: shape)
         let hh = ShapeGeometry.halfHeight(for: shape)
-        let tx = absX > 0.001 ? hw / absX : .greatestFiniteMagnitude
-        let ty = absY > 0.001 ? hh / absY : .greatestFiniteMagnitude
-        let t = min(tx, ty)
-        return CGPoint(x: center.x + t * dx, y: center.y + t * dy)
+        // Bestäm om vi träffar vänster/höger eller topp/botten
+        // Normalisera mot formen (dx/hw vs dy/hh) — störst normaliserad komponent vinner
+        let normX = abs(dx) / hw
+        let normY = abs(dy) / hh
+        if normX >= normY {
+            // Vänster eller höger sida
+            return CGPoint(x: center.x + (dx > 0 ? hw : -hw), y: center.y)
+        } else {
+            // Topp eller botten
+            return CGPoint(x: center.x, y: center.y + (dy > 0 ? hh : -hh))
+        }
+    }
+
+    /// Närmaste diamant-spets (top/bottom/left/right).
+    private func diamondSideCenter(center: CGPoint, dx: CGFloat, dy: CGFloat, shape: ShapeNode) -> CGPoint {
+        let hw = ShapeGeometry.halfWidth(for: shape)
+        let hh = ShapeGeometry.halfHeight(for: shape)
+        let normX = abs(dx) / hw
+        let normY = abs(dy) / hh
+        if normX >= normY {
+            return CGPoint(x: center.x + (dx > 0 ? hw : -hw), y: center.y)
+        } else {
+            return CGPoint(x: center.x, y: center.y + (dy > 0 ? hh : -hh))
+        }
     }
 
     /// v28: pilhuvuden med rundade hörn — stroke + fyllning med lineJoin: .round

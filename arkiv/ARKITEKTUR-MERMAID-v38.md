@@ -1,23 +1,13 @@
-# ARKITEKTUR-MERMAID — Version v39
+# ARKITEKTUR-MERMAID — Version v38
 *Datum: 2026-05-20*
 
-**Aktuell version:** v39
+**Aktuell version:** v38
 
-**v39-huvudändringar:**
-- **App döpt om till "2e"** (INFOPLIST_KEY_CFBundleDisplayName). Ny rosa/lila pastell-ikon.
-- **BLUEPRINT.md skapad** — komplett fil-index, modul-ansvar, skalbarhetsprinciper. Refereras i CLAUDE.md.
-- **Selection handles omplacerade:** rotation → top-left (transparent), fri-resize → bottom-left (diagonal ikon).
-- **Collapse-badge** vid bottom-center (nära kant-startpunkt).
-- **Edge-exits från sidmitten:** `edgePoint()` snäpper nu alltid till närmaste sidas mitt (top/bottom/left/right), inte diagonal-intersect. Renare Lucidchart-look.
-- **Multi-select i primär toolbar:** `rectangle.dashed`-ikon direkt i toolbar (borttagen ur meny). Secondary row visas automatiskt vid markerMode med operationerna: Duplicera, Ta bort, Centrera H, Centrera V. `CanvasModel.duplicateSelection()`, `deleteSelection()`, `alignSelectionHorizontally()`, `alignSelectionVertically()`.
-- **Text toolbar utökad:** Punktlista, Numrerad lista, Indrag+ och Indrag- direkt i text-toolbar (ingen sheet-öppning krävs). `ShapeNode.hasNumberedList`, `ShapeNode.indentLevel` (bakåtkompatibel Decodable).
-- **Auto-scroll vid kant:** när form dras nära viewport-kanten scrollar canvasen automatiskt. `CanvasViewportState.autoScrollVelocity`, Timer i ZoomableCanvas.Coordinator.
-
-**v38-huvudändringar (föregående):**
-- **Länk-bubblor synliga:** `JumpLinkShapeBackground` använder alltid `accentColor`.
-- **Bezier-kurvor på kanter:** cubic bezier med face-normal kontrollpunkter.
-- **Kant-namn:** contextMenu → alert → visas vid midpoint.
-- **Mermaid curve directive:** `%%{init: {"flowchart": {"curve": "basis"}}}%%`.
+**v38-huvudändringar:**
+- **Länk-bubblor synliga:** `JumpLinkShapeBackground` använder alltid `accentColor` (tidigare vit-på-vit = osynlig).
+- **Bezier-kurvor på kanter:** `drawEdge` ritar cubic bezier-kurvor med face-normal kontrollpunkter (Lucidchart-stil S-kurva). `outwardNormal()` bestämmer ut-riktning per formyta. Waypoint-kanter: smooth quadratic bezier.
+- **Kant-namn:** "Döp kant" i contextMenu → alert → namn visas bredvid midpoint-handtaget. `CanvasModel.setEdgeLabel()`.
+- **Mermaid curve directive:** `%%{init: {"flowchart": {"curve": "basis"}}}%%` i toppen av all Mermaid-output.
 
 **v37-huvudändringar (föregående):**
 - **Importera Mermaid från AI:** `MermaidImportSheet` — tvåstegs-sheet.

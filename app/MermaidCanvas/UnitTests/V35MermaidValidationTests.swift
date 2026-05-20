@@ -43,9 +43,9 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general
         )
 
-        // Mermaid-block ska börja med flowchart-direktiv
-        XCTAssertTrue(mermaid.hasPrefix("flowchart TD"),
-                      "Mermaid-output ska starta med 'flowchart TD'")
+        // v38: output börjar med init-direktiv för kurvor, sedan flowchart TD
+        XCTAssertTrue(mermaid.contains("flowchart TD"),
+                      "Mermaid-output ska innehålla 'flowchart TD'")
 
         // Varje form-typ har ett specifikt syntax-mönster i mermaid-grammatiken.
         // Vi vet att labels är giltiga unika strängar — så vi söker efter dem

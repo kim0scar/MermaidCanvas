@@ -12,7 +12,7 @@ struct LägenMenu: View {
     var onNewCanvas: () -> Void
     var onShowCode: () -> Void
     var onShowRules: () -> Void
-    /// v33: markerButton flyttad hit från primary toolbar för att rymma 44pt-knappar.
+    /// v39: fortfarande kvar som parameter för bakåtkompatibilitet — används ej i menyn längre.
     var onToggleMarker: () -> Void
     /// v37: importera Mermaid-kod från AI.
     var onImportMermaid: () -> Void
@@ -48,12 +48,6 @@ struct LägenMenu: View {
                 Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
             }
             Divider()
-            // v33: markeringsläge flyttat hit från toolbar
-            Button { onToggleMarker() } label: {
-                Label(model.markerMode ? "Stäng markeringsläge" : "Markeringsläge",
-                      systemImage: model.markerMode ? "pencil.slash" : "pencil.tip")
-            }
-            .accessibilityIdentifier("menu.toggleMarker")
             // v32: Preview-knapp borttagen — kommer tillbaka när Godot-flödet är moget.
             Button { onShowCode() } label: {
                 Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")

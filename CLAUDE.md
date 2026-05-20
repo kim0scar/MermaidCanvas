@@ -73,7 +73,7 @@ Användarens canvas-filer ligger i:
 7. **iOS-deploy**: följ `Start för ios appar Kim.md` för Team ID, signing och devicectl-flödet. Allt står där.
 8. **Språk**: svenska i kod-kommentarer (få sådana) och commit-meddelanden. Korta meningar.
 9. **Frågestil**: Kim är inte utvecklare. Gör rimliga antaganden, fråga bara vid riktiga vägval. Inget utvecklarjargong i svar.
-10. **Innan du ändrar kod**: läs `ARKITEKTUR-MERMAID.md` så du vet var saker bor.
+10. **Innan du ändrar kod**: läs `BLUEPRINT.md` (fil-index + modul-ansvar) och `ARKITEKTUR-MERMAID.md` (diagram). Om din ändring avviker från BLUEPRINT.md:s modul-gränser — motivera det för Kim innan du fortsätter.
 11. **Visuell dialog är delat språk — två lager**: när du läser eller skriver canvas-filer, följ `METOD-VISUELL-DIALOG.md` strikt. Protokollet har **två lager** som måste hållas isär: *Fidelity* (positioner, storlekar, canvas-mått — så du ser exakt det Kim ritat) och *Semantik* (kategori per nod — så du vet vad varje form *betyder*). App-lagret (zoom, multiselect, undo, etc.) är en tredje sak som aldrig får blandas in i filen. Förlustfri round-trip + korrekt semantik är icke förhandlingsbar — utan båda fungerar inte hela syftet med appen.
 12. **Auto-commit + push efter varje fungerande fix.** Så fort en ändring är klar och kompilerar (eller verifierat funkar i sim/iPhone): commit:a och push:a direkt — utan att Kim ber om det. Kim ska aldrig behöva oroa sig för att jobb försvinner. Versionsbumpning sker fortfarande bara vid milstolpe (regel 4), men *själva sparandet* är automatiskt mellan versioner. Innan `/clear`: verifiera att `git status` är clean och att `origin/main` är synkat — säg till Kim om något saknas.
 
@@ -87,7 +87,8 @@ Användarens canvas-filer ligger i:
 | `METOD-VISUELL-DIALOG.md` | Protokoll för delat visuellt språk Kim ↔ Claude Code. Portabel — gäller alla projekt med visuell yta. |
 | `VERSIONSHANTERING.md` | Exakt checklista vid varje deploy / ny version |
 | `ARKITEKTUR-MERMAID.md` | Aktuell arkitektur: mermaid-diagram + fil-tabell |
-| `ARKITEKTUR-SWIFT.md` | Swift-modul-tabell |
+| `BLUEPRINT.md` | **Komplett fil-index** + modul-ansvar + skalbarhetsprinciper + v39 feature-kluster |
+| `ARKITEKTUR-SWIFT.md` | Swift-modul-tabell (äldre, BLUEPRINT.md är nu primär) |
 | `ROADMAP.md` | Versioner + roadmap framåt |
 | `Start för ios appar Kim.md` | iPhone-deploy: signing, build, devicectl |
 | `arkiv/ARKITEKTUR-MERMAID-vN.md` | Historik över hur appen sett ut tidigare |

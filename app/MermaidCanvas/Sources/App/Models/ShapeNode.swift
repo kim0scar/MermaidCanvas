@@ -68,6 +68,10 @@ struct ShapeNode: Identifiable, Codable {
     var textAlignment: TextAlignMode
     /// v37: visa text med • per rad. Default = false.
     var hasBullets: Bool
+    /// v39: visa text med 1. 2. 3. per rad. Default = false.
+    var hasNumberedList: Bool
+    /// v39: indragsnivå (0 = ingen, 1 = ett steg, 2 = två steg). Default = 0.
+    var indentLevel: Int
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -88,7 +92,9 @@ struct ShapeNode: Identifiable, Codable {
          colorPackId: String? = nil,
          lineEnd: CGPoint? = nil,
          textAlignment: TextAlignMode = .center,
-         hasBullets: Bool = false) {
+         hasBullets: Bool = false,
+         hasNumberedList: Bool = false,
+         indentLevel: Int = 0) {
         self.id = id
         self.type = type
         self.position = position
@@ -109,10 +115,50 @@ struct ShapeNode: Identifiable, Codable {
         self.lineEnd = lineEnd
         self.textAlignment = textAlignment
         self.hasBullets = hasBullets
+        self.hasNumberedList = hasNumberedList
+        self.indentLevel = indentLevel
     }
 
     /// v31: effective width-multiplier (fallback till sizeMultiplier).
     var effectiveWidth: CGFloat { widthMultiplier ?? sizeMultiplier }
     /// v31: effective height-multiplier (fallback till sizeMultiplier).
     var effectiveHeight: CGFloat { heightMultiplier ?? sizeMultiplier }
+}
+
+// MARK: - Bakåtkompatibel Decodable
+
+extension ShapeNode {
+    private enum CodingKeys: String, CodingKey {
+        case id, type, position, label, showLabel, sizeMultiplier
+        case widthMultiplier, heightMultiplier, note, category, rotation
+        case colorOverride, linkNumber, tableRows, tableCols, textStyle
+        case colorPackId, lineEnd, textAlignment, hasBullets
+        case hasNumberedList, indentLevel
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id              = try c.decode(UUID.self, forKey: .id)
+        type            = try c.decode(ShapeType.self, forKey: .type)
+        position        = try c.decode(CGPoint.self, forKey: .position)
+        label           = try c.decode(String.self, forKey: .label)
+        showLabel       = try c.decodeIfPresent(Bool.self, forKey: .showLabel) ?? true
+        sizeMultiplier  = try c.decodeIfPresent(CGFloat.self, forKey: .sizeMultiplier) ?? 1.0
+        widthMultiplier = try c.decodeIfPresent(CGFloat.self, forKey: .widthMultiplier)
+        heightMultiplier = try c.decodeIfPresent(CGFloat.self, forKey: .heightMultiplier)
+        note            = try c.decodeIfPresent(String.self, forKey: .note) ?? ""
+        category        = try c.decodeIfPresent(ShapeCategory.self, forKey: .category) ?? .ui
+        rotation        = try c.decodeIfPresent(CGFloat.self, forKey: .rotation) ?? 0
+        colorOverride   = try c.decodeIfPresent(String.self, forKey: .colorOverride)
+        linkNumber      = try c.decodeIfPresent(Int.self, forKey: .linkNumber)
+        tableRows       = try c.decodeIfPresent(Int.self, forKey: .tableRows)
+        tableCols       = try c.decodeIfPresent(Int.self, forKey: .tableCols)
+        textStyle       = try c.decodeIfPresent(TextStyle.self, forKey: .textStyle) ?? .body
+        colorPackId     = try c.decodeIfPresent(String.self, forKey: .colorPackId)
+        lineEnd         = try c.decodeIfPresent(CGPoint.self, forKey: .lineEnd)
+        textAlignment   = try c.decodeIfPresent(TextAlignMode.self, forKey: .textAlignment) ?? .center
+        hasBullets      = try c.decodeIfPresent(Bool.self, forKey: .hasBullets) ?? false
+        hasNumberedList = try c.decodeIfPresent(Bool.self, forKey: .hasNumberedList) ?? false
+        indentLevel     = try c.decodeIfPresent(Int.self, forKey: .indentLevel) ?? 0
+    }
 }

@@ -45,17 +45,16 @@ final class CanvasViewportState: ObservableObject {
     }
 
     /// Canvas-koordinat för MITTEN av nuvarande synliga viewport.
-    /// Använd som drop-position vid TAP-på-chip — så formen alltid hamnar
-    /// där användaren tittar (inte vid canvas-fysiska centrum 2000,2000 som
-    /// kan vara utanför skärm efter pan).
     var visibleCenterInCanvas: CGPoint {
         guard zoomScale > 0.0001 else { return CGPoint(x: 2000, y: 2000) }
-        // Viewport-mitten i scrollView-content-koord (= contentOffset + halv viewport)
         let scrollCenterX = contentOffset.width + globalFrame.width / 2
         let scrollCenterY = contentOffset.height + globalFrame.height / 2
-        // Dela med zoom → canvas-koord
         return CGPoint(x: scrollCenterX / zoomScale, y: scrollCenterY / zoomScale)
     }
+
+    /// v39: auto-scroll-hastighet (scroll-koordinater per sekund) begärd av shape-drag.
+    /// ZoomableCanvas läser detta och rullar UIScrollView. Noll = ingen scroll.
+    @Published var autoScrollVelocity: CGSize = .zero
 }
 
 /// v34 — Tillstånd för aktiv chip-drag.
