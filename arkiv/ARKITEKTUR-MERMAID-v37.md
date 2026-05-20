@@ -1,18 +1,12 @@
-# ARKITEKTUR-MERMAID — Version v38
+# ARKITEKTUR-MERMAID — Version v37
 *Datum: 2026-05-20*
 
-**Aktuell version:** v38
+**Aktuell version:** v37
 
-**v38-huvudändringar:**
-- **Länk-bubblor synliga:** `JumpLinkShapeBackground` använder alltid `accentColor` (tidigare vit-på-vit = osynlig).
-- **Bezier-kurvor på kanter:** `drawEdge` ritar cubic bezier-kurvor med face-normal kontrollpunkter (Lucidchart-stil S-kurva). `outwardNormal()` bestämmer ut-riktning per formyta. Waypoint-kanter: smooth quadratic bezier.
-- **Kant-namn:** "Döp kant" i contextMenu → alert → namn visas bredvid midpoint-handtaget. `CanvasModel.setEdgeLabel()`.
-- **Mermaid curve directive:** `%%{init: {"flowchart": {"curve": "basis"}}}%%` i toppen av all Mermaid-output.
-
-**v37-huvudändringar (föregående):**
-- **Importera Mermaid från AI:** `MermaidImportSheet` — tvåstegs-sheet.
-- **EdgeDirection enum:** `forward/backward/bidirectional/none` (ersätter `bidirectional: Bool`).
-- **Textjustering + punktlista:** `TextAlignMode` + `hasBullets` per form.
+**v37-huvudändringar:**
+- **Importera Mermaid från AI:** `MermaidImportSheet` — tvåstegs-sheet: kopiera mall till Claude.ai → klistra in genererad kod → canvas fylls automatiskt.
+- **EdgeDirection enum:** Ersätter `bidirectional: Bool` med fyra riktningar (`forward/backward/bidirectional/none`). Kant-ikon byter utseende (→ ← ↔ —). Mermaid-export: `-->`, `<--`, `<-->`, `---` + streckade varianter.
+- **Textjustering + punktlista:** `TextAlignMode` (L/C/R) och `hasBullets` per form. Redigerbart i EditShapeSheet, visas direkt på canvas.
 
 > **Status:** v31 är en STOR version efter v30: modulär omstrukturering (Sources/App/, Mermaid/, ClaudeCode/), canvas 1600×1600, startzoom 100%, pan-clamp, zoom-mot-finger, 2-rads-former, nya symboler (pill, lös linje, lös pil, anteckning-popup), ny plattform iOS SwiftUI, form-paketer-toolbar-ikon, Prompt-Process-pack (subagent/prompt/skill/tool/memory/output), migrerade deprecated kategorier, fri-resize-handtag, GitHub-publicering.
 
