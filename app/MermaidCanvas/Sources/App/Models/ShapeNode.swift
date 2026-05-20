@@ -58,6 +58,8 @@ struct ShapeNode: Identifiable, Codable {
     var tableRows: Int?
     /// v19: tabell-kolumner (för type=.table). nil = default 3.
     var tableCols: Int?
+    /// v41: cellinnehåll i tabellen. Indexeras [rad][kolumn]. nil = tom.
+    var tableCells: [[String]]?
     /// v23: textstil för label (Rubrik 1/2/3 eller brödtext).
     var textStyle: TextStyle
     /// v23: färg-paket-id (ColorPack.id) eller nil = ingen färg = vit + kategori-ram.
@@ -88,6 +90,7 @@ struct ShapeNode: Identifiable, Codable {
          linkNumber: Int? = nil,
          tableRows: Int? = nil,
          tableCols: Int? = nil,
+         tableCells: [[String]]? = nil,
          textStyle: TextStyle = .body,
          colorPackId: String? = nil,
          lineEnd: CGPoint? = nil,
@@ -110,6 +113,7 @@ struct ShapeNode: Identifiable, Codable {
         self.linkNumber = linkNumber
         self.tableRows = tableRows
         self.tableCols = tableCols
+        self.tableCells = tableCells
         self.textStyle = textStyle
         self.colorPackId = colorPackId
         self.lineEnd = lineEnd
@@ -131,7 +135,7 @@ extension ShapeNode {
     private enum CodingKeys: String, CodingKey {
         case id, type, position, label, showLabel, sizeMultiplier
         case widthMultiplier, heightMultiplier, note, category, rotation
-        case colorOverride, linkNumber, tableRows, tableCols, textStyle
+        case colorOverride, linkNumber, tableRows, tableCols, tableCells, textStyle
         case colorPackId, lineEnd, textAlignment, hasBullets
         case hasNumberedList, indentLevel
     }
@@ -153,6 +157,7 @@ extension ShapeNode {
         linkNumber      = try c.decodeIfPresent(Int.self, forKey: .linkNumber)
         tableRows       = try c.decodeIfPresent(Int.self, forKey: .tableRows)
         tableCols       = try c.decodeIfPresent(Int.self, forKey: .tableCols)
+        tableCells      = try c.decodeIfPresent([[String]].self, forKey: .tableCells)
         textStyle       = try c.decodeIfPresent(TextStyle.self, forKey: .textStyle) ?? .body
         colorPackId     = try c.decodeIfPresent(String.self, forKey: .colorPackId)
         lineEnd         = try c.decodeIfPresent(CGPoint.self, forKey: .lineEnd)

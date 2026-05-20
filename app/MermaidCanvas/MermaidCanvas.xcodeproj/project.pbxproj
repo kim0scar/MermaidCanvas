@@ -45,6 +45,7 @@
 		8ACA8B8CF558FE905EE46D08 /* NotePopupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */; };
 		8F2521DE2FAD8F29346237F5 /* NoteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADAFD7500719BA94561524F9 /* NoteBadge.swift */; };
 		999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290C826C5E3BCE9774F09866 /* ContentView.swift */; };
+		99D3AD3E87507BF6A37E2D1A /* TableEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */; };
 		9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */; };
 		9BAFA33B65E91F3B02ED1035 /* V33VersionVisibleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1B560714D67098D8A734035 /* V33VersionVisibleTests.swift */; };
 		AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */; };
@@ -108,6 +109,7 @@
 		25EF82F1BF18F5CFD8CF0343 /* FloatingChipPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingChipPreview.swift; sourceTree = "<group>"; };
 		26849544B1328648A4C1C344 /* ios-swiftui-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "ios-swiftui-rules.md"; sourceTree = "<group>"; };
 		290C826C5E3BCE9774F09866 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableEditorSheet.swift; sourceTree = "<group>"; };
 		2D0E6420DE137F57D019A7EB /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
 		37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -221,6 +223,7 @@
 				FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */,
 				C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */,
 				D35F5529A9079DF8958E486C /* PreviewSheet.swift */,
+				2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */,
 				23D164BF747C4ACF00F0921D /* ToolbarView.swift */,
 				5B2E47D263E03FC15133D9E0 /* Handles */,
 			);
@@ -522,6 +525,7 @@
 				46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */,
 				12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */,
 				0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */,
+				99D3AD3E87507BF6A37E2D1A /* TableEditorSheet.swift in Sources */,
 				EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */,
 				2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */,
 				F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */,
@@ -623,7 +627,7 @@
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "2e";
+				INFOPLIST_KEY_CFBundleDisplayName = "Flöde";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIFileSharingEnabled = YES;
@@ -648,7 +652,7 @@
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "2e";
+				INFOPLIST_KEY_CFBundleDisplayName = "Flöde";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIFileSharingEnabled = YES;

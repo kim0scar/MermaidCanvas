@@ -322,6 +322,16 @@ final class CanvasModel: ObservableObject {
         shapes[index].hasBullets = hasBullets
     }
 
+    /// v41: uppdatera tabell-form med nytt innehåll (från TableEditorSheet).
+    func updateTableShape(id: UUID, label: String, rows: Int, cols: Int, cells: [[String]]) {
+        guard let i = shapes.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        shapes[i].label = label
+        shapes[i].tableRows = rows
+        shapes[i].tableCols = cols
+        shapes[i].tableCells = cells
+    }
+
     func deleteShape(id: UUID) {
         snapshotForUndo()
         edges.removeAll { $0.from == id || $0.to == id }

@@ -37,6 +37,8 @@ struct ContentView: View {
     @State private var showNotePopup: Bool = false
     /// v37: Mermaid-import från AI
     @State private var showMermaidImport: Bool = false
+    /// v41: tabell-redigeraren
+    @State private var tableEditingShapeId: UUID? = nil
 
     var body: some View {
         ZStack {
@@ -86,6 +88,7 @@ struct ContentView: View {
                     onShapeSelect: { id in model.selectShape(id) },
                     onShapeDuplicate: { id in model.duplicateShape(id: id) },
                     onShapeShowNote: { id in notingShapeId = id },
+                    onTableEdit: { id in tableEditingShapeId = id },
                     zoomPercent: $zoomPercent,
                     resetZoomTrigger: resetZoomTrigger
                 )
@@ -176,6 +179,25 @@ struct ContentView: View {
                 showMermaidImport = false
             }
         }
+        // v41: tabell-redigerare (dubbelklick på tabell-form)
+        .sheet(isPresented: tableEditingBinding) {
+            if let id = tableEditingShapeId,
+               let shape = model.shapes.first(where: { $0.id == id }),
+               shape.type == .table {
+                TableEditorSheet(
+                    shapeId: id,
+                    initialRows: shape.tableRows ?? 3,
+                    initialCols: shape.tableCols ?? 3,
+                    initialCells: shape.tableCells ?? [],
+                    initialLabel: shape.label,
+                    onSave: { label, rows, cols, cells in
+                        model.updateTableShape(id: id, label: label, rows: rows, cols: cols, cells: cells)
+                        tableEditingShapeId = nil
+                    },
+                    onCancel: { tableEditingShapeId = nil }
+                )
+            }
+        }
         .fileImporter(
             isPresented: $showImporter,
             allowedContentTypes: [.plainText, .text],
@@ -242,6 +264,11 @@ struct ContentView: View {
             get: { notingShapeId != nil },
             set: { if !$0 { notingShapeId = nil } }
         )
+    }
+
+    private var tableEditingBinding: Binding<Bool> {
+        Binding(get: { tableEditingShapeId != nil },
+                set: { if !$0 { tableEditingShapeId = nil } })
     }
 
     // MARK: - Filhantering

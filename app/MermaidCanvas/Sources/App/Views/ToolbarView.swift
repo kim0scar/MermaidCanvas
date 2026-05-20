@@ -218,8 +218,16 @@ struct ToolbarView: View {
                 shapeChip(.square,       "square",           accId: "chip.square") {
                     model.addShape(.square, at: canvasCenter)
                 }
-                shapeChip(.diamond,      "diamond.fill",     accId: "chip.diamond") {
-                    model.addShape(.diamond, at: canvasCenter)
+                shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
+                    ZStack {
+                        DiamondShape()
+                            .stroke(Color.primary, lineWidth: 1.8)
+                            .frame(width: 22, height: 24)
+                    }
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    .contentShape(Circle())
                 }
                 shapeChip(.pill,         "capsule",          accId: "chip.pill") {
                     model.addShape(.pill, at: canvasCenter)
@@ -390,6 +398,41 @@ struct ToolbarView: View {
                         chipDragState.activeType = nil
                         // Släpp inom canvas → kalla onDropShape med canvas-koord.
                         // Släpp utanför → ingen åtgärd (drag avbryts).
+                        if viewportState.isInsideCanvas(global),
+                           let canvasPoint = viewportState.canvasPoint(forGlobal: global) {
+                            onDropShape(type, canvasPoint)
+                        }
+                    }
+            )
+            .onTapGesture { onTap() }
+            .accessibilityElement(children: .ignore)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel(Text(accId))
+            .accessibilityIdentifier(accId)
+    }
+
+    /// Generic shapeChip som tar en valfri face-view (används t.ex. för diamant med custom-ritad form).
+    @ViewBuilder
+    private func shapeChipGeneric<F: View>(
+        type: ShapeType,
+        accId: String,
+        onTap: @escaping () -> Void,
+        @ViewBuilder face: () -> F
+    ) -> some View {
+        face()
+            .contentShape(Circle())
+            .gesture(
+                DragGesture(minimumDistance: 8, coordinateSpace: .global)
+                    .onChanged { value in
+                        if chipDragState.activeType != type {
+                            chipDragState.activeType = type
+                        }
+                        chipDragState.globalLocation = value.location
+                    }
+                    .onEnded { value in
+                        let global = value.location
+                        chipDragState.globalLocation = global
+                        chipDragState.activeType = nil
                         if viewportState.isInsideCanvas(global),
                            let canvasPoint = viewportState.canvasPoint(forGlobal: global) {
                             onDropShape(type, canvasPoint)

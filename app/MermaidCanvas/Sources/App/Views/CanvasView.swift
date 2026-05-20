@@ -66,6 +66,7 @@ struct CanvasView: View {
     var onShapeSelect: (UUID) -> Void
     var onShapeDuplicate: (UUID) -> Void
     var onShapeShowNote: (UUID) -> Void
+    var onTableEdit: (UUID) -> Void
 
     /// v25: rapporterar zoom-procent uppåt till toolbar
     @Binding var zoomPercent: Int
@@ -203,6 +204,7 @@ struct CanvasView: View {
                         onDuplicate: { onShapeDuplicate(shape.id) },
                         onShowNote: { onShapeShowNote(shape.id) },
                         onToggleCollapse: { model.toggleCollapse(id: shape.id) },
+                        onTableEdit: { _ in onTableEdit(shape.id) },
                         onDragUpdate: { canvasPoint in
                             updateAutoScroll(at: canvasPoint)
                         },
@@ -252,8 +254,17 @@ struct CanvasView: View {
                 )
             }
 
-            if model.markerMode {
+            if model.markerMode && model.multiSelection.isEmpty {
+                // Marquee-selection overlay (bara aktiv när inget är markerat)
                 MarkerOverlay(model: model, canvasContentSize: model.contentSize)
+            } else if model.markerMode && !model.multiSelection.isEmpty {
+                // Bakgrunds-tap rensar urval (så man kan starta ny marquee-selektion)
+                Color.clear
+                    .contentShape(Rectangle())
+                    .frame(width: model.contentSize.width, height: model.contentSize.height)
+                    .onTapGesture {
+                        model.multiSelection.removeAll()
+                    }
             }
         }
     }
@@ -344,6 +355,8 @@ struct ShapeView: View {
     let onDuplicate: () -> Void
     let onShowNote: () -> Void
     let onToggleCollapse: () -> Void
+    /// v41: öppnar tabell-redigeraren vid dubbelklick på tabell-form.
+    var onTableEdit: ((UUID) -> Void)? = nil
     /// v39: rapporterar drag-position (canvas-koord) för auto-scroll. nil = drag avslutad.
     var onDragUpdate: ((CGPoint?) -> Void)? = nil
     /// v40: callback för att flytta ALLA markerade former (multi-select drag).
@@ -432,9 +445,13 @@ struct ShapeView: View {
             x: shape.position.x + dragOffset.width,
             y: shape.position.y + dragOffset.height
         )
-        // v28 Etapp 10: dubbeltap startar ALLTID edit (Kim's krav).
+        // v41: dubbelklick på tabell öppnar tabell-redigeraren.
         .onTapGesture(count: 2) {
-            onEdit()
+            if shape.type == .table {
+                onTableEdit?(shape.id)
+            } else {
+                onEdit()
+            }
         }
         .onTapGesture(count: 1) {
             if markerMode {
@@ -529,6 +546,7 @@ struct ShapeView: View {
         case .table:
             TableShapeBackground(rows: shape.tableRows ?? 3,
                                  cols: shape.tableCols ?? 3,
+                                 cells: shape.tableCells ?? [],
                                  fill: effectiveFill,
                                  stroke: effectiveStroke)
         case .link:
@@ -599,6 +617,7 @@ struct ShapeView: View {
 private struct TableShapeBackground: View {
     var rows: Int
     var cols: Int
+    var cells: [[String]]
     var fill: Color
     var stroke: Color
 
@@ -613,6 +632,24 @@ private struct TableShapeBackground: View {
                         RoundedRectangle(cornerRadius: 6, style: .continuous)
                             .stroke(stroke, lineWidth: 1.5)
                     )
+                // Cellinnehåll
+                ForEach(0..<rows, id: \.self) { row in
+                    ForEach(0..<cols, id: \.self) { col in
+                        let text = row < cells.count && col < cells[row].count ? cells[row][col] : ""
+                        if !text.isEmpty {
+                            Text(text)
+                                .font(.system(size: max(8, min(cellH * 0.4, 12))))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
+                                .foregroundStyle(stroke)
+                                .frame(width: cellW, height: cellH)
+                                .position(x: cellW * (CGFloat(col) + 0.5),
+                                          y: cellH * (CGFloat(row) + 0.5))
+                                .allowsHitTesting(false)
+                        }
+                    }
+                }
+                // Gridlinjer
                 Path { p in
                     for r in 1..<rows {
                         let y = cellH * CGFloat(r)
@@ -708,32 +745,17 @@ struct SquareShape: Shape {
     }
 }
 
-/// Processsteg-pil — pentagon med avrundade vänsterhörn och spetsig högerände.
-/// v40: spets = 35% av bredden + rundade vänsterhörn (r=4pt) → matchar arrowshape.right bättre.
+/// Processsteg-pil — pentagon med rak vänsterkant och spetsig högerände.
+/// v41: platt vänsterkant → matchar arrowshape.right-ikonen exakt.
 struct ProcessArrowShape: Shape {
     func path(in rect: CGRect) -> Path {
-        let tip: CGFloat = rect.width * 0.35   // v40: 35% → kroppen mer framträdande, spets tydligare
-        let r: CGFloat = 4                     // hörnradie vänsterkant
-
+        let tip: CGFloat = rect.width * 0.35   // spets = 35% av bredden
         var p = Path()
-        // övre-vänster hörn (avrundat)
-        p.move(to: CGPoint(x: rect.minX + r, y: rect.minY))
-        // övre kanten → spetsbas
+        p.move(to: CGPoint(x: rect.minX, y: rect.minY))
         p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.minY))
-        // spets höger
         p.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        // spets ner → nedre kanten
         p.addLine(to: CGPoint(x: rect.maxX - tip, y: rect.maxY))
-        // nedre kanten → undre-vänster hörn
-        p.addLine(to: CGPoint(x: rect.minX + r, y: rect.maxY))
-        // undre-vänster rundning
-        p.addQuadCurve(to: CGPoint(x: rect.minX, y: rect.maxY - r),
-                       control: CGPoint(x: rect.minX, y: rect.maxY))
-        // vänster kant upp
-        p.addLine(to: CGPoint(x: rect.minX, y: rect.minY + r))
-        // övre-vänster rundning
-        p.addQuadCurve(to: CGPoint(x: rect.minX + r, y: rect.minY),
-                       control: CGPoint(x: rect.minX, y: rect.minY))
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
         p.closeSubpath()
         return p
     }
