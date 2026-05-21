@@ -262,12 +262,16 @@ final class CanvasModel: ObservableObject {
     func duplicateShape(id: UUID) -> UUID? {
         guard let o = shapes.first(where: { $0.id == id }) else { return nil }
         snapshotForUndo()
+        // v46: kopiera ALLA fält så resize, line-endpoints, tabell-celler,
+        // numrering och indrag inte tappas vid duplicering.
         let copy = ShapeNode(
             type: o.type,
             position: CGPoint(x: o.position.x + 24, y: o.position.y + 24),
             label: o.label,
             showLabel: o.showLabel,
             sizeMultiplier: o.sizeMultiplier,
+            widthMultiplier: o.widthMultiplier,
+            heightMultiplier: o.heightMultiplier,
             note: o.note,
             category: o.category,
             rotation: o.rotation,
@@ -275,10 +279,14 @@ final class CanvasModel: ObservableObject {
             linkNumber: nil, // jump-link ska INTE dupliceras (skulle bli orphan-länk)
             tableRows: o.tableRows,
             tableCols: o.tableCols,
+            tableCells: o.tableCells,
             textStyle: o.textStyle,
             colorPackId: o.colorPackId,
+            lineEnd: o.lineEnd,
             textAlignment: o.textAlignment,
-            hasBullets: o.hasBullets
+            hasBullets: o.hasBullets,
+            hasNumberedList: o.hasNumberedList,
+            indentLevel: o.indentLevel
         )
         shapes.append(copy)
         return copy.id
@@ -383,10 +391,19 @@ final class CanvasModel: ObservableObject {
     }
 
     /// v40: Flytta alla markerade former med ett delta (px i canvas-koordinater).
+    /// v46: Om en container är med i selectionen följer dess barn med automatiskt,
+    /// så hela grupperingen flyttas som en enhet.
     func moveSelection(by delta: CGSize) {
         guard !multiSelection.isEmpty else { return }
+        // Beräkna alla shape-ids som ska flyttas: markeringen + barn till markerade containrar
+        var idsToMove: Set<UUID> = multiSelection
+        for shape in shapes where shape.type == .container && multiSelection.contains(shape.id) {
+            for child in shapesInside(container: shape) {
+                idsToMove.insert(child.id)
+            }
+        }
         for i in shapes.indices {
-            if multiSelection.contains(shapes[i].id) {
+            if idsToMove.contains(shapes[i].id) {
                 shapes[i].position.x += delta.width
                 shapes[i].position.y += delta.height
             }
@@ -510,6 +527,8 @@ final class CanvasModel: ObservableObject {
         var newShapes: [ShapeNode] = []
         for shape in shapes where multiSelection.contains(shape.id) {
             var copy = shape
+            // v46: kopiera ALLA fält (tableCells, hasNumberedList, indentLevel
+            // saknades tidigare). linkNumber sätts till nil för att undvika orphan-länkar.
             copy = ShapeNode(
                 id: UUID(),
                 type: shape.type, position: CGPoint(x: shape.position.x + 30, y: shape.position.y + 30),
@@ -517,11 +536,14 @@ final class CanvasModel: ObservableObject {
                 sizeMultiplier: shape.sizeMultiplier, widthMultiplier: shape.widthMultiplier,
                 heightMultiplier: shape.heightMultiplier, note: shape.note,
                 category: shape.category, rotation: shape.rotation,
-                colorOverride: shape.colorOverride, linkNumber: shape.linkNumber,
+                colorOverride: shape.colorOverride, linkNumber: nil,
                 tableRows: shape.tableRows, tableCols: shape.tableCols,
+                tableCells: shape.tableCells,
                 textStyle: shape.textStyle, colorPackId: shape.colorPackId,
                 lineEnd: shape.lineEnd, textAlignment: shape.textAlignment,
-                hasBullets: shape.hasBullets
+                hasBullets: shape.hasBullets,
+                hasNumberedList: shape.hasNumberedList,
+                indentLevel: shape.indentLevel
             )
             newShapes.append(copy)
         }

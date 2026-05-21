@@ -31,9 +31,11 @@ final class DragOutTests: XCTestCase {
     }
 
     /// Räkna alla former på canvas (alla typer).
+    /// v46: "text" borttaget (v44), .container/.pill/.square/.processArrow tillagda.
     @MainActor
     private func totalShapeCount(_ app: XCUIApplication) -> Int {
-        ["circle", "rectangle", "diamond", "text", "table", "link"]
+        ["circle", "rectangle", "diamond", "square", "pill",
+         "processArrow", "container", "table", "link"]
             .map { shapeCount(app, type: $0) }
             .reduce(0, +)
     }
@@ -71,24 +73,25 @@ final class DragOutTests: XCTestCase {
                        "Tap på chip.circle ska ha gett model.shapes.count = 1")
     }
 
-    /// Tap på alla 6 chips → modellen ska ha 7 former (jump-link = 2).
+    /// v46: Tap på alla chips → modellen ska ha rätt antal (jump-link = 2).
     @MainActor
     func testAllSixChipsProduceShapes() throws {
         let app = launchApp()
         XCTAssertEqual(modelShapeCount(app), 0)
         openShapesRow(app)
 
+        // v46: .text borttagen i v44. Testar circle/rectangle/diamond/table/link.
         for chipId in ["chip.circle", "chip.rectangle", "chip.diamond",
-                       "chip.text", "chip.table", "chip.link"] {
+                       "chip.table", "chip.link"] {
             let chip = app.buttons[chipId]
             XCTAssertTrue(chip.waitForExistence(timeout: 4), "\(chipId) saknas")
             chip.tap()
-            sleep(UInt32(0))  // ge SwiftUI tid att uppdatera
+            sleep(UInt32(0))
         }
         sleep(1)
-        // 5 enskilda + 1 jump-link-par = 7
-        XCTAssertEqual(modelShapeCount(app), 7,
-                       "Förväntade 7 former (5 enskilda + 1 jump-link-par)")
+        // 4 enskilda + 1 jump-link-par = 5
+        XCTAssertEqual(modelShapeCount(app), 5,
+                       "Förväntade 5 former (4 enskilda + 1 jump-link-par)")
     }
 
     /// Drag-out: tryck-och-håll på rektangel-chip, dra till canvas-center.
@@ -101,7 +104,7 @@ final class DragOutTests: XCTestCase {
         let chip = app.buttons["chip.rectangle"]
         XCTAssertTrue(chip.waitForExistence(timeout: 4))
 
-        let canvas = app.otherElements["canvas"]
+        let canvas = app.scrollViews["canvas"]
         XCTAssertTrue(canvas.waitForExistence(timeout: 4))
 
         let chipCoord = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
@@ -122,7 +125,7 @@ final class DragOutTests: XCTestCase {
         let chip = app.buttons["chip.circle"]
         XCTAssertTrue(chip.waitForExistence(timeout: 4))
 
-        let canvas = app.otherElements["canvas"]
+        let canvas = app.scrollViews["canvas"]
         XCTAssertTrue(canvas.waitForExistence(timeout: 4))
 
         let chipCoord = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))

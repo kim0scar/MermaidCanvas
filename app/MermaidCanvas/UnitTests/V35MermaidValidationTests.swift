@@ -515,6 +515,44 @@ final class V35MermaidValidationTests: XCTestCase {
     }
 
     /// Verifierar att widthMultiplier + heightMultiplier round-trippar via JSON-state.
+    /// v46: numrering + indrag + tabell-celler ska round-trippa.
+    func testRoundTrip_v46Fields_Preserved() throws {
+        let listShape = ShapeNode(
+            type: .rectangle,
+            position: CGPoint(x: 100, y: 100),
+            label: "Punkt 1\nPunkt 2\nPunkt 3",
+            hasNumberedList: true,
+            indentLevel: 2
+        )
+        let tableShape = ShapeNode(
+            type: .table,
+            position: CGPoint(x: 400, y: 100),
+            label: "Tabell",
+            tableRows: 2,
+            tableCols: 2,
+            tableCells: [["A", "B"], ["C", "D"]]
+        )
+        let doc = CanvasDocument(
+            title: "v46-fields",
+            shapes: [listShape, tableShape],
+            edges: [],
+            canvasSize: CGSize(width: 1000, height: 1000),
+            specType: .general,
+            platform: .blank,
+            activeShapePacks: [.basic],
+            collapsedIds: []
+        )
+        let parsed = MermaidParser.parse(doc.content)
+        XCTAssertEqual(parsed.shapes.count, 2)
+        let restoredList  = try XCTUnwrap(parsed.shapes.first { $0.type == .rectangle })
+        let restoredTable = try XCTUnwrap(parsed.shapes.first { $0.type == .table })
+        XCTAssertTrue(restoredList.hasNumberedList, "hasNumberedList ska bevaras")
+        XCTAssertEqual(restoredList.indentLevel, 2, "indentLevel ska bevaras")
+        XCTAssertEqual(restoredTable.tableCells?.count, 2, "tableCells rader ska bevaras")
+        XCTAssertEqual(restoredTable.tableCells?[0], ["A", "B"], "tableCells första raden")
+        XCTAssertEqual(restoredTable.tableCells?[1], ["C", "D"], "tableCells andra raden")
+    }
+
     func testRoundTrip_WidthHeightMultiplier_Preserved() throws {
         let shape = ShapeNode(
             type: .rectangle,

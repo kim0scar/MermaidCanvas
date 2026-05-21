@@ -242,6 +242,10 @@ enum MermaidGenerator {
             if shape.type == .table {
                 n["tableRows"] = shape.tableRows ?? 3
                 n["tableCols"] = shape.tableCols ?? 3
+                // v46: tabell-cellinnehåll round-trippas
+                if let cells = shape.tableCells, !cells.isEmpty {
+                    n["tableCells"] = cells
+                }
             }
             // v23: textstil + färg-paket
             if shape.textStyle != .body {
@@ -263,6 +267,13 @@ enum MermaidGenerator {
             }
             if shape.hasBullets {
                 n["hasBullets"] = true
+            }
+            // v46: numrerad lista + indrag round-trippas
+            if shape.hasNumberedList {
+                n["hasNumberedList"] = true
+            }
+            if shape.indentLevel > 0 {
+                n["indentLevel"] = shape.indentLevel
             }
             return n
         }

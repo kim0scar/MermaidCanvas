@@ -51,8 +51,6 @@ struct ContentView: View {
                     canvasCenter: canvasCenter,
                     zoomPercent: zoomPercent,
                     hasOpenFile: fileManager.hasOpenFile,
-                    onStartEdgeMode: { model.startEdgeMode($0) },
-                    onCancelEdgeMode: { model.cancelEdgeMode() },
                     onOpen: { showImporter = true },
                     onSave: save,
                     onSaveAs: saveAs,

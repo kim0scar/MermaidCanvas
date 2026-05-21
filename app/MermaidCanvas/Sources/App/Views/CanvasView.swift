@@ -92,21 +92,25 @@ struct CanvasView: View {
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height,
                        alignment: .topLeading)
-                .background(Color.white)
+                .background(
+                    // v46: tap-to-deselect ligger på själva bakgrunden — så tap på
+                    // shape inte triggar parent-simultaneousGesture som rensade selection.
+                    Color.white
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            model.deselect()
+                            if model.isEdgeMode { model.cancelEdgeMode() }
+                        }
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(Color.primary.opacity(0.18), lineWidth: 1)
+                        .allowsHitTesting(false)
                 )
                 .coordinateSpace(name: "canvas")
         }
         .ignoresSafeArea()
         .accessibilityIdentifier("canvas")
-        .simultaneousGesture(
-            TapGesture().onEnded {
-                model.deselect()
-                if model.isEdgeMode { model.cancelEdgeMode() }
-            }
-        )
     }
 
     /// v39: Auto-scroll när form dras nära viewport-kant. canvasPoint=nil = avsluta scroll.
@@ -465,7 +469,9 @@ struct ShapeView: View {
             x: shape.position.x + dragOffset.width,
             y: shape.position.y + dragOffset.height
         )
-        // v41: dubbelklick på tabell öppnar tabell-redigeraren.
+        // v46: enkel- och dubbeltap i exakt-ordning. SwiftUI fördröjer count:1 om
+        // count:2 ligger SENARE i kedjan, så dubbelklick måste ligga FÖRE och
+        // enkeltap kvar — annars triggas både select OCH edit vid dubbelklick.
         .onTapGesture(count: 2) {
             if shape.type == .table {
                 onTableEdit?(shape.id)
@@ -475,7 +481,7 @@ struct ShapeView: View {
         }
         .onTapGesture(count: 1) {
             if markerMode {
-                onSelect()   // v40: markerMode → toggla i multiSelection
+                onSelect()
                 return
             }
             if edgeMode {

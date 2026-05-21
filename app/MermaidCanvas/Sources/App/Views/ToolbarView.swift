@@ -28,8 +28,8 @@ struct ToolbarView: View {
     let canvasCenter: CGPoint
     let zoomPercent: Int
     var hasOpenFile: Bool
-    var onStartEdgeMode: (EdgeCreationMode) -> Void
-    var onCancelEdgeMode: () -> Void
+    // v46: onStartEdgeMode/onCancelEdgeMode borttagna — anropades aldrig
+    // efter att long-press ersattes av ConnectionHandle i v44.
     var onOpen: () -> Void
     var onSave: () -> Void
     var onSaveAs: () -> Void
@@ -568,6 +568,37 @@ struct ToolbarView: View {
                     let on = !(model.shapes[idx].hasNumberedList)
                     model.shapes[idx].hasNumberedList = on
                     if on { model.shapes[idx].hasBullets = false }
+                }
+
+                Divider().frame(height: 28).padding(.horizontal, 2)
+
+                // v46: Textjustering L/C/R
+                textActionButton(
+                    icon: "text.alignleft",
+                    label: "Vänster",
+                    active: selectedShape?.textAlignment == .leading
+                ) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    model.shapes[idx].textAlignment = .leading
+                }
+                textActionButton(
+                    icon: "text.aligncenter",
+                    label: "Centrera",
+                    active: selectedShape?.textAlignment == .center
+                ) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    model.shapes[idx].textAlignment = .center
+                }
+                textActionButton(
+                    icon: "text.alignright",
+                    label: "Höger",
+                    active: selectedShape?.textAlignment == .trailing
+                ) {
+                    guard let id = model.selectedShapeId,
+                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    model.shapes[idx].textAlignment = .trailing
                 }
 
                 Divider().frame(height: 28).padding(.horizontal, 2)

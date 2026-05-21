@@ -152,6 +152,10 @@ enum MermaidParser {
             let textAlignRaw = (node["textAlignment"] as? String) ?? TextAlignMode.center.rawValue
             let textAlignment = TextAlignMode(rawValue: textAlignRaw) ?? .center
             let hasBullets = (node["hasBullets"] as? Bool) ?? false
+            // v46: numrerad lista, indrag, tabell-celler
+            let hasNumberedList = (node["hasNumberedList"] as? Bool) ?? false
+            let indentLevel = (node["indentLevel"] as? Int) ?? 0
+            let tableCells = node["tableCells"] as? [[String]]
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
@@ -167,11 +171,14 @@ enum MermaidParser {
                 linkNumber: linkNumber,
                 tableRows: tableRows,
                 tableCols: tableCols,
+                tableCells: tableCells,
                 textStyle: textStyle,
                 colorPackId: colorPackId,
                 lineEnd: lineEnd,
                 textAlignment: textAlignment,
-                hasBullets: hasBullets
+                hasBullets: hasBullets,
+                hasNumberedList: hasNumberedList,
+                indentLevel: max(0, min(2, indentLevel))
             )
             idMap[mid] = shape.id
             shapes.append(shape)
@@ -252,6 +259,10 @@ enum MermaidParser {
         let type: ShapeType
         let label: String
         let category: ShapeCategory
+        // v46: explicit overrides från %% container-pos / width / height-kommentarer
+        var overridePosition: CGPoint? = nil
+        var overrideWidth: CGFloat? = nil
+        var overrideHeight: CGFloat? = nil
     }
 
     private static func parseMermaid(_ markdown: String) -> ParsedCanvas {
@@ -290,17 +301,65 @@ enum MermaidParser {
 
         // v44: Parsa subgraph-block — varje subgraph blir en container-form med label.
         // Syntax: subgraph ID ["Label"] ... end
+        // v46: Läs även ut "container-pos: X,Y" + "width: W" + "height: H" från
+        // %%-kommentarer så position och storlek round-trippas även vid fallback-parse.
         let subgraphPattern = #"subgraph\s+(\w+)\s*\[\s*\"([^\"]*?)\"\s*\]"#
+        let posPattern   = #"%%\s+(\w+)\s+container-pos:\s+(-?\d+),(-?\d+)"#
+        let widthPattern = #"%%\s+(\w+)\s+width:\s+([\d.]+)"#
+        let heightPattern = #"%%\s+(\w+)\s+height:\s+([\d.]+)"#
+        var containerOverrides: [String: (CGPoint?, CGFloat?, CGFloat?)] = [:]
+        func updateOverride(_ id: String, pos: CGPoint? = nil,
+                            w: CGFloat? = nil, h: CGFloat? = nil) {
+            var entry = containerOverrides[id] ?? (nil, nil, nil)
+            if let pos = pos { entry.0 = pos }
+            if let w = w { entry.1 = w }
+            if let h = h { entry.2 = h }
+            containerOverrides[id] = entry
+        }
+        if let regex = try? NSRegularExpression(pattern: posPattern) {
+            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
+                where m.numberOfRanges >= 4 {
+                let id = ns.substring(with: m.range(at: 1))
+                let x = Double(ns.substring(with: m.range(at: 2))) ?? 0
+                let y = Double(ns.substring(with: m.range(at: 3))) ?? 0
+                updateOverride(id, pos: CGPoint(x: x, y: y))
+            }
+        }
+        if let regex = try? NSRegularExpression(pattern: widthPattern) {
+            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
+                where m.numberOfRanges >= 3 {
+                let id = ns.substring(with: m.range(at: 1))
+                if let w = Double(ns.substring(with: m.range(at: 2))) {
+                    updateOverride(id, w: CGFloat(w))
+                }
+            }
+        }
+        if let regex = try? NSRegularExpression(pattern: heightPattern) {
+            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
+                where m.numberOfRanges >= 3 {
+                let id = ns.substring(with: m.range(at: 1))
+                if let h = Double(ns.substring(with: m.range(at: 2))) {
+                    updateOverride(id, h: CGFloat(h))
+                }
+            }
+        }
         if let regex = try? NSRegularExpression(pattern: subgraphPattern) {
             let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
             for m in matches where m.numberOfRanges >= 3 {
                 let id = ns.substring(with: m.range(at: 1))
-                guard !seen.contains(id) else { continue }
+                // v46: hoppa över iphone/canvas-wrapper-subgraphs som inte är användarcontainrar
+                guard !seen.contains(id), id != "iphone" else { continue }
                 seen.insert(id)
                 let label = ns.substring(with: m.range(at: 2))
                     .replacingOccurrences(of: "#quot;", with: "\"")
                     .replacingOccurrences(of: "<br/>", with: "\n")
-                nodes.append(ParsedNode(mermaidId: id, type: .container, label: label, category: .ui))
+                let override = containerOverrides[id]
+                nodes.append(ParsedNode(
+                    mermaidId: id, type: .container, label: label, category: .ui,
+                    overridePosition: override?.0,
+                    overrideWidth: override?.1,
+                    overrideHeight: override?.2
+                ))
             }
         }
 
@@ -362,24 +421,31 @@ enum MermaidParser {
         guard count > 0 else { return [] }
         let centerX: CGFloat = 200
         let centerY: CGFloat = 320
+        // v46: använd override-position om den finns (containrar med %% pos-kommentar)
+        func makeShape(_ n: ParsedNode, at pos: CGPoint) -> ShapeNode {
+            ShapeNode(type: n.type,
+                      position: pos,
+                      label: n.label,
+                      widthMultiplier: n.overrideWidth,
+                      heightMultiplier: n.overrideHeight,
+                      category: n.category)
+        }
         if count == 1 {
             let n = nodes[0]
-            let shape = ShapeNode(type: n.type,
-                                  position: CGPoint(x: centerX, y: centerY),
-                                  label: n.label,
-                                  category: n.category)
-            return [PositionedNode(mermaidId: n.mermaidId, shape: shape)]
+            let pos = n.overridePosition ?? CGPoint(x: centerX, y: centerY)
+            return [PositionedNode(mermaidId: n.mermaidId, shape: makeShape(n, at: pos))]
         }
         let radius: CGFloat = 140
         return nodes.enumerated().map { i, n in
-            let angle = (2.0 * .pi / Double(count)) * Double(i) - .pi / 2
-            let x = centerX + radius * CGFloat(cos(angle))
-            let y = centerY + radius * CGFloat(sin(angle))
-            let shape = ShapeNode(type: n.type,
-                                  position: CGPoint(x: x, y: y),
-                                  label: n.label,
-                                  category: n.category)
-            return PositionedNode(mermaidId: n.mermaidId, shape: shape)
+            let pos: CGPoint
+            if let override = n.overridePosition {
+                pos = override
+            } else {
+                let angle = (2.0 * .pi / Double(count)) * Double(i) - .pi / 2
+                pos = CGPoint(x: centerX + radius * CGFloat(cos(angle)),
+                              y: centerY + radius * CGFloat(sin(angle)))
+            }
+            return PositionedNode(mermaidId: n.mermaidId, shape: makeShape(n, at: pos))
         }
     }
 

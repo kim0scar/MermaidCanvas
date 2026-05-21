@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
 """
-v35 Flöde — app-ikon-generator.
+v45 Visuali2e — app-ikon-generator.
 
-Ritar tre stiliserade former (cirkel, fyrkant, diamant) kopplade med pilar,
-bakgrund i salviagrön (#B8D4C2), former i mörk grågrön (#3C5060).
-
-Output: 1024×1024 PNG utan alpha-kanal (Apple-krav).
+Lila gradient bakgrund, "Visuali" i vit + "2e" highlightat i ljus korall.
+"2e" = "twice-exceptional" — kognitiv profil med dubbel begåvning/utmaning.
+Output: 1024×1024 PNG utan alpha (Apple-krav).
 """
-from PIL import Image, ImageDraw
-import math
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
 
 SIZE = 1024
-BG = (184, 212, 194)        # #B8D4C2 salviagrön
-SHAPE = (60, 80, 96)         # #3C5060 mörk grågrön
-ARROW = (60, 80, 96)
 
-# Lite mjukare bakgrundsövergång — extra glow runt formerna
-GLOW = (210, 226, 216)
+# Lila gradient: ljus topp → djupare lila botten
+BG_TOP = (200, 175, 245)      # #C8AFF5 ljus lavendel
+BG_BOTTOM = (124, 88, 220)    # #7C58DC djupare lila
+
+# Highlight för 2e — varm korall som sticker ut mot lila
+HIGHLIGHT = (255, 196, 128)   # #FFC480 mjuk korall/persika
+
+WHITE = (255, 255, 255)
+SHADOW = (60, 30, 110)
+
+FONT_ROUNDED = "/System/Library/Fonts/SFNSRounded.ttf"
+FONT_FALLBACK = "/Library/Fonts/Avenir Next.ttc"
 
 OUT = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -26,54 +31,124 @@ OUT = os.path.join(
 )
 
 
+def vertical_gradient(size, top, bottom):
+    img = Image.new("RGB", (size, size), top)
+    for y in range(size):
+        t = y / (size - 1)
+        col = (
+            int(top[0] + (bottom[0] - top[0]) * t),
+            int(top[1] + (bottom[1] - top[1]) * t),
+            int(top[2] + (bottom[2] - top[2]) * t),
+        )
+        ImageDraw.Draw(img).line([(0, y), (size, y)], fill=col)
+    return img
+
+
+def load_font(path, size):
+    try:
+        return ImageFont.truetype(path, size)
+    except OSError:
+        return ImageFont.truetype(FONT_FALLBACK, size)
+
+
+def measure(draw, text, font):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    return bbox[2] - bbox[0], bbox[3] - bbox[1], bbox[0], bbox[1]
+
+
 def main():
-    # RGB (ingen alpha — Apples krav för 1024)
-    img = Image.new("RGB", (SIZE, SIZE), BG)
+    img = vertical_gradient(SIZE, BG_TOP, BG_BOTTOM)
+
+    # Mjuk inre glow uppe-vänster för djup
+    glow = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    gd = ImageDraw.Draw(glow)
+    gd.ellipse([-200, -200, 700, 700], fill=(255, 255, 255, 40))
+    glow = glow.filter(ImageFilter.GaussianBlur(radius=120))
+    img.paste(glow, (0, 0), glow)
+
     draw = ImageDraw.Draw(img)
 
-    # Mjuk inre vinjett-ring (ger djup utan att förstöra plattheten)
-    cx, cy = SIZE // 2, SIZE // 2
-    for r in range(SIZE // 2, int(SIZE * 0.42), -1):
-        t = (r - SIZE * 0.42) / (SIZE * 0.5 - SIZE * 0.42)
-        # gradient bg -> svagt mörkare
-        col = (
-            int(BG[0] - 8 * t),
-            int(BG[1] - 8 * t),
-            int(BG[2] - 8 * t),
-        )
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=col)
+    # === TEXT-LAYOUT ===
+    # "Visuali" + "2e" på samma rad
+    # Stora typsnitt — ska fylla ikonen brett, "2e" lite större (highlight)
 
-    # Tre former — triangelplacering: cirkel uppe, fyrkant nere-vänster, diamant nere-höger
-    shape_size = 220                 # diameter / sida
-    half = shape_size // 2
-    # Placeringar (mitt-koordinater)
-    p_circle = (SIZE // 2, int(SIZE * 0.30))
-    p_square = (int(SIZE * 0.28), int(SIZE * 0.68))
-    p_diamond = (int(SIZE * 0.72), int(SIZE * 0.68))
+    # Text-storlek skalas automatiskt så hela "Visuali 2e" får ordentlig
+    # padding mot kanterna (iOS rundar hörnen ~18% av sidan, så marginal är kritisk)
+    text_main = "Visuali"
+    text_2e = "2e"
 
-    # Pilar mellan formerna (rita FÖRE formerna så att formerna döljer linjeändar)
-    line_w = 14
-    arrow_pts = [
-        (p_circle, p_square),
-        (p_circle, p_diamond),
-        (p_square, p_diamond),
-    ]
-    for a, b in arrow_pts:
-        draw_arrow(draw, a, b, ARROW, line_w, shrink=half + 10)
+    target_width = int(SIZE * 0.78)   # max-bredd för texten
 
-    # Cirkel
-    draw.ellipse(
-        [p_circle[0] - half, p_circle[1] - half, p_circle[0] + half, p_circle[1] + half],
-        fill=SHAPE,
+    # Börja stort + skala ner tills det får plats
+    font_size = 240
+    while font_size > 60:
+        font_main = load_font(FONT_ROUNDED, font_size)
+        font_2e = load_font(FONT_ROUNDED, int(font_size * 1.18))
+        w_main, h_main, ox_main, oy_main = measure(draw, text_main, font_main)
+        w_2e, h_2e, ox_2e, oy_2e = measure(draw, text_2e, font_2e)
+        # Pill-padding ingår i totalen
+        pill_pad_x = max(int(font_size * 0.06), 12)
+        gap = int(font_size * 0.05)
+        total_w = w_main + gap + w_2e + 2 * pill_pad_x
+        if total_w <= target_width:
+            break
+        font_size -= 10
+
+    base_x = (SIZE - total_w) // 2 + pill_pad_x
+
+    # Vertikalt centrum — flytta upp lite för balans
+    cy = int(SIZE * 0.46)
+
+    # === SKUGGA bakom text ===
+    shadow = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shadow)
+    sd.text((base_x - ox_main + 6, cy - h_main // 2 - oy_main + 8),
+            text_main, font=font_main, fill=(40, 20, 80, 130))
+    sd.text((base_x + w_main + gap - ox_2e + 6, cy - h_2e // 2 - oy_2e + 8),
+            text_2e, font=font_2e, fill=(40, 20, 80, 130))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(radius=12))
+    img.paste(shadow, (0, 0), shadow)
+
+    # === HUVUDTEXT "Visuali" — vit ===
+    draw.text(
+        (base_x - ox_main, cy - h_main // 2 - oy_main),
+        text_main,
+        font=font_main,
+        fill=WHITE,
     )
 
-    # Fyrkant — rundade hörn
-    radius = 36
-    sx, sy = p_square
-    rounded_rect(draw, sx - half, sy - half, sx + half, sy + half, radius, SHAPE)
+    # === HIGHLIGHT-PILL bakom "2e" ===
+    # Avrundad pill i korall som bakgrund — gör 2e visuellt distinkt
+    pill_pad_y = max(int(font_size * 0.06), 10)
+    pill_x0 = base_x + w_main + gap - pill_pad_x
+    pill_y0 = cy - h_2e // 2 - pill_pad_y
+    pill_x1 = base_x + w_main + gap + w_2e + pill_pad_x
+    pill_y1 = cy + h_2e // 2 + pill_pad_y
+    radius = (pill_y1 - pill_y0) // 2
+    draw.rounded_rectangle([pill_x0, pill_y0, pill_x1, pill_y1],
+                           radius=radius, fill=HIGHLIGHT)
 
-    # Diamant — rundad
-    draw_rounded_diamond(draw, p_diamond[0], p_diamond[1], half, SHAPE, corner_radius=20)
+    # "2e" i djupare lila ovanpå pill — kontrast mot korallen
+    draw.text(
+        (base_x + w_main + gap - ox_2e, cy - h_2e // 2 - oy_2e),
+        text_2e,
+        font=font_2e,
+        fill=(80, 40, 160),
+    )
+
+    # === LITEN UNDERTITEL ===
+    sub_font = load_font(FONT_ROUNDED, 64)
+    sub = "visuell tankekarta"
+    sw, sh, sox, soy = measure(draw, sub, sub_font)
+    sub_x = (SIZE - sw) // 2 - sox
+    sub_y = int(SIZE * 0.78) - sh // 2 - soy
+    # Skugga
+    sshadow = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    ImageDraw.Draw(sshadow).text((sub_x + 3, sub_y + 4), sub,
+                                  font=sub_font, fill=(40, 20, 80, 120))
+    sshadow = sshadow.filter(ImageFilter.GaussianBlur(radius=6))
+    img.paste(sshadow, (0, 0), sshadow)
+    draw.text((sub_x, sub_y), sub, font=sub_font, fill=(255, 245, 230))
 
     # Säkerställ ingen alpha
     if img.mode != "RGB":
@@ -82,61 +157,6 @@ def main():
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     img.save(OUT, "PNG", optimize=True)
     print(f"OK — {OUT} ({SIZE}x{SIZE} RGB, ingen alpha)")
-
-
-def rounded_rect(draw, x0, y0, x1, y1, r, fill):
-    draw.rectangle([x0 + r, y0, x1 - r, y1], fill=fill)
-    draw.rectangle([x0, y0 + r, x1, y1 - r], fill=fill)
-    draw.pieslice([x0, y0, x0 + 2 * r, y0 + 2 * r], 180, 270, fill=fill)
-    draw.pieslice([x1 - 2 * r, y0, x1, y0 + 2 * r], 270, 360, fill=fill)
-    draw.pieslice([x0, y1 - 2 * r, x0 + 2 * r, y1], 90, 180, fill=fill)
-    draw.pieslice([x1 - 2 * r, y1 - 2 * r, x1, y1], 0, 90, fill=fill)
-
-
-def draw_rounded_diamond(draw, cx, cy, half, fill, corner_radius=20):
-    # Diamant = roterad fyrkant 45°. Enklast: polygon med 4 punkter, men för mjuka hörn
-    # ritar vi som en bildmask och paste:ar tillbaka.
-    s = int(half * 1.45)   # diagonal-justering så formen ser visuellt likvärdig stor ut
-    canvas = Image.new("L", (s * 2 + 80, s * 2 + 80), 0)
-    cd = ImageDraw.Draw(canvas)
-    # Rita en rundad fyrkant centrerad
-    pad = 40
-    rounded_rect(cd, pad, pad, pad + 2 * s, pad + 2 * s, corner_radius * 2, 255)
-    # Rotera 45°
-    rotated = canvas.rotate(45, resample=Image.BICUBIC, expand=True)
-    # Hitta rotated centrum och paste:a på huvudbilden
-    rw, rh = rotated.size
-    px = cx - rw // 2
-    py = cy - rh // 2
-    # Skapa färglager med samma storlek
-    color_layer = Image.new("RGB", (rw, rh), fill)
-    base = draw._image
-    base.paste(color_layer, (px, py), rotated)
-
-
-def draw_arrow(draw, a, b, color, width, shrink=0):
-    """Rita rak linje med pilhuvud från a till b, krymp båda ändarna med 'shrink'."""
-    ax, ay = a
-    bx, by = b
-    dx, dy = bx - ax, by - ay
-    dist = math.hypot(dx, dy)
-    if dist < 1:
-        return
-    ux, uy = dx / dist, dy / dist
-    # Krympta start/slut
-    sx, sy = ax + ux * shrink, ay + uy * shrink
-    ex, ey = bx - ux * shrink, by - uy * shrink
-    draw.line([(sx, sy), (ex, ey)], fill=color, width=width)
-    # Pilhuvud
-    head_len = 36
-    head_w = 26
-    # Bas-punkten där pilhuvudet börjar
-    bxh, byh = ex - ux * head_len, ey - uy * head_len
-    # Perpendikulär
-    px, py = -uy, ux
-    p1 = (bxh + px * head_w, byh + py * head_w)
-    p2 = (bxh - px * head_w, byh - py * head_w)
-    draw.polygon([p1, (ex, ey), p2], fill=color)
 
 
 if __name__ == "__main__":

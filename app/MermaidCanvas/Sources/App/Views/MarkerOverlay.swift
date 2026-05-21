@@ -11,16 +11,14 @@ struct MarkerOverlay: View {
 
     var body: some View {
         ZStack {
-            // Genomskinlig fångst-yta över hela canvasen
+            // v46: Genomskinlig fångst-yta över hela canvasen.
+            // Tap-gestures tas INTE upp här — de passerar igenom till underliggande
+            // shapes (som hanterar tap i markerMode genom att toggla multiSelection
+            // via model.selectShape). Endast drag (>= 10pt) konsumeras för marquee.
             Color.clear
                 .contentShape(Rectangle())
                 .frame(width: canvasContentSize.width, height: canvasContentSize.height)
                 .gesture(dragGesture)
-                .onTapGesture {
-                    // v44: tap på tom canvas-yta rensar selection (så man kan starta
-                    // ny marquee-selektion direkt utan att toggla markerMode).
-                    model.multiSelection.removeAll()
-                }
 
             // Rita markerings-rektangel om vi drar
             if let start = startCanvas, let current = currentCanvas {
@@ -45,7 +43,8 @@ struct MarkerOverlay: View {
     }
 
     private var dragGesture: some Gesture {
-        DragGesture(coordinateSpace: .named("canvas"))
+        // v46: minimumDistance > 0 så att taps passerar genom till shapes
+        DragGesture(minimumDistance: 8, coordinateSpace: .named("canvas"))
             .onChanged { v in
                 if startCanvas == nil {
                     startCanvas = v.startLocation
