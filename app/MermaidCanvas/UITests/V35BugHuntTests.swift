@@ -30,7 +30,7 @@ final class V35BugHuntTests: XCTestCase {
         XCTAssertTrue(chip.waitForExistence(timeout: 4))
 
         // Räkna shapes före
-        let initialShapeCount = app.otherElements.matching(identifier: "shape.circle").count
+        let initialShapeCount = app.descendants(matching: .any).matching(identifier: "shape.circle").count
         print("V35_BUG: initial shape.circle count = \(initialShapeCount)")
 
         // Lägg 10 former via tap (tap-flödet lägger i canvas-mitten/synlig viewport)
@@ -38,13 +38,13 @@ final class V35BugHuntTests: XCTestCase {
             chip.tap()
             // Kort paus så SwiftUI hinner uppdatera
             Thread.sleep(forTimeInterval: 0.3)
-            let count = app.otherElements.matching(identifier: "shape.circle").count
+            let count = app.descendants(matching: .any).matching(identifier: "shape.circle").count
             print("V35_BUG: efter tap #\(i+1) — shape.circle count = \(count)")
         }
         sleep(2)
 
         // Verifiera att alla 10 finns kvar
-        let finalCount = app.otherElements.matching(identifier: "shape.circle").count
+        let finalCount = app.descendants(matching: .any).matching(identifier: "shape.circle").count
         print("V35_BUG: final shape.circle count = \(finalCount)")
 
         // Ta screenshot för visuell verifiering
@@ -120,7 +120,7 @@ final class V35BugHuntTests: XCTestCase {
         sleep(2)
 
         // Verifiera att en cirkel-shape syns på skärmen
-        let shape = app.otherElements.matching(identifier: "shape.circle").firstMatch
+        let shape = app.descendants(matching: .any).matching(identifier: "shape.circle").firstMatch
         XCTAssertTrue(shape.waitForExistence(timeout: 4),
                       "Efter pan + tap-chip ska en cirkel synas i viewport — om den hamnar i statisk canvas-mitten är den utanför skärm")
 
