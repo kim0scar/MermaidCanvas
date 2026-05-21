@@ -75,6 +75,11 @@ struct ShapeNode: Identifiable, Codable {
     var hasNumberedList: Bool
     /// v39: indragsnivå (0 = ingen, 1 = ett steg, 2 = två steg). Default = 0.
     var indentLevel: Int
+    /// v47: explicit referens till container-förälder. Ersätter position-baserad
+    /// detektering i `CanvasModel.shapesInside(container:)`. nil = inte i någon container.
+    /// Sätts automatiskt vid drag-slut och vid drag-ut. Position-baserad detektering
+    /// behålls som fallback för bakåtkompatibilitet.
+    var childOfContainerId: UUID?
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -98,7 +103,8 @@ struct ShapeNode: Identifiable, Codable {
          textAlignment: TextAlignMode = .center,
          hasBullets: Bool = false,
          hasNumberedList: Bool = false,
-         indentLevel: Int = 0) {
+         indentLevel: Int = 0,
+         childOfContainerId: UUID? = nil) {
         self.id = id
         self.type = type
         self.position = position
@@ -122,6 +128,7 @@ struct ShapeNode: Identifiable, Codable {
         self.hasBullets = hasBullets
         self.hasNumberedList = hasNumberedList
         self.indentLevel = indentLevel
+        self.childOfContainerId = childOfContainerId
     }
 
     /// v31: effective width-multiplier (fallback till sizeMultiplier).
@@ -139,6 +146,7 @@ extension ShapeNode {
         case colorOverride, linkNumber, tableRows, tableCols, tableCells, textStyle
         case colorPackId, lineEnd, textAlignment, hasBullets
         case hasNumberedList, indentLevel
+        case childOfContainerId  // v47
     }
 
     init(from decoder: Decoder) throws {
@@ -175,5 +183,6 @@ extension ShapeNode {
         hasBullets      = try c.decodeIfPresent(Bool.self, forKey: .hasBullets) ?? false
         hasNumberedList = try c.decodeIfPresent(Bool.self, forKey: .hasNumberedList) ?? false
         indentLevel     = try c.decodeIfPresent(Int.self, forKey: .indentLevel) ?? 0
+        childOfContainerId = try c.decodeIfPresent(UUID.self, forKey: .childOfContainerId)
     }
 }

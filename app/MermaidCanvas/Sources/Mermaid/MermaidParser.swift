@@ -184,6 +184,18 @@ enum MermaidParser {
             shapes.append(shape)
         }
 
+        // v47: andra-pass — sätt childOfContainerId nu när alla mermaidId → UUID-mappningar
+        // är kända. Vi sparar mermaid-id:t som sträng i JSON och slår upp UUID:t här.
+        for (idx, node) in nodes.enumerated() {
+            guard let parentMid = node["childOfContainerId"] as? String,
+                  let parentUUID = idMap[parentMid] else { continue }
+            // Skydda mot data där noden refererar sig själv eller en icke-container
+            guard idx < shapes.count else { continue }
+            if shapes[idx].id != parentUUID {
+                shapes[idx].childOfContainerId = parentUUID
+            }
+        }
+
         var edgeList: [EdgeConnection] = []
         for edge in edges {
             guard let fromMid = edge["from"] as? String,

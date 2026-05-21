@@ -153,6 +153,13 @@ enum MermaidGenerator {
             case .r3:   styleProps.append("font-weight:500")
             case .body: break
             }
+            // v47: textAlignment som CSS — syns i mermaid.live-rendering
+            // (.center är default, hoppas över för att hålla utdata ren).
+            switch shape.textAlignment {
+            case .leading:  styleProps.append("text-align:left")
+            case .trailing: styleProps.append("text-align:right")
+            case .center:   break
+            }
 
             // Färg: colorOverride → colorPack → text-transparens (i prioritetsordning).
             // colorOverride och colorPack emitteras som inline style → slår alltid igenom
@@ -274,6 +281,11 @@ enum MermaidGenerator {
             }
             if shape.indentLevel > 0 {
                 n["indentLevel"] = shape.indentLevel
+            }
+            // v47: explicit container-förälder som mermaid-id (sträng)
+            if let parentUUID = shape.childOfContainerId,
+               let parentMid = mermaidIds[parentUUID] {
+                n["childOfContainerId"] = parentMid
             }
             return n
         }

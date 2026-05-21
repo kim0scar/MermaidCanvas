@@ -286,7 +286,8 @@ final class CanvasModel: ObservableObject {
             textAlignment: o.textAlignment,
             hasBullets: o.hasBullets,
             hasNumberedList: o.hasNumberedList,
-            indentLevel: o.indentLevel
+            indentLevel: o.indentLevel,
+            childOfContainerId: o.childOfContainerId   // v47: kopiera container-koppling
         )
         shapes.append(copy)
         return copy.id
@@ -410,8 +411,13 @@ final class CanvasModel: ObservableObject {
         }
     }
 
-    /// v44: returnerar former vars position är innanför en container's bounds.
-    /// Containrar själva räknas inte med (för att undvika rekursion).
+    /// v47: returnerar former som är barn till en container.
+    /// **Explicit-först:** former vars `childOfContainerId` matchar räknas alltid med,
+    /// oavsett position. Detta är robust mot att container drar barnen utanför sina
+    /// bounds under flytt.
+    /// **Fallback:** för bakåtkompatibilitet med v46-och-äldre data där fältet saknas
+    /// (nil-värde), räknas också former vars position ligger innanför containerns
+    /// bounds OCH som inte tillhör någon annan container.
     func shapesInside(container: ShapeNode) -> [ShapeNode] {
         let w = ShapeGeometry.width(for: container)
         let h = ShapeGeometry.height(for: container)
@@ -419,8 +425,41 @@ final class CanvasModel: ObservableObject {
                           y: container.position.y - h/2,
                           width: w, height: h)
         return shapes.filter { s in
-            s.id != container.id && s.type != .container &&
-            rect.contains(s.position)
+            guard s.id != container.id, s.type != .container else { return false }
+            // Explicit-först
+            if let explicitParent = s.childOfContainerId {
+                return explicitParent == container.id
+            }
+            // Fallback: position innanför + ingen annan explicit förälder
+            return rect.contains(s.position)
+        }
+    }
+
+    /// v47: detektera vilken container en form ska tillhöra baserat på sin position.
+    /// Anropas typiskt efter att en form har flyttats (drag-end). Sätter eller tömmer
+    /// `childOfContainerId` automatiskt. Vid överlappande containrar väljs den
+    /// **senast tillagda** (visuellt på toppen i z-ordning).
+    func assignContainerForShape(_ shapeId: UUID) {
+        guard let shapeIdx = shapes.firstIndex(where: { $0.id == shapeId }) else { return }
+        let shape = shapes[shapeIdx]
+        // Containrar är inte själva barn av andra containrar.
+        guard shape.type != .container else { return }
+        let pos = shape.position
+        // Iterera baklänges för att välja toppen vid överlapp.
+        var newParent: UUID? = nil
+        for cs in shapes.reversed() where cs.type == .container {
+            let w = ShapeGeometry.width(for: cs)
+            let h = ShapeGeometry.height(for: cs)
+            let r = CGRect(x: cs.position.x - w/2,
+                           y: cs.position.y - h/2,
+                           width: w, height: h)
+            if r.contains(pos) {
+                newParent = cs.id
+                break
+            }
+        }
+        if shapes[shapeIdx].childOfContainerId != newParent {
+            shapes[shapeIdx].childOfContainerId = newParent
         }
     }
 
@@ -543,7 +582,8 @@ final class CanvasModel: ObservableObject {
                 lineEnd: shape.lineEnd, textAlignment: shape.textAlignment,
                 hasBullets: shape.hasBullets,
                 hasNumberedList: shape.hasNumberedList,
-                indentLevel: shape.indentLevel
+                indentLevel: shape.indentLevel,
+                childOfContainerId: shape.childOfContainerId   // v47
             )
             newShapes.append(copy)
         }

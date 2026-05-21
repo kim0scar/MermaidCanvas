@@ -83,7 +83,7 @@ final class V27FeatureTests: XCTestCase {
         openShapesRow(app)
         let chip = app.buttons["chip.table"]
         XCTAssertTrue(chip.waitForExistence(timeout: 4))
-        let canvas = app.otherElements["canvas"]
+        let canvas = app.scrollViews["canvas"]
         XCTAssertTrue(canvas.waitForExistence(timeout: 4))
 
         let chipCoord = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
@@ -100,7 +100,7 @@ final class V27FeatureTests: XCTestCase {
         openShapesRow(app)
         let chip = app.buttons["chip.link"]
         XCTAssertTrue(chip.waitForExistence(timeout: 4))
-        let canvas = app.otherElements["canvas"]
+        let canvas = app.scrollViews["canvas"]
         XCTAssertTrue(canvas.waitForExistence(timeout: 4))
 
         // chip.link är längst till höger; drag till mitten ger korrekt avstånd.
@@ -121,7 +121,7 @@ final class V27FeatureTests: XCTestCase {
         openShapesRow(app)
         let chip = app.buttons["chip.circle"]
         XCTAssertTrue(chip.waitForExistence(timeout: 4))
-        let canvas = app.otherElements["canvas"]
+        let canvas = app.scrollViews["canvas"]
         XCTAssertTrue(canvas.waitForExistence(timeout: 4))
 
         let chipCoord = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
@@ -134,9 +134,9 @@ final class V27FeatureTests: XCTestCase {
             XCTFail("Kunde inte läsa senaste shape-position")
             return
         }
-        // v31: canvas 1600×1600 → mitten ≈ (800, 800). Drag-test landar någonstans inom 600pt rimligt avstånd.
-        XCTAssertLessThan(abs(pos.x - 800), 600, "Cirkel landade för långt från drop-punkt X (pos=\(pos))")
-        XCTAssertLessThan(abs(pos.y - 800), 600, "Cirkel landade för långt från drop-punkt Y (pos=\(pos))")
+        // v47: canvas 4000×4000 sedan v34 → mitten ≈ (2000, 2000). Tolerans 600pt.
+        XCTAssertLessThan(abs(pos.x - 2000), 600, "Cirkel landade för långt från drop-punkt X (pos=\(pos))")
+        XCTAssertLessThan(abs(pos.y - 2000), 600, "Cirkel landade för långt från drop-punkt Y (pos=\(pos))")
     }
 
     /// Verifiera att en cirkel som dras nära kanten landar långt från mitten —
@@ -147,7 +147,7 @@ final class V27FeatureTests: XCTestCase {
         openShapesRow(app)
         let chip = app.buttons["chip.circle"]
         XCTAssertTrue(chip.waitForExistence(timeout: 4))
-        let canvas = app.otherElements["canvas"]
+        let canvas = app.scrollViews["canvas"]
         XCTAssertTrue(canvas.waitForExistence(timeout: 4))
 
         // Drop till vänster överkant
@@ -161,8 +161,8 @@ final class V27FeatureTests: XCTestCase {
             XCTFail("Kunde inte läsa senaste shape-position")
             return
         }
-        // v31: canvas-mitten ≈ (800, 800). Drop i hörnet ska INTE vara där.
-        let distFromCenter = abs(pos.x - 800) + abs(pos.y - 800)
+        // v47: canvas 4000×4000 sedan v34 → mitten ≈ (2000, 2000). Drop i hörnet ska INTE vara där.
+        let distFromCenter = abs(pos.x - 2000) + abs(pos.y - 2000)
         XCTAssertGreaterThan(distFromCenter, 80,
                              "Drop i hörnet hade samma position som mitten — drag flyttar inte (pos=\(pos))")
     }

@@ -690,4 +690,95 @@ final class V35MermaidValidationTests: XCTestCase {
         XCTAssertEqual(parsed.shapes.first?.type, .rectangle,
                        "Parsern ska identifiera formen som rectangle:\n\(wrapped)")
     }
+
+    // MARK: - v47: textAlignment som CSS i mermaid-export
+
+    /// v47: textAlignment .leading och .trailing ska resultera i CSS
+    /// `text-align:left` resp `text-align:right` i style-raden. .center är default
+    /// och hoppas över.
+    func testGenerator_TextAlignment_ProducesCSS() throws {
+        let leftShape = ShapeNode(type: .rectangle,
+                                  position: CGPoint(x: 100, y: 100),
+                                  label: "vänster",
+                                  textAlignment: .leading)
+        let centerShape = ShapeNode(type: .rectangle,
+                                    position: CGPoint(x: 300, y: 100),
+                                    label: "mitt",
+                                    textAlignment: .center)
+        let rightShape = ShapeNode(type: .rectangle,
+                                   position: CGPoint(x: 500, y: 100),
+                                   label: "höger",
+                                   textAlignment: .trailing)
+        let code = MermaidGenerator.generate(
+            shapes: [leftShape, centerShape, rightShape],
+            edges: [],
+            canvasSize: CGSize(width: 600, height: 400),
+            specType: .general
+        )
+        // Räkna förekomster — bara leading + trailing ska ge text-align-rader.
+        let leftCount  = code.components(separatedBy: "text-align:left").count - 1
+        let rightCount = code.components(separatedBy: "text-align:right").count - 1
+        let centerCount = code.components(separatedBy: "text-align:center").count - 1
+
+        XCTAssertEqual(leftCount, 1, "leading-form ska ge en text-align:left-rad:\n\(code)")
+        XCTAssertEqual(rightCount, 1, "trailing-form ska ge en text-align:right-rad:\n\(code)")
+        XCTAssertEqual(centerCount, 0, "center är default och ska inte producera CSS:\n\(code)")
+    }
+
+    /// v47: container-child explicit-koppling — `childOfContainerId` round-trippar
+    /// via canvasStateJSON som mermaid-id-sträng.
+    func testRoundTrip_ChildOfContainer_Preserved() throws {
+        let containerId = UUID()
+        let container = ShapeNode(id: containerId, type: .container,
+                                  position: CGPoint(x: 300, y: 300),
+                                  label: "Grupp")
+        let child = ShapeNode(type: .rectangle,
+                              position: CGPoint(x: 300, y: 300),
+                              label: "Barn",
+                              childOfContainerId: containerId)
+        let orphan = ShapeNode(type: .circle,
+                               position: CGPoint(x: 800, y: 800),
+                               label: "Fri")
+        let doc = CanvasDocument(
+            title: "v47-childOfContainer",
+            shapes: [container, child, orphan], edges: [],
+            canvasSize: CGSize(width: 1200, height: 1200),
+            specType: .general, platform: .blank,
+            activeShapePacks: [.basic], collapsedIds: []
+        )
+        XCTAssertTrue(doc.content.contains("\"childOfContainerId\""),
+                      "Dokumentet ska innehålla childOfContainerId-nyckel.")
+        let parsed = MermaidParser.parse(doc.content)
+        XCTAssertEqual(parsed.shapes.count, 3, "Round-trip ska bevara 3 noder")
+        let parsedContainer = parsed.shapes.first(where: { $0.type == .container })
+        let parsedChild     = parsed.shapes.first(where: { $0.label == "Barn" })
+        let parsedOrphan    = parsed.shapes.first(where: { $0.label == "Fri" })
+        XCTAssertNotNil(parsedContainer)
+        XCTAssertNotNil(parsedChild)
+        XCTAssertNotNil(parsedOrphan)
+        XCTAssertEqual(parsedChild?.childOfContainerId, parsedContainer?.id,
+                       "Barnet ska peka på containerns UUID efter round-trip")
+        XCTAssertNil(parsedOrphan?.childOfContainerId,
+                     "Fri form ska ha childOfContainerId = nil")
+    }
+
+    /// v47: textAlignment round-trippar via canvasStateJSON oavsett vad
+    /// styleStmts gör (de är bara för Mermaid Live-rendering).
+    func testRoundTrip_TextAlignment_Preserved() throws {
+        let original = ShapeNode(type: .rectangle,
+                                 position: CGPoint(x: 200, y: 200),
+                                 label: "Skev text",
+                                 textAlignment: .trailing)
+        let doc = CanvasDocument(
+            title: "v47-textAlignment",
+            shapes: [original], edges: [],
+            canvasSize: CGSize(width: 600, height: 400),
+            specType: .general, platform: .blank,
+            activeShapePacks: [.basic], collapsedIds: []
+        )
+        let parsed = MermaidParser.parse(doc.content)
+        XCTAssertEqual(parsed.shapes.count, 1, "Round-trip ska bevara 1 form")
+        XCTAssertEqual(parsed.shapes.first?.textAlignment, .trailing,
+                       "textAlignment .trailing ska bevaras genom round-trip")
+    }
 }

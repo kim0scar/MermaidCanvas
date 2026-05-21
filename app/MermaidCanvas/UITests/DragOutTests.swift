@@ -89,9 +89,9 @@ final class DragOutTests: XCTestCase {
             sleep(UInt32(0))
         }
         sleep(1)
-        // 4 enskilda + 1 jump-link-par = 5
-        XCTAssertEqual(modelShapeCount(app), 5,
-                       "Förväntade 5 former (4 enskilda + 1 jump-link-par)")
+        // v47: 4 enskilda (circle, rect, diamond, table) + 1 jump-link-par (=2) = 6
+        XCTAssertEqual(modelShapeCount(app), 6,
+                       "Förväntade 6 former (4 enskilda + 1 jump-link-par à 2)")
     }
 
     /// Drag-out: tryck-och-håll på rektangel-chip, dra till canvas-center.

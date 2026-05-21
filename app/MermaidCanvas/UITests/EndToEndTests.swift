@@ -41,7 +41,7 @@ final class EndToEndTests: XCTestCase {
     @MainActor
     private func dragChipToCanvas(_ app: XCUIApplication, chipId: String) {
         let chip = app.buttons[chipId]
-        let canvas = app.otherElements["canvas"]
+        let canvas = app.scrollViews["canvas"]
         XCTAssertTrue(chip.waitForExistence(timeout: 3), "chip \(chipId) saknas")
         XCTAssertTrue(canvas.waitForExistence(timeout: 3))
         let from = chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
@@ -111,11 +111,7 @@ final class EndToEndTests: XCTestCase {
         assertDragCreatesShape(app, chipId: "chip.pill", expectedDelta: 1)
     }
 
-    @MainActor func testDragTextCreatesShape() throws {
-        let app = launchApp()
-        openShapesRow(app)
-        assertDragCreatesShape(app, chipId: "chip.text", expectedDelta: 1)
-    }
+    // v47: testDragTextCreatesShape borttagen — .text-formen togs bort i v44.
 
     @MainActor func testDragTableCreatesShape() throws {
         let app = launchApp()

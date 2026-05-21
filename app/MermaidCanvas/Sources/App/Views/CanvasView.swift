@@ -224,6 +224,10 @@ struct CanvasView: View {
                             if shape.type == .container {
                                 model.moveContainerChildren(containerId: shape.id, by: delta)
                             }
+                        },
+                        onDragEnded: { id in
+                            // v47: explicit container-tilldelning efter drag.
+                            model.assignContainerForShape(id)
                         }
                     )
                 }
@@ -380,6 +384,10 @@ struct ShapeView: View {
     var outgoingDirection: CGVector? = nil
     /// v44: rapporterar drag-delta för container — så inneliggande former kan flyttas med.
     var onContainerMove: ((CGSize) -> Void)? = nil
+    /// v47: rapporterar att en form har slutat dras (efter position-uppdatering).
+    /// CanvasModel använder detta för att (om)tilldela `childOfContainerId` baserat på
+    /// var formen landade.
+    var onDragEnded: ((UUID) -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
@@ -558,6 +566,8 @@ struct ShapeView: View {
                     dragOffset = .zero
                     lastContainerDragTranslation = .zero   // v44: reset för container-tracking
                     onDragUpdate?(nil)
+                    // v47: efter position-uppdatering, om-tilldela container-förälder.
+                    onDragEnded?(shape.id)
                 }
             }
     }
