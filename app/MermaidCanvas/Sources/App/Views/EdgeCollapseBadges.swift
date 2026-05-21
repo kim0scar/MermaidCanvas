@@ -21,6 +21,7 @@ struct EdgeStubBadge: View {
         }
         .buttonStyle(.plain)
         .position(position)
+        .accessibilityIdentifier("edge.stub.badge")
     }
 }
 
@@ -46,5 +47,6 @@ struct EdgeStartCollapseBadge: View {
         }
         .buttonStyle(.plain)
         .position(position)
+        .accessibilityIdentifier("edge.collapse.minus")
     }
 }

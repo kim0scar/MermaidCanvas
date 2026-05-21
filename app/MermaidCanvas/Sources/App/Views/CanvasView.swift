@@ -265,6 +265,10 @@ struct CanvasView: View {
                                                               shapes: model.shapes,
                                                               excludingId: s.id) {
                             model.addEdge(from: s.id, to: target.id)
+                            // v49 Fel #3 (Agent B 2/3-konsensus): säkerställ
+                            // att from-shape är markerad efter pil skapats —
+                            // annars syns inte minus-badgen vid kantens start.
+                            model.selectedShapeId = s.id
                         }
                         connectionDrag = nil
                     }
@@ -1253,9 +1257,10 @@ struct EdgesView: View {
         head.addLine(to: a1)
         head.addLine(to: a2)
         head.closeSubpath()
-        context.fill(head, with: .color(.primary.opacity(0.78)))
-        // Rita också en stroke runt huvudet med rundade join för att mjuka spetsarna
-        context.stroke(head, with: .color(.primary.opacity(0.78)),
-                       style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+        // v49 Fel #1 (Agent C 1/3-diagnos): bara fill, inte stroke. Stroke med
+        // .round cap/join lade till ~0.75pt rundning på pilspets-sidorna som
+        // kan ge subpixel-asymmetri vid diagonala vinklar. Ren fyllning ger
+        // skarpare, mer symmetrisk pilspets.
+        context.fill(head, with: .color(.primary.opacity(0.85)))
     }
 }

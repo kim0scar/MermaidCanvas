@@ -10,6 +10,7 @@
 		0320F7EB8A111772BE23366A /* CanvasFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DBE1118CB6B8E7AD3B7E51 /* CanvasFileManager.swift */; };
 		04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */; };
 		04F6EA93B52298C165CEB0DE /* MermaidImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */; };
+		05D7C2B2DFD541EDEBB30893 /* V49ConnectionSelectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */; };
 		07E3490A9963968FB98F7B44 /* V28VisualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */; };
 		084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */; };
 		08E3968AA32CB239C81D65C0 /* godot-lexicon.md in Resources */ = {isa = PBXBuildFile; fileRef = 4F05E5949388DD0DA7C68672 /* godot-lexicon.md */; };
@@ -66,6 +67,7 @@
 		CAF3B1AA079DA30839223936 /* RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DBECF727C64AC554A79FCC /* RoundTripTests.swift */; };
 		D05D53CCB773A8CDA53268A8 /* PlatformRulesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */; };
 		D289533B98FCCF66069A957F /* ColorPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */; };
+		D3D1D0B08A5B220C248F63CE /* V48VerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A32EF129D0C8F481A9D9DF8 /* V48VerificationTest.swift */; };
 		D4040B6552C65FDDCE78A77B /* V27FeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BE1B86655B722847CCF708 /* V27FeatureTests.swift */; };
 		D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */; };
 		D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */; };
@@ -151,7 +153,9 @@
 		7DE1EFE7C5FDD982C0043924 /* V35BugHuntTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V35BugHuntTests.swift; sourceTree = "<group>"; };
 		844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V34PanSymmetryTests.swift; sourceTree = "<group>"; };
 		8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitectureRenderer.swift; sourceTree = "<group>"; };
+		8A32EF129D0C8F481A9D9DF8 /* V48VerificationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V48VerificationTest.swift; sourceTree = "<group>"; };
 		8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "claude-canvas-protocol.md"; sourceTree = "<group>"; };
+		972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V49ConnectionSelectionTest.swift; sourceTree = "<group>"; };
 		A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33AutoLoopTests.swift; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
@@ -345,6 +349,7 @@
 			children = (
 				19DBECF727C64AC554A79FCC /* RoundTripTests.swift */,
 				D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */,
+				972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */,
 			);
 			path = UnitTests;
 			sourceTree = "<group>";
@@ -388,6 +393,7 @@
 				844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */,
 				7DE1EFE7C5FDD982C0043924 /* V35BugHuntTests.swift */,
 				B5958A7631F79A8FEB1B4108 /* V46ExplorationTest.swift */,
+				8A32EF129D0C8F481A9D9DF8 /* V48VerificationTest.swift */,
 			);
 			path = UITests;
 			sourceTree = "<group>";
@@ -577,6 +583,7 @@
 			files = (
 				CAF3B1AA079DA30839223936 /* RoundTripTests.swift in Sources */,
 				AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */,
+				05D7C2B2DFD541EDEBB30893 /* V49ConnectionSelectionTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,6 +604,7 @@
 				2FB60923F478B3E69A314A91 /* V34PanSymmetryTests.swift in Sources */,
 				ACAD3D1912FDDEC2BB523429 /* V35BugHuntTests.swift in Sources */,
 				A2D61FC3A2523D993BA72AE5 /* V46ExplorationTest.swift in Sources */,
+				D3D1D0B08A5B220C248F63CE /* V48VerificationTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
