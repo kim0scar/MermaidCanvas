@@ -103,6 +103,7 @@ struct ContentView: View {
                     .transition(.scale.combined(with: .opacity))
             }
         }
+        .onAppear { applyV49TestScenarioIfNeeded() }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
@@ -376,6 +377,39 @@ struct ContentView: View {
         case .processArrow: return "arrowshape.right"
         // v44
         case .container:    return "rectangle.dashed"
+        }
+    }
+
+    /// v49: Programmatic test-scenario via launch-argument.
+    /// XCUITest:s connection.handle-drag fungerar inte reliably i sim,
+    /// så vi måste skapa pilen direkt på modellen för visuell verifiering.
+    ///
+    /// Args:
+    ///  -uitest-v49-rect-circle-arrow  → 2 former + 1 pil (horisontell) + markera from
+    ///  -uitest-v49-vertical-arrow     → 2 former + 1 pil (vertikal) + markera from
+    ///  -uitest-v49-collapsed          → samma + kollapsa from-shape
+    private func applyV49TestScenarioIfNeeded() {
+        let args = ProcessInfo.processInfo.arguments
+        guard args.contains(where: { $0.hasPrefix("-uitest-v49-") }) else { return }
+
+        // Vänta en frame så viewport hinner initieras
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let center = viewportState.visibleCenterInCanvas
+            var rect = ShapeNode(type: .rectangle, position: CGPoint(x: center.x - 120, y: center.y))
+            var circle = ShapeNode(type: .circle, position: CGPoint(x: center.x + 120, y: center.y))
+            if args.contains("-uitest-v49-vertical-arrow") {
+                rect.position = CGPoint(x: center.x, y: center.y - 120)
+                circle.position = CGPoint(x: center.x, y: center.y + 120)
+            }
+            model.shapes.append(rect)
+            model.shapes.append(circle)
+            model.addEdge(from: rect.id, to: circle.id)
+            // v49 Fel #3-fix: markera from-shape så minus-badge visas
+            model.selectedShapeId = rect.id
+
+            if args.contains("-uitest-v49-collapsed") {
+                model.toggleCollapse(id: rect.id)
+            }
         }
     }
 }

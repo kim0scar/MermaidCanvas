@@ -41,6 +41,7 @@
 		5502DC1063808D7E976CD568 /* CanvasViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00A564942F1596BCF995981 /* CanvasViewportState.swift */; };
 		56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */; };
 		62EF8D225C5132FB200E453E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4913E980F026A3D6E49070B7 /* AppVersion.swift */; };
+		66E7C0CA771E5C607A4F1B41 /* V49VisualVerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */; };
 		695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
 		6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
@@ -170,6 +171,7 @@
 		D35F5529A9079DF8958E486C /* PreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSheet.swift; sourceTree = "<group>"; };
 		D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GodotPreviewRenderer.swift; sourceTree = "<group>"; };
 		D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V35MermaidValidationTests.swift; sourceTree = "<group>"; };
+		DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V49VisualVerificationTest.swift; sourceTree = "<group>"; };
 		DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V28VisualTests.swift; sourceTree = "<group>"; };
 		DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMiniSheet.swift; sourceTree = "<group>"; };
 		E00A564942F1596BCF995981 /* CanvasViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewportState.swift; sourceTree = "<group>"; };
@@ -394,6 +396,7 @@
 				7DE1EFE7C5FDD982C0043924 /* V35BugHuntTests.swift */,
 				B5958A7631F79A8FEB1B4108 /* V46ExplorationTest.swift */,
 				8A32EF129D0C8F481A9D9DF8 /* V48VerificationTest.swift */,
+				DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */,
 			);
 			path = UITests;
 			sourceTree = "<group>";
@@ -605,6 +608,7 @@
 				ACAD3D1912FDDEC2BB523429 /* V35BugHuntTests.swift in Sources */,
 				A2D61FC3A2523D993BA72AE5 /* V46ExplorationTest.swift in Sources */,
 				D3D1D0B08A5B220C248F63CE /* V48VerificationTest.swift in Sources */,
+				66E7C0CA771E5C607A4F1B41 /* V49VisualVerificationTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
