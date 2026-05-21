@@ -177,10 +177,12 @@ struct CanvasView: View {
                       shapes: model.shapes,
                       canvasScale: zoomScale,
                       hiddenShapeIds: hiddenForEdges,
+                      selectedShapeId: model.selectedShapeId,
                       onEdgeDelete: onEdgeDelete,
                       onEdgeSetDirection: { id, dir in model.setEdgeDirection(id: id, direction: dir) },
                       onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) },
-                      onEdgeRename: { id, label in model.setEdgeLabel(id: id, label: label) })
+                      onEdgeRename: { id, label in model.setEdgeLabel(id: id, label: label) },
+                      onToggleCollapse: { id in model.toggleCollapse(id: id) })
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
 
@@ -200,8 +202,6 @@ struct CanvasView: View {
                         edgeMode: model.isEdgeMode,
                         markerMode: model.markerMode,
                         canvasScale: zoomScale,
-                        isCollapsed: model.collapsedIds.contains(shape.id),
-                        showCollapseBadge: model.hasOutgoingEdges(id: shape.id),
                         isPendingFrom: model.pendingEdgeFrom == shape.id,
                         onEdgeTap: { onShapeEdgeTap(shape.id) },
                         onSelect: { handleShapeSelect(id: shape.id) },
@@ -209,7 +209,6 @@ struct CanvasView: View {
                         onDelete: { onShapeDelete(shape.id) },
                         onDuplicate: { onShapeDuplicate(shape.id) },
                         onShowNote: { onShapeShowNote(shape.id) },
-                        onToggleCollapse: { model.toggleCollapse(id: shape.id) },
                         onTableEdit: { _ in onTableEdit(shape.id) },
                         onDragUpdate: { canvasPoint in
                             updateAutoScroll(at: canvasPoint)
@@ -218,7 +217,6 @@ struct CanvasView: View {
                             model.moveSelection(by: delta)
                         },
                         isInMultiSelection: model.multiSelection.contains(shape.id),
-                        outgoingDirection: model.averageOutgoingDirection(from: shape.id),
                         onContainerMove: { delta in
                             // v44: när en container dras flyttas alla former inuti med
                             if shape.type == .container {
@@ -362,8 +360,6 @@ struct ShapeView: View {
     let edgeMode: Bool
     let markerMode: Bool
     let canvasScale: CGFloat
-    let isCollapsed: Bool
-    let showCollapseBadge: Bool
     let isPendingFrom: Bool
     let onEdgeTap: () -> Void
     let onSelect: () -> Void
@@ -371,7 +367,6 @@ struct ShapeView: View {
     let onDelete: () -> Void
     let onDuplicate: () -> Void
     let onShowNote: () -> Void
-    let onToggleCollapse: () -> Void
     /// v41: öppnar tabell-redigeraren vid dubbelklick på tabell-form.
     var onTableEdit: ((UUID) -> Void)? = nil
     /// v39: rapporterar drag-position (canvas-koord) för auto-scroll. nil = drag avslutad.
@@ -380,8 +375,6 @@ struct ShapeView: View {
     var onMoveMultiSelection: ((CGSize) -> Void)? = nil
     /// v40: sann om denna form ingår i multiSelection
     var isInMultiSelection: Bool = false
-    /// v42: genomsnittlig riktning för utgående kanter — används för badge-position.
-    var outgoingDirection: CGVector? = nil
     /// v44: rapporterar drag-delta för container — så inneliggande former kan flyttas med.
     var onContainerMove: ((CGSize) -> Void)? = nil
     /// v47: rapporterar att en form har slutat dras (efter position-uppdatering).
@@ -455,22 +448,8 @@ struct ShapeView: View {
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
-        // v42: collapse-badge vid kant-startpunkten (riktning mot utgående pilar)
-        .overlay {
-            if showCollapseBadge && !markerMode, let dir = outgoingDirection {
-                let w = ShapeGeometry.width(for: shape)
-                let h = ShapeGeometry.height(for: shape)
-                // Placera badge precis innanför kanten i riktning mot pilen
-                let badgeOffset: CGFloat = 18 / canvasScale
-                let edgeX = dir.dx * (w / 2 - badgeOffset)
-                let edgeY = dir.dy * (h / 2 - badgeOffset)
-                CollapseBadge(collapsed: isCollapsed,
-                              canvasScale: canvasScale,
-                              onTap: onToggleCollapse)
-                    .offset(x: edgeX, y: edgeY)
-                    .rotationEffect(.degrees(-shape.rotation))
-            }
-        }
+        // v48 Fel #3+#4: CollapseBadge är flyttad från ShapeView till EdgesView
+        // (renderas per utgående kant, vid kantens start). Se EdgeCollapseBadges.swift.
         .contentShape(Rectangle())
         .accessibilityIdentifier("shape.\(shape.type.rawValue)")
         .position(
@@ -815,10 +794,14 @@ struct EdgesView: View {
     let shapes: [ShapeNode]
     let canvasScale: CGFloat
     let hiddenShapeIds: Set<UUID>
+    /// v48: vilken form som är markerad — styr om minus-badges visas.
+    let selectedShapeId: UUID?
     var onEdgeDelete: (UUID) -> Void
     var onEdgeSetDirection: (UUID, EdgeDirection) -> Void
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
     var onEdgeRename: (UUID, String) -> Void
+    /// v48: toggle-callback för collapse-badges. Tar shape-ID.
+    var onToggleCollapse: (UUID) -> Void
 
     // v44: kant-namngivning via EdgeLabelSheet (ersätter v38-alerten).
     @State private var renamingEdgeId: UUID? = nil
@@ -830,11 +813,33 @@ struct EdgesView: View {
     var body: some View {
         ZStack {
             Canvas { context, _ in
+                // Normala kanter (båda ändar synliga)
                 for edge in edges where isVisible(edge) {
                     guard let fromShape = shapes.first(where: { $0.id == edge.from }),
                           let toShape = shapes.first(where: { $0.id == edge.to })
                     else { continue }
                     drawEdge(context: context, edge: edge, fromShape: fromShape, toShape: toShape)
+                }
+                // v48 Fel #4: Stub-linjer för kollapsade kanter (from synlig, to gömd).
+                // Visar att något är dolt även utan att forma vara markerad.
+                for edge in edges where (!hiddenShapeIds.contains(edge.from)
+                                         && hiddenShapeIds.contains(edge.to)) {
+                    guard let fromShape = shapes.first(where: { $0.id == edge.from }),
+                          let toShape   = shapes.first(where: { $0.id == edge.to })
+                    else { continue }
+                    let from = edgePoint(for: fromShape, towards: toShape.position)
+                    let dx = toShape.position.x - fromShape.position.x
+                    let dy = toShape.position.y - fromShape.position.y
+                    let len = max(hypot(dx, dy), 1)
+                    let stubLen: CGFloat = 30
+                    let stubEnd = CGPoint(x: from.x + stubLen * dx / len,
+                                          y: from.y + stubLen * dy / len)
+                    var stub = Path()
+                    stub.move(to: from)
+                    stub.addLine(to: stubEnd)
+                    context.stroke(stub, with: .color(.primary.opacity(0.45)),
+                                   style: StrokeStyle(lineWidth: 2, lineCap: .round,
+                                                      dash: [4, 3]))
                 }
             }
             .allowsHitTesting(false)
@@ -844,6 +849,34 @@ struct EdgesView: View {
                    let fromShape = shapes.first(where: { $0.id == edge.from }),
                    let toShape = shapes.first(where: { $0.id == edge.to }) {
                     midpointHandle(edge: $edge, fromShape: fromShape, toShape: toShape)
+                }
+            }
+
+            // v48 Fel #3+#4: Collapse-badges per kant.
+            // Minus: vid utgående kants start, BARA när from är markerad.
+            // Plus:  vid stub-änden, ALLTID synlig om to är gömd.
+            ForEach(edges) { edge in
+                if let fromShape = shapes.first(where: { $0.id == edge.from }),
+                   let toShape   = shapes.first(where: { $0.id == edge.to }),
+                   !hiddenShapeIds.contains(edge.from) {
+                    let toHidden = hiddenShapeIds.contains(edge.to)
+                    let isFromSelected = (selectedShapeId == edge.from)
+                    let from = edgePoint(for: fromShape, towards: toShape.position)
+                    if toHidden {
+                        let dx = toShape.position.x - fromShape.position.x
+                        let dy = toShape.position.y - fromShape.position.y
+                        let len = max(hypot(dx, dy), 1)
+                        let stubLen: CGFloat = 30
+                        let stubEnd = CGPoint(x: from.x + stubLen * dx / len,
+                                              y: from.y + stubLen * dy / len)
+                        EdgeStubBadge(position: stubEnd,
+                                      canvasScale: canvasScale,
+                                      onTap: { onToggleCollapse(edge.from) })
+                    } else if isFromSelected {
+                        EdgeStartCollapseBadge(position: from,
+                                               canvasScale: canvasScale,
+                                               onTap: { onToggleCollapse(edge.from) })
+                    }
                 }
             }
         }
@@ -881,12 +914,23 @@ struct EdgesView: View {
             case .none:          return "minus"
             }
         }()
+        // v48 Fel #2: positionera mid på den FAKTISKA synliga linjen (mellan
+        // edgePoints, inte mellan shape-centra). Beräkna också linjens vinkel
+        // så att ikonen kan roteras med linjens fortsättning.
+        let edgeStart = edgePoint(for: fromShape, towards: toShape.position)
+        let edgeEnd   = edgePoint(for: toShape,   towards: fromShape.position)
         let mid: CGPoint = {
             if hasWaypoint { return edge.wrappedValue.waypoints[0].point }
-            return CGPoint(
-                x: (fromShape.position.x + toShape.position.x) / 2,
-                y: (fromShape.position.y + toShape.position.y) / 2
-            )
+            return CGPoint(x: (edgeStart.x + edgeEnd.x) / 2,
+                           y: (edgeStart.y + edgeEnd.y) / 2)
+        }()
+        let lineAngle: Double = {
+            if hasWaypoint {
+                let wp = edge.wrappedValue.waypoints[0].point
+                return atan2(Double(wp.y - edgeStart.y), Double(wp.x - edgeStart.x))
+            }
+            return atan2(Double(edgeEnd.y - edgeStart.y),
+                         Double(edgeEnd.x - edgeStart.x))
         }()
         let size: CGFloat = max(14, 18 / canvasScale)
         let label = edge.wrappedValue.label
@@ -900,6 +944,7 @@ struct EdgesView: View {
             Image(systemName: icon)
                 .font(.system(size: size * 0.45, weight: .bold))
                 .foregroundStyle(hasWaypoint ? Color.white : Color.accentColor)
+                .rotationEffect(.radians(lineAngle)) // v48: roterar med linjen
         }
         .contentShape(Circle().inset(by: -size * 0.5))
         .position(mid)
@@ -1062,19 +1107,7 @@ struct EdgesView: View {
             }
         }
 
-        var path = Path()
-        path.move(to: start)
-        if let wp = edge.waypoints.first {
-            // Mjuk böj via waypoint (quadratic → quadratic)
-            path.addQuadCurve(to: wp.point, control: cp1)
-            path.addQuadCurve(to: end,      control: cp2)
-        } else {
-            // Klassisk S-kurva (cubic bezier)
-            path.addCurve(to: end, control1: cp1, control2: cp2)
-        }
-        context.stroke(path, with: .color(.primary.opacity(0.7)), style: strokeStyle)
-
-        // Pilhuvuden — vinkel från bezier-tangenten vid endpoint
+        // Pilhuvud-vinklar (bezier-tangent vid endpoint)
         let endAngle: CGFloat
         let startAngle: CGFloat
         if let wp = edge.waypoints.first {
@@ -1084,6 +1117,35 @@ struct EdgesView: View {
             endAngle   = atan2(end.y   - cp2.y, end.x   - cp2.x)
             startAngle = atan2(start.y - cp1.y, start.x - cp1.x)
         }
+
+        // v48 Fel #1: dra in linjens endpoint med lineWidth/2 i den änden där
+        // pilspets ritas — så .round-cap inte sticker fram förbi spetsen
+        // (det gjorde tidigare att pilspetsen såg sned/asymmetrisk ut).
+        let halfLW = strokeStyle.lineWidth / 2
+        let endHasHead   = (edge.direction == .forward  || edge.direction == .bidirectional)
+        let startHasHead = (edge.direction == .backward || edge.direction == .bidirectional)
+        let lineEnd: CGPoint = endHasHead
+            ? CGPoint(x: end.x - halfLW * cos(endAngle),
+                      y: end.y - halfLW * sin(endAngle))
+            : end
+        let lineStart: CGPoint = startHasHead
+            ? CGPoint(x: start.x - halfLW * cos(startAngle),
+                      y: start.y - halfLW * sin(startAngle))
+            : start
+
+        var path = Path()
+        path.move(to: lineStart)
+        if let wp = edge.waypoints.first {
+            // Mjuk böj via waypoint (quadratic → quadratic)
+            path.addQuadCurve(to: wp.point, control: cp1)
+            path.addQuadCurve(to: lineEnd,  control: cp2)
+        } else {
+            // Klassisk S-kurva (cubic bezier)
+            path.addCurve(to: lineEnd, control1: cp1, control2: cp2)
+        }
+        context.stroke(path, with: .color(.primary.opacity(0.7)), style: strokeStyle)
+
+        // Pilhuvuden ritas vid ORIGINAL end/start (linjens cap har dragits in)
         switch edge.direction {
         case .forward:       drawArrowHead(context: context, tip: end,   angle: endAngle)
         case .backward:      drawArrowHead(context: context, tip: start, angle: startAngle)
