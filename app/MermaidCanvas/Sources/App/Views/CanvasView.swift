@@ -921,20 +921,23 @@ struct EdgesView: View {
         // v48 Fel #2: positionera mid på den FAKTISKA synliga linjen (mellan
         // edgePoints, inte mellan shape-centra). Beräkna också linjens vinkel
         // så att ikonen kan roteras med linjens fortsättning.
-        let edgeStart = edgePoint(for: fromShape, towards: toShape.position)
-        let edgeEnd   = edgePoint(for: toShape,   towards: fromShape.position)
+        // v50 F-03: vid bezier-routing runt obstakel måste mid räknas PÅ
+        // kurvan, annars hamnar handlen inuti obstaklet.
+        let anchors = edgeAnchors(edge: edge.wrappedValue,
+                                  fromShape: fromShape,
+                                  toShape: toShape)
+        let edgeStart = anchors.start
+        let edgeEnd   = anchors.end
         let mid: CGPoint = {
             if hasWaypoint { return edge.wrappedValue.waypoints[0].point }
-            return CGPoint(x: (edgeStart.x + edgeEnd.x) / 2,
-                           y: (edgeStart.y + edgeEnd.y) / 2)
+            return anchors.mid
         }()
         let lineAngle: Double = {
             if hasWaypoint {
                 let wp = edge.wrappedValue.waypoints[0].point
                 return atan2(Double(wp.y - edgeStart.y), Double(wp.x - edgeStart.x))
             }
-            return atan2(Double(edgeEnd.y - edgeStart.y),
-                         Double(edgeEnd.x - edgeStart.x))
+            return anchors.midAngle
         }()
         let size: CGFloat = max(14, 18 / canvasScale)
         let label = edge.wrappedValue.label
@@ -1095,6 +1098,14 @@ struct EdgesView: View {
                 guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }
                 // Hoppa även dolda noder (de syns inte, ska inte routa runt)
                 guard !hiddenShapeIds.contains(obstacle.id) else { return nil }
+                // v50: hoppa över container när pilen går mellan dess egna barn.
+                // Annars ser routing-algoritmen containern som obstakel och bezier-
+                // kontrollpunkterna dras långt utanför viewport (F-02 i bug-rapport).
+                if obstacle.type == .container,
+                   fromShape.childOfContainerId == obstacle.id
+                   || toShape.childOfContainerId == obstacle.id {
+                    return nil
+                }
                 let w = ShapeGeometry.width(for: obstacle)
                 let h = ShapeGeometry.height(for: obstacle)
                 // Lägg till lite margin runt obstacle för andningsutrymme
@@ -1237,6 +1248,75 @@ struct EdgesView: View {
         } else {
             return CGPoint(x: center.x, y: center.y + (dy > 0 ? hh : -hh))
         }
+    }
+
+    /// v50 F-03: bezier-anchors för en edge — start, end, bezier-mid och tangent vid t=0.5.
+    /// Använder samma routing-logik som `drawEdge` så midpoint-handle hamnar på den
+    /// faktiska synliga kurvan, även när bezier böjer sig runt obstakel.
+    private struct EdgeAnchors {
+        let start: CGPoint
+        let end: CGPoint
+        let cp1: CGPoint
+        let cp2: CGPoint
+        let mid: CGPoint
+        let midAngle: Double
+    }
+
+    private func edgeAnchors(edge: EdgeConnection,
+                             fromShape: ShapeNode,
+                             toShape: ShapeNode) -> EdgeAnchors {
+        let start: CGPoint
+        let end: CGPoint
+        if let wp = edge.waypoints.first {
+            start = edgePoint(for: fromShape, towards: wp.point)
+            end   = edgePoint(for: toShape,   towards: wp.point)
+        } else {
+            start = edgePoint(for: fromShape, towards: toShape.position)
+            end   = edgePoint(for: toShape,   towards: fromShape.position)
+        }
+        let n1 = outwardNormal(for: fromShape, at: start)
+        let n2 = outwardNormal(for: toShape,   at: end)
+        let dist    = hypot(end.x - start.x, end.y - start.y)
+        let tension = min(dist * 0.42, 95)
+        var cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
+        var cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
+        if edge.waypoints.isEmpty {
+            let obstacleBboxes: [CGRect] = shapes.compactMap { obstacle in
+                guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }
+                guard !hiddenShapeIds.contains(obstacle.id) else { return nil }
+                if obstacle.type == .container,
+                   fromShape.childOfContainerId == obstacle.id
+                   || toShape.childOfContainerId == obstacle.id {
+                    return nil
+                }
+                let w = ShapeGeometry.width(for: obstacle)
+                let h = ShapeGeometry.height(for: obstacle)
+                let margin: CGFloat = 12
+                return CGRect(x: obstacle.position.x - w/2 - margin,
+                              y: obstacle.position.y - h/2 - margin,
+                              width: w + margin * 2,
+                              height: h + margin * 2)
+            }
+            if EdgeRouting.hasObstacle(from: start, to: end, obstacles: obstacleBboxes) {
+                let routed = EdgeRouting.controlPoints(from: start, to: end, obstacles: obstacleBboxes)
+                cp1 = routed.cp1
+                cp2 = routed.cp2
+            }
+        }
+        // bezier vid t=0.5
+        let u: CGFloat = 0.5
+        let v: CGFloat = 1 - u
+        let mid = CGPoint(
+            x: v*v*v*start.x + 3*v*v*u*cp1.x + 3*v*u*u*cp2.x + u*u*u*end.x,
+            y: v*v*v*start.y + 3*v*v*u*cp1.y + 3*v*u*u*cp2.y + u*u*u*end.y
+        )
+        // tangent (derivative) vid t=0.5 ger linjens lutning där
+        let tx = 3*v*v*(cp1.x - start.x) + 6*v*u*(cp2.x - cp1.x) + 3*u*u*(end.x - cp2.x)
+        let ty = 3*v*v*(cp1.y - start.y) + 6*v*u*(cp2.y - cp1.y) + 3*u*u*(end.y - cp2.y)
+        let midAngle = atan2(Double(ty), Double(tx))
+        return EdgeAnchors(start: start, end: end,
+                           cp1: cp1, cp2: cp2,
+                           mid: mid, midAngle: midAngle)
     }
 
     /// v28: pilhuvuden med rundade hörn — stroke + fyllning med lineJoin: .round

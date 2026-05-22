@@ -29,7 +29,28 @@ Se `arkiv/ARKITEKTUR-MERMAID-v32.md` och `arkiv/ARKITEKTUR-MERMAID-v31.md` för 
 
 Se `arkiv/ARKITEKTUR-MERMAID-v25.md` till v30 för historia.
 
-## Planerat: v35
+## v50 (under utveckling)
+
+**Tema:** Visuell placerings-bugjakt + 2 root-cause-fixar
+
+- **Ny test-infrastruktur:** `UITests/V50PlacementTests.swift` + `UITests/V50PlacementMatrix.md`
+  + `Sources/App/UITestScenarios.swift` — 23 deterministiska scenarier byggs
+  via `-uitest-place-*` launch-args, screenshot per scenario, granskning post-hoc
+- **F-02 fix:** Pilar mellan barn i en container gick rakt upp ur skärmen.
+  Container sågs som obstakel av routing-algoritmen även för pilar mellan
+  dess egna barn. Fix i `CanvasView.drawEdge` + ny `edgeAnchors` — hoppa över
+  container när from/to har `childOfContainerId == container.id`.
+- **F-03 fix:** Midpoint-handle och kant-etikett saknades på böjda bezier-pilar.
+  Mid beräknades som rak mid mellan endpoints → hamnade inuti obstaklet.
+  Fix: ny `EdgeAnchors`-helper räknar mid + tangent vid bezier t=0.5.
+- Fullständig rapport: `UI-PLACERINGS-FYND-v49.md`
+
+## v49 (released)
+
+- Multi-agent-konsensus-metod för pilspets-asymmetri + minus-badge-state
+- Launch-arg-baserade test-scenarier för visuell verifiering
+
+## Planerat: v51+
 
 (Backlog — Kim styr prioritering)
 

@@ -103,7 +103,7 @@ struct ContentView: View {
                     .transition(.scale.combined(with: .opacity))
             }
         }
-        .onAppear { applyV49TestScenarioIfNeeded() }
+        .onAppear { applyUITestScenarioIfNeeded() }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,
@@ -380,21 +380,27 @@ struct ContentView: View {
         }
     }
 
-    /// v49: Programmatic test-scenario via launch-argument.
+    /// Programmatic test-scenarios via launch-argument.
     /// XCUITest:s connection.handle-drag fungerar inte reliably i sim,
-    /// så vi måste skapa pilen direkt på modellen för visuell verifiering.
+    /// så vi måste skapa scenarier direkt på modellen för visuell verifiering.
     ///
-    /// Args:
-    ///  -uitest-v49-rect-circle-arrow  → 2 former + 1 pil (horisontell) + markera from
-    ///  -uitest-v49-vertical-arrow     → 2 former + 1 pil (vertikal) + markera from
-    ///  -uitest-v49-collapsed          → samma + kollapsa from-shape
-    private func applyV49TestScenarioIfNeeded() {
+    /// Stödjer två generationer:
+    ///  • `-uitest-v49-*` → äldre kompakt-scenarier (rect-circle-arrow / vertical / collapsed)
+    ///  • `-uitest-place-NN-*` → v50 placerings-matris i UITestScenarios.swift
+    private func applyUITestScenarioIfNeeded() {
         let args = ProcessInfo.processInfo.arguments
-        guard args.contains(where: { $0.hasPrefix("-uitest-v49-") }) else { return }
+        let hasV49 = args.contains(where: { $0.hasPrefix("-uitest-v49-") })
+        let hasV50 = args.contains(where: { $0.hasPrefix("-uitest-place-") })
+        guard hasV49 || hasV50 else { return }
 
         // Vänta en frame så viewport hinner initieras
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             let center = viewportState.visibleCenterInCanvas
+            if hasV50 {
+                _ = UITestScenarios.apply(args: args, model: model, center: center)
+                return
+            }
+            // Legacy v49-scenarier behålls för bakåtkomp med befintliga tester.
             var rect = ShapeNode(type: .rectangle, position: CGPoint(x: center.x - 120, y: center.y))
             var circle = ShapeNode(type: .circle, position: CGPoint(x: center.x + 120, y: center.y))
             if args.contains("-uitest-v49-vertical-arrow") {
@@ -404,9 +410,7 @@ struct ContentView: View {
             model.shapes.append(rect)
             model.shapes.append(circle)
             model.addEdge(from: rect.id, to: circle.id)
-            // v49 Fel #3-fix: markera from-shape så minus-badge visas
             model.selectedShapeId = rect.id
-
             if args.contains("-uitest-v49-collapsed") {
                 model.toggleCollapse(id: rect.id)
             }

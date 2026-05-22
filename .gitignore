@@ -25,3 +25,9 @@ Package.resolved
 # Claude Code lokal-data
 .claude/
 DerivedData-device/
+
+# UI-bugjakt-screenshots (binärdata, behåll bara MD-rapporten)
+UI-PLACERINGS-FYND-v49/
+
+# Playwright MCP cache
+.playwright-mcp/
