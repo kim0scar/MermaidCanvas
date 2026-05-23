@@ -877,7 +877,28 @@ struct EdgesView: View {
                                       canvasScale: canvasScale,
                                       onTap: { onToggleCollapse(edge.from) })
                     } else if isFromSelected {
-                        EdgeStartCollapseBadge(position: from,
+                        // v50 F-06: minus-badge (vid from-edge) och midpoint-handle
+                        // (vid mid på pilen) kan överlappa när pilen är kort —
+                        // särskilt när from-edge ligger nära mid. Mät avståndet
+                        // från-edge → mid och skifta minus-badge perpendikulärt
+                        // när det är < ~40pt (badge-storlek + glipa).
+                        let toEdge = edgePoint(for: toShape, towards: fromShape.position)
+                        let midPt = CGPoint(x: (from.x + toEdge.x) / 2,
+                                            y: (from.y + toEdge.y) / 2)
+                        let midDist = hypot(midPt.x - from.x, midPt.y - from.y)
+                        let cdx = toShape.position.x - fromShape.position.x
+                        let cdy = toShape.position.y - fromShape.position.y
+                        let clen = hypot(cdx, cdy)
+                        let needShift = midDist < 80 && clen > 0.1
+                        let badgePos: CGPoint = {
+                            guard needShift else { return from }
+                            let nx = -cdy / clen      // perpendikulär enhetsvektor
+                            let ny = cdx / clen
+                            let perpShift: CGFloat = 22
+                            return CGPoint(x: from.x + nx * perpShift,
+                                           y: from.y + ny * perpShift)
+                        }()
+                        EdgeStartCollapseBadge(position: badgePos,
                                                canvasScale: canvasScale,
                                                onTap: { onToggleCollapse(edge.from) })
                     }
@@ -1084,7 +1105,11 @@ struct EdgesView: View {
         let n1 = outwardNormal(for: fromShape, at: start)
         let n2 = outwardNormal(for: toShape,   at: end)
         let dist    = hypot(end.x - start.x, end.y - start.y)
-        let tension = min(dist * 0.42, 95)
+        // v50 F-04: minskad från 0.42 → 0.18 så diagonala pilar blir mer raka.
+        // Lucidchart-böjning kvar för horisontella/vertikala (där normal och dir
+        // är parallella) men dämpad för diagonala (där normal är vinkelrät mot
+        // dir → ger annars en kraftig S-kurva).
+        let tension = min(dist * 0.18, 60)
         var cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
         var cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
 
@@ -1277,7 +1302,11 @@ struct EdgesView: View {
         let n1 = outwardNormal(for: fromShape, at: start)
         let n2 = outwardNormal(for: toShape,   at: end)
         let dist    = hypot(end.x - start.x, end.y - start.y)
-        let tension = min(dist * 0.42, 95)
+        // v50 F-04: minskad från 0.42 → 0.18 så diagonala pilar blir mer raka.
+        // Lucidchart-böjning kvar för horisontella/vertikala (där normal och dir
+        // är parallella) men dämpad för diagonala (där normal är vinkelrät mot
+        // dir → ger annars en kraftig S-kurva).
+        let tension = min(dist * 0.18, 60)
         var cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
         var cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
         if edge.waypoints.isEmpty {
