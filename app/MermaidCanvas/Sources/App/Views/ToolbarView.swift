@@ -220,8 +220,10 @@ struct ToolbarView: View {
                 }
                 shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
                     ZStack {
-                        DiamondShape()
-                            .stroke(Color.primary, lineWidth: 1.3)   // v44: slimmare stroke matchar SF symbols
+                        // v50.2 F-5: explicit cornerRadius=3 så chip-ikonen ser
+                        // kantigare ut och matchar canvas-formens proportioner.
+                        DiamondShape(cornerRadius: 3)
+                            .stroke(Color.primary, lineWidth: 1.3)
                             .frame(width: 26, height: 20)
                     }
                     .frame(width: 44, height: 44)

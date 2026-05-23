@@ -17,8 +17,12 @@ struct SelectionHandles: View {
         let rotationOffset: CGFloat = 36 / canvasScale
 
         ZStack {
-            // Streckad markeringsram runt formen
-            Rectangle()
+            // v50.2 F-6: streckad markeringsram följer formens egen
+            // cornerRadius så ramen ser ut att höra ihop med formen
+            // (rektangel/square/pill/container är rundade — diamond/
+            // processArrow har egen geometri och får rät bbox-ram).
+            RoundedRectangle(cornerRadius: selectionCornerRadius(for: shape),
+                             style: .continuous)
                 .stroke(Color.accentColor,
                         style: StrokeStyle(lineWidth: strokeWidth,
                                            dash: [6 / canvasScale, 4 / canvasScale]))
@@ -96,6 +100,30 @@ struct SelectionHandles: View {
         .position(pos)
         .gesture(rotationGesture)
         .accessibilityIdentifier("resize.rotate")
+    }
+
+    // MARK: - Selection-ram cornerRadius
+
+    /// v50.2 F-6: cornerRadius per formtyp så streckad markeringsram följer
+    /// formens egen geometri. Värdena ska matcha hur formerna ritas
+    /// (rektangel: 10, square: 14, pill: full kapsel). Diamond + processArrow
+    /// + circle har egna geometrier som inte är RoundedRectangle — där
+    /// faller vi tillbaka på 0 (rät bbox, känns OK för dessa).
+    private func selectionCornerRadius(for shape: ShapeNode) -> CGFloat {
+        switch shape.type {
+        case .rectangle, .container, .table:
+            return 10
+        case .square:
+            return 14
+        case .pill:
+            return min(ShapeGeometry.width(for: shape),
+                       ShapeGeometry.height(for: shape)) / 2
+        case .circle:
+            return min(ShapeGeometry.width(for: shape),
+                       ShapeGeometry.height(for: shape)) / 2
+        case .diamond, .processArrow, .line, .arrow, .link:
+            return 0
+        }
     }
 
     // MARK: - Positioner

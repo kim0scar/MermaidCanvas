@@ -35,15 +35,17 @@ struct EdgeStartCollapseBadge: View {
     var onTap: () -> Void
 
     var body: some View {
-        let size: CGFloat = max(18, 20 / canvasScale)
+        // v50.2 F-2: badge syntes knappt. Större (24/26pt), tjockare vit
+        // stroke (2pt) och systemPurple för högre kontrast mot vit canvas.
+        let size: CGFloat = max(24, 26 / canvasScale)
         Button(action: onTap) {
             Image(systemName: "minus")
                 .font(.system(size: size * 0.55, weight: .heavy))
                 .foregroundStyle(.white)
                 .frame(width: size, height: size)
-                .background(Color(.systemIndigo))
+                .background(Color(.systemPurple))
                 .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                .overlay(Circle().stroke(Color.white, lineWidth: 2))
         }
         .buttonStyle(.plain)
         .position(position)

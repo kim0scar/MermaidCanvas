@@ -316,8 +316,10 @@ struct ConnectionRubberBand: View {
 
 // MARK: - ConnectionHandles
 
-/// v44: ETT enskilt connection-handtag (höger sida) — alltid synligt på vald form.
-/// Drag från handtaget till annan form skapar en pil.
+/// v50.2 F-3: FYRA connection-handtag (top/höger/botten/vänster) — alltid
+/// synliga på vald form. Storlek matchar resize-handles (28pt) och de sitter
+/// LITE LÄNGRE UT (gap 10pt) så de inte krockar med formens kant eller med
+/// resize/rotation-handtag. Drag från handtag till annan form skapar pil.
 struct ConnectionHandles: View {
     let shape: ShapeNode
     let canvasScale: CGFloat
@@ -327,9 +329,15 @@ struct ConnectionHandles: View {
     var body: some View {
         let w = ShapeGeometry.width(for: shape)
         let h = ShapeGeometry.height(for: shape)
-        let size: CGFloat = max(20, 22 / canvasScale)
+        // v50.2 F-3: matcha resize-handles storlek (28pt) — tydligare och
+        // mer touch-vänliga.
+        let size: CGFloat = max(24, 28 / canvasScale)
+        let gap: CGFloat = size / 2 + 10 / canvasScale
         ZStack {
-            handle(offset: CGPoint(x: w/2 + size/2 + 6 / canvasScale, y: 0), size: size)
+            handle(offset: CGPoint(x:  w/2 + gap, y: 0),    icon: "arrow.right", accId: "connection.handle.right",  size: size)
+            handle(offset: CGPoint(x: -w/2 - gap, y: 0),    icon: "arrow.left",  accId: "connection.handle.left",   size: size)
+            handle(offset: CGPoint(x: 0, y: -h/2 - gap),    icon: "arrow.up",    accId: "connection.handle.top",    size: size)
+            handle(offset: CGPoint(x: 0, y:  h/2 + gap),    icon: "arrow.down",  accId: "connection.handle.bottom", size: size)
         }
         .frame(width: w, height: h)
         .position(shape.position)
@@ -337,10 +345,10 @@ struct ConnectionHandles: View {
     }
 
     @ViewBuilder
-    private func handle(offset: CGPoint, size: CGFloat) -> some View {
+    private func handle(offset: CGPoint, icon: String, accId: String, size: CGFloat) -> some View {
         ZStack {
             Circle().fill(Color.accentColor)
-            Image(systemName: "arrow.right")
+            Image(systemName: icon)
                 .font(.system(size: size * 0.50, weight: .bold))
                 .foregroundStyle(Color.white)
         }
@@ -353,7 +361,7 @@ struct ConnectionHandles: View {
                 .onChanged { v in onDragChanged(v.location) }
                 .onEnded { v in onDragEnded(v.location) }
         )
-        .accessibilityIdentifier("connection.handle")
+        .accessibilityIdentifier(accId)
     }
 }
 
@@ -1147,15 +1155,23 @@ struct EdgesView: View {
             }
         }
 
-        // Pilhuvud-vinklar (bezier-tangent vid endpoint)
+        // Pilhuvud-vinklar (bezier-tangent vid endpoint).
+        // v50.2 F-1: tidigare användes atan2(end - cp2) som matematiskt är
+        // exakt tangenten vid t=1, MEN när cp2 är nära end (kort pil eller
+        // låg tension) blir vektorn liten och atan2 numeriskt känslig →
+        // pilspetsen blir sned. Lösning: sampla bezier vid t=0.92 och peka
+        // från den punkten mot end. Det ger en stabil "near-endpoint-tangent"
+        // som matchar pilens visuella riktning även för korta pilar.
         let endAngle: CGFloat
         let startAngle: CGFloat
         if let wp = edge.waypoints.first {
             endAngle   = atan2(end.y   - wp.point.y, end.x   - wp.point.x)
             startAngle = atan2(start.y - wp.point.y, start.x - wp.point.x)
         } else {
-            endAngle   = atan2(end.y   - cp2.y, end.x   - cp2.x)
-            startAngle = atan2(start.y - cp1.y, start.x - cp1.x)
+            let nearEnd   = Self.cubicBezier(t: 0.92, p0: start, p1: cp1, p2: cp2, p3: end)
+            let nearStart = Self.cubicBezier(t: 0.08, p0: start, p1: cp1, p2: cp2, p3: end)
+            endAngle   = atan2(end.y   - nearEnd.y,   end.x   - nearEnd.x)
+            startAngle = atan2(start.y - nearStart.y, start.x - nearStart.x)
         }
 
         // v48 Fel #1: dra in linjens endpoint med lineWidth/2 i den änden där
@@ -1273,6 +1289,19 @@ struct EdgesView: View {
         } else {
             return CGPoint(x: center.x, y: center.y + (dy > 0 ? hh : -hh))
         }
+    }
+
+    /// v50.2 F-1: cubic bezier-evaluering vid godtyckligt t.
+    /// Används av drawEdge för pilspets-tangent vid t=0.92/0.08 (stabilare
+    /// än atan2(end-cp2) för korta pilar).
+    static func cubicBezier(t: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint, p3: CGPoint) -> CGPoint {
+        let u = 1 - t
+        let uu = u * u, uuu = uu * u
+        let tt = t * t, ttt = tt * t
+        return CGPoint(
+            x: uuu * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * p3.x,
+            y: uuu * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * p3.y
+        )
     }
 
     /// v50 F-03: bezier-anchors för en edge — start, end, bezier-mid och tangent vid t=0.5.

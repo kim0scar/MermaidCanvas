@@ -3,5 +3,5 @@ import Foundation
 /// Single source of truth för MermaidCanvas-versionsnummer.
 /// Bumpas till nästa nummer vid varje deploy enligt VERSIONSHANTERING.md.
 enum AppVersion {
-    static let current: String = "v50.1"
+    static let current: String = "v50.2"
 }
