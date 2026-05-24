@@ -39,6 +39,8 @@ struct ContentView: View {
     @State private var showMermaidImport: Bool = false
     /// v41: tabell-redigeraren
     @State private var tableEditingShapeId: UUID? = nil
+    /// v50.4: visa Component Gallery (debug/visuell verifiering)
+    @State private var showComponentGallery: Bool = false
 
     var body: some View {
         ZStack {
@@ -103,7 +105,23 @@ struct ContentView: View {
                     .transition(.scale.combined(with: .opacity))
             }
         }
-        .onAppear { applyUITestScenarioIfNeeded() }
+        .onAppear {
+            applyUITestScenarioIfNeeded()
+            // v50.4: launch-arg → visa Component Gallery direkt
+            if ProcessInfo.processInfo.arguments.contains("-uitest-component-gallery") {
+                showComponentGallery = true
+            }
+        }
+        .sheet(isPresented: $showComponentGallery) {
+            NavigationStack {
+                ComponentGallery()
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Klar") { showComponentGallery = false }
+                        }
+                    }
+            }
+        }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: editingBinding) {
             if let id = editingShapeId,

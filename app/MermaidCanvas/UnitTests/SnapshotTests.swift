@@ -125,6 +125,22 @@ final class SnapshotTests: XCTestCase {
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 240, height: 140)), record: .missing)
     }
 
+    // MARK: - v50.4 Cykel 2 — Hela Component Gallery (global konsistens)
+
+    func test_component_gallery_full() {
+        // En enda snapshot av hela Gallery-vyn → fångar global visuell
+        // konsistens mellan alla former, badges, edges. Om en form ändras
+        // i isolation men gör sviten visuellt inkonsekvent → upptäcks här.
+        let view = NavigationStack {
+            ComponentGallery()
+        }
+        assertSnapshot(
+            of: view,
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            record: .missing
+        )
+    }
+
     func test_processarrow_chip_vs_canvas_side_by_side() {
         let view = HStack(spacing: 30) {
             VStack(spacing: 4) {
