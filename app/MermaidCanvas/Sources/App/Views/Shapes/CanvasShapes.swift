@@ -72,8 +72,11 @@ struct ProcessArrowShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         let tip: CGFloat = rect.width * 0.35   // spets = 35% av bredden
-        // Säkerställ att radien inte överskrider tillgängliga sidor
-        let r = min(cornerRadius, min(rect.height / 2, (rect.width - tip) / 2, 12))
+        // v50.3 R1: skala radien PROPORTIONELLT mot höjden (max 18% av höjd)
+        // så liten chip (26×18) inte kollapsar till en lök, medan stor canvas-
+        // form (120×80) behåller mjuk rundning. v50.2 använde min(radie, h/2)
+        // → 8pt på 18pt höjd = 89% av halv-höjden → äter formen.
+        let r = min(cornerRadius, rect.height * 0.18, (rect.width - tip) / 2)
 
         // De fem hörnen i ordning runt formen
         let topLeft      = CGPoint(x: rect.minX,       y: rect.minY)

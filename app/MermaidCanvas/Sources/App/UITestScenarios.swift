@@ -46,6 +46,13 @@ enum UITestScenarios {
         "21-multi-select-with-edges":   place21MultiSelectEdges,
         "22-edge-after-resize":         place22EdgeAfterResize,
         "23-edge-with-label-curved":    place23EdgeLabelCurved,
+        // v50.3 nya scenarier för exploratorisk täckning
+        "29-container-with-label":      place29ContainerWithLabel,
+        "30-marker-mode-active":        place30MarkerModeActive,
+        "31-processarrow-isolated":     place31ProcessArrowIsolated,
+        "32-arrowheads-8-dirs":         place32Arrowheads8DirsClean,
+        "33-selected-pill":             place33SelectedPill,
+        "34-selected-diamond":          place34SelectedDiamond,
     ]
 
     // MARK: - Builders
@@ -286,5 +293,61 @@ enum UITestScenarios {
         if let edge = model.edges.last {
             model.setEdgeLabel(id: edge.id, label: "förbi")
         }
+    }
+
+    // MARK: - v50.3 nya scenarier för exploratorisk verifiering
+
+    private static func place29ContainerWithLabel(_ model: CanvasModel, _ c: CGPoint) {
+        var box = ShapeNode(type: .container, position: c, label: "Grupp")
+        box.widthMultiplier = 2.0
+        box.heightMultiplier = 1.5
+        let containerId = box.id
+        let child1 = ShapeNode(type: .circle,
+                               position: CGPoint(x: c.x - 80, y: c.y),
+                               childOfContainerId: containerId)
+        let child2 = ShapeNode(type: .circle,
+                               position: CGPoint(x: c.x + 80, y: c.y),
+                               childOfContainerId: containerId)
+        model.shapes.append(contentsOf: [box, child1, child2])
+    }
+
+    private static func place30MarkerModeActive(_ model: CanvasModel, _ c: CGPoint) {
+        let a = ShapeNode(type: .rectangle, position: CGPoint(x: c.x - 100, y: c.y - 80))
+        let b = ShapeNode(type: .circle,    position: CGPoint(x: c.x + 100, y: c.y - 80))
+        let d = ShapeNode(type: .diamond,   position: CGPoint(x: c.x,        y: c.y + 80))
+        model.shapes.append(contentsOf: [a, b, d])
+        // Simulera att marker-mode är på + att alla tre är markerade
+        model.toggleMarkerMode()
+        model.multiSelection = [a.id, b.id, d.id]
+    }
+
+    private static func place31ProcessArrowIsolated(_ model: CanvasModel, _ c: CGPoint) {
+        let a = ShapeNode(type: .processArrow, position: c, label: "Steg 1")
+        model.shapes.append(a)
+    }
+
+    private static func place32Arrowheads8DirsClean(_ model: CanvasModel, _ c: CGPoint) {
+        let hub = ShapeNode(type: .circle, position: c, label: "hub")
+        model.shapes.append(hub)
+        let r: CGFloat = 200
+        for i in 0..<8 {
+            let angle = CGFloat(i) * .pi / 4
+            let pos = CGPoint(x: c.x + cos(angle) * r, y: c.y + sin(angle) * r)
+            let n = ShapeNode(type: .circle, position: pos)
+            model.shapes.append(n)
+            model.addEdge(from: hub.id, to: n.id)
+        }
+    }
+
+    private static func place33SelectedPill(_ model: CanvasModel, _ c: CGPoint) {
+        let p = ShapeNode(type: .pill, position: c, label: "Pill")
+        model.shapes.append(p)
+        model.selectedShapeId = p.id
+    }
+
+    private static func place34SelectedDiamond(_ model: CanvasModel, _ c: CGPoint) {
+        let d = ShapeNode(type: .diamond, position: c, label: "Beslut")
+        model.shapes.append(d)
+        model.selectedShapeId = d.id
     }
 }

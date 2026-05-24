@@ -19,6 +19,7 @@ struct MarkerOverlay: View {
                 .contentShape(Rectangle())
                 .frame(width: canvasContentSize.width, height: canvasContentSize.height)
                 .gesture(dragGesture)
+                .accessibilityIdentifier("marker.overlay")
 
             // Rita markerings-rektangel om vi drar
             if let start = startCanvas, let current = currentCanvas {
@@ -43,8 +44,10 @@ struct MarkerOverlay: View {
     }
 
     private var dragGesture: some Gesture {
-        // v46: minimumDistance > 0 så att taps passerar genom till shapes
-        DragGesture(minimumDistance: 8, coordinateSpace: .named("canvas"))
+        // v50.3 R5: minimumDistance höjd från 8 → 20 så att UIScrollView's
+        // egen pan-gesture (10 screen-pt) inte vinner och stjäl marquee-draget
+        // vid låg zoom. Tap-pass-through fungerar fortfarande.
+        DragGesture(minimumDistance: 20, coordinateSpace: .named("canvas"))
             .onChanged { v in
                 if startCanvas == nil {
                     startCanvas = v.startLocation
@@ -66,9 +69,18 @@ struct MarkerOverlay: View {
             width: abs(current.x - start.x),
             height: abs(current.y - start.y)
         )
-        let inside = model.shapes
-            .filter { rect.contains($0.position) }
-            .map { $0.id }
+        // v50.3 R5: bbox-intersect istället för center-baserad hitTest.
+        // Tidigare missades stora former vars CENTER låg utanför rect även
+        // om större delen av formen syntes inom. Nu fångas alla former som
+        // OVERLAPPAR rect, vilket är användarens förväntning.
+        let inside = model.shapes.filter { shape in
+            let w = ShapeGeometry.width(for: shape)
+            let h = ShapeGeometry.height(for: shape)
+            let bbox = CGRect(x: shape.position.x - w / 2,
+                              y: shape.position.y - h / 2,
+                              width: w, height: h)
+            return rect.intersects(bbox)
+        }.map { $0.id }
         model.multiSelection = Set(inside)
     }
 }

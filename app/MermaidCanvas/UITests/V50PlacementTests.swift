@@ -46,4 +46,11 @@ final class V50PlacementTests: XCTestCase {
     @MainActor func test_place_21_multi_select_with_edges()  { runScenario("21-multi-select-with-edges") }
     @MainActor func test_place_22_edge_after_resize()        { runScenario("22-edge-after-resize") }
     @MainActor func test_place_23_edge_with_label_curved()   { runScenario("23-edge-with-label-curved") }
+    // v50.3 nya scenarier (R3, R5, R1, R4, F-6)
+    @MainActor func test_place_29_container_with_label()     { runScenario("29-container-with-label") }
+    @MainActor func test_place_30_marker_mode_active()       { runScenario("30-marker-mode-active") }
+    @MainActor func test_place_31_processarrow_isolated()    { runScenario("31-processarrow-isolated") }
+    @MainActor func test_place_32_arrowheads_8_dirs()        { runScenario("32-arrowheads-8-dirs") }
+    @MainActor func test_place_33_selected_pill()            { runScenario("33-selected-pill") }
+    @MainActor func test_place_34_selected_diamond()         { runScenario("34-selected-diamond") }
 }

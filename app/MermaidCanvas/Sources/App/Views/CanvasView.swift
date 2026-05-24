@@ -437,7 +437,10 @@ struct ShapeView: View {
             if shape.type == .line || shape.type == .arrow {
                 FreeLineView(shape: shape, stroke: effectiveStroke)
             }
-            if shape.showLabel {
+            // v50.3 R3: Containers label hanteras via separat .overlay nedan
+            // (Lucidchart-stil ovanför ramen). Andra former behåller centrerad
+            // text inuti ZStack:en.
+            if shape.showLabel && shape.type != .container {
                 Text(formattedLabel)
                     .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
                                   weight: shape.textStyle.fontWeight,
@@ -453,6 +456,31 @@ struct ShapeView: View {
                height: ShapeGeometry.height(for: shape))
         .rotationEffect(.degrees(shape.rotation))
         .opacity(markerMode && !edgeMode ? 0.6 : 1.0)
+        // v50.3 R3: Container-label OVANFÖR ramen (Lucidchart-stil).
+        // .overlay tillåter att text-frame går utanför container-frame:n
+        // utan att klippas. Padding + bakgrund ger "tab"-känsla.
+        .overlay(alignment: .top) {
+            if shape.type == .container && shape.showLabel && !shape.label.isEmpty {
+                Text(formattedLabel)
+                    .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
+                                  weight: shape.textStyle.fontWeight,
+                                  design: .rounded))
+                    .foregroundStyle(Color.primary)
+                    .lineLimit(1)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color(.systemBackground))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(shape.category.strokeColor, lineWidth: 1)
+                            )
+                    )
+                    .offset(y: -14)
+                    .rotationEffect(.degrees(-shape.rotation))
+            }
+        }
         .overlay(alignment: .topTrailing) {
             if !shape.note.isEmpty && !markerMode {
                 NoteBadge(canvasScale: canvasScale, onTap: onShowNote)
@@ -1165,8 +1193,21 @@ struct EdgesView: View {
         let endAngle: CGFloat
         let startAngle: CGFloat
         if let wp = edge.waypoints.first {
-            endAngle   = atan2(end.y   - wp.point.y, end.x   - wp.point.x)
-            startAngle = atan2(start.y - wp.point.y, start.x - wp.point.x)
+            // v50.3 R4: waypoint-grenen behöver samma "near-endpoint-tangent"
+            // som cubic-grenen. Quad-bezier sampling vid t=0.90 / 0.10.
+            // Q(t) = (1-t)²·P0 + 2(1-t)t·CP + t²·P1
+            func quad(_ t: CGFloat, _ p0: CGPoint, _ cp: CGPoint, _ p1: CGPoint) -> CGPoint {
+                let u = 1 - t
+                return CGPoint(
+                    x: u * u * p0.x + 2 * u * t * cp.x + t * t * p1.x,
+                    y: u * u * p0.y + 2 * u * t * cp.y + t * t * p1.y
+                )
+            }
+            // Linjen är två quad-bezier: start → wp via cp1, wp → end via cp2
+            let nearEnd   = quad(0.90, wp.point, cp2, end)
+            let nearStart = quad(0.10, start, cp1, wp.point)
+            endAngle   = atan2(end.y   - nearEnd.y,   end.x   - nearEnd.x)
+            startAngle = atan2(start.y - nearStart.y, start.x - nearStart.x)
         } else {
             let nearEnd   = Self.cubicBezier(t: 0.92, p0: start, p1: cp1, p2: cp2, p3: end)
             let nearStart = Self.cubicBezier(t: 0.08, p0: start, p1: cp1, p2: cp2, p3: end)
