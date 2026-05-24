@@ -9,15 +9,19 @@ struct EdgeStubBadge: View {
     var onTap: () -> Void
 
     var body: some View {
-        let size: CGFloat = max(20, 22 / canvasScale)
+        // v50.4: storlek + färg + stroke från DesignTokens — synkat med
+        // minus-badgen så de visuellt hänger ihop.
+        let size: CGFloat = max(DesignTokens.Badge.plusSize,
+                                (DesignTokens.Badge.plusSize + 2) / canvasScale)
         Button(action: onTap) {
             Image(systemName: "plus")
                 .font(.system(size: size * 0.55, weight: .heavy))
                 .foregroundStyle(.white)
                 .frame(width: size, height: size)
-                .background(Color(.systemIndigo))
+                .background(DesignTokens.Badge.plusColor)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                .overlay(Circle().stroke(Color.white,
+                                         lineWidth: DesignTokens.Badge.plusStrokeWidth))
         }
         .buttonStyle(.plain)
         .position(position)
@@ -35,18 +39,21 @@ struct EdgeStartCollapseBadge: View {
     var onTap: () -> Void
 
     var body: some View {
-        // v50.3 R2: ännu större (28/30) + shadow så badge syns även när
-        // 4 connection-handles trängs runt formen.
-        let size: CGFloat = max(28, 30 / canvasScale)
+        // v50.4: storlek + färg + stroke + shadow från DesignTokens.
+        let size: CGFloat = max(DesignTokens.Badge.minusSize,
+                                (DesignTokens.Badge.minusSize + 2) / canvasScale)
         Button(action: onTap) {
             Image(systemName: "minus")
                 .font(.system(size: size * 0.55, weight: .heavy))
                 .foregroundStyle(.white)
                 .frame(width: size, height: size)
-                .background(Color(.systemPurple))
+                .background(DesignTokens.Badge.minusColor)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white, lineWidth: 2))
-                .shadow(color: Color(.systemPurple).opacity(0.5), radius: 4, x: 0, y: 0)
+                .overlay(Circle().stroke(Color.white,
+                                         lineWidth: DesignTokens.Badge.minusStrokeWidth))
+                .shadow(color: DesignTokens.Badge.minusColor.opacity(0.5),
+                        radius: DesignTokens.Badge.minusShadowRadius,
+                        x: 0, y: 0)
         }
         .buttonStyle(.plain)
         .position(position)

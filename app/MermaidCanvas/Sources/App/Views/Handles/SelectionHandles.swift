@@ -110,20 +110,13 @@ struct SelectionHandles: View {
     /// + circle har egna geometrier som inte är RoundedRectangle — där
     /// faller vi tillbaka på 0 (rät bbox, känns OK för dessa).
     private func selectionCornerRadius(for shape: ShapeNode) -> CGFloat {
-        switch shape.type {
-        case .rectangle, .container, .table:
-            return 10
-        case .square:
-            return 14
-        case .pill:
-            return min(ShapeGeometry.width(for: shape),
-                       ShapeGeometry.height(for: shape)) / 2
-        case .circle:
-            return min(ShapeGeometry.width(for: shape),
-                       ShapeGeometry.height(for: shape)) / 2
-        case .diamond, .processArrow, .line, .arrow, .link:
-            return 0
-        }
+        // v50.4: delegerar till DesignTokens — så selection-ramen automatiskt
+        // matchar formens cornerRadius om den ändras centralt.
+        DesignTokens.Selection.cornerRadius(
+            for: shape.type,
+            width: ShapeGeometry.width(for: shape),
+            height: ShapeGeometry.height(for: shape)
+        )
     }
 
     // MARK: - Positioner

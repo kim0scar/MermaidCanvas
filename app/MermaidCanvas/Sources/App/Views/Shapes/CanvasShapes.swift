@@ -8,7 +8,9 @@ import SwiftUI
 /// v28: rundad romb/diamant — mjuka hörn istället för vassa spetsar.
 /// v35.1: fyller hela ramen (120×80) → bredare-än-hög romb som matchar Mermaid's {} render.
 struct DiamondShape: Shape {
-    var cornerRadius: CGFloat = 8
+    // v50.4: default läses från DesignTokens så chip + canvas matchar
+    // automatiskt. Kan fortfarande overridas per-instans om behövs.
+    var cornerRadius: CGFloat = DesignTokens.Shape.diamondCornerRadius
 
     func path(in rect: CGRect) -> Path {
         let top    = CGPoint(x: rect.midX, y: rect.minY)
@@ -56,7 +58,9 @@ struct DiamondShape: Shape {
 /// Liksidig kvadrat med rundade hörn — identisk med RoundedRectangle men kvadratisk.
 /// ShapeGeometry ger 80×80-ram; formen fyller den.
 struct SquareShape: Shape {
-    var cornerRadius: CGFloat = 14
+    // v50.4: default från DesignTokens. Tidigare 14 → divergerade med
+    // chip-rendering som hade 6.
+    var cornerRadius: CGFloat = DesignTokens.Shape.squareCornerRadius
     func path(in rect: CGRect) -> Path {
         Path(roundedRect: rect, cornerRadius: cornerRadius, style: .continuous)
     }
@@ -68,7 +72,8 @@ struct SquareShape: Shape {
 /// matchar rektangel/square/pill. Spetsen (rightmost punkt) hålls skarp för
 /// att behålla "processpil"-identiteten.
 struct ProcessArrowShape: Shape {
-    var cornerRadius: CGFloat = 8
+    // v50.4: default från DesignTokens.
+    var cornerRadius: CGFloat = DesignTokens.Shape.processArrowCornerRadius
 
     func path(in rect: CGRect) -> Path {
         let tip: CGFloat = rect.width * 0.35   // spets = 35% av bredden

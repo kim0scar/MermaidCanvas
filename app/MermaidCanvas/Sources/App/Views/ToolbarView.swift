@@ -220,11 +220,12 @@ struct ToolbarView: View {
                 }
                 shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
                     ZStack {
-                        // v50.2 F-5: explicit cornerRadius=3 så chip-ikonen ser
-                        // kantigare ut och matchar canvas-formens proportioner.
-                        DiamondShape(cornerRadius: 3)
-                            .stroke(Color.primary, lineWidth: 1.3)
-                            .frame(width: 26, height: 20)
+                        // v50.4: läser från DesignTokens — samma cornerRadius
+                        // som canvas-rendering, ingen tyst divergens längre.
+                        DiamondShape(cornerRadius: DesignTokens.Shape.diamondCornerRadius)
+                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                            .frame(width: DesignTokens.Chip.diamondIconWidth,
+                                   height: DesignTokens.Chip.diamondIconHeight)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -236,9 +237,11 @@ struct ToolbarView: View {
                 }
                 shapeChipGeneric(type: .processArrow, accId: "chip.processArrow", onTap: { model.addShape(.processArrow, at: canvasCenter) }) {
                     ZStack {
-                        ProcessArrowShape()
-                            .stroke(Color.primary, lineWidth: 1.3)   // v44: slimmare stroke matchar SF symbols
-                            .frame(width: 26, height: 18)
+                        // v50.4: DesignTokens — chip + canvas läser från samma källa.
+                        ProcessArrowShape(cornerRadius: DesignTokens.Shape.processArrowCornerRadius)
+                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                            .frame(width: DesignTokens.Chip.processArrowIconWidth,
+                                   height: DesignTokens.Chip.processArrowIconHeight)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
