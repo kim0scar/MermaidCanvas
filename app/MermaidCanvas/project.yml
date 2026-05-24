@@ -5,6 +5,11 @@ options:
     iOS: "17.0"
   createIntermediateGroups: true
 
+packages:
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: 1.18.0
+
 settings:
   base:
     DEVELOPMENT_TEAM: SFXR8MV6MP
@@ -61,6 +66,7 @@ targets:
       - path: UnitTests
     dependencies:
       - target: MermaidCanvas
+      - package: SnapshotTesting
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kimlundqvist.mermaidcanvas.unittests
