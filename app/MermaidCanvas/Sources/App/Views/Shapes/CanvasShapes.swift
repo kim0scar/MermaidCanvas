@@ -72,16 +72,16 @@ struct SquareShape: Shape {
 /// matchar rektangel/square/pill. Spetsen (rightmost punkt) hålls skarp för
 /// att behålla "processpil"-identiteten.
 struct ProcessArrowShape: Shape {
-    // v50.4: default från DesignTokens.
-    var cornerRadius: CGFloat = DesignTokens.Shape.processArrowCornerRadius
+    /// v50.5 F3: radie = procent av höjd (default 0.18) så chip OCH canvas får
+    /// proportionellt likvärdig rundning. Tidigare fixt 8pt clampades olika
+    /// (chip 18pt → 3.24pt vs canvas 80pt → 8pt). Procent → båda ~18% av höjd.
+    var cornerRadiusRatio: CGFloat = DesignTokens.Shape.processArrowCornerRadiusRatio
 
     func path(in rect: CGRect) -> Path {
         let tip: CGFloat = rect.width * 0.35   // spets = 35% av bredden
-        // v50.3 R1: skala radien PROPORTIONELLT mot höjden (max 18% av höjd)
-        // så liten chip (26×18) inte kollapsar till en lök, medan stor canvas-
-        // form (120×80) behåller mjuk rundning. v50.2 använde min(radie, h/2)
-        // → 8pt på 18pt höjd = 89% av halv-höjden → äter formen.
-        let r = min(cornerRadius, rect.height * 0.18, (rect.width - tip) / 2)
+        // Radie = procent av höjd, cap vid (rect.width - tip)/2 så geometrin
+        // inte degenererar på extremt smala former.
+        let r = min(rect.height * cornerRadiusRatio, (rect.width - tip) / 2)
 
         // De fem hörnen i ordning runt formen
         let topLeft      = CGPoint(x: rect.minX,       y: rect.minY)

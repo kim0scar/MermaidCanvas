@@ -51,6 +51,7 @@
 		66E7C0CA771E5C607A4F1B41 /* V49VisualVerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */; };
 		684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6F52E499ADD995928FF171 /* SnapshotTests.swift */; };
 		695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
+		6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */; };
 		6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */; };
 		6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969A68524F5A084A0839C4 /* DesignTokens.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
@@ -198,6 +199,7 @@
 		BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapseBadge.swift; sourceTree = "<group>"; };
 		C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRulesSheet.swift; sourceTree = "<group>"; };
 		C15C2D1CD9CB0FFE5A6F1C69 /* test_diamond_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
+		C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeContextMenu.swift; sourceTree = "<group>"; };
 		CB0A0E15AFE7F04DC3EFE060 /* EdgeLabelSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeLabelSheet.swift; sourceTree = "<group>"; };
 		CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableCanvas.swift; sourceTree = "<group>"; };
 		D1A3B497A1E73B822E786868 /* test_square_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_square_shape.1.png; sourceTree = "<group>"; };
@@ -292,6 +294,7 @@
 				FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */,
 				C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */,
 				D35F5529A9079DF8958E486C /* PreviewSheet.swift */,
+				C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */,
 				2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */,
 				23D164BF747C4ACF00F0921D /* ToolbarView.swift */,
 				3F2CBADEE919A0EC993D21F6 /* Debug */,
@@ -688,6 +691,7 @@
 				F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */,
 				C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */,
 				150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */,
+				6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */,
 				46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */,
 				12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */,
 				0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */,

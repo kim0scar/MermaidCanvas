@@ -232,13 +232,26 @@ struct ToolbarView: View {
                     .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
                     .contentShape(Circle())
                 }
-                shapeChip(.pill,         "capsule",          accId: "chip.pill") {
-                    model.addShape(.pill, at: canvasCenter)
+                shapeChipGeneric(type: .pill, accId: "chip.pill", onTap: { model.addShape(.pill, at: canvasCenter) }) {
+                    ZStack {
+                        // v50.5 F2: explicit Capsule i samma proportion som
+                        // canvas-pill (150×80 = 1.875:1). Ersätter SF Symbol
+                        // "capsule" som ritade en annan form än canvas-renderingen.
+                        Capsule(style: .continuous)
+                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                            .frame(width: DesignTokens.Chip.pillIconWidth,
+                                   height: DesignTokens.Chip.pillIconHeight)
+                    }
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    .contentShape(Circle())
                 }
                 shapeChipGeneric(type: .processArrow, accId: "chip.processArrow", onTap: { model.addShape(.processArrow, at: canvasCenter) }) {
                     ZStack {
-                        // v50.4: DesignTokens — chip + canvas läser från samma källa.
-                        ProcessArrowShape(cornerRadius: DesignTokens.Shape.processArrowCornerRadius)
+                        // v50.5 F3: ProcessArrow läser ratio-token — chip och canvas
+                        // får visuellt likvärdig rundning oavsett storlek.
+                        ProcessArrowShape(cornerRadiusRatio: DesignTokens.Shape.processArrowCornerRadiusRatio)
                             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
                             .frame(width: DesignTokens.Chip.processArrowIconWidth,
                                    height: DesignTokens.Chip.processArrowIconHeight)

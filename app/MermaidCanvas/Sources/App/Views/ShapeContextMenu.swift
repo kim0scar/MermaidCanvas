@@ -1,0 +1,55 @@
+import SwiftUI
+
+/// v50.5 F4: Egen popover-meny som ersätter SwiftUI's `.contextMenu`.
+///
+/// `.contextMenu` triggar UIKit's `UIContextMenuInteraction` som visar en
+/// snapshot-preview av target-vyn (mörk blurred overlay) innan menyn —
+/// vilket gav den svarta flashen Kim såg. Egen popover undviker det helt.
+struct ShapeContextMenu: View {
+    let noteIsEmpty: Bool
+    let onEdit: () -> Void
+    let onDuplicate: () -> Void
+    let onShowNote: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            menuItem(label: "Redigera",
+                     systemImage: "pencil",
+                     action: onEdit)
+            menuItem(label: "Duplicera",
+                     systemImage: "plus.square.on.square",
+                     action: onDuplicate)
+            menuItem(label: noteIsEmpty ? "Lägg till anteckning" : "Visa anteckning",
+                     systemImage: "note.text",
+                     action: onShowNote)
+            Divider().padding(.vertical, 4)
+            menuItem(label: "Ta bort",
+                     systemImage: "trash",
+                     destructive: true,
+                     action: onDelete)
+        }
+        .padding(.vertical, 6)
+        .frame(minWidth: 220)
+    }
+
+    @ViewBuilder
+    private func menuItem(label: String,
+                          systemImage: String,
+                          destructive: Bool = false,
+                          action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: systemImage)
+                    .frame(width: 20)
+                Text(label)
+                Spacer()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .foregroundStyle(destructive ? Color.red : Color.primary)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}

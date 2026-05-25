@@ -28,20 +28,23 @@ extension DesignTokens {
         static let squareCornerRadius: CGFloat = 10
 
         // ProcessArrow (pentagon)
-        /// Hörn-radie för processArrow — gäller de fyra raka hörnen
-        /// (spetsen hålls skarp). Skala automatiskt mot rect-höjd
-        /// (se ProcessArrowShape.path för clamp-logik).
-        static let processArrowCornerRadius: CGFloat = 8
+        /// v50.5 F3: Hörn-radie för processArrow ANGES SOM PROCENT av rect-höjd
+        /// så chip (liten) OCH canvas (stor) får visuellt likvärdig rundning.
+        /// 0.18 = 18% av höjd. Chip 18pt → 3.24pt, canvas 80pt → 14.4pt
+        /// — samma proportion mellan radie och form-storlek.
+        static let processArrowCornerRadiusRatio: CGFloat = 0.18
 
         // Rectangle / Container / Table
         /// Standard rektangel-radie för alla rektangulära former.
         static let rectangleCornerRadius: CGFloat = 10
 
         // Stroke-widths
-        /// Chip-stroke (toolbar).
-        static let chipStrokeWidth: CGFloat = 1.3
+        /// v50.5 F1: chip + canvas använder SAMMA stroke-width så de inte
+        /// divergerar. 1.5pt är en bra mellan-väg som ser ren ut på båda
+        /// storlekar (26×20 chip och 120×80 canvas).
+        static let chipStrokeWidth: CGFloat = 1.5
         /// Canvas-stroke (faktisk form på canvas).
-        static let canvasStrokeWidth: CGFloat = 2.0
+        static let canvasStrokeWidth: CGFloat = 1.5
     }
 }
 
@@ -107,5 +110,11 @@ extension DesignTokens {
 
         static let processArrowIconWidth: CGFloat = 26
         static let processArrowIconHeight: CGFloat = 18
+
+        /// v50.5 F2: explicit pill-chip-ikon med Capsule (tidigare användes
+        /// SF Symbol "capsule" som inte matchade canvas-formens proportion).
+        /// 30×16 = 1.875:1, samma ratio som canvas-pill (150×80).
+        static let pillIconWidth: CGFloat = 30
+        static let pillIconHeight: CGFloat = 16
     }
 }

@@ -397,6 +397,10 @@ struct ShapeView: View {
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
     @State private var lastContainerDragTranslation: CGSize = .zero
+    /// v50.5 F4: egen popover-meny vid long-press — ersätter .contextMenu
+    /// som triggade SwiftUI's snapshot-preview (svart blurred flash) innan
+    /// menyn visades.
+    @State private var showContextMenu: Bool = false
 
     private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
     private var effectiveFill: Color { pack.fillColor }
@@ -521,15 +525,22 @@ struct ShapeView: View {
         // v40: drag aktiverat i markerMode OM formen ingår i multiSelection.
         // Utan mask .none läggs inget gesture-recognizer på (undviker UIScrollView-kollision).
         .gesture(unifiedDragGesture, including: gestureActive ? .all : .none)
-        .contextMenu {
-            Button { onEdit() } label: { Label("Redigera", systemImage: "pencil") }
-            Button { onDuplicate() } label: { Label("Duplicera", systemImage: "plus.square.on.square") }
-            Button { onShowNote() } label: {
-                Label(shape.note.isEmpty ? "Lägg till anteckning" : "Visa anteckning",
-                      systemImage: "note.text")
-            }
-            Divider()
-            Button(role: .destructive) { onDelete() } label: { Label("Ta bort", systemImage: "trash") }
+        // v50.5 F4: explicit long-press → popover (utan SwiftUI's contextMenu-
+        // snapshot-flash). simultaneousGesture så drag-gesten fortfarande
+        // fungerar. 0.45s = standard iOS long-press-känsla.
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.45)
+                .onEnded { _ in showContextMenu = true }
+        )
+        .popover(isPresented: $showContextMenu) {
+            ShapeContextMenu(
+                noteIsEmpty: shape.note.isEmpty,
+                onEdit:      { showContextMenu = false; onEdit() },
+                onDuplicate: { showContextMenu = false; onDuplicate() },
+                onShowNote:  { showContextMenu = false; onShowNote() },
+                onDelete:    { showContextMenu = false; onDelete() }
+            )
+            .presentationCompactAdaptation(.popover)
         }
     }
 
@@ -913,24 +924,19 @@ struct EdgesView: View {
                                       canvasScale: canvasScale,
                                       onTap: { onToggleCollapse(edge.from) })
                     } else if isFromSelected {
-                        // v50 F-06: minus-badge (vid from-edge) och midpoint-handle
-                        // (vid mid på pilen) kan överlappa när pilen är kort —
-                        // särskilt när from-edge ligger nära mid. Mät avståndet
-                        // från-edge → mid och skifta minus-badge perpendikulärt
-                        // när det är < ~40pt (badge-storlek + glipa).
-                        let toEdge = edgePoint(for: toShape, towards: fromShape.position)
-                        let midPt = CGPoint(x: (from.x + toEdge.x) / 2,
-                                            y: (from.y + toEdge.y) / 2)
-                        let midDist = hypot(midPt.x - from.x, midPt.y - from.y)
+                        // v50.5 F5: alltid skifta minus-badgen perpendikulärt UT
+                        // från pilens linje så den inte hamnar på from-shape:s
+                        // resize-handles (som sitter vid edge-punkten). 45pt =
+                        // utanför handle-zonen (handles ~28pt diam) men nära nog
+                        // att läsas som "tillhör denna pil".
                         let cdx = toShape.position.x - fromShape.position.x
                         let cdy = toShape.position.y - fromShape.position.y
                         let clen = hypot(cdx, cdy)
-                        let needShift = midDist < 80 && clen > 0.1
                         let badgePos: CGPoint = {
-                            guard needShift else { return from }
+                            guard clen > 0.1 else { return from }
                             let nx = -cdy / clen      // perpendikulär enhetsvektor
                             let ny = cdx / clen
-                            let perpShift: CGFloat = 22
+                            let perpShift: CGFloat = 45
                             return CGPoint(x: from.x + nx * perpShift,
                                            y: from.y + ny * perpShift)
                         }()
