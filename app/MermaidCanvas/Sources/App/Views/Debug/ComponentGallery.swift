@@ -199,43 +199,44 @@ struct ComponentGallery: View {
                 label: "rectangle",
                 shapeType: .rectangle,
                 selectionRadius: 10,
-                chipView: AnyView(Image(systemName: "rectangle").font(.system(size: 24))),
-                canvasView: AnyView(RoundedRectangle(cornerRadius: 10).stroke(Color.primary, lineWidth: 2))
+                chipView: AnyView(RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius * 0.25, style: .continuous).stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth).frame(width: 28, height: 18)),
+                canvasView: AnyView(RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius, style: .continuous).stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth))
             ),
             GalleryEntry(
                 label: "square",
                 shapeType: .square,
                 selectionRadius: 14,
-                chipView: AnyView(SquareShape(cornerRadius: 6).stroke(Color.primary, lineWidth: 1.3).frame(width: 22, height: 22)),
-                canvasView: AnyView(SquareShape().stroke(Color.primary, lineWidth: 2).frame(width: 80, height: 80))
+                chipView: AnyView(SquareShape().stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth).frame(width: DesignTokens.Chip.squareIconSide, height: DesignTokens.Chip.squareIconSide)),
+                // Square använder default cornerRadiusRatio (12.5%) → chip 22pt ger 2.75pt, canvas 80pt ger 10pt
+                canvasView: AnyView(SquareShape().stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth).frame(width: 80, height: 80))
             ),
             GalleryEntry(
                 label: "diamond",
                 shapeType: .diamond,
                 selectionRadius: 0,
-                chipView: AnyView(DiamondShape(cornerRadius: 3).stroke(Color.primary, lineWidth: 1.3).frame(width: 26, height: 20)),
-                canvasView: AnyView(DiamondShape().stroke(Color.primary, lineWidth: 2))
+                chipView: AnyView(DiamondShape(cornerRadius: DesignTokens.Shape.diamondCornerRadius).stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth).frame(width: DesignTokens.Chip.diamondIconWidth, height: DesignTokens.Chip.diamondIconHeight)),
+                canvasView: AnyView(DiamondShape().stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth))
             ),
             GalleryEntry(
                 label: "pill",
                 shapeType: .pill,
                 selectionRadius: 40,
-                chipView: AnyView(Image(systemName: "capsule").font(.system(size: 24))),
-                canvasView: AnyView(Capsule().stroke(Color.primary, lineWidth: 2))
+                chipView: AnyView(Capsule(style: .continuous).stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth).frame(width: DesignTokens.Chip.pillIconWidth, height: DesignTokens.Chip.pillIconHeight)),
+                canvasView: AnyView(Capsule(style: .continuous).stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth))
             ),
             GalleryEntry(
                 label: "processArrow",
                 shapeType: .processArrow,
                 selectionRadius: 0,
-                chipView: AnyView(ProcessArrowShape().stroke(Color.primary, lineWidth: 1.3).frame(width: 26, height: 18)),
-                canvasView: AnyView(ProcessArrowShape().stroke(Color.primary, lineWidth: 2))
+                chipView: AnyView(ProcessArrowShape().stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth).frame(width: DesignTokens.Chip.processArrowIconWidth, height: DesignTokens.Chip.processArrowIconHeight)),
+                canvasView: AnyView(ProcessArrowShape().stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth))
             ),
             GalleryEntry(
                 label: "container",
                 shapeType: .container,
                 selectionRadius: 10,
-                chipView: AnyView(Image(systemName: "rectangle.dashed").font(.system(size: 24))),
-                canvasView: AnyView(RoundedRectangle(cornerRadius: 10).stroke(Color.primary, style: StrokeStyle(lineWidth: 2, dash: [6, 4])))
+                chipView: AnyView(RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius * 0.25, style: .continuous).stroke(Color.primary, style: StrokeStyle(lineWidth: DesignTokens.Shape.chipStrokeWidth, dash: [3, 2])).frame(width: 30, height: 20)),
+                canvasView: AnyView(RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius, style: .continuous).stroke(Color.primary, style: StrokeStyle(lineWidth: DesignTokens.Shape.canvasStrokeWidth, dash: [6, 4])))
             ),
             GalleryEntry(
                 label: "table",

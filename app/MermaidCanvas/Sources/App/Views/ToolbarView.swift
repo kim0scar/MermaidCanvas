@@ -209,14 +209,37 @@ struct ToolbarView: View {
         VStack(spacing: 8) {
             // Rad A — 7 grundformer
             HStack(spacing: 8) {
-                shapeChip(.circle,       "circle",           accId: "chip.circle") {
+                // v50.5 F7: circle behåller SF Symbol (matchar Circle exakt — ingen divergens).
+                shapeChip(.circle, "circle", accId: "chip.circle") {
                     model.addShape(.circle, at: canvasCenter)
                 }
-                shapeChip(.rectangle,    "rectangle",        accId: "chip.rectangle") {
-                    model.addShape(.rectangle, at: canvasCenter)
+                // v50.5 F7: rectangle nu custom (SF "rectangle" har raka hörn,
+                // canvas Rectangle har cornerRadius=10).
+                shapeChipGeneric(type: .rectangle, accId: "chip.rectangle", onTap: { model.addShape(.rectangle, at: canvasCenter) }) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius * 0.25,
+                                         style: .continuous)
+                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                            .frame(width: 28, height: 18)
+                    }
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    .contentShape(Circle())
                 }
-                shapeChip(.square,       "square",           accId: "chip.square") {
-                    model.addShape(.square, at: canvasCenter)
+                // v50.5 F7: square nu custom (SF "square" har raka hörn,
+                // canvas SquareShape har ratio-baserad rundning).
+                shapeChipGeneric(type: .square, accId: "chip.square", onTap: { model.addShape(.square, at: canvasCenter) }) {
+                    ZStack {
+                        SquareShape()
+                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                            .frame(width: DesignTokens.Chip.squareIconSide,
+                                   height: DesignTokens.Chip.squareIconSide)
+                    }
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    .contentShape(Circle())
                 }
                 shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
                     ZStack {
@@ -264,8 +287,21 @@ struct ToolbarView: View {
             }
             // v44: Rad B — text-chipet borttaget. container ersätter slot.
             HStack(spacing: 8) {
-                shapeChip(.container, "rectangle.dashed", accId: "chip.container") {
-                    model.addShape(.container, at: canvasCenter)
+                // v50.5 F7: container nu custom — dashed RoundedRectangle som
+                // matchar canvas-container-renderingen.
+                shapeChipGeneric(type: .container, accId: "chip.container", onTap: { model.addShape(.container, at: canvasCenter) }) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius * 0.25,
+                                         style: .continuous)
+                            .stroke(Color.primary,
+                                    style: StrokeStyle(lineWidth: DesignTokens.Shape.chipStrokeWidth,
+                                                       dash: [3, 2]))
+                            .frame(width: 30, height: 20)
+                    }
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    .contentShape(Circle())
                 }
                 shapeChip(.table, "tablecells",        accId: "chip.table", onTap: onAddTable)
                 shapeChip(.link,  "link",              accId: "chip.link",  onTap: onAddJumpLink)

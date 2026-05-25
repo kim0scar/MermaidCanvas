@@ -24,7 +24,12 @@ extension DesignTokens {
         static let diamondCornerRadius: CGFloat = 6
 
         // Square (kvadrat)
-        /// Hörn-radie för kvadrat — matchar mellan chip och canvas.
+        /// v50.5 F6: Hörn-radie som PROCENT av sida — chip OCH canvas får
+        /// visuellt likvärdig rundning. Tidigare fixt 10pt → chip 22pt fick
+        /// nästan cirkel-form (10/22 = 45%), canvas 80pt fick 10/80 = 12.5%.
+        /// Med ratio: båda får ~12.5% av sidan.
+        static let squareCornerRadiusRatio: CGFloat = 0.125
+        /// Kvarstår för bakåtkompatibilitet — använd i selection-corner.
         static let squareCornerRadius: CGFloat = 10
 
         // ProcessArrow (pentagon)

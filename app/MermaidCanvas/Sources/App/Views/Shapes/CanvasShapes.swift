@@ -58,11 +58,13 @@ struct DiamondShape: Shape {
 /// Liksidig kvadrat med rundade hörn — identisk med RoundedRectangle men kvadratisk.
 /// ShapeGeometry ger 80×80-ram; formen fyller den.
 struct SquareShape: Shape {
-    // v50.4: default från DesignTokens. Tidigare 14 → divergerade med
-    // chip-rendering som hade 6.
-    var cornerRadius: CGFloat = DesignTokens.Shape.squareCornerRadius
+    /// v50.5 F6: radie = procent av min(width, height) så chip OCH canvas
+    /// får visuellt likvärdig rundning. Default 12.5% från DesignTokens.
+    /// Behåller cornerRadius som override för fall där fixt värde behövs.
+    var cornerRadiusRatio: CGFloat = DesignTokens.Shape.squareCornerRadiusRatio
     func path(in rect: CGRect) -> Path {
-        Path(roundedRect: rect, cornerRadius: cornerRadius, style: .continuous)
+        let r = min(rect.width, rect.height) * cornerRadiusRatio
+        return Path(roundedRect: rect, cornerRadius: r, style: .continuous)
     }
 }
 

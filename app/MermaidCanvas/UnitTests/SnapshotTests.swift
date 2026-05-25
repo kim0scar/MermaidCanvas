@@ -3,27 +3,23 @@ import SwiftUI
 import SnapshotTesting
 @testable import MermaidCanvas
 
-/// v50.4 Cykel 1 — Snapshot testing av isolerade UI-komponenter.
-/// Första körningen genererar referensbilder i `__Snapshots__/SnapshotTests/`.
-/// Senare körningar jämför pixel-by-pixel och failar vid diff.
+/// v50.5 — Snapshot testing av isolerade UI-komponenter.
+/// LÄSER ALLA värden från DesignTokens så testen automatiskt följer med
+/// när vi ändrar tokens (samma mönster som chip/canvas-rendering).
 ///
-/// Syfte: fånga visuella regressioner automatiskt mellan iterationer
-/// (t.ex. att chip-ikonen ändras eller att en badge får fel storlek).
+/// Genererar baseline om saknas, jämför pixel-by-pixel annars.
 final class SnapshotTests: XCTestCase {
 
     override class func setUp() {
         super.setUp()
-        // v50.4: global record-mode .missing → skapa baseline om saknas,
-        // annars jämför pixel-by-pixel. Sätts via SnapshotTestingConfiguration
-        // som påverkar alla efterföljande assertSnapshot-calls i bundlen.
         SnapshotTesting.diffTool = .ksdiff
     }
 
-    // MARK: - Shape-rendering (canvas-storlek)
+    // MARK: - Canvas-storlek former
 
     func test_diamond_shape() {
         let view = DiamondShape()
-            .stroke(Color.black, lineWidth: 2)
+            .stroke(Color.black, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
             .frame(width: 120, height: 80)
             .padding(20)
             .background(Color.white)
@@ -32,7 +28,7 @@ final class SnapshotTests: XCTestCase {
 
     func test_processarrow_shape() {
         let view = ProcessArrowShape()
-            .stroke(Color.black, lineWidth: 2)
+            .stroke(Color.black, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
             .frame(width: 120, height: 80)
             .padding(20)
             .background(Color.white)
@@ -41,19 +37,30 @@ final class SnapshotTests: XCTestCase {
 
     func test_square_shape() {
         let view = SquareShape()
-            .stroke(Color.black, lineWidth: 2)
+            .stroke(Color.black, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
             .frame(width: 80, height: 80)
             .padding(20)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 120, height: 120)), record: .missing)
     }
 
-    // MARK: - Chip-rendering (toolbar-storlek)
+    /// v50.5: pill (Capsule) — canvas-storlek 150×80.
+    func test_pill_shape() {
+        let view = Capsule(style: .continuous)
+            .stroke(Color.black, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+            .frame(width: 150, height: 80)
+            .padding(20)
+            .background(Color.white)
+        assertSnapshot(of: view, as: .image(layout: .fixed(width: 190, height: 120)), record: .missing)
+    }
+
+    // MARK: - Chip-rendering (läser tokens)
 
     func test_diamond_chip() {
-        let view = DiamondShape(cornerRadius: 3)
-            .stroke(Color.primary, lineWidth: 1.3)
-            .frame(width: 26, height: 20)
+        let view = DiamondShape(cornerRadius: DesignTokens.Shape.diamondCornerRadius)
+            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+            .frame(width: DesignTokens.Chip.diamondIconWidth,
+                   height: DesignTokens.Chip.diamondIconHeight)
             .padding(10)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 46, height: 40)), record: .missing)
@@ -61,20 +68,34 @@ final class SnapshotTests: XCTestCase {
 
     func test_processarrow_chip() {
         let view = ProcessArrowShape()
-            .stroke(Color.primary, lineWidth: 1.3)
-            .frame(width: 26, height: 18)
+            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+            .frame(width: DesignTokens.Chip.processArrowIconWidth,
+                   height: DesignTokens.Chip.processArrowIconHeight)
             .padding(10)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 46, height: 38)), record: .missing)
     }
 
     func test_square_chip() {
-        let view = SquareShape(cornerRadius: 6)
-            .stroke(Color.primary, lineWidth: 1.3)
-            .frame(width: 22, height: 22)
+        // v50.5: använder default cornerRadiusRatio
+        let view = SquareShape()
+            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+            .frame(width: DesignTokens.Chip.squareIconSide,
+                   height: DesignTokens.Chip.squareIconSide)
             .padding(10)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 42, height: 42)), record: .missing)
+    }
+
+    /// v50.5: pill chip — explicit Capsule (matchar v50.5 ToolbarView-fix).
+    func test_pill_chip() {
+        let view = Capsule(style: .continuous)
+            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+            .frame(width: DesignTokens.Chip.pillIconWidth,
+                   height: DesignTokens.Chip.pillIconHeight)
+            .padding(10)
+            .background(Color.white)
+        assertSnapshot(of: view, as: .image(layout: .fixed(width: 50, height: 36)), record: .missing)
     }
 
     // MARK: - Edge-badges
@@ -101,63 +122,107 @@ final class SnapshotTests: XCTestCase {
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 60, height: 60)), record: .missing)
     }
 
-    // MARK: - Side-by-side chip vs canvas (kritiskt för v50.4 R-felet)
+    // MARK: - Side-by-side chip vs canvas (kärnan i F1/F2/F3)
 
-    func test_diamond_chip_vs_canvas_side_by_side() {
-        let view = HStack(spacing: 30) {
-            // Chip
+    /// Hjälpare: chip + canvas av samma form sida vid sida.
+    /// Använder tokens på BÅDA sidor → ändras tokens, ändras båda synkront.
+    @ViewBuilder
+    private func sideBySide<ChipView: View, CanvasView: View>(
+        @ViewBuilder chip: () -> ChipView,
+        @ViewBuilder canvas: () -> CanvasView
+    ) -> some View {
+        HStack(spacing: 30) {
             VStack(spacing: 4) {
-                DiamondShape(cornerRadius: 3)
-                    .stroke(Color.primary, lineWidth: 1.3)
-                    .frame(width: 26, height: 20)
+                chip()
                 Text("CHIP").font(.system(size: 8))
             }
-            // Canvas
             VStack(spacing: 4) {
-                DiamondShape()
-                    .stroke(Color.primary, lineWidth: 2)
-                    .frame(width: 120, height: 80)
+                canvas()
                 Text("CANVAS").font(.system(size: 8))
             }
         }
         .padding(20)
         .background(Color.white)
+    }
+
+    func test_diamond_chip_vs_canvas_side_by_side() {
+        let view = sideBySide(
+            chip: {
+                DiamondShape(cornerRadius: DesignTokens.Shape.diamondCornerRadius)
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                    .frame(width: DesignTokens.Chip.diamondIconWidth,
+                           height: DesignTokens.Chip.diamondIconHeight)
+            },
+            canvas: {
+                DiamondShape()
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+                    .frame(width: 120, height: 80)
+            }
+        )
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 240, height: 140)), record: .missing)
     }
 
-    // MARK: - v50.4 Cykel 2 — Hela Component Gallery (global konsistens)
+    func test_processarrow_chip_vs_canvas_side_by_side() {
+        let view = sideBySide(
+            chip: {
+                ProcessArrowShape()
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                    .frame(width: DesignTokens.Chip.processArrowIconWidth,
+                           height: DesignTokens.Chip.processArrowIconHeight)
+            },
+            canvas: {
+                ProcessArrowShape()
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+                    .frame(width: 120, height: 80)
+            }
+        )
+        assertSnapshot(of: view, as: .image(layout: .fixed(width: 240, height: 140)), record: .missing)
+    }
+
+    func test_pill_chip_vs_canvas_side_by_side() {
+        // v50.5: 280pt-bredd så canvas-pill (150pt) inte clippas.
+        let view = sideBySide(
+            chip: {
+                Capsule(style: .continuous)
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                    .frame(width: DesignTokens.Chip.pillIconWidth,
+                           height: DesignTokens.Chip.pillIconHeight)
+            },
+            canvas: {
+                Capsule(style: .continuous)
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+                    .frame(width: 150, height: 80)
+            }
+        )
+        assertSnapshot(of: view, as: .image(layout: .fixed(width: 280, height: 140)), record: .missing)
+    }
+
+    func test_square_chip_vs_canvas_side_by_side() {
+        let view = sideBySide(
+            chip: {
+                SquareShape()
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                    .frame(width: DesignTokens.Chip.squareIconSide,
+                           height: DesignTokens.Chip.squareIconSide)
+            },
+            canvas: {
+                SquareShape()
+                    .stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+                    .frame(width: 80, height: 80)
+            }
+        )
+        assertSnapshot(of: view, as: .image(layout: .fixed(width: 200, height: 140)), record: .missing)
+    }
+
+
+    // MARK: - Hela Component Gallery (global konsistens)
 
     func test_component_gallery_full() {
-        // En enda snapshot av hela Gallery-vyn → fångar global visuell
-        // konsistens mellan alla former, badges, edges. Om en form ändras
-        // i isolation men gör sviten visuellt inkonsekvent → upptäcks här.
-        let view = NavigationStack {
-            ComponentGallery()
-        }
+        let view = NavigationStack { ComponentGallery() }
         assertSnapshot(
             of: view,
             as: .image(layout: .device(config: .iPhone13Pro)),
             record: .missing
         )
-    }
-
-    func test_processarrow_chip_vs_canvas_side_by_side() {
-        let view = HStack(spacing: 30) {
-            VStack(spacing: 4) {
-                ProcessArrowShape()
-                    .stroke(Color.primary, lineWidth: 1.3)
-                    .frame(width: 26, height: 18)
-                Text("CHIP").font(.system(size: 8))
-            }
-            VStack(spacing: 4) {
-                ProcessArrowShape()
-                    .stroke(Color.primary, lineWidth: 2)
-                    .frame(width: 120, height: 80)
-                Text("CANVAS").font(.system(size: 8))
-            }
-        }
-        .padding(20)
-        .background(Color.white)
-        assertSnapshot(of: view, as: .image(layout: .fixed(width: 240, height: 140)), record: .missing)
     }
 }
