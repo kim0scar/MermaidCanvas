@@ -8,7 +8,7 @@ enum ShapeGeometry {
     /// v35.1/v36: typ-specifika basbredder/-höjder.
     static func typeBaseWidth(for type: ShapeType) -> CGFloat {
         switch type {
-        case .pill:         return 150   // 25% bredare oval
+        case .pill:         return 130   // v50.5 (v2): smalare så proportionen matchar pill-chipet och rectangeln bredvid
         case .square:       return 80    // liksidig kvadrat
         case .processArrow: return 110   // kompakt pil (spets 40% av bredden)
         case .container:    return 280   // v44: grupperande container ska rymma flera former
@@ -924,21 +924,30 @@ struct EdgesView: View {
                                       canvasScale: canvasScale,
                                       onTap: { onToggleCollapse(edge.from) })
                     } else if isFromSelected {
-                        // v50.5 F5: alltid skifta minus-badgen perpendikulärt UT
-                        // från pilens linje så den inte hamnar på from-shape:s
-                        // resize-handles (som sitter vid edge-punkten). 45pt =
-                        // utanför handle-zonen (handles ~28pt diam) men nära nog
-                        // att läsas som "tillhör denna pil".
+                        // v50.5 (v2) F5: minus-badgen placeras FRAMÅT på pilen
+                        // (in mot to-shape), 30pt från from-edge — INTE
+                        // perpendikulärt (perpendikulärt hamnar precis på
+                        // hörn-resize-handles eftersom edge-punkten sitter på
+                        // shape-kanten där handles också är).
+                        // Förra försöket med perpShift=45pt landade nedanför
+                        // bottom-right-handle. Genom att flytta badgen IN på
+                        // pilen kommer den mellan handle-zonen och midpoint-
+                        // handle, tydligt synlig utan kollision.
                         let cdx = toShape.position.x - fromShape.position.x
                         let cdy = toShape.position.y - fromShape.position.y
                         let clen = hypot(cdx, cdy)
                         let badgePos: CGPoint = {
                             guard clen > 0.1 else { return from }
-                            let nx = -cdy / clen      // perpendikulär enhetsvektor
-                            let ny = cdx / clen
-                            let perpShift: CGFloat = 45
-                            return CGPoint(x: from.x + nx * perpShift,
-                                           y: from.y + ny * perpShift)
+                            // v50.5 (v3) F5: 40% av pil-längd fram, cap 80pt.
+                            // På from-edge sitter en ConnectionHandle med
+                            // utgående directional-pil (~30pt diameter) som
+                            // 30pt-offset krockade med. 40% placerar badgen
+                            // tydligt mellan from-handle och midpoint-handle.
+                            let offset = min(80, clen * 0.40)
+                            let dxU = cdx / clen
+                            let dyU = cdy / clen
+                            return CGPoint(x: from.x + dxU * offset,
+                                           y: from.y + dyU * offset)
                         }()
                         EdgeStartCollapseBadge(position: badgePos,
                                                canvasScale: canvasScale,
