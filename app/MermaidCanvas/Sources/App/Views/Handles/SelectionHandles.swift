@@ -17,15 +17,11 @@ struct SelectionHandles: View {
         let rotationOffset: CGFloat = 36 / canvasScale
 
         ZStack {
-            // v50.2 F-6: streckad markeringsram följer formens egen
-            // cornerRadius så ramen ser ut att höra ihop med formen
-            // (rektangel/square/pill/container är rundade — diamond/
-            // processArrow har egen geometri och får rät bbox-ram).
-            RoundedRectangle(cornerRadius: selectionCornerRadius(for: shape),
-                             style: .continuous)
-                .stroke(Color.accentColor,
-                        style: StrokeStyle(lineWidth: strokeWidth,
-                                           dash: [6 / canvasScale, 4 / canvasScale]))
+            // v50.5 v3 F8: markeringsramen följer formens EGEN GEOMETRI —
+            // diamond får romb-formad ram, processArrow får pentagon-formad,
+            // circle får cirkel, pill får capsule. Tidigare alltid bbox vilket
+            // såg fel ut runt icke-rectangle-former.
+            selectionOutline(strokeWidth: strokeWidth)
                 .frame(width: w, height: h)
                 .rotationEffect(.degrees(shape.rotation))
                 .position(center)
@@ -100,6 +96,34 @@ struct SelectionHandles: View {
         .position(pos)
         .gesture(rotationGesture)
         .accessibilityIdentifier("resize.rotate")
+    }
+
+    // MARK: - Selection-ram (shape-baserad)
+
+    /// v50.5 v3 F8: ritar markerings-omkretsen i samma form som själva
+    /// formen — så diamond får romb-ram, circle får cirkel-ram, etc.
+    @ViewBuilder
+    private func selectionOutline(strokeWidth: CGFloat) -> some View {
+        let dashStyle = StrokeStyle(lineWidth: strokeWidth,
+                                    dash: [6 / canvasScale, 4 / canvasScale])
+        switch shape.type {
+        case .diamond:
+            DiamondShape().stroke(Color.accentColor, style: dashStyle)
+        case .processArrow:
+            ProcessArrowShape().stroke(Color.accentColor, style: dashStyle)
+        case .circle:
+            Circle().stroke(Color.accentColor, style: dashStyle)
+        case .pill:
+            Capsule(style: .continuous).stroke(Color.accentColor, style: dashStyle)
+        case .square:
+            SquareShape().stroke(Color.accentColor, style: dashStyle)
+        case .rectangle, .container, .table:
+            RoundedRectangle(cornerRadius: selectionCornerRadius(for: shape),
+                             style: .continuous)
+                .stroke(Color.accentColor, style: dashStyle)
+        case .line, .arrow, .link:
+            RoundedRectangle(cornerRadius: 0).stroke(Color.accentColor, style: dashStyle)
+        }
     }
 
     // MARK: - Selection-ram cornerRadius

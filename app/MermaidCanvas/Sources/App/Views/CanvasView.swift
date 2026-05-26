@@ -882,7 +882,8 @@ struct EdgesView: View {
                     let dx = toShape.position.x - fromShape.position.x
                     let dy = toShape.position.y - fromShape.position.y
                     let len = max(hypot(dx, dy), 1)
-                    let stubLen: CGFloat = 30
+                    // v50.5 v3 F9: 50pt matchar plus-badge-position nedan.
+                    let stubLen: CGFloat = 50
                     let stubEnd = CGPoint(x: from.x + stubLen * dx / len,
                                           y: from.y + stubLen * dy / len)
                     var stub = Path()
@@ -917,7 +918,10 @@ struct EdgesView: View {
                         let dx = toShape.position.x - fromShape.position.x
                         let dy = toShape.position.y - fromShape.position.y
                         let len = max(hypot(dx, dy), 1)
-                        let stubLen: CGFloat = 30
+                        // v50.5 v3 F9: 50pt (var 30) så plus-badge inte göms
+                        // bakom from-shape:s right-arrow connection-handle
+                        // när formen är markerad.
+                        let stubLen: CGFloat = 50
                         let stubEnd = CGPoint(x: from.x + stubLen * dx / len,
                                               y: from.y + stubLen * dy / len)
                         EdgeStubBadge(position: stubEnd,
