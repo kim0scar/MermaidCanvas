@@ -231,15 +231,20 @@ struct CanvasView: View {
                 }
             }
 
+            // v50.5 v4 F10: multi-selection-ram följer formens egen geometri
+            // (samma som SelectionHandles enkelmarkering). Tidigare alltid
+            // Rectangle() → bbox runt circle/diamond/pill.
             ForEach(model.shapes.filter { model.multiSelection.contains($0.id) }) { s in
-                Rectangle()
-                    .stroke(Color.accentColor,
-                            style: StrokeStyle(lineWidth: 2 / zoomScale,
-                                               dash: [5 / zoomScale, 4 / zoomScale]))
-                    .frame(width: ShapeGeometry.width(for: s) + 8,
-                           height: ShapeGeometry.height(for: s) + 8)
-                    .position(s.position)
-                    .allowsHitTesting(false)
+                SelectionOutline(
+                    shapeType: s.type,
+                    width: ShapeGeometry.width(for: s),
+                    height: ShapeGeometry.height(for: s),
+                    strokeWidth: 2 / zoomScale,
+                    canvasScale: zoomScale
+                )
+                .rotationEffect(.degrees(s.rotation))
+                .position(s.position)
+                .allowsHitTesting(false)
             }
 
             // Connection-handtag + selection-handtag på vald form
