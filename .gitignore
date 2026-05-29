@@ -31,3 +31,6 @@ UI-PLACERINGS-FYND-v49/
 
 # Playwright MCP cache
 .playwright-mcp/
+
+# UX-persona testkörningar (screenshots + JSON, lokala)
+.ux-personas-test/
