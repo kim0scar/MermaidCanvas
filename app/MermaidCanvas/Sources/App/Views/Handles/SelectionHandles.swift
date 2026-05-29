@@ -152,10 +152,13 @@ struct SelectionHandles: View {
                 let dx = v.location.x - shape.position.x
                 let dy = v.location.y - shape.position.y
                 let dist = sqrt(dx * dx + dy * dy)
-                let baseHalfDiag = sqrt(
-                    ShapeGeometry.baseWidth * ShapeGeometry.baseWidth +
-                    ShapeGeometry.baseHeight * ShapeGeometry.baseHeight
-                ) / 2
+                // v50.5 (v5) M1: räkna mot formens TYP-bas (container 280×200,
+                // pill 130, square 80…) — annars hoppade storleken direkt man
+                // grep handtaget (container → 2.4×) eftersom generisk 120×80
+                // inte matchar handtagets faktiska hörn-avstånd.
+                let bw = ShapeGeometry.typeBaseWidth(for: shape.type)
+                let bh = ShapeGeometry.typeBaseHeight(for: shape.type)
+                let baseHalfDiag = sqrt(bw * bw + bh * bh) / 2
                 let newMult = min(max(dist / baseHalfDiag, 0.3), 3.0)
                 shape.sizeMultiplier = newMult
                 shape.widthMultiplier = newMult
@@ -169,8 +172,11 @@ struct SelectionHandles: View {
             .onChanged { v in
                 let dx = abs(v.location.x - shape.position.x)
                 let dy = abs(v.location.y - shape.position.y)
-                let newW = min(max(dx / (ShapeGeometry.baseWidth / 2), 0.3), 3.0)
-                let newH = min(max(dy / (ShapeGeometry.baseHeight / 2), 0.3), 3.0)
+                // v50.5 (v5) M1: typ-bas även här (se proportionalResizeGesture).
+                let bw = ShapeGeometry.typeBaseWidth(for: shape.type)
+                let bh = ShapeGeometry.typeBaseHeight(for: shape.type)
+                let newW = min(max(dx / (bw / 2), 0.3), 3.0)
+                let newH = min(max(dy / (bh / 2), 0.3), 3.0)
                 shape.widthMultiplier = newW
                 shape.heightMultiplier = newH
             }

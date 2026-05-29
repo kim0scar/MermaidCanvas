@@ -88,8 +88,14 @@ enum MermaidParser {
     // MARK: - State-JSON (autoritativ)
 
     private static func parseStateJSON(_ markdown: String) -> ParsedCanvas? {
+        // v50.5 (v5) BUG1: matcha stäng-taggen som "\n-->" (egen rad) — INTE
+        // första "-->". En nod/notis med texten "A --> B" skrev tidigare ett
+        // rått "-->" inuti JSON-strängen, vilket trunkerade hela state-blocket
+        // och tappade ALL fidelity (positioner, färger, notiser…) till
+        // fallback-parsern. JSON escapar äkta radbrytningar som \n (2 tecken),
+        // så "\n-->" kan bara vara vår egen avslutningsrad (CanvasDocument:46-48).
         guard let start = markdown.range(of: "<!-- mermaidcanvas-state"),
-              let end = markdown.range(of: "-->", range: start.upperBound..<markdown.endIndex)
+              let end = markdown.range(of: "\n-->", range: start.upperBound..<markdown.endIndex)
         else { return nil }
         let jsonStr = String(markdown[start.upperBound..<end.lowerBound])
             .trimmingCharacters(in: .whitespacesAndNewlines)

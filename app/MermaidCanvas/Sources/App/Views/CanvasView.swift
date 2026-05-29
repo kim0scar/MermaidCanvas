@@ -535,7 +535,16 @@ struct ShapeView: View {
         // fungerar. 0.45s = standard iOS long-press-känsla.
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.45)
-                .onEnded { _ in showContextMenu = true }
+                .onEnded { _ in
+                    // v50.5 (v5) M3: i edge-mode betyder håll-in inget — popa
+                    // inte redigera-menyn då (användaren siktar på pil-ände).
+                    guard !edgeMode else { return }
+                    // v50.5 (v5) F13: haptic feedback (gamla .contextMenu gav
+                    // system-haptic gratis — popover gör inte det).
+                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                    generator.impactOccurred()
+                    showContextMenu = true
+                }
         )
         .popover(isPresented: $showContextMenu) {
             ShapeContextMenu(
@@ -718,6 +727,11 @@ private struct TableShapeBackground: View {
 
     var body: some View {
         GeometryReader { geo in
+            // v50.5 (v5) H1/H2: tabell-data redigeras tvåvägs via markdown —
+            // ett handredigerat 0 i rows/cols gav `1..<0` Range-krasch + div-by-zero.
+            // Klampa till minst 1 här så formen alltid är ritbar.
+            let rows = max(1, self.rows)
+            let cols = max(1, self.cols)
             let cellW = geo.size.width / CGFloat(cols)
             let cellH = geo.size.height / CGFloat(rows)
             ZStack {
@@ -947,12 +961,13 @@ struct EdgesView: View {
                         let clen = hypot(cdx, cdy)
                         let badgePos: CGPoint = {
                             guard clen > 0.1 else { return from }
-                            // v50.5 (v3) F5: 40% av pil-längd fram, cap 80pt.
-                            // På from-edge sitter en ConnectionHandle med
-                            // utgående directional-pil (~30pt diameter) som
-                            // 30pt-offset krockade med. 40% placerar badgen
-                            // tydligt mellan from-handle och midpoint-handle.
-                            let offset = min(80, clen * 0.40)
+                            // v50.5 (v5) F11: 55pt min, 40% av pil-längd, cap 80pt.
+                            // Connection-handle (← ↑ → ↓) i marker-mode sitter
+                            // ~30pt utanför shape-kanten. På korta pilar (clen<140)
+                            // hamnade 40%-offset (=56pt vid 140pt-pil) precis
+                            // utanför handle-zonen — men kortare pilar krockade.
+                            // 55pt minimum garanterar luft till handle-cirkeln.
+                            let offset = max(55, min(80, clen * 0.40))
                             let dxU = cdx / clen
                             let dyU = cdy / clen
                             return CGPoint(x: from.x + dxU * offset,

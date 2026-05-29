@@ -131,4 +131,62 @@ final class RoundTripTests: XCTestCase {
         XCTAssertTrue(packs.contains(.roadmap),
                       "Roadmap-pack ska bevaras")
     }
+
+    /// v50.5 (v5) BUG1-regression: en nod med "-->" i texten (extremt vanligt i
+    /// en flödesschema-app) skrev tidigare ett rått "-->" inuti JSON-state-blocket,
+    /// vilket trunkerade hela blocket och tappade ALL fidelity till fallback-parsern.
+    /// Testet bevisar att position + label nu överlever förlustfritt.
+    func testRoundTrip_LabelWithArrowArrow_PreservesFidelity() throws {
+        let original = ShapeNode(type: .rectangle,
+                                 position: CGPoint(x: 321, y: 234),
+                                 label: "A --> B",
+                                 note: "se flöde: start --> mål")
+        let doc = CanvasDocument(
+            title: "ArrowLabelTest",
+            shapes: [original],
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 800),
+            specType: .general,
+            platform: .blank,
+            activeShapePacks: [.basic],
+            collapsedIds: []
+        )
+        let parsed = MermaidParser.parse(doc.content)
+
+        XCTAssertEqual(parsed.shapes.count, 1,
+                       "Formen ska överleva trots --> i text")
+        guard let p = parsed.shapes.first else { return }
+        // Position bevarad på 1pt = JSON-state-blocket lästes (inte fallback-cirkeln)
+        XCTAssertEqual(p.position.x, 321, accuracy: 1.0,
+                       "BUG1: position.x ska bevaras (autoritativ JSON, ej fallback)")
+        XCTAssertEqual(p.position.y, 234, accuracy: 1.0,
+                       "BUG1: position.y ska bevaras")
+        XCTAssertEqual(p.label, "A --> B", "Label med --> ska bevaras ordagrant")
+        XCTAssertEqual(p.note, "se flöde: start --> mål",
+                       "Notis med --> ska bevaras ordagrant")
+    }
+
+    /// v50.5 (v5) H1/H2-regression: en tabell med 0 rader/kolumner (möjligt via
+    /// tvåvägs-markdown-redigering) fick TableShapeBackground att krascha på
+    /// `1..<0` Range + division by zero. Testet bevisar att parse + round-trip
+    /// inte kraschar och att tabellen överlever.
+    func testRoundTrip_TableZeroRowsCols_DoesNotCrash() throws {
+        let original = ShapeNode(type: .table,
+                                 position: CGPoint(x: 150, y: 150),
+                                 label: "Tom tabell",
+                                 tableRows: 0, tableCols: 0)
+        let doc = CanvasDocument(
+            title: "ZeroTableTest",
+            shapes: [original],
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 800),
+            specType: .general,
+            platform: .blank,
+            activeShapePacks: [.basic],
+            collapsedIds: []
+        )
+        // Får inte krascha vid parse
+        let parsed = MermaidParser.parse(doc.content)
+        XCTAssertEqual(parsed.shapes.count, 1, "Tabellen ska överleva round-trip")
+    }
 }
