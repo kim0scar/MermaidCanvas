@@ -2,7 +2,32 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v34 (under utveckling)
+## Aktuell version: v50.6 (deployad)
+
+*Tema:* Teknisk skuld + AI-driven UX-testning
+
+**v50.6 (denna session):**
+- **6 buggar fixade** (hittade via parallell Claude Code CLI-bugjakt + sim-agenter):
+  - BUG1 (missionskritisk): `-->` i nodtext/notis trunkerade JSON-state-blocket → all fidelity tappades. Fix: matcha `\n-->`.
+  - H1/H2: tabell med 0 rader/kol kraschade. Fix: `max(1,…)`-klamp.
+  - M1: container hoppade till 2,4× vid resize-handtag. Fix: typ-specifik bas.
+  - M3: long-press popade meny i edge-mode. Fix: `guard !edgeMode`.
+  - F11: minus-badge överlappade marker-handle. Fix: min 55pt offset.
+  - F13: haptic feedback på long-press.
+  - 2 regressionstester (RoundTripTests): `-->` i text + 0-rader-tabell.
+- **Nytt verktyg: `ux-personas-test` (v1.0)** — AI-testanvändare (6 personas) driver
+  appen i simulatorn via **idb** och hittar UX-fel + förbättringar. Smart-prompt-lager
+  expanderar korta svenska fraser till rika testuppdrag. Ligger i `~/.claude/skills/`.
+- **Första UX-svep:** `UX_PERSONA_AUDIT.md` — 14 unika fynd (0 krascher). Topp-3:
+  former staplas osynligt, ingen markeringsfeedback, blockerande nybörjarbuggar.
+
+> **OBS dokumentationsdrift:** `ARKITEKTUR-MERMAID.md` speglar v39 och historiken nedan
+> stannar vid v34. Koden har gått till v50.6 via många små iterationer utan full
+> arkitektur-omskrivning. En full ARKITEKTUR-uppdatering är en egen framtida uppgift.
+
+---
+
+## Tidigare: v34 (under utveckling)
 
 **Tema:** Canvas-omtag + modulär arkitektur
 
