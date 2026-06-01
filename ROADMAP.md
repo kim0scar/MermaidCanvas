@@ -2,11 +2,22 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v50.6 (deployad)
+## Aktuell version: v50.7 (deployad)
 
-*Tema:* Teknisk skuld + AI-driven UX-testning
+*Tema:* UX-svep efter persona-audit — tillgänglighet, feedback, upptäckbarhet
 
-**v50.6 (denna session):**
+**v50.7 (denna session):**
+- **UX-004** — kaskad-offset på nya former (slutar stapla osynligt; 4/6 personas).
+- **UX-005** — mjuk markerings-outline direkt vid tap (syntes tidigare först vid drag).
+- **UX-001/007/010/013** — läsbara VoiceOver-labels på toolbar-knappar, form-chips och resize/rotation-handtag (läste tidigare råa SF Symbol-namn).
+- **UX-006** — ≥44pt träffytor på collapse-badge och 100%-zoomknapp (visuell storlek oförändrad).
+- **UX-003** — tomt-tillstånd (`EmptyCanvasHint`) vägleder förstagångsanvändare.
+- **UX-012** — rektangel-chip tydligare avlångt (skiljs från kvadrat).
+- **Verifierat icke-buggar (ingen ändring):** UX-002 (undo korrekt per-steg), UX-008 (drag funkar på omarkerad form; snabbsvep = scroll by design), UX-014 (kosmetiskt animations-kantfall).
+- **Follow-up (kräver design):** UX-009 (pil-upptäckbarhet), UX-011 (tabell-redigerings-affordance).
+- Arkitektur-doc omskriven: `ARKITEKTUR-MERMAID.md` speglar nu v50.7 (var v39). v39 arkiverad.
+
+**v50.6 (föregående):**
 - **6 buggar fixade** (hittade via parallell Claude Code CLI-bugjakt + sim-agenter):
   - BUG1 (missionskritisk): `-->` i nodtext/notis trunkerade JSON-state-blocket → all fidelity tappades. Fix: matcha `\n-->`.
   - H1/H2: tabell med 0 rader/kol kraschade. Fix: `max(1,…)`-klamp.
