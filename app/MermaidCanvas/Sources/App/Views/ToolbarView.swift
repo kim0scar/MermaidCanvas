@@ -128,6 +128,7 @@ struct ToolbarView: View {
         .disabled(disabled)
         .opacity(disabled ? 0.35 : 1)
         .accessibilityIdentifier(accId)
+        .accessibilityLabel(a11yLabel(for: accId))
     }
 
     @ViewBuilder
@@ -138,6 +139,7 @@ struct ToolbarView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("toolbar.marker")
+        .accessibilityLabel(a11yLabel(for: "toolbar.marker"))
     }
 
     @ViewBuilder
@@ -150,6 +152,7 @@ struct ToolbarView: View {
         .buttonStyle(.plain)
         .disabled(!model.canUndo)
         .accessibilityIdentifier("toolbar.undo")
+        .accessibilityLabel(a11yLabel(for: "toolbar.undo"))
     }
 
     @ViewBuilder
@@ -166,6 +169,7 @@ struct ToolbarView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("toolbar.zoom")
+        .accessibilityLabel(a11yLabel(for: "toolbar.zoom"))
         .accessibilityValue(diagnosticsValue)
     }
 
@@ -315,6 +319,7 @@ struct ToolbarView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("chip.notepopup")
+                .accessibilityLabel(a11yLabel(for: "chip.notepopup"))
             }
         }
         .padding(.horizontal, 2)
@@ -332,6 +337,7 @@ struct ToolbarView: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("chip.pack.\(pack.rawValue)")
+        .accessibilityLabel(a11yLabel(for: "chip.pack.\(pack.rawValue)"))
     }
 
     /// v31: Form-paket-rad — togglar för UI och Prompt-Process.
@@ -436,6 +442,35 @@ struct ToolbarView: View {
     /// 3. .onEnded: ContentView läser location, konverterar via viewportState
     ///    och anropar handleDrop. Eller chipsens egen onEnded gör det direkt.
     @ViewBuilder
+    /// v50.7 UX-001/010/013: människo-läsbara VoiceOver-labels per accId.
+    /// Utan dessa läste VoiceOver råa SF Symbol-namn ("swatchpalette") eller
+    /// chip-id:t ("chip circle"). accId behålls separat för UI-tester.
+    private func a11yLabel(for accId: String) -> String {
+        switch accId {
+        case "toolbar.shapes": return "Former"
+        case "toolbar.packs": return "Formpaket"
+        case "toolbar.colors": return "Färg"
+        case "toolbar.textStyles": return "Textstil"
+        case "toolbar.marker": return "Markera flera"
+        case "toolbar.undo": return "Ångra"
+        case "toolbar.zoom": return "Zooma till 100 procent"
+        case "chip.circle": return "Cirkel"
+        case "chip.rectangle": return "Rektangel"
+        case "chip.square": return "Kvadrat"
+        case "chip.diamond": return "Romb"
+        case "chip.pill": return "Kapsel"
+        case "chip.processArrow": return "Processpil"
+        case "chip.container": return "Behållare"
+        case "chip.table": return "Tabell"
+        case "chip.link": return "Hopplänk"
+        case "chip.line": return "Linje"
+        case "chip.notepopup": return "Visa anteckningar"
+        default:
+            if accId.hasPrefix("chip.pack.") || accId.hasPrefix("toggle.pack.") { return "Formpaket" }
+            return accId
+        }
+    }
+
     private func shapeChip(_ type: ShapeType,
                            _ system: String,
                            accId: String,
@@ -469,7 +504,7 @@ struct ToolbarView: View {
             .onTapGesture { onTap() }
             .accessibilityElement(children: .ignore)
             .accessibilityAddTraits(.isButton)
-            .accessibilityLabel(Text(accId))
+            .accessibilityLabel(Text(a11yLabel(for: accId)))
             .accessibilityIdentifier(accId)
     }
 
@@ -504,7 +539,7 @@ struct ToolbarView: View {
             .onTapGesture { onTap() }
             .accessibilityElement(children: .ignore)
             .accessibilityAddTraits(.isButton)
-            .accessibilityLabel(Text(accId))
+            .accessibilityLabel(Text(a11yLabel(for: accId)))
             .accessibilityIdentifier(accId)
     }
 

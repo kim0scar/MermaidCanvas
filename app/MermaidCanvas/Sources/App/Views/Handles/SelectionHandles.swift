@@ -61,6 +61,8 @@ struct SelectionHandles: View {
         .position(pos)
         .gesture(proportionalResizeGesture)
         .accessibilityIdentifier("resize.proportional")
+        .accessibilityLabel("Ändra storlek proportionerligt")
+        .accessibilityAddTraits(.isButton)
     }
 
     /// Fri resize — bottom-left hörn, diagonal ikon (tydlig resize-signal).
@@ -80,6 +82,8 @@ struct SelectionHandles: View {
         .position(pos)
         .gesture(freeResizeGesture)
         .accessibilityIdentifier("resize.free")
+        .accessibilityLabel("Ändra storlek fritt")
+        .accessibilityAddTraits(.isButton)
     }
 
     /// Rotation — top-left hörn, transparent bakgrund (som övriga handles).
@@ -100,6 +104,8 @@ struct SelectionHandles: View {
         .position(pos)
         .gesture(rotationGesture)
         .accessibilityIdentifier("resize.rotate")
+        .accessibilityLabel("Rotera")
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Selection-ram cornerRadius
