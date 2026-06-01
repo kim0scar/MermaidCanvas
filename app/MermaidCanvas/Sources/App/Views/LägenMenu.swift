@@ -17,6 +17,9 @@ struct LägenMenu: View {
     /// v37: importera Mermaid-kod från AI.
     var onImportMermaid: () -> Void
 
+    /// v51.2: speglar valt skärmläge för bock-markering.
+    @AppStorage(OrientationStore.key) private var orientationMode: String = OrientationMode.portrait.rawValue
+
     var body: some View {
         Menu {
             // v40: Ny canvas överst + kompakt plattform-rad
@@ -52,6 +55,19 @@ struct LägenMenu: View {
                 Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")
             }
             .accessibilityIdentifier("menu.showCode")
+            Divider()
+            // v51.2: skärmläge porträtt/landskap (äkta orientering)
+            Menu {
+                Button { OrientationStore.set(.portrait) } label: {
+                    Label("Porträttläge", systemImage: orientationMode == OrientationMode.portrait.rawValue ? "checkmark" : "iphone")
+                }
+                Button { OrientationStore.set(.landscape) } label: {
+                    Label("Landskapsläge", systemImage: orientationMode == OrientationMode.landscape.rawValue ? "checkmark" : "iphone.landscape")
+                }
+            } label: {
+                Label("Skärmläge", systemImage: "rotate.right")
+            }
+            .accessibilityIdentifier("menu.orientation")
             Divider()
             Button(action: {}) {
                 Label(AppVersion.current, systemImage: "info.circle")

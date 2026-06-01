@@ -2,7 +2,17 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v51.1 (deployad)
+## Aktuell version: v51.2 (deployad)
+
+*Tema:* Landskapsläge (punkt 6) — äkta orientering
+
+**v51.2 (denna session):**
+- **Skärmläge porträtt/landskap** i Lägen-menyn ("Skärmläge"). Äkta orientering via `AppDelegate` + `requestGeometryUpdate` (iOS 16+) — UIKit roterar hela koordinatsystemet så drag-släpp, UIScrollView-pan/zoom, sheets och tangentbord följer med korrekt. Valet sparas (`@AppStorage`).
+- Avvisade "rotera ikonerna 90°"-idén (enhällig panel: skulle desynka drag/scroll/sheets/tangentbord). Med äkta orientering behövs ingen ikon-rotation — allt står rätt.
+- `project.yml`: låste upp Landscape Left/Right. Ny `Orientation.swift`.
+- Verifierat i sim (roterar utan krasch, porträtt default). **Slutlig känsla (drag/zoom i landskap) verifieras på iPhone.**
+
+**v51.1 (föregående):**
 
 *Tema:* Åttahörning + chip-omordning (punkt 5)
 
