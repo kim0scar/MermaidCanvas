@@ -2,7 +2,14 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v50.9 (deployad)
+## Aktuell version: v51.0 (deployad)
+
+*Tema:* Dark mode — beroende-pilarna syns nu (punkt 4)
+
+**v51.0 (denna session):**
+- **Dark mode-fix:** kanter/pilar/etiketter var osynliga i iPhone dark mode (ritades med `.primary` = vit, mot canvasens fasta vita papper). Canvasen är medvetet ett vitt ritbräde (ColorPack-färger + Mermaid-export är ljusa), så lösningen är `.environment(\.colorScheme, .light)` på hela canvas-subträdet → allt bläck blir mörkt och syns i båda lägena. Toolbar/menyer förblir adaptiva.
+
+**v50.9 (föregående):**
 
 *Tema:* Form-polish (punkt 1–3 av Kims lista)
 

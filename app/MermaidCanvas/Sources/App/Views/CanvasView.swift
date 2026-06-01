@@ -108,6 +108,11 @@ struct CanvasView: View {
                         .allowsHitTesting(false)
                 )
                 .coordinateSpace(name: "canvas")
+                // v51.0: canvasen är ett FAST vitt ritbräde (ColorPack-färger + Mermaid-
+                // export är ljusa). Tvinga light color scheme på hela canvas-subträdet så
+                // kanter/pilar/etiketter (.primary) blir mörka och syns i iPhone dark mode.
+                // Toolbar/menyer ligger utanför detta subträd → förblir adaptiva.
+                .environment(\.colorScheme, .light)
         }
         .ignoresSafeArea()
         .accessibilityIdentifier("canvas")
