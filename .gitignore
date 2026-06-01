@@ -34,3 +34,6 @@ UI-PLACERINGS-FYND-v49/
 
 # UX-persona testkörningar (screenshots + JSON, lokala)
 .ux-personas-test/
+
+# iOS sim-validation testkörningar (inventory/scenarios/rapporter, lokala)
+.ios-sim-validation/
