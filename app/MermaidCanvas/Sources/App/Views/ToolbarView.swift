@@ -228,7 +228,9 @@ struct ToolbarView: View {
                         RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius * 0.25,
                                          style: .continuous)
                             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: 28, height: 18)
+                            // v50.7 UX-012: tydligare avlångt (30×15) så rektangel inte
+                            // förväxlas med kvadrat-chipet vid en blick.
+                            .frame(width: 30, height: 15)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
