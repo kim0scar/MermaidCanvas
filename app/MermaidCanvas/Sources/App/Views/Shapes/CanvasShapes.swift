@@ -82,9 +82,10 @@ struct ProcessArrowShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         let tip: CGFloat = rect.width * 0.35   // spets = 35% av bredden
-        // Radie = procent av höjd, cap vid (rect.width - tip)/2 så geometrin
-        // inte degenererar på extremt smala former.
-        let r = min(rect.height * cornerRadiusRatio, (rect.width - tip) / 2)
+        // Radie = procent av höjd, cappad så geometrin inte degenererar:
+        // - (width - tip)/2 skyddar bredden (smala former)
+        // - height/2 skyddar höjden (platta former) — v50.9-tillägg
+        let r = min(rect.height * cornerRadiusRatio, (rect.width - tip) / 2, rect.height / 2)
 
         // De fem hörnen i ordning runt formen
         let topLeft      = CGPoint(x: rect.minX,       y: rect.minY)

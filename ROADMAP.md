@@ -2,7 +2,16 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v50.8 (deployad)
+## Aktuell version: v50.9 (deployad)
+
+*Tema:* Form-polish (punkt 1–3 av Kims lista)
+
+**v50.9 (denna session):**
+- **ProcessArrow** ("pilen") rundare hörn: `processArrowCornerRadiusRatio` 0.18→0.30 (spetsen kvar skarp; extra höjd-cap mot degenerering vid platt resize).
+- **Diamant** lite rundare: `diamondCornerRadiusRatio` 0.075→0.10 (chip+canvas via delad token).
+- **Cirkel-chippen** ritas nu som riktig `Circle()` via `iconSize` — matchar övriga chips storlek (var för liten som SF Symbol).
+
+**v50.8 (föregående):**
 
 *Tema:* Chip ↔ canvas — äkta single source (formerna matchar på riktigt)
 

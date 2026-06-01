@@ -25,9 +25,9 @@ extension DesignTokens {
         // v50.8: ALLA rundade former uttrycks som ratio så chip (liten) och canvas
         // (stor) får proportionellt identisk rundning. Canvas default-look bevaras:
         //   rektangel 80×0.175=14 · container 200×0.08=16 · diamant 80×0.075=6 · tabell 80×0.075=6
-        static let diamondCornerRadiusRatio: CGFloat = 0.075
+        static let diamondCornerRadiusRatio: CGFloat = 0.10   // v50.9: 0.075→0.10 (Kim: lite rundare)
         static let squareCornerRadiusRatio: CGFloat = 0.125
-        static let processArrowCornerRadiusRatio: CGFloat = 0.18
+        static let processArrowCornerRadiusRatio: CGFloat = 0.30   // v50.9: 0.18→0.30 (Kim: pilen för kantig)
         static let rectangleCornerRadiusRatio: CGFloat = 0.175
         static let containerCornerRadiusRatio: CGFloat = 0.08
         static let tableCornerRadiusRatio: CGFloat = 0.075

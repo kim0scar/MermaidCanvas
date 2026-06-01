@@ -217,9 +217,19 @@ struct ToolbarView: View {
         VStack(spacing: 8) {
             // Rad A — 7 grundformer
             HStack(spacing: 8) {
-                // v50.5 F7: circle behåller SF Symbol (matchar Circle exakt — ingen divergens).
-                shapeChip(.circle, "circle", accId: "chip.circle") {
-                    model.addShape(.circle, at: canvasCenter)
+                // v50.9: cirkel-chippen ritas som riktig Circle() via iconSize (samma
+                // mönster + storlek som övriga chips). Tidigare SF Symbol .title3 = för liten.
+                shapeChipGeneric(type: .circle, accId: "chip.circle", onTap: { model.addShape(.circle, at: canvasCenter) }) {
+                    let s = DesignTokens.Chip.iconSize(for: .circle)
+                    ZStack {
+                        Circle()
+                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
+                            .frame(width: s.height, height: s.height)
+                    }
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                    .contentShape(Circle())
                 }
                 // v50.5 F7: rectangle nu custom (SF "rectangle" har raka hörn,
                 // canvas Rectangle har cornerRadius=10).
