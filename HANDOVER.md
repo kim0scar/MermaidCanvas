@@ -1,6 +1,6 @@
 # HANDOVER — MermaidCanvas (Visuali2e)
 
-*Senast uppdaterad: 2026-05-30 · Version: v50.6 · Branch: `main`*
+*Senast uppdaterad: 2026-06-01 · Version: v50.7 · Branch: `main`*
 
 Det här dokumentet låter vem som helst (människa eller Claude Code CLI) ta över
 projektet med glasklarhet om var allt finns. Läs detta + `CLAUDE.md` först.
@@ -21,12 +21,13 @@ projektet med glasklarhet om var allt finns. Läs detta + `CLAUDE.md` först.
 > arbetskopior från tidigare sessioner. IGNORERA dem — `main` i huvudmappen är
 > sanningen. De kan rensas med `git worktree prune`.
 
-## 2. Appens nuläge (v50.6)
+## 2. Appens nuläge (v50.7)
 
 - SwiftUI iPhone-app, visuell flödesschema-editor. Persistas som Mermaid-markdown.
 - Versionsnummer: **single source of truth** = `app/MermaidCanvas/Sources/App/AppVersion.swift`.
-- v50.6 = 6 buggfixar + 2 regressionstester + två nya utvecklingsverktyg (se nedan).
-- Senaste deploy: iPhone 16 Pro (device-id i `CLAUDE.md`).
+- v50.7 = 6 UX-fixar från persona-auditen + arkitektur-doc omskriven (se §5 + ROADMAP).
+- v50.6 = 6 buggfixar + 2 regressionstester + två nya utvecklingsverktyg.
+- Senaste deploy: iPhone 16 Pro v50.7 (device-id i `CLAUDE.md`).
 
 ## 3. Styrdokument (läs i denna ordning)
 
@@ -62,16 +63,28 @@ körbara skills i `verktyg-skills/`:
 
 ## 5. Vad som återstår (från UX-audit + backlog)
 
-**Blockerande UX-buggar (fixa först):**
-- Andra form går inte att lägga till (ser ut som inget händer).
-- Dubbeltap öppnar ingen textredigering.
-- VoiceOver läser tekniska symbolnamn.
+**Åtgärdat i v50.7 (hela UX_PERSONA_AUDIT-svepet):**
+- ✅ Former staplas inte längre osynligt (UX-004 kaskad-offset). Detta löste troligen
+  även det tidigare "andra form går inte att lägga till — ser ut som inget händer":
+  formen lades till men på exakt samma pixel.
+- ✅ Markeringsfeedback direkt vid tap (UX-005).
+- ✅ VoiceOver läser läsbara labels, inte symbolnamn (UX-001/007/010/013).
+- ✅ Träffytor ≥44pt på badge + zoom-knapp (UX-006).
+- ✅ Tomt-tillstånd med vägledning (UX-003).
+- ✅ Rektangel-chip skiljs från kvadrat (UX-012).
+- Verifierat icke-buggar: UX-002 (undo korrekt), UX-008 (drag funkar; snabbsvep = scroll),
+  UX-014 (kosmetiskt animations-kantfall).
 
-**Stör men blockerar inte:** former staplas osynligt · ingen markeringsfeedback ·
-träffytor <44pt · ingen onboarding · pil-skapande svårhittat.
+**Att bekräfta på iPhone (känsel/gest — sim räcker inte):**
+- Markeringsram + träffytor känns rätt vid fingertryck.
+- "Dubbeltap öppnar ingen textredigering" (tidigare rapporterat) — kunde INTE reproduceras
+  i koden (`onTapGesture(count:2)` → `onEdit()` finns). Verifiera på enheten; säg till om det kvarstår.
+
+**Follow-up (kräver dedikerad design, ej gjort):**
+- UX-009 pil-upptäckbarhet · UX-011 tabell-redigerings-affordance.
 
 **Teknisk skuld:**
-- `ARKITEKTUR-MERMAID.md` speglar v39 — koden är v50.6. Behöver omskrivning.
+- ✅ `ARKITEKTUR-MERMAID.md` omskriven till v50.7 (var v39); v39 arkiverad.
 - Backlog: konvertera flaky V48-tester till launch-arg-bas; byt app-ikon-task.
 
 ## 6. Hur man tar över — snabbstart
