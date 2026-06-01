@@ -173,8 +173,26 @@ final class CanvasModel: ObservableObject {
 
     // MARK: - Mutationer
 
+    /// v50.7 UX-004: nya former hamnade pixel-exakt på samma punkt → osynlig hög.
+    /// Om en form redan ligger nära `position`, förskjut den nya i en kaskad
+    /// (nedåt-höger) tills platsen är fri. Deterministiskt, ingen extra state.
+    private func cascadedPosition(near position: CGPoint) -> CGPoint {
+        let step: CGFloat = 28
+        let threshold: CGFloat = 20
+        var p = position
+        var guardCount = 0
+        while shapes.contains(where: { abs($0.position.x - p.x) < threshold && abs($0.position.y - p.y) < threshold }),
+              guardCount < 40 {
+            p.x += step
+            p.y += step
+            guardCount += 1
+        }
+        return p
+    }
+
     func addShape(_ type: ShapeType, at position: CGPoint) {
         snapshotForUndo()
+        let position = cascadedPosition(near: position)
         let cat = specType.defaultCategory
         // v23: tom label från start — Kim vill skriva själv
         // v44: container får default-label "Grupp" (Kim vet då vad formen är)
@@ -186,6 +204,7 @@ final class CanvasModel: ObservableObject {
     /// v29: lägg form med en explicit kategori (används av form-pack-chips).
     func addShape(_ type: ShapeType, at position: CGPoint, category: ShapeCategory) {
         snapshotForUndo()
+        let position = cascadedPosition(near: position)
         shapes.append(ShapeNode(type: type, position: position, label: "", category: category))
         expandCanvasIfNeeded(near: position)
     }
@@ -194,6 +213,7 @@ final class CanvasModel: ObservableObject {
     /// `withArrow=true` ger en lös pil med pilhuvud, false ger ett vanligt streck.
     func addFreeLine(at position: CGPoint, withArrow: Bool) {
         snapshotForUndo()
+        let position = cascadedPosition(near: position)
         let cat = specType.defaultCategory
         let node = ShapeNode(
             type: withArrow ? .arrow : .line,
@@ -210,6 +230,7 @@ final class CanvasModel: ObservableObject {
     /// Lägg en tabell-form (3×3) på canvas-mitten.
     func addTable(at position: CGPoint, rows: Int = 3, cols: Int = 3) {
         snapshotForUndo()
+        let position = cascadedPosition(near: position)
         shapes.append(ShapeNode(
             type: .table,
             position: position,
