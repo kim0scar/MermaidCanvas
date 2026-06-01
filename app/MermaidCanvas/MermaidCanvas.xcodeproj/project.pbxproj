@@ -104,6 +104,7 @@
 		F981FB6DBB390CE175179931 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = CC205BE752FCB6EEF9752960 /* SnapshotTesting */; };
 		FA1737FF5856B37C8337F489 /* METOD-VISUELL-DIALOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */; };
 		FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */; };
+		FCAC9FAF1E4E5B985ABC8738 /* EmptyCanvasHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246DAEE1890CEA36F3801363 /* EmptyCanvasHint.swift */; };
 		FCDCD38C1EC1587E7BD78E79 /* ColorPackPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */; };
 /* End PBXBuildFile section */
 
@@ -137,6 +138,7 @@
 		20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCodeSheet.swift; sourceTree = "<group>"; };
 		228F689846F0D1503749250D /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		23D164BF747C4ACF00F0921D /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
+		246DAEE1890CEA36F3801363 /* EmptyCanvasHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCanvasHint.swift; sourceTree = "<group>"; };
 		25EF82F1BF18F5CFD8CF0343 /* FloatingChipPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingChipPreview.swift; sourceTree = "<group>"; };
 		26849544B1328648A4C1C344 /* ios-swiftui-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "ios-swiftui-rules.md"; sourceTree = "<group>"; };
 		290C826C5E3BCE9774F09866 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -287,6 +289,7 @@
 				CB0A0E15AFE7F04DC3EFE060 /* EdgeLabelSheet.swift */,
 				6C857637FAB48F6C5E7460F8 /* EdgeRouting.swift */,
 				7551766C6C334EDA0CFD664E /* EditShapeSheet.swift */,
+				246DAEE1890CEA36F3801363 /* EmptyCanvasHint.swift */,
 				EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */,
 				7B7282ECFED87095333BB0D4 /* LägenMenu.swift */,
 				55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */,
@@ -675,6 +678,7 @@
 				E342D27716614E0B8631409F /* EdgeLabelSheet.swift in Sources */,
 				B98CB3E584346224B1671C65 /* EdgeRouting.swift in Sources */,
 				8426638A65B4BA49FF8F7992 /* EditShapeSheet.swift in Sources */,
+				FCAC9FAF1E4E5B985ABC8738 /* EmptyCanvasHint.swift in Sources */,
 				E59147BD729B4A37CFCD70F5 /* FloatingChipPreview.swift in Sources */,
 				37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */,
 				04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */,

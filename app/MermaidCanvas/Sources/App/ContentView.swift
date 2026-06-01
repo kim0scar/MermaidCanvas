@@ -97,6 +97,14 @@ struct ContentView: View {
             // — ingen .onAppear / .onChange behövs.
             }
 
+            // v50.7 UX-003: tomt-tillstånd-vägledning. Visas bara på tom canvas och
+            // när inget chip dras. Blockerar inga gester.
+            if model.shapes.isEmpty && chipDragState.activeType == nil {
+                EmptyCanvasHint()
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
+
             // v34: flytande chip-preview vid finger under aktiv drag
             if let type = chipDragState.activeType {
                 FloatingChipPreview(type: type)
