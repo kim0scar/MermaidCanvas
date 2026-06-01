@@ -1,0 +1,6 @@
+#!/bin/bash
+# Wrapper så idb alltid hittar både companion (brew) och klient (py3.13-venv).
+# idb_companion låg i /opt/homebrew/bin; python-klienten i ~/.idb-venv (Py3.13,
+# eftersom fb-idb 1.1.x kraschar på Python 3.14:s borttagna asyncio.get_event_loop).
+export PATH="/opt/homebrew/bin:$PATH"
+exec "$HOME/.idb-venv/bin/idb" "$@"
