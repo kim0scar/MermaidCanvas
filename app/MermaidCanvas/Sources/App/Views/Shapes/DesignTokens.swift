@@ -7,8 +7,10 @@ import CoreGraphics
 /// storlekar, färger, stroke-widths). Förhindrar att två oberoende kod-paths
 /// (toolbar-chip + canvas-rendering) divergerar tyst.
 ///
-/// **Mönster:** chip OCH canvas läser från samma token. Ändra på ETT ställe
-/// → båda uppdateras synkat.
+/// **v50.8:** Enad även **aspect ratio** (chip-ikoner härleds från canvas-formernas
+/// bas-storlek via `Chip.iconSize(for:)`) och **alla hörn-radier som ratio**
+/// (`Shape.cornerRadius(for:height:)`). Chip, canvas, gallery och selection läser nu
+/// samma källa → de kan inte glida isär.
 ///
 /// **Källa:** https://github.com/microsoft/fluentui-apple/wiki/Design-Tokens
 enum DesignTokens {}
@@ -16,40 +18,42 @@ enum DesignTokens {}
 // MARK: - Shape tokens
 
 /// Form-rendering konstanter — används av BÅDE ToolbarView (chip) och
-/// CanvasShapes/CanvasView (canvas-rendering).
+/// CanvasView (canvas-rendering) samt ComponentGallery.
 extension DesignTokens {
     enum Shape {
-        // Diamond (romb)
-        /// Hörn-radie för diamant — samma för chip och canvas så de visuellt matchar.
-        static let diamondCornerRadius: CGFloat = 6
-
-        // Square (kvadrat)
-        /// v50.5 F6: Hörn-radie som PROCENT av sida — chip OCH canvas får
-        /// visuellt likvärdig rundning. Tidigare fixt 10pt → chip 22pt fick
-        /// nästan cirkel-form (10/22 = 45%), canvas 80pt fick 10/80 = 12.5%.
-        /// Med ratio: båda får ~12.5% av sidan.
+        // Hörn-radie som RATIO av referens-dimension (höjd; square = min-sida).
+        // v50.8: ALLA rundade former uttrycks som ratio så chip (liten) och canvas
+        // (stor) får proportionellt identisk rundning. Canvas default-look bevaras:
+        //   rektangel 80×0.175=14 · container 200×0.08=16 · diamant 80×0.075=6 · tabell 80×0.075=6
+        static let diamondCornerRadiusRatio: CGFloat = 0.075
         static let squareCornerRadiusRatio: CGFloat = 0.125
-        /// Kvarstår för bakåtkompatibilitet — använd i selection-corner.
-        static let squareCornerRadius: CGFloat = 10
-
-        // ProcessArrow (pentagon)
-        /// v50.5 F3: Hörn-radie för processArrow ANGES SOM PROCENT av rect-höjd
-        /// så chip (liten) OCH canvas (stor) får visuellt likvärdig rundning.
-        /// 0.18 = 18% av höjd. Chip 18pt → 3.24pt, canvas 80pt → 14.4pt
-        /// — samma proportion mellan radie och form-storlek.
         static let processArrowCornerRadiusRatio: CGFloat = 0.18
-
-        // Rectangle / Container / Table
-        /// Standard rektangel-radie för alla rektangulära former.
-        static let rectangleCornerRadius: CGFloat = 10
+        static let rectangleCornerRadiusRatio: CGFloat = 0.175
+        static let containerCornerRadiusRatio: CGFloat = 0.08
+        static let tableCornerRadiusRatio: CGFloat = 0.075
 
         // Stroke-widths
-        /// v50.5 F1: chip + canvas använder SAMMA stroke-width så de inte
-        /// divergerar. 1.5pt är en bra mellan-väg som ser ren ut på båda
-        /// storlekar (26×20 chip och 120×80 canvas).
+        /// v50.5 F1: chip + canvas använder SAMMA stroke-width så de inte divergerar.
         static let chipStrokeWidth: CGFloat = 1.5
         /// Canvas-stroke (faktisk form på canvas).
         static let canvasStrokeWidth: CGFloat = 1.5
+
+        /// Absolut hörn-radie (pt) för en form vid given höjd. ENDA källa — canvas,
+        /// chip, gallery och selection läser härifrån. (Custom-path-former
+        /// Square/Diamond/ProcessArrow räknar själva från sina `cornerRadiusRatio`,
+        /// men returneras här också så värdet är konsekvent om det behövs.)
+        static func cornerRadius(for type: ShapeType, height: CGFloat) -> CGFloat {
+            switch type {
+            case .rectangle:           return height * rectangleCornerRadiusRatio
+            case .container:           return height * containerCornerRadiusRatio
+            case .table:               return height * tableCornerRadiusRatio
+            case .square:              return height * squareCornerRadiusRatio
+            case .diamond:             return height * diamondCornerRadiusRatio
+            case .processArrow:        return height * processArrowCornerRadiusRatio
+            case .pill, .circle:       return height / 2
+            case .line, .arrow, .link: return 0
+            }
+        }
     }
 }
 
@@ -59,19 +63,18 @@ extension DesignTokens {
 extension DesignTokens {
     enum Selection {
         /// Returnerar cornerRadius för selection-ram baserat på shape-typ.
-        /// Matchar formens egen rendering (rectangle r=10 → selection r=10).
+        /// Matchar formens egen rendering via Shape.cornerRadius (single source).
         static func cornerRadius(for shapeType: ShapeType,
                                  width: CGFloat,
                                  height: CGFloat) -> CGFloat {
             switch shapeType {
-            case .rectangle, .container, .table:
-                return Shape.rectangleCornerRadius
-            case .square:
-                return Shape.squareCornerRadius
             case .pill, .circle:
                 return min(width, height) / 2
             case .diamond, .processArrow, .line, .arrow, .link:
+                // egna geometrier — SelectionOutline ritar formen, ingen rect-radie
                 return 0
+            case .rectangle, .container, .table, .square:
+                return Shape.cornerRadius(for: shapeType, height: height)
             }
         }
 
@@ -100,26 +103,21 @@ extension DesignTokens {
 
 // MARK: - Chip tokens
 
-/// Toolbar-chip-konstanter (storlek på chip-frame och chip-ikon-frame inuti).
+/// Toolbar-chip-konstanter.
 extension DesignTokens {
     enum Chip {
         /// Hela chip-knappens diameter (klickyta).
         static let frameSize: CGFloat = 44
 
-        /// Width × height för chip-ikonen INUTI chip-frame.
-        /// Egentligen olika per form pga visual-weight balansering.
-        static let diamondIconWidth: CGFloat = 26
-        static let diamondIconHeight: CGFloat = 20
-
-        static let squareIconSide: CGFloat = 22
-
-        static let processArrowIconWidth: CGFloat = 26
-        static let processArrowIconHeight: CGFloat = 18
-
-        /// v50.5 F2: explicit pill-chip-ikon med Capsule (tidigare användes
-        /// SF Symbol "capsule" som inte matchade canvas-formens proportion).
-        /// 30×16 = 1.875:1, samma ratio som canvas-pill (150×80).
-        static let pillIconWidth: CGFloat = 30
-        static let pillIconHeight: CGFloat = 16
+        /// v50.8: chip-ikonens storlek HÄRLEDS från canvas-formens aspect ratio
+        /// (`ShapeGeometry`). Bredd = höjd × (canvas-bredd / canvas-höjd). Garanterar
+        /// att chip och canvas alltid har samma proportion — ingen hårdkodning som
+        /// kan glida isär. `targetHeight` = ikon-höjd inuti chip-frame.
+        static func iconSize(for type: ShapeType, targetHeight: CGFloat = 20) -> CGSize {
+            let w = ShapeGeometry.typeBaseWidth(for: type)
+            let h = ShapeGeometry.typeBaseHeight(for: type)
+            let ratio = h > 0 ? w / h : 1
+            return CGSize(width: targetHeight * ratio, height: targetHeight)
+        }
     }
 }

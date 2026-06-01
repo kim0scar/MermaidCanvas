@@ -1,7 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v50.7
+# ARKITEKTUR-MERMAID — Version v50.8
 *Datum: 2026-06-01*
 
-**Aktuell version:** v50.7
+**Aktuell version:** v50.8
 **Single source of truth för version:** `app/MermaidCanvas/Sources/App/AppVersion.swift`
 
 > Detta dokument speglar **nuvarande** kod (v50.7). Den kompletta modul-kartan med
@@ -42,6 +42,11 @@ Sources/
 ```
 
 **Kärninvarianter:**
+- **Chip ↔ canvas single source (v50.8):** toolbar-chip och canvas-rendering läser SAMMA
+  källa för geometri — `DesignTokens.Chip.iconSize(for:)` härleder chip-proportion från
+  `ShapeGeometry`-bas-storlek, och `DesignTokens.Shape.cornerRadius(for:height:)` ger hörn
+  som ratio. Inga hårdkodade chip-storlekar/canvas-radier → de kan inte glida isär.
+  `ComponentGallery` (launch-arg `-uitest-component-gallery`) verifierar matchningen.
 - **Modellen muteras aldrig direkt från View** — alltid via `CanvasModel`-metoder (varje muterande metod gör `snapshotForUndo()`).
 - **Förlustfri round-trip** (fidelity: positioner/storlekar/färger; semantik: kategori per nod) är icke förhandlingsbar — se `METOD-VISUELL-DIALOG.md`.
 - **Ny data i ShapeNode/EdgeConnection** är alltid Codable med bakåtkompatibel default.

@@ -8,9 +8,10 @@ import SwiftUI
 /// v28: rundad romb/diamant — mjuka hörn istället för vassa spetsar.
 /// v35.1: fyller hela ramen (120×80) → bredare-än-hög romb som matchar Mermaid's {} render.
 struct DiamondShape: Shape {
-    // v50.4: default läses från DesignTokens så chip + canvas matchar
-    // automatiskt. Kan fortfarande overridas per-instans om behövs.
-    var cornerRadius: CGFloat = DesignTokens.Shape.diamondCornerRadius
+    /// v50.8 F6-analogt: radie = procent av höjd (default 0.075) så chip OCH canvas
+    /// får proportionellt likvärdig rundning. Tidigare fixt 6pt → chip (h=20) blev
+    /// 30% rundat (knubbigt), canvas (h=80) 7.5% (vasst). Nu samma proportion på båda.
+    var cornerRadiusRatio: CGFloat = DesignTokens.Shape.diamondCornerRadiusRatio
 
     func path(in rect: CGRect) -> Path {
         let top    = CGPoint(x: rect.midX, y: rect.minY)
@@ -18,7 +19,7 @@ struct DiamondShape: Shape {
         let bottom = CGPoint(x: rect.midX, y: rect.maxY)
         let left   = CGPoint(x: rect.minX, y: rect.midY)
 
-        let r = min(cornerRadius, min(rect.width, rect.height) / 4)
+        let r = min(rect.height * cornerRadiusRatio, min(rect.width, rect.height) / 4)
         // För varje hörn: gå r-pt åt vardera håll längs kanten innan hörnet
         // och rita en quad-curve runt själva hörnet.
         let topToRightDir = unitVector(from: top, to: right)

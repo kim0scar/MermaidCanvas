@@ -637,7 +637,7 @@ struct ShapeView: View {
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .rectangle, height: ShapeGeometry.height(for: shape)), style: .continuous)
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .diamond:
@@ -650,12 +650,12 @@ struct ShapeView: View {
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .container:
             // v44: container — grupperande rektangel med streckad ram (Mermaid subgraph)
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous)
                 .fill(effectiveFill.opacity(0.05))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous)
                         .stroke(effectiveStroke,
-                                style: StrokeStyle(lineWidth: 1.5, dash: [6, 4]))
+                                style: StrokeStyle(lineWidth: DesignTokens.Shape.canvasStrokeWidth, dash: [6, 4]))
                 )
         case .table:
             TableShapeBackground(rows: shape.tableRows ?? 3,
@@ -683,17 +683,17 @@ struct ShapeView: View {
     private var stroke: some View {
         switch shape.type {
         case .circle:
-            Circle().stroke(effectiveStroke, lineWidth: 1.5)
+            Circle().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .rectangle:
-            RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(effectiveStroke, lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .rectangle, height: ShapeGeometry.height(for: shape)), style: .continuous).stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .diamond:
-            DiamondShape().stroke(effectiveStroke, lineWidth: 1.5)
+            DiamondShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .pill:
-            Capsule(style: .continuous).stroke(effectiveStroke, lineWidth: 1.5)
+            Capsule(style: .continuous).stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .square:
-            SquareShape().stroke(effectiveStroke, lineWidth: 1.5)
+            SquareShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .processArrow:
-            ProcessArrowShape().stroke(effectiveStroke, lineWidth: 1.5)
+            ProcessArrowShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .container:
             // v44: container — streckad ram redan ritad i background
             EmptyView()

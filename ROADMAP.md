@@ -2,11 +2,19 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v50.7 (deployad)
+## Aktuell version: v50.8 (deployad)
 
-*Tema:* UX-svep efter persona-audit — tillgänglighet, feedback, upptäckbarhet
+*Tema:* Chip ↔ canvas — äkta single source (formerna matchar på riktigt)
 
-**v50.7 (denna session):**
+**v50.8 (denna session):**
+- **Grundfix:** `DesignTokens` enade tidigare bara hörn-radie + stroke — **inte aspect ratio**. Chip-ikonernas storlekar var hårdkodade oberoende av canvas → glidning ("åter igen").
+- Chip-ikonernas **storlek härleds nu från canvas** (`Chip.iconSize(for:)` läser `ShapeGeometry`-bas-ratio) → chip och canvas kan aldrig divergera i proportion.
+- **Alla** hörn-radier uttrycks som ratio (`Shape.cornerRadius(for:height:)`); canvas slutade hårdkoda 14/16 och stroke 1,5 → läser tokens.
+- **Diamant**: `DiamondShape` bytte absolut hörn-radie → ratio (missades i v50.5). Chip var knubbig (30% rundning), canvas vass (7,5%) — nu samma proportion.
+- Rättat pill-ratio (1,625, inte 1,875) och **reverterat v50.7 UX-012-regressionen** (rektangel 2,0 → 1,5).
+- `ComponentGallery` (chip vs canvas-jämförelse) läser nu samma källa → sann jämförelse.
+
+**v50.7 (föregående):**
 - **UX-004** — kaskad-offset på nya former (slutar stapla osynligt; 4/6 personas).
 - **UX-005** — mjuk markerings-outline direkt vid tap (syntes tidigare först vid drag).
 - **UX-001/007/010/013** — läsbara VoiceOver-labels på toolbar-knappar, form-chips och resize/rotation-handtag (läste tidigare råa SF Symbol-namn).

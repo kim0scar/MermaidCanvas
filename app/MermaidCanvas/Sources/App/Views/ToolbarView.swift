@@ -224,13 +224,13 @@ struct ToolbarView: View {
                 // v50.5 F7: rectangle nu custom (SF "rectangle" har raka hörn,
                 // canvas Rectangle har cornerRadius=10).
                 shapeChipGeneric(type: .rectangle, accId: "chip.rectangle", onTap: { model.addShape(.rectangle, at: canvasCenter) }) {
+                    let s = DesignTokens.Chip.iconSize(for: .rectangle)
                     ZStack {
-                        RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius * 0.25,
+                        // v50.8: storlek + hörn härleds från canvas (ShapeGeometry) → chip = canvas
+                        RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .rectangle, height: s.height),
                                          style: .continuous)
                             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            // v50.7 UX-012: tydligare avlångt (30×15) så rektangel inte
-                            // förväxlas med kvadrat-chipet vid en blick.
-                            .frame(width: 30, height: 15)
+                            .frame(width: s.width, height: s.height)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -240,11 +240,11 @@ struct ToolbarView: View {
                 // v50.5 F7: square nu custom (SF "square" har raka hörn,
                 // canvas SquareShape har ratio-baserad rundning).
                 shapeChipGeneric(type: .square, accId: "chip.square", onTap: { model.addShape(.square, at: canvasCenter) }) {
+                    let s = DesignTokens.Chip.iconSize(for: .square)
                     ZStack {
                         SquareShape()
                             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: DesignTokens.Chip.squareIconSide,
-                                   height: DesignTokens.Chip.squareIconSide)
+                            .frame(width: s.width, height: s.height)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -252,13 +252,13 @@ struct ToolbarView: View {
                     .contentShape(Circle())
                 }
                 shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
+                    let s = DesignTokens.Chip.iconSize(for: .diamond)
                     ZStack {
-                        // v50.4: läser från DesignTokens — samma cornerRadius
-                        // som canvas-rendering, ingen tyst divergens längre.
-                        DiamondShape(cornerRadius: DesignTokens.Shape.diamondCornerRadius)
+                        // v50.8: DiamondShape() använder ratio-default → samma rundnings-
+                        // proportion som canvas. Storlek från ShapeGeometry-ratio.
+                        DiamondShape()
                             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: DesignTokens.Chip.diamondIconWidth,
-                                   height: DesignTokens.Chip.diamondIconHeight)
+                            .frame(width: s.width, height: s.height)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -266,14 +266,13 @@ struct ToolbarView: View {
                     .contentShape(Circle())
                 }
                 shapeChipGeneric(type: .pill, accId: "chip.pill", onTap: { model.addShape(.pill, at: canvasCenter) }) {
+                    let s = DesignTokens.Chip.iconSize(for: .pill)
                     ZStack {
-                        // v50.5 F2: explicit Capsule i samma proportion som
-                        // canvas-pill (150×80 = 1.875:1). Ersätter SF Symbol
-                        // "capsule" som ritade en annan form än canvas-renderingen.
+                        // v50.8: Capsule i exakt canvas-pillens proportion (130×80 = 1.625:1)
+                        // via ShapeGeometry. Tidigare hårdkodat 30×16 = fel ratio.
                         Capsule(style: .continuous)
                             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: DesignTokens.Chip.pillIconWidth,
-                                   height: DesignTokens.Chip.pillIconHeight)
+                            .frame(width: s.width, height: s.height)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -281,13 +280,12 @@ struct ToolbarView: View {
                     .contentShape(Circle())
                 }
                 shapeChipGeneric(type: .processArrow, accId: "chip.processArrow", onTap: { model.addShape(.processArrow, at: canvasCenter) }) {
+                    let s = DesignTokens.Chip.iconSize(for: .processArrow)
                     ZStack {
-                        // v50.5 F3: ProcessArrow läser ratio-token — chip och canvas
-                        // får visuellt likvärdig rundning oavsett storlek.
-                        ProcessArrowShape(cornerRadiusRatio: DesignTokens.Shape.processArrowCornerRadiusRatio)
+                        // v50.8: ProcessArrow ratio-default + storlek från ShapeGeometry.
+                        ProcessArrowShape()
                             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: DesignTokens.Chip.processArrowIconWidth,
-                                   height: DesignTokens.Chip.processArrowIconHeight)
+                            .frame(width: s.width, height: s.height)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
@@ -300,13 +298,14 @@ struct ToolbarView: View {
                 // v50.5 F7: container nu custom — dashed RoundedRectangle som
                 // matchar canvas-container-renderingen.
                 shapeChipGeneric(type: .container, accId: "chip.container", onTap: { model.addShape(.container, at: canvasCenter) }) {
+                    let s = DesignTokens.Chip.iconSize(for: .container)
                     ZStack {
-                        RoundedRectangle(cornerRadius: DesignTokens.Shape.rectangleCornerRadius * 0.25,
+                        RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: s.height),
                                          style: .continuous)
                             .stroke(Color.primary,
                                     style: StrokeStyle(lineWidth: DesignTokens.Shape.chipStrokeWidth,
                                                        dash: [3, 2]))
-                            .frame(width: 30, height: 20)
+                            .frame(width: s.width, height: s.height)
                     }
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(.ultraThinMaterial))
