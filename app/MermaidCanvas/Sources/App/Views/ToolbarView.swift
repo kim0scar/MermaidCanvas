@@ -166,6 +166,10 @@ struct ToolbarView: View {
                 .frame(minWidth: 40, minHeight: 28)
                 .background(Capsule().fill(.ultraThinMaterial))
                 .overlay(Capsule().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
+                // v50.7 UX-006: tap-ytan ≥44pt (Apple-minimum) — kapseln förblir
+                // visuellt kompakt, men träffytan runt den är full 44×44.
+                .frame(minWidth: 44, minHeight: 44)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("toolbar.zoom")

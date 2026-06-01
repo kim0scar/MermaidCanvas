@@ -17,6 +17,9 @@ struct CollapseBadge: View {
                 .background(Color(.systemIndigo))
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Color.white, lineWidth: 1))
+                // v50.7 UX-006: expandera tap-ytan till ~2× visuell storlek (≥44pt
+                // träffyta vid normal zoom) utan att ändra badgens utseende.
+                .contentShape(Circle().inset(by: -size * 0.5))
         }
         .buttonStyle(.plain)
     }
