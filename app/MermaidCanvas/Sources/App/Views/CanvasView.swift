@@ -252,6 +252,19 @@ struct CanvasView: View {
                let selectedId = model.selectedShapeId,
                let idx = model.shapes.firstIndex(where: { $0.id == selectedId }) {
                 let s = model.shapes[idx]
+                // v50.7 UX-005: mjuk markerings-outline direkt vid tap (samma
+                // streckade ram som multi-select). Tidigare syntes markeringen
+                // först när man började dra — oklart vad som var valt.
+                SelectionOutline(
+                    shapeType: s.type,
+                    width: ShapeGeometry.width(for: s),
+                    height: ShapeGeometry.height(for: s),
+                    strokeWidth: 2 / zoomScale,
+                    canvasScale: zoomScale
+                )
+                .rotationEffect(.degrees(s.rotation))
+                .position(s.position)
+                .allowsHitTesting(false)
                 SelectionHandles(
                     shape: $model.shapes[idx],
                     canvasScale: zoomScale
