@@ -434,6 +434,7 @@ enum MermaidGenerator {
         case .processArrow: return "[\"\(label)\"]"    // processpil — Mermaid saknar pentagon-form; rektangel
         // v44: container — renderas som subgraph i en separat loop (se generate())
         case .container:    return "(\"\(label)\")"    // fallback om någon container skulle hamna i shape-loop
+        case .octagon:      return "(\"\(label)\")"    // v51.1: Mermaid saknar oktagon; rundad rektangel-fallback (round-trip via state-JSON)
         }
     }
 

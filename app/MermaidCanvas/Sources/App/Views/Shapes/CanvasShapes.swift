@@ -135,3 +135,51 @@ struct ProcessArrowShape: Shape {
 
     private func amt(_ v: CGFloat) -> CGFloat { v }
 }
+
+// MARK: - Octagon v51.1
+
+/// Åttahörning med rundade hörn. Reguljär oktagon i bounding-box (hörnen avfasade)
+/// + lätt rundning på de 8 vertexarna (quadCurve) så formspråket matchar övriga
+/// rundade former. chip OCH canvas använder samma `cornerRadiusRatio` → matchar.
+struct OctagonShape: Shape {
+    var cornerRadiusRatio: CGFloat = DesignTokens.Shape.octagonCornerRadiusRatio
+    /// Hur mycket hörnen fasas (andel av min-sida) — definierar oktagon-silhuetten.
+    var chamferRatio: CGFloat = 0.29
+
+    func path(in rect: CGRect) -> Path {
+        let c = min(rect.width, rect.height) * chamferRatio
+        let pts = [
+            CGPoint(x: rect.minX + c, y: rect.minY),
+            CGPoint(x: rect.maxX - c, y: rect.minY),
+            CGPoint(x: rect.maxX,     y: rect.minY + c),
+            CGPoint(x: rect.maxX,     y: rect.maxY - c),
+            CGPoint(x: rect.maxX - c, y: rect.maxY),
+            CGPoint(x: rect.minX + c, y: rect.maxY),
+            CGPoint(x: rect.minX,     y: rect.maxY - c),
+            CGPoint(x: rect.minX,     y: rect.minY + c)
+        ]
+        // Runda de 8 hörnen, men aldrig mer än halva kortaste kanten tål.
+        let r = min(rect.height * cornerRadiusRatio, c * 0.8)
+        var p = Path()
+        let n = pts.count
+        for i in 0..<n {
+            let curr = pts[i]
+            let prev = pts[(i - 1 + n) % n]
+            let next = pts[(i + 1) % n]
+            let dIn = unit(from: prev, to: curr)
+            let dOut = unit(from: curr, to: next)
+            let pStart = CGPoint(x: curr.x - dIn.dx * r, y: curr.y - dIn.dy * r)
+            let pEnd   = CGPoint(x: curr.x + dOut.dx * r, y: curr.y + dOut.dy * r)
+            if i == 0 { p.move(to: pStart) } else { p.addLine(to: pStart) }
+            p.addQuadCurve(to: pEnd, control: curr)
+        }
+        p.closeSubpath()
+        return p
+    }
+
+    private func unit(from a: CGPoint, to b: CGPoint) -> CGVector {
+        let dx = b.x - a.x, dy = b.y - a.y
+        let len = sqrt(dx * dx + dy * dy)
+        return len > 0.001 ? CGVector(dx: dx / len, dy: dy / len) : .zero
+    }
+}

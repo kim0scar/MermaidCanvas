@@ -31,6 +31,7 @@ extension DesignTokens {
         static let rectangleCornerRadiusRatio: CGFloat = 0.175
         static let containerCornerRadiusRatio: CGFloat = 0.08
         static let tableCornerRadiusRatio: CGFloat = 0.075
+        static let octagonCornerRadiusRatio: CGFloat = 0.08   // v51.1: rundning på oktagonens 8 hörn
 
         // Stroke-widths
         /// v50.5 F1: chip + canvas använder SAMMA stroke-width så de inte divergerar.
@@ -50,6 +51,7 @@ extension DesignTokens {
             case .square:              return height * squareCornerRadiusRatio
             case .diamond:             return height * diamondCornerRadiusRatio
             case .processArrow:        return height * processArrowCornerRadiusRatio
+            case .octagon:             return height * octagonCornerRadiusRatio
             case .pill, .circle:       return height / 2
             case .line, .arrow, .link: return 0
             }
@@ -70,7 +72,7 @@ extension DesignTokens {
             switch shapeType {
             case .pill, .circle:
                 return min(width, height) / 2
-            case .diamond, .processArrow, .line, .arrow, .link:
+            case .diamond, .processArrow, .octagon, .line, .arrow, .link:
                 // egna geometrier — SelectionOutline ritar formen, ingen rect-radie
                 return 0
             case .rectangle, .container, .table, .square:

@@ -57,10 +57,10 @@ final class SnapshotTests: XCTestCase {
     // MARK: - Chip-rendering (läser tokens)
 
     func test_diamond_chip() {
-        let view = DiamondShape(cornerRadius: DesignTokens.Shape.diamondCornerRadius)
+        let view = DiamondShape()
             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-            .frame(width: DesignTokens.Chip.diamondIconWidth,
-                   height: DesignTokens.Chip.diamondIconHeight)
+            .frame(width: DesignTokens.Chip.iconSize(for: .diamond).width,
+                   height: DesignTokens.Chip.iconSize(for: .diamond).height)
             .padding(10)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 46, height: 40)), record: .missing)
@@ -69,8 +69,8 @@ final class SnapshotTests: XCTestCase {
     func test_processarrow_chip() {
         let view = ProcessArrowShape()
             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-            .frame(width: DesignTokens.Chip.processArrowIconWidth,
-                   height: DesignTokens.Chip.processArrowIconHeight)
+            .frame(width: DesignTokens.Chip.iconSize(for: .processArrow).width,
+                   height: DesignTokens.Chip.iconSize(for: .processArrow).height)
             .padding(10)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 46, height: 38)), record: .missing)
@@ -80,8 +80,8 @@ final class SnapshotTests: XCTestCase {
         // v50.5: använder default cornerRadiusRatio
         let view = SquareShape()
             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-            .frame(width: DesignTokens.Chip.squareIconSide,
-                   height: DesignTokens.Chip.squareIconSide)
+            .frame(width: DesignTokens.Chip.iconSize(for: .square).width,
+                   height: DesignTokens.Chip.iconSize(for: .square).height)
             .padding(10)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 42, height: 42)), record: .missing)
@@ -91,8 +91,8 @@ final class SnapshotTests: XCTestCase {
     func test_pill_chip() {
         let view = Capsule(style: .continuous)
             .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-            .frame(width: DesignTokens.Chip.pillIconWidth,
-                   height: DesignTokens.Chip.pillIconHeight)
+            .frame(width: DesignTokens.Chip.iconSize(for: .pill).width,
+                   height: DesignTokens.Chip.iconSize(for: .pill).height)
             .padding(10)
             .background(Color.white)
         assertSnapshot(of: view, as: .image(layout: .fixed(width: 50, height: 36)), record: .missing)
@@ -148,10 +148,10 @@ final class SnapshotTests: XCTestCase {
     func test_diamond_chip_vs_canvas_side_by_side() {
         let view = sideBySide(
             chip: {
-                DiamondShape(cornerRadius: DesignTokens.Shape.diamondCornerRadius)
+                DiamondShape()
                     .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                    .frame(width: DesignTokens.Chip.diamondIconWidth,
-                           height: DesignTokens.Chip.diamondIconHeight)
+                    .frame(width: DesignTokens.Chip.iconSize(for: .diamond).width,
+                           height: DesignTokens.Chip.iconSize(for: .diamond).height)
             },
             canvas: {
                 DiamondShape()
@@ -167,8 +167,8 @@ final class SnapshotTests: XCTestCase {
             chip: {
                 ProcessArrowShape()
                     .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                    .frame(width: DesignTokens.Chip.processArrowIconWidth,
-                           height: DesignTokens.Chip.processArrowIconHeight)
+                    .frame(width: DesignTokens.Chip.iconSize(for: .processArrow).width,
+                           height: DesignTokens.Chip.iconSize(for: .processArrow).height)
             },
             canvas: {
                 ProcessArrowShape()
@@ -185,8 +185,8 @@ final class SnapshotTests: XCTestCase {
             chip: {
                 Capsule(style: .continuous)
                     .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                    .frame(width: DesignTokens.Chip.pillIconWidth,
-                           height: DesignTokens.Chip.pillIconHeight)
+                    .frame(width: DesignTokens.Chip.iconSize(for: .pill).width,
+                           height: DesignTokens.Chip.iconSize(for: .pill).height)
             },
             canvas: {
                 Capsule(style: .continuous)
@@ -202,8 +202,8 @@ final class SnapshotTests: XCTestCase {
             chip: {
                 SquareShape()
                     .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                    .frame(width: DesignTokens.Chip.squareIconSide,
-                           height: DesignTokens.Chip.squareIconSide)
+                    .frame(width: DesignTokens.Chip.iconSize(for: .square).width,
+                           height: DesignTokens.Chip.iconSize(for: .square).height)
             },
             canvas: {
                 SquareShape()

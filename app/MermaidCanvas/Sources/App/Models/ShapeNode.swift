@@ -28,6 +28,8 @@ enum ShapeType: String, Codable, CaseIterable {
     case processArrow
     /// v44: container — grupperande rektangel (Mermaid subgraph). Andra former kan vara inuti.
     case container
+    /// v51.1: åttahörning (octagon) med rundade hörn.
+    case octagon
 }
 
 extension ShapeType: Transferable {

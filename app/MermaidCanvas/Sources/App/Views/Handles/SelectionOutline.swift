@@ -29,6 +29,8 @@ struct SelectionOutline: View {
                 DiamondShape().stroke(Color.accentColor, style: dashStyle)
             case .processArrow:
                 ProcessArrowShape().stroke(Color.accentColor, style: dashStyle)
+            case .octagon:
+                OctagonShape().stroke(Color.accentColor, style: dashStyle)
             case .circle:
                 Circle().stroke(Color.accentColor, style: dashStyle)
             case .pill:

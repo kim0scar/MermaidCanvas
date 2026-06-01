@@ -189,4 +189,29 @@ final class RoundTripTests: XCTestCase {
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.shapes.count, 1, "Tabellen ska överleva round-trip")
     }
+
+    /// v51.1: åttahörningen (ny ShapeType) ska round-trippa förlustfritt via state-JSON.
+    /// Mermaid saknar native octagon, men typen bevaras via JSON-state-blocket.
+    func testRoundTrip_Octagon_PreservesType() throws {
+        let original = ShapeNode(type: .octagon,
+                                 position: CGPoint(x: 222, y: 333),
+                                 label: "Åttahörning")
+        let doc = CanvasDocument(
+            title: "OctagonTest",
+            shapes: [original],
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 800),
+            specType: .general,
+            platform: .blank,
+            activeShapePacks: [.basic],
+            collapsedIds: []
+        )
+        let parsed = MermaidParser.parse(doc.content)
+        XCTAssertEqual(parsed.shapes.count, 1, "Åttahörningen ska överleva round-trip")
+        guard let p = parsed.shapes.first else { return }
+        XCTAssertEqual(p.type, .octagon, "Typ octagon ska bevaras (state-JSON, ej Mermaid-fallback)")
+        XCTAssertEqual(p.position.x, 222, accuracy: 1.0, "position.x bevaras")
+        XCTAssertEqual(p.position.y, 333, accuracy: 1.0, "position.y bevaras")
+        XCTAssertEqual(p.label, "Åttahörning", "label bevaras")
+    }
 }

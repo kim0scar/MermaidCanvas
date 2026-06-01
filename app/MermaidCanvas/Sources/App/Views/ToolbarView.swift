@@ -215,113 +215,19 @@ struct ToolbarView: View {
     @ViewBuilder
     private var shapesSecondary: some View {
         VStack(spacing: 8) {
-            // Rad A — 7 grundformer
+            // v51.1: Rad A — rundade former + fyrkanter (omordnad: rundade först)
             HStack(spacing: 8) {
-                // v50.9: cirkel-chippen ritas som riktig Circle() via iconSize (samma
-                // mönster + storlek som övriga chips). Tidigare SF Symbol .title3 = för liten.
-                shapeChipGeneric(type: .circle, accId: "chip.circle", onTap: { model.addShape(.circle, at: canvasCenter) }) {
-                    let s = DesignTokens.Chip.iconSize(for: .circle)
-                    ZStack {
-                        Circle()
-                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: s.height, height: s.height)
-                    }
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                    .contentShape(Circle())
-                }
-                // v50.5 F7: rectangle nu custom (SF "rectangle" har raka hörn,
-                // canvas Rectangle har cornerRadius=10).
-                shapeChipGeneric(type: .rectangle, accId: "chip.rectangle", onTap: { model.addShape(.rectangle, at: canvasCenter) }) {
-                    let s = DesignTokens.Chip.iconSize(for: .rectangle)
-                    ZStack {
-                        // v50.8: storlek + hörn härleds från canvas (ShapeGeometry) → chip = canvas
-                        RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .rectangle, height: s.height),
-                                         style: .continuous)
-                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: s.width, height: s.height)
-                    }
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                    .contentShape(Circle())
-                }
-                // v50.5 F7: square nu custom (SF "square" har raka hörn,
-                // canvas SquareShape har ratio-baserad rundning).
-                shapeChipGeneric(type: .square, accId: "chip.square", onTap: { model.addShape(.square, at: canvasCenter) }) {
-                    let s = DesignTokens.Chip.iconSize(for: .square)
-                    ZStack {
-                        SquareShape()
-                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: s.width, height: s.height)
-                    }
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                    .contentShape(Circle())
-                }
-                shapeChipGeneric(type: .diamond, accId: "chip.diamond", onTap: { model.addShape(.diamond, at: canvasCenter) }) {
-                    let s = DesignTokens.Chip.iconSize(for: .diamond)
-                    ZStack {
-                        // v50.8: DiamondShape() använder ratio-default → samma rundnings-
-                        // proportion som canvas. Storlek från ShapeGeometry-ratio.
-                        DiamondShape()
-                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: s.width, height: s.height)
-                    }
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                    .contentShape(Circle())
-                }
-                shapeChipGeneric(type: .pill, accId: "chip.pill", onTap: { model.addShape(.pill, at: canvasCenter) }) {
-                    let s = DesignTokens.Chip.iconSize(for: .pill)
-                    ZStack {
-                        // v50.8: Capsule i exakt canvas-pillens proportion (130×80 = 1.625:1)
-                        // via ShapeGeometry. Tidigare hårdkodat 30×16 = fel ratio.
-                        Capsule(style: .continuous)
-                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: s.width, height: s.height)
-                    }
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                    .contentShape(Circle())
-                }
-                shapeChipGeneric(type: .processArrow, accId: "chip.processArrow", onTap: { model.addShape(.processArrow, at: canvasCenter) }) {
-                    let s = DesignTokens.Chip.iconSize(for: .processArrow)
-                    ZStack {
-                        // v50.8: ProcessArrow ratio-default + storlek från ShapeGeometry.
-                        ProcessArrowShape()
-                            .stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth)
-                            .frame(width: s.width, height: s.height)
-                    }
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                    .contentShape(Circle())
-                }
+                geoChip(.circle, accId: "chip.circle") { model.addShape(.circle, at: canvasCenter) }
+                geoChip(.pill, accId: "chip.pill") { model.addShape(.pill, at: canvasCenter) }
+                geoChip(.rectangle, accId: "chip.rectangle") { model.addShape(.rectangle, at: canvasCenter) }
+                geoChip(.square, accId: "chip.square") { model.addShape(.square, at: canvasCenter) }
+                geoChip(.container, accId: "chip.container") { model.addShape(.container, at: canvasCenter) }
             }
-            // v44: Rad B — text-chipet borttaget. container ersätter slot.
+            // v51.1: Rad B — övriga former + verktyg
             HStack(spacing: 8) {
-                // v50.5 F7: container nu custom — dashed RoundedRectangle som
-                // matchar canvas-container-renderingen.
-                shapeChipGeneric(type: .container, accId: "chip.container", onTap: { model.addShape(.container, at: canvasCenter) }) {
-                    let s = DesignTokens.Chip.iconSize(for: .container)
-                    ZStack {
-                        RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: s.height),
-                                         style: .continuous)
-                            .stroke(Color.primary,
-                                    style: StrokeStyle(lineWidth: DesignTokens.Shape.chipStrokeWidth,
-                                                       dash: [3, 2]))
-                            .frame(width: s.width, height: s.height)
-                    }
-                    .frame(width: 44, height: 44)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                    .contentShape(Circle())
-                }
+                geoChip(.diamond, accId: "chip.diamond") { model.addShape(.diamond, at: canvasCenter) }
+                geoChip(.processArrow, accId: "chip.processArrow") { model.addShape(.processArrow, at: canvasCenter) }
+                geoChip(.octagon, accId: "chip.octagon") { model.addShape(.octagon, at: canvasCenter) }
                 shapeChip(.table, "tablecells",        accId: "chip.table", onTap: onAddTable)
                 shapeChip(.link,  "link",              accId: "chip.link",  onTap: onAddJumpLink)
                 shapeChip(.line,  "minus",             accId: "chip.line") {
@@ -338,6 +244,47 @@ struct ToolbarView: View {
             }
         }
         .padding(.horizontal, 2)
+    }
+
+    /// v51.1: enhetlig geometri-chip. Storlek via `iconSize` (canvas-proportion) +
+    /// rätt SwiftUI-form per typ. Gör chip-raderna kompakta och trivialt omordningsbara.
+    @ViewBuilder
+    private func geoChip(_ type: ShapeType, accId: String, onTap: @escaping () -> Void) -> some View {
+        shapeChipGeneric(type: type, accId: accId, onTap: onTap) {
+            let s = DesignTokens.Chip.iconSize(for: type)
+            ZStack { geoChipShape(type, size: s) }
+                .frame(width: 44, height: 44)
+                .background(Circle().fill(.ultraThinMaterial))
+                .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                .contentShape(Circle())
+        }
+    }
+
+    @ViewBuilder
+    private func geoChipShape(_ type: ShapeType, size s: CGSize) -> some View {
+        let stroke = DesignTokens.Shape.chipStrokeWidth
+        switch type {
+        case .circle:
+            Circle().stroke(Color.primary, lineWidth: stroke).frame(width: s.height, height: s.height)
+        case .pill:
+            Capsule(style: .continuous).stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        case .rectangle:
+            RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .rectangle, height: s.height), style: .continuous)
+                .stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        case .square:
+            SquareShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        case .container:
+            RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: s.height), style: .continuous)
+                .stroke(Color.primary, style: StrokeStyle(lineWidth: stroke, dash: [3, 2])).frame(width: s.width, height: s.height)
+        case .diamond:
+            DiamondShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        case .processArrow:
+            ProcessArrowShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        case .octagon:
+            OctagonShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        default:
+            EmptyView()
+        }
     }
 
     /// v29: pack-chip — tap lägger rektangel med pack:s default-kategori.
@@ -479,6 +426,7 @@ struct ToolbarView: View {
         case "chip.table": return "Tabell"
         case "chip.link": return "Hopplänk"
         case "chip.line": return "Linje"
+        case "chip.octagon": return "Åttahörning"
         case "chip.notepopup": return "Visa anteckningar"
         default:
             if accId.hasPrefix("chip.pack.") || accId.hasPrefix("toggle.pack.") { return "Formpaket" }

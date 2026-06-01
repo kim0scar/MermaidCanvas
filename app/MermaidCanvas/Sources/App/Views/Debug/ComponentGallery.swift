@@ -189,6 +189,13 @@ struct ComponentGallery: View {
     private var galleryShapes: [GalleryEntry] {
         [
             GalleryEntry(
+                label: "octagon",
+                shapeType: .octagon,
+                selectionRadius: 0,
+                chipView: AnyView(OctagonShape().stroke(Color.primary, lineWidth: DesignTokens.Shape.chipStrokeWidth).frame(width: DesignTokens.Chip.iconSize(for: .octagon).width, height: DesignTokens.Chip.iconSize(for: .octagon).height)),
+                canvasView: AnyView(OctagonShape().stroke(Color.primary, lineWidth: DesignTokens.Shape.canvasStrokeWidth).frame(width: 56, height: 56))
+            ),
+            GalleryEntry(
                 label: "circle",
                 shapeType: .circle,
                 selectionRadius: 40,

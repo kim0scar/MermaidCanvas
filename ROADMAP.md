@@ -2,7 +2,16 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v51.0 (deployad)
+## Aktuell version: v51.1 (deployad)
+
+*Tema:* Åttahörning + chip-omordning (punkt 5)
+
+**v51.1 (denna session):**
+- **Ny form: åttahörning (octagon)** med rundade hörn (`OctagonShape`), bas 80×80. Round-trippar förlustfritt via state-JSON (`type: "octagon"`); Mermaid-syntax-fallback = rundad rektangel.
+- Hanterad i alla form-switchar (kompilator-verifierat) + de tysta `default`-fällorna i `ShapeGeometry` (explicit 80×80).
+- **Chip-raderna omordnade** (rundade först): Rad A = cirkel, pill, rektangel, kvadrat, container; Rad B = diamant, processpil, åttahörning, tabell, länk, linje, anteckningar. Chip-blocken refaktorerade till `geoChip`-helper (DRY).
+
+**v51.0 (föregående):**
 
 *Tema:* Dark mode — beroende-pilarna syns nu (punkt 4)
 

@@ -12,6 +12,7 @@ enum ShapeGeometry {
         case .square:       return 80    // liksidig kvadrat
         case .processArrow: return 110   // kompakt pil (spets 40% av bredden)
         case .container:    return 280   // v44: grupperande container ska rymma flera former
+        case .octagon:      return 80    // v51.1: symmetrisk åttahörning
         default:            return baseWidth
         }
     }
@@ -19,6 +20,7 @@ enum ShapeGeometry {
         switch type {
         case .square:    return 80    // liksidig kvadrat
         case .container: return 200   // v44: container — högre default-höjd
+        case .octagon:   return 80    // v51.1: symmetrisk åttahörning
         default:         return baseHeight
         }
     }
@@ -679,6 +681,10 @@ struct ShapeView: View {
             ProcessArrowShape()
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
+        case .octagon:
+            OctagonShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .line, .arrow:
             EmptyView()
         }
@@ -699,6 +705,8 @@ struct ShapeView: View {
             SquareShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .processArrow:
             ProcessArrowShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+        case .octagon:
+            OctagonShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .container:
             // v44: container — streckad ram redan ritad i background
             EmptyView()
@@ -723,6 +731,8 @@ struct ShapeView: View {
                 SquareShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .processArrow:
                 ProcessArrowShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .octagon:
+                OctagonShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .container:
                 RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
@@ -1338,7 +1348,7 @@ struct EdgesView: View {
             localPoint = CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
         case .diamond:
             localPoint = diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
-        case .rectangle, .table, .pill, .square, .processArrow, .container:
+        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon:
             localPoint = rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
             return center

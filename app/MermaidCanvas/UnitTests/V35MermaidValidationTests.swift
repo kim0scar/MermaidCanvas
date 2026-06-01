@@ -30,7 +30,9 @@ final class V35MermaidValidationTests: XCTestCase {
             ShapeNode(type: .square,       position: CGPoint(x: 1000, y: 100), label: "Fyrkant"),
             ShapeNode(type: .processArrow, position: CGPoint(x: 1100, y: 100), label: "Processpil"),
             // v44 — container (subgraph i Mermaid)
-            ShapeNode(type: .container,    position: CGPoint(x: 1200, y: 100), label: "Container")
+            ShapeNode(type: .container,    position: CGPoint(x: 1200, y: 100), label: "Container"),
+            // v51.1 — åttahörning (Mermaid-fallback = rundad rektangel; round-trip via state-JSON)
+            ShapeNode(type: .octagon,      position: CGPoint(x: 1300, y: 100), label: "Åttahörning")
         ]
         XCTAssertEqual(shapes.count, ShapeType.allCases.count, "Testet ska täcka alla ShapeType-fall")
         // Sanity check: alla ShapeType-fall ska finnas representerade
@@ -74,6 +76,8 @@ final class V35MermaidValidationTests: XCTestCase {
         XCTAssertTrue(mermaid.contains("\"Processpil\""), "Processpil-label saknas i output")
         // v44: container renderas som subgraph
         XCTAssertTrue(mermaid.contains("\"Container\""), "Container-label saknas i output")
+        // v51.1: åttahörning
+        XCTAssertTrue(mermaid.contains("\"Åttahörning\""), "Åttahörning-label saknas i output")
 
         // Tabell-metadata ska finnas som mermaid-kommentar
         XCTAssertTrue(mermaid.contains("table: 3×4"),
