@@ -1,5 +1,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import UIKit
 import os
 
 /// v34: dragLog behålls (för diagnostik) men ShapeDragController är rivet.
@@ -273,6 +274,11 @@ struct ContentView: View {
             if newPhase == .background, fileManager.hasOpenFile {
                 saveToOpenFile()
             }
+        }
+        // v60.1: UIKit-livscykeln (egen UIWindow i stället för WindowGroup) kan göra scenePhase
+        // mindre pålitlig — lyssna även direkt på didEnterBackground så autospar garanterat sker.
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
+            if fileManager.hasOpenFile { saveToOpenFile() }
         }
         .confirmationDialog("Spara nuvarande canvas först?",
                             isPresented: $showNewCanvasPrompt,
