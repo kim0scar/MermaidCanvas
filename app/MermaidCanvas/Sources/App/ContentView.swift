@@ -10,6 +10,8 @@ struct ContentView: View {
     @StateObject private var fileManager = CanvasFileManager()
     /// v36: autosave vid bakgrundning.
     @Environment(\.scenePhase) private var scenePhase
+    /// v60: landskap (compact höjd på iPhone) → vänster vertikal sidebar i stället för topp-bar.
+    @Environment(\.verticalSizeClass) private var vSizeClass
     /// v34: synkroniserad spegel av UIScrollView's pan/zoom-state.
     /// Speglat live i ZoomableCanvas delegate-callbacks (utan async). Manuell
     /// chip-drop läser detta synkront vid drag-end → ingen race-condition.
@@ -42,65 +44,76 @@ struct ContentView: View {
     /// v50.4: visa Component Gallery (debug/visuell verifiering)
     @State private var showComponentGallery: Bool = false
 
+    // v60: extraherade vyer för adaptiv layout (porträtt topp-bar / landskap vänster-sidebar).
+    private func toolbarView(vertical: Bool) -> some View {
+        ToolbarView(
+            model: model,
+            chipDragState: chipDragState,
+            viewportState: viewportState,
+            onDropShape: handleDrop,
+            canvasCenter: canvasCenter,
+            zoomPercent: zoomPercent,
+            hasOpenFile: fileManager.hasOpenFile,
+            onOpen: { showImporter = true },
+            onSave: save,
+            onSaveAs: saveAs,
+            onUndo: { model.undo() },
+            onShowCode: showMermaidCode,
+            onShowRules: { showRulesSheet = true },
+            onToggleMarker: { model.toggleMarkerMode() },
+            onAddTable: { model.addTable(at: canvasCenter) },
+            onAddJumpLink: { model.addJumpLinkPair(near: canvasCenter) },
+            onNewCanvas: {
+                if model.shapes.isEmpty { showNewCanvasSheet = true } else { showNewCanvasPrompt = true }
+            },
+            onResetZoom: { resetZoomTrigger &+= 1 },
+            onShowNotePopup: { showNotePopup = true },
+            onImportMermaid: { showMermaidImport = true },
+            onDuplicateSelection: { model.duplicateSelection() },
+            onDeleteSelection: { model.deleteSelection() },
+            onAlignHorizontal: { model.alignSelectionHorizontally() },
+            onAlignVertical: { model.alignSelectionVertically() },
+            axis: vertical ? .vertical : .horizontal
+        )
+    }
+
+    private var canvasView: some View {
+        CanvasView(
+            model: model,
+            viewportState: viewportState,
+            onShapeEdgeTap: { id in _ = model.handleEdgeTap(on: id) },
+            onShapeEdit: { id in editingShapeId = id },
+            onShapeDelete: { id in model.deleteShape(id: id) },
+            onEdgeDelete: { id in model.deleteEdge(id: id) },
+            onShapeSelect: { id in model.selectShape(id) },
+            onShapeDuplicate: { id in model.duplicateShape(id: id) },
+            onShapeShowNote: { id in notingShapeId = id },
+            onTableEdit: { id in tableEditingShapeId = id },
+            zoomPercent: $zoomPercent,
+            resetZoomTrigger: resetZoomTrigger
+        )
+    }
+
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                ToolbarView(
-                    model: model,
-                    chipDragState: chipDragState,
-                    viewportState: viewportState,
-                    onDropShape: handleDrop,
-                    canvasCenter: canvasCenter,
-                    zoomPercent: zoomPercent,
-                    hasOpenFile: fileManager.hasOpenFile,
-                    onOpen: { showImporter = true },
-                    onSave: save,
-                    onSaveAs: saveAs,
-                    onUndo: { model.undo() },
-                    onShowCode: showMermaidCode,
-                    onShowRules: { showRulesSheet = true },
-                    onToggleMarker: { model.toggleMarkerMode() },
-                    onAddTable: { model.addTable(at: canvasCenter) },
-                    onAddJumpLink: { model.addJumpLinkPair(near: canvasCenter) },
-                    onNewCanvas: {
-                        if model.shapes.isEmpty {
-                            showNewCanvasSheet = true
-                        } else {
-                            showNewCanvasPrompt = true
-                        }
-                    },
-                    onResetZoom: { resetZoomTrigger &+= 1 },
-                    onShowNotePopup: { showNotePopup = true },
-                    onImportMermaid: { showMermaidImport = true },
-                    onDuplicateSelection: { model.duplicateSelection() },
-                    onDeleteSelection: { model.deleteSelection() },
-                    onAlignHorizontal: { model.alignSelectionHorizontally() },
-                    onAlignVertical: { model.alignSelectionVertically() }
-                )
-
-                CanvasView(
-                    model: model,
-                    viewportState: viewportState,
-                    onShapeEdgeTap: { id in _ = model.handleEdgeTap(on: id) },
-                    onShapeEdit: { id in editingShapeId = id },
-                    onShapeDelete: { id in model.deleteShape(id: id) },
-                    onEdgeDelete: { id in model.deleteEdge(id: id) },
-                    onShapeSelect: { id in model.selectShape(id) },
-                    onShapeDuplicate: { id in model.duplicateShape(id: id) },
-                    onShapeShowNote: { id in notingShapeId = id },
-                    onTableEdit: { id in tableEditingShapeId = id },
-                    zoomPercent: $zoomPercent,
-                    resetZoomTrigger: resetZoomTrigger
-                )
-
-            // v35: canvasCenter är dynamisk via computed property från viewportState
-            // — ingen .onAppear / .onChange behövs.
+        ZStack(alignment: .topLeading) {
+            if vSizeClass == .compact {
+                // v60: landskap — canvas i fullskärm, toolbar som vänster sidebar (overlay).
+                canvasView
+                toolbarView(vertical: true)
+                    .padding(.leading, 6)
+                    .padding(.top, 6)
+            } else {
+                // Porträtt — toolbar som topp-bar ovanför canvas (som tidigare).
+                VStack(spacing: 0) {
+                    toolbarView(vertical: false)
+                    canvasView
+                }
             }
 
-            // v50.7 UX-003: tomt-tillstånd-vägledning. Visas bara på tom canvas och
-            // när inget chip dras. Blockerar inga gester.
+            // v50.7 UX-003: tomt-tillstånd-vägledning (centrerad). Blockerar inga gester.
             if model.shapes.isEmpty && chipDragState.activeType == nil {
                 EmptyCanvasHint()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .allowsHitTesting(false)
                     .transition(.opacity)
             }

@@ -50,39 +50,62 @@ struct ToolbarView: View {
     var onDeleteSelection: () -> Void
     var onAlignHorizontal: () -> Void
     var onAlignVertical: () -> Void
+    /// v60: layout-axel — .horizontal (porträtt: topp-bar) eller .vertical (landskap: vänster sidebar).
+    var axis: Axis = .horizontal
 
     @State private var secondaryRow: SecondaryToolbarRow? = nil
     @State private var showSizePicker = false   // v40: textstorlek-popup
 
     var body: some View {
-        VStack(spacing: 0) {
-            primaryRow
-            // v39: visa multi-select-operationer automatiskt när markerMode är aktivt
-            let activeRow: SecondaryToolbarRow? = model.markerMode ? .multiSelect : secondaryRow
-            if let row = activeRow {
-                secondaryRowView(row)
-                    .transition(.asymmetric(
-                        insertion: .opacity.combined(with: .move(edge: .top)),
-                        removal: .opacity.combined(with: .move(edge: .top))
-                    ))
+        // v39: visa multi-select-operationer automatiskt när markerMode är aktivt
+        let activeRow: SecondaryToolbarRow? = model.markerMode ? .multiSelect : secondaryRow
+        if axis == .vertical {
+            // v60: landskap — vänster vertikal sidebar (ligger som overlay över canvas).
+            // Primärkolumn till vänster; sekundär-panel öppnas till höger om den.
+            HStack(alignment: .top, spacing: 6) {
+                primaryControls(vertical: true)
+                    .padding(8)
+                    .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
+                if let row = activeRow {
+                    secondaryRowView(row)
+                        .padding(8)
+                        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
+                }
             }
+        } else {
+            VStack(spacing: 0) {
+                primaryControls(vertical: false)
+                    .padding(.horizontal, 10).padding(.vertical, 8)
+                if let row = activeRow {
+                    secondaryRowView(row)
+                        .transition(.asymmetric(
+                            insertion: .opacity.combined(with: .move(edge: .top)),
+                            removal: .opacity.combined(with: .move(edge: .top))
+                        ))
+                }
+            }
+            .background(Color(.systemBackground))
         }
-        .background(Color(.systemBackground))
     }
 
     // MARK: - Primary rad
 
+    /// v60: primärkontrollerna i axel-medveten layout (HStack i porträtt, VStack i landskap).
     @ViewBuilder
-    private var primaryRow: some View {
-        // v39: multi-select-knapp (rectangle.dashed) i primär toolbar.
-        HStack(spacing: 4) {
+    private func primaryControls(vertical: Bool) -> some View {
+        let layout = vertical
+            ? AnyLayout(VStackLayout(spacing: 6))
+            : AnyLayout(HStackLayout(spacing: 4))
+        layout {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
             toggleButton("swatchpalette", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
             // v39: multi-select direkt i toolbar
             markerButton
-            Spacer(minLength: 0)
+            if !vertical { Spacer(minLength: 0) }
             zoomBadge
             undoButton
             LägenMenu(
@@ -98,8 +121,6 @@ struct ToolbarView: View {
                 onImportMermaid: onImportMermaid
             )
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
     }
 
     @ViewBuilder
@@ -215,19 +236,20 @@ struct ToolbarView: View {
     @ViewBuilder
     private var shapesSecondary: some View {
         VStack(spacing: 8) {
-            // v51.1: Rad A — rundade former + fyrkanter (omordnad: rundade först)
-            HStack(spacing: 8) {
-                geoChip(.circle, accId: "chip.circle") { model.addShape(.circle, at: canvasCenter) }
-                geoChip(.pill, accId: "chip.pill") { model.addShape(.pill, at: canvasCenter) }
-                geoChip(.rectangle, accId: "chip.rectangle") { model.addShape(.rectangle, at: canvasCenter) }
-                geoChip(.square, accId: "chip.square") { model.addShape(.square, at: canvasCenter) }
-                geoChip(.container, accId: "chip.container") { model.addShape(.container, at: canvasCenter) }
+            // v60: ALLA 8 geometriska former på ÖVERSTA raden (Kims önskemål).
+            // 40pt-frame + 6pt mellanrum ryms i porträtt; tap-yta ≥44pt via contentShape-inset.
+            HStack(spacing: 6) {
+                geoChip(.circle, accId: "chip.circle", frame: 40) { model.addShape(.circle, at: canvasCenter) }
+                geoChip(.pill, accId: "chip.pill", frame: 40) { model.addShape(.pill, at: canvasCenter) }
+                geoChip(.rectangle, accId: "chip.rectangle", frame: 40) { model.addShape(.rectangle, at: canvasCenter) }
+                geoChip(.square, accId: "chip.square", frame: 40) { model.addShape(.square, at: canvasCenter) }
+                geoChip(.container, accId: "chip.container", frame: 40) { model.addShape(.container, at: canvasCenter) }
+                geoChip(.diamond, accId: "chip.diamond", frame: 40) { model.addShape(.diamond, at: canvasCenter) }
+                geoChip(.processArrow, accId: "chip.processArrow", frame: 40) { model.addShape(.processArrow, at: canvasCenter) }
+                geoChip(.octagon, accId: "chip.octagon", frame: 40) { model.addShape(.octagon, at: canvasCenter) }
             }
-            // v51.1: Rad B — övriga former + verktyg
+            // Rad B — verktyg (tabell, länk, linje, anteckningar)
             HStack(spacing: 8) {
-                geoChip(.diamond, accId: "chip.diamond") { model.addShape(.diamond, at: canvasCenter) }
-                geoChip(.processArrow, accId: "chip.processArrow") { model.addShape(.processArrow, at: canvasCenter) }
-                geoChip(.octagon, accId: "chip.octagon") { model.addShape(.octagon, at: canvasCenter) }
                 shapeChip(.table, "tablecells",        accId: "chip.table", onTap: onAddTable)
                 shapeChip(.link,  "link",              accId: "chip.link",  onTap: onAddJumpLink)
                 shapeChip(.line,  "minus",             accId: "chip.line") {
@@ -249,14 +271,15 @@ struct ToolbarView: View {
     /// v51.1: enhetlig geometri-chip. Storlek via `iconSize` (canvas-proportion) +
     /// rätt SwiftUI-form per typ. Gör chip-raderna kompakta och trivialt omordningsbara.
     @ViewBuilder
-    private func geoChip(_ type: ShapeType, accId: String, onTap: @escaping () -> Void) -> some View {
+    private func geoChip(_ type: ShapeType, accId: String, frame: CGFloat = 44, onTap: @escaping () -> Void) -> some View {
         shapeChipGeneric(type: type, accId: accId, onTap: onTap) {
             let s = DesignTokens.Chip.iconSize(for: type)
             ZStack { geoChipShape(type, size: s) }
-                .frame(width: 44, height: 44)
+                .frame(width: frame, height: frame)
                 .background(Circle().fill(.ultraThinMaterial))
                 .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
-                .contentShape(Circle())
+                // v60: behåll ≥44pt tap-yta även om frame krymps till 40 (8-på-rad).
+                .contentShape(Circle().inset(by: min(0, (frame - 44) / 2)))
         }
     }
 
