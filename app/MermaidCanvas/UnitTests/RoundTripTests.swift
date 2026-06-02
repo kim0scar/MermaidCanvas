@@ -214,4 +214,30 @@ final class RoundTripTests: XCTestCase {
         XCTAssertEqual(p.position.y, 333, accuracy: 1.0, "position.y bevaras")
         XCTAssertEqual(p.label, "Åttahörning", "label bevaras")
     }
+
+    /// v60: prompt-fältet ska round-trippa via state-JSON OCH synas i Mermaid-koden (n8n).
+    func testRoundTrip_Prompt_PreservedAndInMermaid() throws {
+        let original = ShapeNode(type: .rectangle,
+                                 position: CGPoint(x: 140, y: 160),
+                                 label: "Webhook",
+                                 prompt: "Skicka POST till n8n med payload X")
+        let doc = CanvasDocument(
+            title: "PromptTest",
+            shapes: [original],
+            edges: [],
+            canvasSize: CGSize(width: 800, height: 800),
+            specType: .general,
+            platform: .blank,
+            activeShapePacks: [.basic],
+            collapsedIds: []
+        )
+        let md = doc.content
+        XCTAssertTrue(md.contains("prompt: Skicka POST till n8n med payload X"),
+                      "Prompt ska finnas som %% prompt:-kommentar i Mermaid")
+        XCTAssertTrue(md.contains("name: Webhook"),
+                      "Namn ska finnas som %% name:-kommentar i Mermaid")
+        let parsed = MermaidParser.parse(md)
+        XCTAssertEqual(parsed.shapes.first?.prompt, "Skicka POST till n8n med payload X",
+                       "Prompt ska bevaras genom round-trip (state-JSON)")
+    }
 }

@@ -2,7 +2,23 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v51.2 (deployad)
+## Aktuell version: v60 (deployad)
+
+*Tema:* Stort lyft — kant-geometri, container-omtag, n8n-prompt, 8-form-rad + landskaps-sidebar
+
+**v60 (denna session — multi-agent-konsensus):**
+- **A — beroende-pilar möter rakt:** `outwardNormal` är nu rotations-medveten + pilhuvudet pekar längs sidans inåt-normal → pilen går in vinkelrätt (även diagonalt/roterat), inte snett.
+- **B — processpilens spets rundad** (höger spets), i både form och chip, med degenerations-cap.
+- **C — container i Lucidchart-stil:** solid header-rad med titel + ljus kropp + tunn ram (canvas + chip).
+- **D — container valbar/namnbar:** containrar z-ordnas under barn → tap/namnbyte fungerar.
+- **E — container-barn följer alltid med:** `childOfContainerId` sätts vid skapande + container "adopterar" former vid släpp; barn följer vid flytt.
+- **F — alla 8 geometriska former på översta raden** (40pt, ≥44pt tap) + **landskap = vänster vertikal sidebar** (adaptiv layout, äkta orientering).
+- **G — prompt + namn per form (n8n):** nytt `prompt`-fält (EditShapeSheet), namn = label; båda exporteras i Mermaid-koden (`%% name:` / `%% prompt:`) för att kopiera flöden till n8n. Round-trippar.
+- Test-target: nya tester (kant, prompt, octagon) + snapshots omrecordade. Hela sviten grön.
+
+> **Verifiera på iPhone:** landskaps-sidebaren (kan ej rotera simulatorn via script), container drag/resize-känsla, diagonala pilar.
+
+**v51.2 (föregående):**
 
 *Tema:* Landskapsläge (punkt 6) — äkta orientering
 

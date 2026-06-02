@@ -1,7 +1,7 @@
-# ARKITEKTUR-MERMAID — Version v50.8
-*Datum: 2026-06-01*
+# ARKITEKTUR-MERMAID — Version v60
+*Datum: 2026-06-02*
 
-**Aktuell version:** v50.8
+**Aktuell version:** v60
 **Single source of truth för version:** `app/MermaidCanvas/Sources/App/AppVersion.swift`
 
 > Detta dokument speglar **nuvarande** kod (v50.7). Den kompletta modul-kartan med
