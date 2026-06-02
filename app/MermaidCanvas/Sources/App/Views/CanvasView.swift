@@ -154,6 +154,14 @@ struct CanvasView: View {
             // v34: be ZoomableCanvas centrera på partner-positionen
             centerOnPoint = partner.position
         } else {
+            // v60.1: när en container väljs — "adoptera" alla former som ligger inom den
+            // NU (explicit childOfContainerId). Annars matchas barn som lades till FÖRE
+            // containern bara via position-fallback, och de tappas mitt i en flytt när de
+            // hinner glida ut ur containerns (statiska) bounds → "följer inte allt med".
+            if let shape = model.shapes.first(where: { $0.id == id }),
+               shape.type == .container {
+                model.claimChildren(forContainer: id)
+            }
             onShapeSelect(id)
         }
     }
