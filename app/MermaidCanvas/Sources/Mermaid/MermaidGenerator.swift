@@ -87,6 +87,13 @@ enum MermaidGenerator {
                 lines.append("\(indent)%% \(id) pack: \(packId)")
             }
             lines.append("\(indent)%% \(id) pos: \(Int(shape.position.x.rounded())),\(Int(shape.position.y.rounded()))")
+            // v60: namn + prompt för n8n-flöden — läsbart direkt i Mermaid-koden.
+            if !shape.label.isEmpty {
+                lines.append("\(indent)%% \(id) name: \(oneLine(shape.label))")
+            }
+            if !shape.prompt.isEmpty {
+                lines.append("\(indent)%% \(id) prompt: \(oneLine(shape.prompt))")
+            }
         }
 
         // v44: containrar exporteras som subgraph-block — referens till
@@ -113,6 +120,10 @@ enum MermaidGenerator {
             }
             if let h = container.heightMultiplier {
                 lines.append("\(indent)%% \(cid) height: \(String(format: "%.2f", h))")
+            }
+            // v60: namn (= subgraph-label ovan) + prompt för n8n.
+            if !container.prompt.isEmpty {
+                lines.append("\(indent)%% \(cid) prompt: \(oneLine(container.prompt))")
             }
         }
 
@@ -281,6 +292,10 @@ enum MermaidGenerator {
             }
             if shape.indentLevel > 0 {
                 n["indentLevel"] = shape.indentLevel
+            }
+            // v60: prompt-text (n8n) — round-trippas via state-JSON
+            if !shape.prompt.isEmpty {
+                n["prompt"] = shape.prompt
             }
             // v47: explicit container-förälder som mermaid-id (sträng)
             if let parentUUID = shape.childOfContainerId,

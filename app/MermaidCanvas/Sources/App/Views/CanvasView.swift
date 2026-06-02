@@ -231,10 +231,18 @@ struct CanvasView: View {
                             }
                         },
                         onDragEnded: { id in
-                            // v47: explicit container-tilldelning efter drag.
-                            model.assignContainerForShape(id)
+                            // v47/v60: efter drag — en container "adopterar" former inom sig,
+                            // en vanlig form tilldelas sin container.
+                            if shape.type == .container {
+                                model.claimChildren(forContainer: id)
+                            } else {
+                                model.assignContainerForShape(id)
+                            }
                         }
                     )
+                    // v60 D: containrar ritas UNDER övriga former (barn fångar då inte
+                    // containerns tap → namnbyte funkar; barn ligger visuellt ovanpå).
+                    .zIndex(shape.type == .container ? 0 : 1)
                 }
             }
 
@@ -485,31 +493,7 @@ struct ShapeView: View {
                height: ShapeGeometry.height(for: shape))
         .rotationEffect(.degrees(shape.rotation))
         .opacity(markerMode && !edgeMode ? 0.6 : 1.0)
-        // v50.3 R3: Container-label OVANFÖR ramen (Lucidchart-stil).
-        // .overlay tillåter att text-frame går utanför container-frame:n
-        // utan att klippas. Padding + bakgrund ger "tab"-känsla.
-        .overlay(alignment: .top) {
-            if shape.type == .container && shape.showLabel && !shape.label.isEmpty {
-                Text(formattedLabel)
-                    .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
-                                  weight: shape.textStyle.fontWeight,
-                                  design: .rounded))
-                    .foregroundStyle(Color.primary)
-                    .lineLimit(1)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(.systemBackground))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .stroke(shape.category.strokeColor, lineWidth: 1)
-                            )
-                    )
-                    .offset(y: -14)
-                    .rotationEffect(.degrees(-shape.rotation))
-            }
-        }
+        // v60: container-titeln bor nu i header-raden (se background) — ingen flytande tab.
         .overlay(alignment: .topTrailing) {
             if !shape.note.isEmpty && !markerMode {
                 NoteBadge(canvasScale: canvasScale, onTap: onShowNote)
@@ -656,14 +640,27 @@ struct ShapeView: View {
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .container:
-            // v44: container — grupperande rektangel med streckad ram (Mermaid subgraph)
-            RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous)
-                .fill(effectiveFill.opacity(0.05))
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous)
-                        .stroke(effectiveStroke,
-                                style: StrokeStyle(lineWidth: DesignTokens.Shape.canvasStrokeWidth, dash: [6, 4]))
-                )
+            // v60: container i Lucidchart-stil — solid header-rad med titel + ljus kropp
+            // + tunn solid ram. Titeln bor i headern (ej flytande tab).
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Text(shape.label.isEmpty ? "Grupp" : formattedLabel)
+                        .font(.system(size: 13 * min(shape.sizeMultiplier, 1.4), weight: .semibold, design: .rounded))
+                        .foregroundStyle(Color.white)
+                        .lineLimit(1)
+                        .padding(.horizontal, 10)
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 28)
+                .background(shape.category.strokeColor)
+                Rectangle().fill(effectiveFill.opacity(0.04))
+            }
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous)
+                    .stroke(shape.category.strokeColor.opacity(0.6), lineWidth: 1.5)
+            )
         case .table:
             TableShapeBackground(rows: shape.tableRows ?? 3,
                                  cols: shape.tableCols ?? 3,
@@ -1167,23 +1164,40 @@ struct EdgesView: View {
     /// v38: utåtriktad normalvektor för en forms yta vid en given kant-punkt.
     /// Avgör vilken yta (V/H/T/B) som är närmast och returnerar ortogonal riktning därifrån.
     private func outwardNormal(for shape: ShapeNode, at point: CGPoint) -> CGPoint {
-        let dx = point.x - shape.position.x
-        let dy = point.y - shape.position.y
+        var dx = point.x - shape.position.x
+        var dy = point.y - shape.position.y
+        // v60: rotations-medveten — räkna normalen i formens LOKALA (oroterade) rum
+        // och rotera tillbaka. Då blir cp + pilhuvud vinkelrätt mot den FAKTISKA
+        // (roterade) sidan → pilen går in rakt även på roterade former.
+        let rot = shape.rotation
+        if abs(rot) > 0.5 {
+            let a = -rot * .pi / 180
+            let c = cos(a), s = sin(a)
+            let lx = dx * c - dy * s
+            let ly = dx * s + dy * c
+            dx = lx; dy = ly
+        }
+        let localNormal: CGPoint
         switch shape.type {
         case .circle, .link:
             let len = hypot(dx, dy)
-            return len > 0.01 ? CGPoint(x: dx / len, y: dy / len) : CGPoint(x: 1, y: 0)
+            localNormal = len > 0.01 ? CGPoint(x: dx / len, y: dy / len) : CGPoint(x: 1, y: 0)
         default:
             let hw = ShapeGeometry.halfWidth(for: shape)
             let hh = ShapeGeometry.halfHeight(for: shape)
             let tx = hw > 0.01 ? abs(dx) / hw : 0
             let ty = hh > 0.01 ? abs(dy) / hh : 0
             if tx >= ty {
-                return dx > 0 ? CGPoint(x: 1, y: 0) : CGPoint(x: -1, y: 0)
+                localNormal = dx > 0 ? CGPoint(x: 1, y: 0) : CGPoint(x: -1, y: 0)
             } else {
-                return dy > 0 ? CGPoint(x: 0, y: 1) : CGPoint(x: 0, y: -1)
+                localNormal = dy > 0 ? CGPoint(x: 0, y: 1) : CGPoint(x: 0, y: -1)
             }
         }
+        guard abs(rot) > 0.5 else { return localNormal }
+        let a = rot * .pi / 180
+        let c = cos(a), s = sin(a)
+        return CGPoint(x: localNormal.x * c - localNormal.y * s,
+                       y: localNormal.x * s + localNormal.y * c)
     }
 
     /// v38: bezier-kurva för en kant — mjuk S-kurva utan waypoint, smidig böj med waypoint.
@@ -1257,30 +1271,13 @@ struct EdgesView: View {
         // pilspetsen blir sned. Lösning: sampla bezier vid t=0.92 och peka
         // från den punkten mot end. Det ger en stabil "near-endpoint-tangent"
         // som matchar pilens visuella riktning även för korta pilar.
-        let endAngle: CGFloat
-        let startAngle: CGFloat
-        if let wp = edge.waypoints.first {
-            // v50.3 R4: waypoint-grenen behöver samma "near-endpoint-tangent"
-            // som cubic-grenen. Quad-bezier sampling vid t=0.90 / 0.10.
-            // Q(t) = (1-t)²·P0 + 2(1-t)t·CP + t²·P1
-            func quad(_ t: CGFloat, _ p0: CGPoint, _ cp: CGPoint, _ p1: CGPoint) -> CGPoint {
-                let u = 1 - t
-                return CGPoint(
-                    x: u * u * p0.x + 2 * u * t * cp.x + t * t * p1.x,
-                    y: u * u * p0.y + 2 * u * t * cp.y + t * t * p1.y
-                )
-            }
-            // Linjen är två quad-bezier: start → wp via cp1, wp → end via cp2
-            let nearEnd   = quad(0.90, wp.point, cp2, end)
-            let nearStart = quad(0.10, start, cp1, wp.point)
-            endAngle   = atan2(end.y   - nearEnd.y,   end.x   - nearEnd.x)
-            startAngle = atan2(start.y - nearStart.y, start.x - nearStart.x)
-        } else {
-            let nearEnd   = Self.cubicBezier(t: 0.92, p0: start, p1: cp1, p2: cp2, p3: end)
-            let nearStart = Self.cubicBezier(t: 0.08, p0: start, p1: cp1, p2: cp2, p3: end)
-            endAngle   = atan2(end.y   - nearEnd.y,   end.x   - nearEnd.x)
-            startAngle = atan2(start.y - nearStart.y, start.x - nearStart.x)
-        }
+        // v60: pilhuvudet pekar längs sidans INÅT-normal (-n) → möter alltid sidan
+        // VINKELRÄTT ("rakt in"). n1/n2 är enhetsvektorer och bezier-tangenten vid
+        // t=1 är exakt -n (eftersom cp = endpoint + n·tension), så pilhuvudet ligger
+        // i linje med kurvans faktiska slut — stabilt för korta/diagonala/roterade pilar.
+        // (Ersätter tidigare t=0.92-tangent-sampling som gav snett möte.)
+        let endAngle   = atan2(-n2.y, -n2.x)
+        let startAngle = atan2(-n1.y, -n1.x)
 
         // v48 Fel #1: dra in linjens endpoint med lineWidth/2 i den änden där
         // pilspets ritas — så .round-cap inte sticker fram förbi spetsen

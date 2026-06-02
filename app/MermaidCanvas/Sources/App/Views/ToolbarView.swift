@@ -274,8 +274,14 @@ struct ToolbarView: View {
         case .square:
             SquareShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
         case .container:
-            RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: s.height), style: .continuous)
-                .stroke(Color.primary, style: StrokeStyle(lineWidth: stroke, dash: [3, 2])).frame(width: s.width, height: s.height)
+            // v60: mini Lucidchart-container — färgad header-remsa + ljus kropp + solid ram.
+            VStack(spacing: 0) {
+                Rectangle().fill(Color.primary).frame(height: max(4, s.height * 0.30))
+                Rectangle().fill(Color.primary.opacity(0.06))
+            }
+            .frame(width: s.width, height: s.height)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: s.height), style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: s.height), style: .continuous).stroke(Color.primary, lineWidth: stroke))
         case .diamond:
             DiamondShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
         case .processArrow:

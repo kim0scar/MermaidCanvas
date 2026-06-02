@@ -117,9 +117,11 @@ struct ProcessArrowShape: Shape {
         // Övre kant → topJoint, runda hörnet ner mot spetsen
         p.addLine(to: off(topJoint, by: tl_tj, -r))
         p.addQuadCurve(to: off(topJoint, by: tj_tp, r), control: topJoint)
-        // Diagonal upp till spetsen (skarp spets — ingen rundning här)
-        p.addLine(to: off(tipPoint, by: tj_tp, -0.5))
-        p.addLine(to: off(tipPoint, by: tp_bj, 0.5))
+        // v60: RUNDAD spets — quadCurve runt tipPoint (Kim: "rund på högersidan").
+        // tipR cappad mot spetsbredd + höjd så den inte degenererar på små/platta former.
+        let tipR = min(r, tip * 0.5, rect.height / 3)
+        p.addLine(to: off(tipPoint, by: tj_tp, -tipR))
+        p.addQuadCurve(to: off(tipPoint, by: tp_bj, tipR), control: tipPoint)
         // Diagonal ner till bottomJoint, runda hörnet upp mot botten
         p.addLine(to: off(bottomJoint, by: tp_bj, -r))
         p.addQuadCurve(to: off(bottomJoint, by: bj_bl, r), control: bottomJoint)

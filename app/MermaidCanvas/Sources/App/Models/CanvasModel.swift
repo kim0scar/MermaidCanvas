@@ -197,7 +197,9 @@ final class CanvasModel: ObservableObject {
         // v23: tom label från start — Kim vill skriva själv
         // v44: container får default-label "Grupp" (Kim vet då vad formen är)
         let defaultLabel = type == .container ? "Grupp" : ""
-        shapes.append(ShapeNode(type: type, position: position, label: defaultLabel, category: cat))
+        let node = ShapeNode(type: type, position: position, label: defaultLabel, category: cat)
+        shapes.append(node)
+        if type != .container { assignContainerForShape(node.id) }   // v60: in i container vid skapande
         expandCanvasIfNeeded(near: position)
     }
 
@@ -205,7 +207,9 @@ final class CanvasModel: ObservableObject {
     func addShape(_ type: ShapeType, at position: CGPoint, category: ShapeCategory) {
         snapshotForUndo()
         let position = cascadedPosition(near: position)
-        shapes.append(ShapeNode(type: type, position: position, label: "", category: category))
+        let node = ShapeNode(type: type, position: position, label: "", category: category)
+        shapes.append(node)
+        if type != .container { assignContainerForShape(node.id) }   // v60
         expandCanvasIfNeeded(near: position)
     }
 
@@ -224,6 +228,7 @@ final class CanvasModel: ObservableObject {
             lineEnd: CGPoint(x: 60, y: 0)
         )
         shapes.append(node)
+        assignContainerForShape(node.id)   // v60: lös linje/pil in i container vid skapande
         expandCanvasIfNeeded(near: position)
     }
 
@@ -231,7 +236,7 @@ final class CanvasModel: ObservableObject {
     func addTable(at position: CGPoint, rows: Int = 3, cols: Int = 3) {
         snapshotForUndo()
         let position = cascadedPosition(near: position)
-        shapes.append(ShapeNode(
+        let node = ShapeNode(
             type: .table,
             position: position,
             label: "",
@@ -239,7 +244,9 @@ final class CanvasModel: ObservableObject {
             category: specType.defaultCategory,
             tableRows: rows,
             tableCols: cols
-        ))
+        )
+        shapes.append(node)
+        assignContainerForShape(node.id)   // v60
         expandCanvasIfNeeded(near: position)
     }
 
@@ -294,6 +301,7 @@ final class CanvasModel: ObservableObject {
             widthMultiplier: o.widthMultiplier,
             heightMultiplier: o.heightMultiplier,
             note: o.note,
+            prompt: o.prompt,   // v60
             category: o.category,
             rotation: o.rotation,
             colorOverride: o.colorOverride,
@@ -365,7 +373,8 @@ final class CanvasModel: ObservableObject {
                      note: String,
                      textStyle: TextStyle,
                      textAlignment: TextAlignMode = .center,
-                     hasBullets: Bool = false) {
+                     hasBullets: Bool = false,
+                     prompt: String = "") {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         snapshotForUndo()
         shapes[index].label = label
@@ -374,6 +383,7 @@ final class CanvasModel: ObservableObject {
         shapes[index].textStyle = textStyle
         shapes[index].textAlignment = textAlignment
         shapes[index].hasBullets = hasBullets
+        shapes[index].prompt = prompt   // v60
     }
 
     /// v41: uppdatera tabell-form med nytt innehåll (från TableEditorSheet).
@@ -481,6 +491,25 @@ final class CanvasModel: ObservableObject {
         }
         if shapes[shapeIdx].childOfContainerId != newParent {
             shapes[shapeIdx].childOfContainerId = newParent
+        }
+    }
+
+    /// v60: container "adopterar" alla icke-container-former vars position ligger inom
+    /// dess bounds → sätter childOfContainerId. Kallas vid container-drag-slut, så att
+    /// dra containern ÖVER former gör dem till barn (de följer sedan med vid flytt).
+    func claimChildren(forContainer containerId: UUID) {
+        guard let container = shapes.first(where: { $0.id == containerId }),
+              container.type == .container else { return }
+        let w = ShapeGeometry.width(for: container)
+        let h = ShapeGeometry.height(for: container)
+        let rect = CGRect(x: container.position.x - w / 2,
+                          y: container.position.y - h / 2,
+                          width: w, height: h)
+        for i in shapes.indices {
+            guard shapes[i].id != containerId, shapes[i].type != .container else { continue }
+            if rect.contains(shapes[i].position) {
+                shapes[i].childOfContainerId = containerId
+            }
         }
     }
 
@@ -595,6 +624,7 @@ final class CanvasModel: ObservableObject {
                 label: shape.label, showLabel: shape.showLabel,
                 sizeMultiplier: shape.sizeMultiplier, widthMultiplier: shape.widthMultiplier,
                 heightMultiplier: shape.heightMultiplier, note: shape.note,
+                prompt: shape.prompt,   // v60
                 category: shape.category, rotation: shape.rotation,
                 colorOverride: shape.colorOverride, linkNumber: nil,
                 tableRows: shape.tableRows, tableCols: shape.tableCols,

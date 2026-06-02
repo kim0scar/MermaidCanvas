@@ -51,6 +51,9 @@ struct ShapeNode: Identifiable, Codable {
     /// v31: separat höjd-skalning.
     var heightMultiplier: CGFloat?
     var note: String
+    /// v60: prompt-text för n8n-flöden. Följer med i Mermaid-exporten (%% <id> prompt: ...)
+    /// så hela flödet kan kopieras som en körbar spec. Round-trippar via state-JSON.
+    var prompt: String
     var category: ShapeCategory
     var rotation: CGFloat
     /// v19: överskrid kategori-färg per form. Hex-sträng "#rrggbb" eller nil = använd kategori.
@@ -92,6 +95,7 @@ struct ShapeNode: Identifiable, Codable {
          widthMultiplier: CGFloat? = nil,
          heightMultiplier: CGFloat? = nil,
          note: String = "",
+         prompt: String = "",
          category: ShapeCategory = .ui,
          rotation: CGFloat = 0,
          colorOverride: String? = nil,
@@ -116,6 +120,7 @@ struct ShapeNode: Identifiable, Codable {
         self.widthMultiplier = widthMultiplier
         self.heightMultiplier = heightMultiplier
         self.note = note
+        self.prompt = prompt
         self.category = category
         self.rotation = rotation
         self.colorOverride = colorOverride
@@ -144,7 +149,7 @@ struct ShapeNode: Identifiable, Codable {
 extension ShapeNode {
     private enum CodingKeys: String, CodingKey {
         case id, type, position, label, showLabel, sizeMultiplier
-        case widthMultiplier, heightMultiplier, note, category, rotation
+        case widthMultiplier, heightMultiplier, note, prompt, category, rotation
         case colorOverride, linkNumber, tableRows, tableCols, tableCells, textStyle
         case colorPackId, lineEnd, textAlignment, hasBullets
         case hasNumberedList, indentLevel
@@ -171,6 +176,7 @@ extension ShapeNode {
         widthMultiplier = try c.decodeIfPresent(CGFloat.self, forKey: .widthMultiplier)
         heightMultiplier = try c.decodeIfPresent(CGFloat.self, forKey: .heightMultiplier)
         note            = try c.decodeIfPresent(String.self, forKey: .note) ?? ""
+        prompt          = try c.decodeIfPresent(String.self, forKey: .prompt) ?? ""
         category        = try c.decodeIfPresent(ShapeCategory.self, forKey: .category) ?? .ui
         rotation        = try c.decodeIfPresent(CGFloat.self, forKey: .rotation) ?? 0
         colorOverride   = try c.decodeIfPresent(String.self, forKey: .colorOverride)

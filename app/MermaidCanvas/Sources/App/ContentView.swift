@@ -142,7 +142,8 @@ struct ContentView: View {
                         note: shape.note,
                         textStyle: shape.textStyle,
                         textAlignment: shape.textAlignment,
-                        hasBullets: shape.hasBullets
+                        hasBullets: shape.hasBullets,
+                        prompt: shape.prompt
                     ),
                     onSave: { edit in
                         model.updateShape(
@@ -152,7 +153,8 @@ struct ContentView: View {
                             note: edit.note,
                             textStyle: edit.textStyle,
                             textAlignment: edit.textAlignment,
-                            hasBullets: edit.hasBullets
+                            hasBullets: edit.hasBullets,
+                            prompt: edit.prompt
                         )
                         editingShapeId = nil
                     },

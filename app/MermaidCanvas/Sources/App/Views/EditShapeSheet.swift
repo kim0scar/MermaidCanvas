@@ -9,6 +9,8 @@ struct ShapeEdit {
     var textStyle: TextStyle
     var textAlignment: TextAlignMode
     var hasBullets: Bool
+    /// v60: prompt-text för n8n-flöden (följer med i Mermaid-exporten).
+    var prompt: String
 }
 
 struct EditShapeSheet: View {
@@ -38,9 +40,9 @@ struct EditShapeSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Text i form") {
+                Section("Namn / text i form") {
                     Toggle("Visa text", isOn: $draft.showLabel)
-                    TextField("Skriv text", text: $draft.label, axis: .vertical)
+                    TextField("Namn på formen (syns i form + Mermaid)", text: $draft.label, axis: .vertical)
                         .lineLimit(1...4)
                         .focused($labelFocused)
                         .accessibilityIdentifier("edit.label")
@@ -71,6 +73,13 @@ struct EditShapeSheet: View {
                     TextField("Skriv anteckning här", text: $draft.note, axis: .vertical)
                         .lineLimit(2...8)
                         .accessibilityIdentifier("edit.note")
+                }
+
+                // v60: prompt-fält — följer med i Mermaid-koden för n8n-flöden.
+                Section("Prompt (för n8n-flöde)") {
+                    TextField("Prompt-text som följer med i Mermaid-koden", text: $draft.prompt, axis: .vertical)
+                        .lineLimit(3...12)
+                        .accessibilityIdentifier("edit.prompt")
                 }
 
                 Section {
@@ -105,6 +114,6 @@ struct EditShapeSheet: View {
                 Text("Alla pilar till och från formen försvinner också.")
             }
         }
-        .presentationDetents([.height(380), .medium])
+        .presentationDetents([.medium, .large])
     }
 }

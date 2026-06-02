@@ -129,6 +129,7 @@ enum MermaidParser {
             let sizeRaw = node["size"]
             let size = sizeRaw.map { numberValue($0) } ?? 1.0
             let note = (node["note"] as? String) ?? ""
+            let prompt = (node["prompt"] as? String) ?? ""   // v60
             let categoryRaw = (node["category"] as? String) ?? ShapeCategory.ui.rawValue
             let category = ShapeCategory(rawValue: categoryRaw) ?? .ui
             let rotationRaw = node["rotation"]
@@ -171,6 +172,7 @@ enum MermaidParser {
                 widthMultiplier: widthMultiplier,
                 heightMultiplier: heightMultiplier,
                 note: note,
+                prompt: prompt,   // v60
                 category: category,
                 rotation: max(-360, min(360, rotation)),
                 colorOverride: colorOverride,
