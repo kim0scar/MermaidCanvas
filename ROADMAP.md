@@ -2,11 +2,24 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v60 (deployad)
+## Aktuell version: v60.1 (deployad)
 
-*Tema:* Stort lyft — kant-geometri, container-omtag, n8n-prompt, 8-form-rad + landskaps-sidebar
+*Tema:* Buggsvep efter v60 — forcerad rotation + container-barn (äkta idb-verifiering)
 
-**v60 (denna session — multi-agent-konsensus):**
+**v60.1 (denna session — idb installerat, riktig sim-utforskning):**
+- **Forcerad landskap fixad (svart nedre halva på enhet / sidledes i sim):** root cause var att
+  SwiftUI `WindowGroup` inte lät orienteringslåset gälla + tvetydig `.landscape`-mask i
+  `requestGeometryUpdate`. Fix: UIKit-livscykel (`main.swift` + `AppDelegate`/`SceneDelegate` +
+  `OrientationLockedHostingController`), explicit scene-manifest, konkret `.landscapeRight`.
+  Autosave hårdad mot `didEnterBackground`. Verifierat i sim via idb (full landskap + vänster-sidebar).
+- **Container-barn följer nu med vid flytt:** `claimChildren` körs när containern väljs → barn får
+  explicit `childOfContainerId` → tappas inte mitt i en flytt. Verifierat via idb.
+- **Verifierat som redan fungerande** (via idb): container-look (C), namnbyte (D), prompt/namn (G),
+  8-form-rad (F), rak pil-entré även diagonalt (A), rundad processpil (B).
+- Nytt regressionstest (`OrientationTests`) → 49/49 gröna. Full rapport: `BUGSVEP-v60.md`.
+- **Kvar:** Kim bekräftar forcerad landskap + container-känsla på sin iPhone.
+
+**v60 (föregående session — multi-agent-konsensus):**
 - **A — beroende-pilar möter rakt:** `outwardNormal` är nu rotations-medveten + pilhuvudet pekar längs sidans inåt-normal → pilen går in vinkelrätt (även diagonalt/roterat), inte snett.
 - **B — processpilens spets rundad** (höger spets), i både form och chip, med degenerations-cap.
 - **C — container i Lucidchart-stil:** solid header-rad med titel + ljus kropp + tunn ram (canvas + chip).
