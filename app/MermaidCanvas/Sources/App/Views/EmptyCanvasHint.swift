@@ -16,10 +16,17 @@ struct EmptyCanvasHint: View {
                 .font(.system(size: 16, design: .rounded))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 280)
+            // v61 (UX-009): pilar är halva språket — berätta var de skapas.
+            (Text("Pil: markera en form och dra från ")
+             + Text(Image(systemName: "arrow.up.right.circle"))
+             + Text(" handtaget."))
+                .font(.system(size: 14, design: .rounded))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 280)
         }
         .foregroundStyle(.secondary)
         .padding(28)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Tom canvas. Tryck på Former uppe till vänster för att lägga till en form.")
+        .accessibilityLabel("Tom canvas. Tryck på Former uppe till vänster för att lägga till en form. Skapa pil genom att markera en form och dra från pilhandtaget.")
     }
 }

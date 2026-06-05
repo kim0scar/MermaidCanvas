@@ -35,6 +35,8 @@ struct ToolbarView: View {
     var onSaveAs: () -> Void
     var onUndo: () -> Void
     var onShowCode: () -> Void
+    /// v61: kopiera hela dokumentet till urklipp utan sheet (1 tryck).
+    var onCopyCode: () -> Void
     var onShowRules: () -> Void
     var onToggleMarker: () -> Void
     var onAddTable: () -> Void
@@ -116,6 +118,7 @@ struct ToolbarView: View {
                 onOpen: onOpen,
                 onNewCanvas: onNewCanvas,
                 onShowCode: onShowCode,
+                onCopyCode: onCopyCode,
                 onShowRules: onShowRules,
                 onToggleMarker: onToggleMarker,
                 onImportMermaid: onImportMermaid

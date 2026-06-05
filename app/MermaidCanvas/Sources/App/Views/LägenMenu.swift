@@ -11,6 +11,8 @@ struct LägenMenu: View {
     var onOpen: () -> Void
     var onNewCanvas: () -> Void
     var onShowCode: () -> Void
+    /// v61: kopiera hela dokumentet till urklipp direkt (1 tryck, ingen sheet).
+    var onCopyCode: () -> Void
     var onShowRules: () -> Void
     /// v39: fortfarande kvar som parameter för bakåtkompatibilitet — används ej i menyn längre.
     var onToggleMarker: () -> Void
@@ -55,6 +57,10 @@ struct LägenMenu: View {
                 Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")
             }
             .accessibilityIdentifier("menu.showCode")
+            Button { onCopyCode() } label: {
+                Label("Kopiera Mermaid-kod", systemImage: "doc.on.doc")
+            }
+            .accessibilityIdentifier("menu.copyCode")
             Divider()
             // v51.2: skärmläge porträtt/landskap (äkta orientering)
             Menu {

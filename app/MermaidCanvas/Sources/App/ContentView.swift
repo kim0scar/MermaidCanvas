@@ -60,6 +60,7 @@ struct ContentView: View {
             onSaveAs: saveAs,
             onUndo: { model.undo() },
             onShowCode: showMermaidCode,
+            onCopyCode: copyMermaidCode,
             onShowRules: { showRulesSheet = true },
             onToggleMarker: { model.toggleMarkerMode() },
             onAddTable: { model.addTable(at: canvasCenter) },
@@ -383,6 +384,13 @@ struct ContentView: View {
     private func showMermaidCode() {
         // v32: kod genereras live i sheet via @ObservedObject model
         showCodeSheet = true
+    }
+
+    /// v61: 1-tryck — hela dokumentet (frontmatter + mermaid + state-JSON)
+    /// rakt till urklipp, redo att klistras in hos Claude Code.
+    private func copyMermaidCode() {
+        UIPasteboard.general.string = makeDocument().content
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     // MARK: - Drop-handler (v34)
