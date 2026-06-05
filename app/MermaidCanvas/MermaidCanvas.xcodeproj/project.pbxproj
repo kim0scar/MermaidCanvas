@@ -46,6 +46,7 @@
 		544D1031BCB9A98913A5DC1F /* V50PlacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DB770D9036DCE9E3A4CCAE /* V50PlacementTests.swift */; };
 		5502DC1063808D7E976CD568 /* CanvasViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00A564942F1596BCF995981 /* CanvasViewportState.swift */; };
 		56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */; };
+		59180BADCEB07539F7339DCA /* MermaidMetaComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */; };
 		59AA65D2448161A90BCE5383 /* test_square_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7AEE1B1C74B79EB4BCC084BF /* test_square_chip.1.png */; };
 		5A50365791B6A7E6EA5E5AE7 /* test_pill_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = F412CFF6EF86D30458B755F5 /* test_pill_chip.1.png */; };
 		5DF06D8483154EE8A4C834A5 /* test_edge_collapse_minus_badge.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 72FF022E5293D765B68F37FC /* test_edge_collapse_minus_badge.1.png */; };
@@ -63,6 +64,7 @@
 		7EECEE3DC37DCC6AE815E975 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */; };
 		8426638A65B4BA49FF8F7992 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7551766C6C334EDA0CFD664E /* EditShapeSheet.swift */; };
 		85283CC24837156EABB5A0F2 /* test_component_gallery_full.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF3CF9F456AC109F02223E3 /* test_component_gallery_full.1.png */; };
+		87D91925AB13DCBEE7F5A9EA /* MermaidAutoLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EE5157030AD0CE1127BF10 /* MermaidAutoLayout.swift */; };
 		8908BB722493ADED37C336CF /* test_pill_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7DA70C2BF0320E293B5E247C /* test_pill_shape.1.png */; };
 		8ACA8B8CF558FE905EE46D08 /* NotePopupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */; };
 		8F2521DE2FAD8F29346237F5 /* NoteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADAFD7500719BA94561524F9 /* NoteBadge.swift */; };
@@ -91,6 +93,7 @@
 		D289533B98FCCF66069A957F /* ColorPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */; };
 		D3D1D0B08A5B220C248F63CE /* V48VerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A32EF129D0C8F481A9D9DF8 /* V48VerificationTest.swift */; };
 		D4040B6552C65FDDCE78A77B /* V27FeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12BE1B86655B722847CCF708 /* V27FeatureTests.swift */; };
+		D41DF508293DA8B03C6BF9C5 /* V61FallbackParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D821FB3C84390B33197E489D /* V61FallbackParserTests.swift */; };
 		D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */; };
 		D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */; };
 		E178F46DAD052D49A4D5F5DE /* UIScreenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */; };
@@ -140,6 +143,7 @@
 		0EF3CF9F456AC109F02223E3 /* test_component_gallery_full.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_component_gallery_full.1.png; sourceTree = "<group>"; };
 		12BE1B86655B722847CCF708 /* V27FeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V27FeatureTests.swift; sourceTree = "<group>"; };
 		162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "METOD-VISUELL-DIALOG.md"; sourceTree = "<group>"; };
+		16EE5157030AD0CE1127BF10 /* MermaidAutoLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidAutoLayout.swift; sourceTree = "<group>"; };
 		18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutOverflowTests.swift; sourceTree = "<group>"; };
 		19DBECF727C64AC554A79FCC /* RoundTripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundTripTests.swift; sourceTree = "<group>"; };
 		1FCD095D020EF17998E82F01 /* test_pill_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_pill_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
@@ -222,6 +226,8 @@
 		D35F5529A9079DF8958E486C /* PreviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSheet.swift; sourceTree = "<group>"; };
 		D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GodotPreviewRenderer.swift; sourceTree = "<group>"; };
 		D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V35MermaidValidationTests.swift; sourceTree = "<group>"; };
+		D821FB3C84390B33197E489D /* V61FallbackParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V61FallbackParserTests.swift; sourceTree = "<group>"; };
+		DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidMetaComments.swift; sourceTree = "<group>"; };
 		DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V49VisualVerificationTest.swift; sourceTree = "<group>"; };
 		DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V28VisualTests.swift; sourceTree = "<group>"; };
 		DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMiniSheet.swift; sourceTree = "<group>"; };
@@ -420,7 +426,9 @@
 		7FC76266063536257C1D33CF /* Mermaid */ = {
 			isa = PBXGroup;
 			children = (
+				16EE5157030AD0CE1127BF10 /* MermaidAutoLayout.swift */,
 				773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */,
+				DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */,
 				4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */,
 				6660E4DB431B5BBCAF625147 /* SpecType.swift */,
 			);
@@ -455,6 +463,7 @@
 				5F6F52E499ADD995928FF171 /* SnapshotTests.swift */,
 				D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */,
 				972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */,
+				D821FB3C84390B33197E489D /* V61FallbackParserTests.swift */,
 				C27B478DB8B95307D57B1E0C /* __Snapshots__ */,
 			);
 			path = UnitTests;
@@ -708,10 +717,12 @@
 				9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */,
 				B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */,
 				D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */,
+				87D91925AB13DCBEE7F5A9EA /* MermaidAutoLayout.swift in Sources */,
 				39C4BE0D9F1D7F0A3221BA24 /* MermaidCanvasApp.swift in Sources */,
 				084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */,
 				D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */,
 				04F6EA93B52298C165CEB0DE /* MermaidImportSheet.swift in Sources */,
+				59180BADCEB07539F7339DCA /* MermaidMetaComments.swift in Sources */,
 				FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */,
 				3AA3A067DEBA4D2C8353DBCA /* MultiSelectResizeHandle.swift in Sources */,
 				56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */,
@@ -753,6 +764,7 @@
 				684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */,
 				AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */,
 				05D7C2B2DFD541EDEBB30893 /* V49ConnectionSelectionTest.swift in Sources */,
+				D41DF508293DA8B03C6BF9C5 /* V61FallbackParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

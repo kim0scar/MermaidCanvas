@@ -279,10 +279,13 @@ enum MermaidParser {
         let type: ShapeType
         let label: String
         let category: ShapeCategory
-        // v46: explicit overrides från %% container-pos / width / height-kommentarer
-        var overridePosition: CGPoint? = nil
-        var overrideWidth: CGFloat? = nil
-        var overrideHeight: CGFloat? = nil
+    }
+
+    private struct RawEdge {
+        let from: String
+        let arrow: String
+        let label: String
+        let to: String
     }
 
     private static func parseMermaid(_ markdown: String) -> ParsedCanvas {
@@ -294,16 +297,53 @@ enum MermaidParser {
 
         // Former; valfritt :::klass-suffix. Ordning: circle/pill-tests före rektangel
         // så att ((..)) och ([..]) inte snappas upp av enkelparen-regeln.
+        // v61: ocitate label-varianter — Claude skriver ofta A[Text] utan citattecken.
+        // Citerade testas först (seen-mängden skyddar mot dubbel-parse).
         let patterns: [(String, ShapeType)] = [
             (#"(\w+)\(\(\s*\"([^\"]*?)\"\s*\)\)(?::::(\w+))?"#, .circle),      // ((".."))
             (#"(\w+)\(\[\s*\"([^\"]*?)\"\s*\]\)(?::::(\w+))?"#, .pill),         // ([".."])
             (#"(\w+)\(\s*\"([^\"]*?)\"\s*\)(?::::(\w+))?"#, .rectangle),        // ("..") v35.1
             (#"(\w+)\[\s*\"([^\"]*?)\"\s*\](?::::(\w+))?"#, .rectangle),        // [".."] bakåtkomp
-            (#"(\w+)\{\s*\"([^\"]*?)\"\s*\}(?::::(\w+))?"#, .diamond)           // {".."}
+            (#"(\w+)\{\s*\"([^\"]*?)\"\s*\}(?::::(\w+))?"#, .diamond),          // {".."}
+            (#"(\w+)\(\(\s*([^\)\"]+?)\s*\)\)(?::::(\w+))?"#, .circle),         // ((..)) ocitat
+            (#"(\w+)\(\[\s*([^\]\"]+?)\s*\]\)(?::::(\w+))?"#, .pill),           // ([..]) ocitat
+            (#"(\w+)\(\s*([^\)\"]+?)\s*\)(?::::(\w+))?"#, .rectangle),          // (..) ocitat
+            (#"(\w+)\[\s*([^\]\"]+?)\s*\](?::::(\w+))?"#, .rectangle),          // [..] ocitat
+            (#"(\w+)\{\s*([^\}\"]+?)\s*\}(?::::(\w+))?"#, .diamond)             // {..} ocitat
         ]
 
         var seen = Set<String>()
         var nodes: [ParsedNode] = []
+
+        // v44: Parsa subgraph-block FÖRST — varje subgraph blir en container-form.
+        // (Före form-mönstren så `subgraph id[Label]` inte snappas som rektangel.)
+        // v61: tre syntax-varianter — ["Label"], [Label] och bara `subgraph id`.
+        let subgraphPatterns = [
+            #"subgraph\s+(\w+)\s*\[\s*\"([^\"]*?)\"\s*\]"#,   // subgraph id ["Label"]
+            #"subgraph\s+(\w+)\s*\[\s*([^\]\"]+?)\s*\]"#,     // subgraph id [Label]
+            #"subgraph\s+(\w+)\s*$"#                           // subgraph id (label = id)
+        ]
+        for pattern in subgraphPatterns {
+            guard let regex = try? NSRegularExpression(pattern: pattern,
+                                                       options: [.anchorsMatchLines]) else { continue }
+            let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
+            for m in matches where m.numberOfRanges >= 2 {
+                let id = ns.substring(with: m.range(at: 1))
+                // v46: hoppa över iphone/canvas-wrapper-subgraphs som inte är användarcontainrar
+                guard !seen.contains(id), id != "iphone" else { continue }
+                seen.insert(id)
+                let label: String
+                if m.numberOfRanges >= 3, m.range(at: 2).location != NSNotFound {
+                    label = ns.substring(with: m.range(at: 2))
+                        .replacingOccurrences(of: "#quot;", with: "\"")
+                        .replacingOccurrences(of: "<br/>", with: "\n")
+                } else {
+                    label = id
+                }
+                nodes.append(ParsedNode(mermaidId: id, type: .container, label: label, category: .ui))
+            }
+        }
+
         for (pattern, type) in patterns {
             guard let regex = try? NSRegularExpression(pattern: pattern) else { continue }
             let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
@@ -319,154 +359,158 @@ enum MermaidParser {
             }
         }
 
-        // v44: Parsa subgraph-block — varje subgraph blir en container-form med label.
-        // Syntax: subgraph ID ["Label"] ... end
-        // v46: Läs även ut "container-pos: X,Y" + "width: W" + "height: H" från
-        // %%-kommentarer så position och storlek round-trippas även vid fallback-parse.
-        let subgraphPattern = #"subgraph\s+(\w+)\s*\[\s*\"([^\"]*?)\"\s*\]"#
-        let posPattern   = #"%%\s+(\w+)\s+container-pos:\s+(-?\d+),(-?\d+)"#
-        let widthPattern = #"%%\s+(\w+)\s+width:\s+([\d.]+)"#
-        let heightPattern = #"%%\s+(\w+)\s+height:\s+([\d.]+)"#
-        var containerOverrides: [String: (CGPoint?, CGFloat?, CGFloat?)] = [:]
-        func updateOverride(_ id: String, pos: CGPoint? = nil,
-                            w: CGFloat? = nil, h: CGFloat? = nil) {
-            var entry = containerOverrides[id] ?? (nil, nil, nil)
-            if let pos = pos { entry.0 = pos }
-            if let w = w { entry.1 = w }
-            if let h = h { entry.2 = h }
-            containerOverrides[id] = entry
-        }
-        if let regex = try? NSRegularExpression(pattern: posPattern) {
-            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
-                where m.numberOfRanges >= 4 {
-                let id = ns.substring(with: m.range(at: 1))
-                let x = Double(ns.substring(with: m.range(at: 2))) ?? 0
-                let y = Double(ns.substring(with: m.range(at: 3))) ?? 0
-                updateOverride(id, pos: CGPoint(x: x, y: y))
-            }
-        }
-        if let regex = try? NSRegularExpression(pattern: widthPattern) {
-            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
-                where m.numberOfRanges >= 3 {
-                let id = ns.substring(with: m.range(at: 1))
-                if let w = Double(ns.substring(with: m.range(at: 2))) {
-                    updateOverride(id, w: CGFloat(w))
-                }
-            }
-        }
-        if let regex = try? NSRegularExpression(pattern: heightPattern) {
-            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
-                where m.numberOfRanges >= 3 {
-                let id = ns.substring(with: m.range(at: 1))
-                if let h = Double(ns.substring(with: m.range(at: 2))) {
-                    updateOverride(id, h: CGFloat(h))
-                }
-            }
-        }
-        if let regex = try? NSRegularExpression(pattern: subgraphPattern) {
-            let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
-            for m in matches where m.numberOfRanges >= 3 {
-                let id = ns.substring(with: m.range(at: 1))
-                // v46: hoppa över iphone/canvas-wrapper-subgraphs som inte är användarcontainrar
-                guard !seen.contains(id), id != "iphone" else { continue }
-                seen.insert(id)
-                let label = ns.substring(with: m.range(at: 2))
-                    .replacingOccurrences(of: "#quot;", with: "\"")
-                    .replacingOccurrences(of: "<br/>", with: "\n")
-                let override = containerOverrides[id]
-                nodes.append(ParsedNode(
-                    mermaidId: id, type: .container, label: label, category: .ui,
-                    overridePosition: override?.0,
-                    overrideWidth: override?.1,
-                    overrideHeight: override?.2
-                ))
-            }
-        }
+        // v61: Metadata-kommentarer (%% id pos/size/rot/color/prompt/…) — gör
+        // mermaid-blocket självbärande utan state-JSON.
+        let meta = MermaidMetaComments.parse(block)
 
-        let positioned = autoPosition(nodes)
-        var idMap: [String: UUID] = [:]
-        let shapes: [ShapeNode] = positioned.map { entry in
-            idMap[entry.mermaidId] = entry.shape.id
-            return entry.shape
-        }
-
-        var edges: [EdgeConnection] = []
+        // Kanter som råa id-par — behövs FÖRE positioneringen (layouten följer kanterna).
+        // v61: kanterna letas i ett AVSKALAT block där nod-kroppar ([..], (..), {..})
+        // och %%-kommentarer tagits bort. Då hittas inline-deklarationer som
+        // `a["X"] --> b["Y"]` (så Claude skriver mermaid) — inte bara nakna `a --> b`.
         // v37: Matchar alla 8 pil-kombinationer:
         // --> <-- <--> --- -.-> <-.-> <-.- -.-
         // Längre/mer-specifika alternativ testas först för att undvika överlapp.
+        var rawEdges: [RawEdge] = []
+        let strippedBlock = stripNodeBodies(block)
+        let strippedNs = strippedBlock as NSString
         let edgePattern = #"(\w+)\s*(<-+\.->|<-+->|-+\.->|-+->|<-+\.-+|<-+|-+\.-+|-{3,})\s*(?:\|\s*\"?([^\"|]*?)\"?\s*\|\s*)?(\w+)"#
         if let regex = try? NSRegularExpression(pattern: edgePattern) {
-            let matches = regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
+            let matches = regex.matches(in: strippedBlock,
+                                        range: NSRange(location: 0, length: strippedNs.length))
             for m in matches where m.numberOfRanges >= 5 {
-                let fromMid = ns.substring(with: m.range(at: 1))
-                let arrowStr = ns.substring(with: m.range(at: 2))
-                let toMid = ns.substring(with: m.range(at: 4))
-                let label: String
-                if m.range(at: 3).location != NSNotFound {
-                    label = ns.substring(with: m.range(at: 3))
-                } else {
-                    label = ""
-                }
-                guard let from = idMap[fromMid], let to = idMap[toMid] else { continue }
-                // Bestäm riktning baserat på prefix/suffix
-                let direction: EdgeDirection
-                let startsWithArrow = arrowStr.hasPrefix("<")
-                let endsWithArrow   = arrowStr.hasSuffix(">")
-                if startsWithArrow && endsWithArrow {
-                    direction = .bidirectional
-                } else if endsWithArrow {
-                    direction = .forward
-                } else if startsWithArrow {
-                    direction = .backward
-                } else {
-                    direction = .none
-                }
-                let dashed = arrowStr.contains(".")
-                edges.append(EdgeConnection(from: from, to: to, label: label,
-                                             direction: direction,
-                                             style: dashed ? .dashed : .solid))
+                let label = m.range(at: 3).location != NSNotFound
+                    ? strippedNs.substring(with: m.range(at: 3)) : ""
+                rawEdges.append(RawEdge(from: strippedNs.substring(with: m.range(at: 1)),
+                                        arrow: strippedNs.substring(with: m.range(at: 2)),
+                                        label: label,
+                                        to: strippedNs.substring(with: m.range(at: 4))))
             }
         }
 
-        return ParsedCanvas(shapes: shapes, edges: edges)
-    }
-
-    private struct PositionedNode {
-        let mermaidId: String
-        let shape: ShapeNode
-    }
-
-    private static func autoPosition(_ nodes: [ParsedNode]) -> [PositionedNode] {
-        let count = nodes.count
-        guard count > 0 else { return [] }
-        let centerX: CGFloat = 200
-        let centerY: CGFloat = 320
-        // v46: använd override-position om den finns (containrar med %% pos-kommentar)
-        func makeShape(_ n: ParsedNode, at pos: CGPoint) -> ShapeNode {
-            ShapeNode(type: n.type,
-                      position: pos,
-                      label: n.label,
-                      widthMultiplier: n.overrideWidth,
-                      heightMultiplier: n.overrideHeight,
-                      category: n.category)
+        // v61: Nakna id:n utan deklaration (`a --> b` där b aldrig får [Label])
+        // blir rektanglar med id:t som text — Claude skriver ofta så.
+        for raw in rawEdges {
+            for id in [raw.from, raw.to] where !seen.contains(id) {
+                seen.insert(id)
+                let category = categoryFor(mermaidId: id,
+                                           classSuffixRange: NSRange(location: NSNotFound, length: 0),
+                                           ns: ns)
+                nodes.append(ParsedNode(mermaidId: id, type: .rectangle, label: id, category: category))
+            }
         }
-        if count == 1 {
-            let n = nodes[0]
-            let pos = n.overridePosition ?? CGPoint(x: centerX, y: centerY)
-            return [PositionedNode(mermaidId: n.mermaidId, shape: makeShape(n, at: pos))]
+
+        // v61: Positioner. `%% pos:`-kommentar vinner; noder utan får lagrad
+        // auto-layout som följer flowchart-riktningen (TD/LR/BT/RL) — inte cirkel.
+        let flowDirection = MermaidAutoLayout.direction(in: block)
+        let autoPositions = MermaidAutoLayout.positions(
+            nodeIds: nodes.map { $0.mermaidId },
+            edges: rawEdges.map { (from: $0.from, to: $0.to) },
+            direction: flowDirection)
+
+        var idMap: [String: UUID] = [:]
+        var collapsedSet: Set<UUID> = []
+        let shapes: [ShapeNode] = nodes.map { n in
+            let m = meta[n.mermaidId]
+            let pos = m?.position ?? autoPositions[n.mermaidId] ?? CGPoint(x: 200, y: 320)
+            // line-end skrivs absolut av generatorn → tillbaka till relativ offset
+            var lineEnd: CGPoint? = nil
+            if let abs = m?.lineEndAbsolute {
+                lineEnd = CGPoint(x: abs.x - pos.x, y: abs.y - pos.y)
+            }
+            // Dold etikett skrivs som " " i nod-syntaxen — återställ från %% name:
+            let trimmedLabel = n.label.trimmingCharacters(in: .whitespaces)
+            let label = trimmedLabel.isEmpty ? (m?.name ?? trimmedLabel) : n.label
+            let shape = ShapeNode(
+                type: n.type,
+                position: pos,
+                label: label,
+                showLabel: !(m?.hiddenLabel ?? false),
+                sizeMultiplier: max(0.3, min(3.0, m?.size ?? 1.0)),
+                widthMultiplier: m?.width.map { max(0.1, min(10.0, $0)) },
+                heightMultiplier: m?.height.map { max(0.1, min(10.0, $0)) },
+                note: m?.note ?? "",
+                prompt: m?.prompt ?? "",
+                category: n.category,
+                rotation: max(-360, min(360, m?.rotation ?? 0)),
+                colorOverride: m?.color,
+                linkNumber: m?.link,
+                tableRows: m?.tableRows,
+                tableCols: m?.tableCols,
+                textStyle: m?.textStyleRaw.flatMap { TextStyle(rawValue: $0) } ?? .body,
+                colorPackId: m?.packId,
+                lineEnd: lineEnd
+            )
+            if m?.collapsed == true { collapsedSet.insert(shape.id) }
+            idMap[n.mermaidId] = shape.id
+            return shape
         }
-        let radius: CGFloat = 140
-        return nodes.enumerated().map { i, n in
-            let pos: CGPoint
-            if let override = n.overridePosition {
-                pos = override
+
+        var edges: [EdgeConnection] = []
+        for raw in rawEdges {
+            guard let from = idMap[raw.from], let to = idMap[raw.to] else { continue }
+            // Bestäm riktning baserat på prefix/suffix
+            let direction: EdgeDirection
+            let startsWithArrow = raw.arrow.hasPrefix("<")
+            let endsWithArrow   = raw.arrow.hasSuffix(">")
+            if startsWithArrow && endsWithArrow {
+                direction = .bidirectional
+            } else if endsWithArrow {
+                direction = .forward
+            } else if startsWithArrow {
+                direction = .backward
             } else {
-                let angle = (2.0 * .pi / Double(count)) * Double(i) - .pi / 2
-                pos = CGPoint(x: centerX + radius * CGFloat(cos(angle)),
-                              y: centerY + radius * CGFloat(sin(angle)))
+                direction = .none
             }
-            return PositionedNode(mermaidId: n.mermaidId, shape: makeShape(n, at: pos))
+            let dashed = raw.arrow.contains(".")
+            edges.append(EdgeConnection(from: from, to: to, label: raw.label,
+                                         direction: direction,
+                                         style: dashed ? .dashed : .solid))
         }
+
+        return ParsedCanvas(shapes: shapes, edges: edges, collapsedIds: collapsedSet)
+    }
+
+    /// v61: Skala bort nod-kroppar och kommentarer inför kant-parsning.
+    /// `a["Träffa (kanske) Bo"] --> b{Val}` → `a --> b`. Innersta klamrar
+    /// tas bort först, upprepat tills inget ändras (strängen krymper varje varv).
+    private static func stripNodeBodies(_ block: String) -> String {
+        // %%-kommentarer bort (kan innehålla pil-tecken i notis/prompt-text)
+        var s = block.split(separator: "\n", omittingEmptySubsequences: false)
+            .filter { !$0.trimmingCharacters(in: .whitespaces).hasPrefix("%%") }
+            .joined(separator: "\n")
+        let bracketPatterns = [#"\([^\(\)]*\)"#, #"\[[^\[\]]*\]"#, #"\{[^\{\}]*\}"#]
+        var changed = true
+        while changed {
+            changed = false
+            for pattern in bracketPatterns {
+                guard let regex = try? NSRegularExpression(pattern: pattern) else { continue }
+                let ns = s as NSString
+                let next = regex.stringByReplacingMatches(
+                    in: s, range: NSRange(location: 0, length: ns.length), withTemplate: "")
+                if next != s {
+                    s = next
+                    changed = true
+                }
+            }
+        }
+        // :::kategori-suffix bort (annars blir "ui" i `a:::ui --> b` en fantomnod)
+        s = replacing(#":::\w+"#, in: s, with: "")
+        // Normalisera äldre pil-skrivsätt till |label|-formen som kant-regexen förstår:
+        // `a -- text --> b` → `a -->|text| b`, `a -. text .-> b`, `a == text ==> b`
+        s = replacing(#"--\s+([^-<>|\n]+?)\s+-->"#, in: s, with: "-->|$1|")
+        s = replacing(#"-\.\s+([^-<>|\n]+?)\s+\.->"#, in: s, with: "-.->|$1|")
+        s = replacing(#"==\s+([^=<>|\n]+?)\s+==>"#, in: s, with: "==>|$1|")
+        // Tjocka pilar (==>) → vanliga pilar — appen har ingen tjock-stil
+        s = replacing(#"<=+>"#, in: s, with: "<-->")
+        s = replacing(#"=+>"#, in: s, with: "-->")
+        return s
+    }
+
+    private static func replacing(_ pattern: String, in text: String, with template: String) -> String {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return text }
+        let ns = text as NSString
+        return regex.stringByReplacingMatches(
+            in: text, range: NSRange(location: 0, length: ns.length), withTemplate: template)
     }
 
     /// Kategori i fallback-läge: först :::klass-suffix, annars prefix i id (ui_xxx), annars .ui.
