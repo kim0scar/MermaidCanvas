@@ -2,7 +2,7 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v61 (byggd + testad i sim — väntar på iPhone-deploy)
+## Aktuell version: v61 (deployad till iPhone 2026-06-05)
 
 *Tema:* "Ren mermaid i backend" — gap-analys + Claude→Kim-riktningen fixad (natt-session)
 
@@ -25,8 +25,9 @@ Versioner och vad de innehåller. Senaste först.
   riktningsspecifika `connection.handle.*`, scenario-launch i stället för syntetiska drag).
   Full svit: 66/66 unit + 107/111 UI i en sittning; de 4 (V48) är ordnings-flaky — 15/15 gröna
   isolerat, direkt efter V46:s 30 utforskningstester kan 3–4 tima ut. Ingen app-regression.
-- **Kvar:** iPhone-deploy + Kims verifiering (även v60.1-punkterna: forcerad landskap,
-  container-känsla). Backlog: se nice-to-have-listan i `GAP-ANALYS-v61.md`.
+- **Kvar:** Kims verifiering på iPhonen (v61-punkterna i ARKITEKTUR-MERMAID.md + v60.1:
+  forcerad landskap, container-känsla). Backlog: nice-to-have-listan i `GAP-ANALYS-v61.md`.
+  Demo-fil att öppna: `v61-demo-från-claude.md` i iCloud-Mermaid-mappen.
 
 ## v60.1 (deployad)
 
