@@ -2,7 +2,33 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v60.1 (deployad)
+## Aktuell version: v61 (byggd + testad i sim — väntar på iPhone-deploy)
+
+*Tema:* "Ren mermaid i backend" — gap-analys + Claude→Kim-riktningen fixad (natt-session)
+
+**v61 (denna session — 4 granskar-agenter + adversarial verifiering, se `GAP-ANALYS-v61.md`):**
+- **Rå mermaid från Claude → riktigt flödesschema.** Ny `MermaidAutoLayout`: lagrad
+  BFS-layout som följer `flowchart TD/LR/BT/RL`. Cirkel-placeringen borta.
+- **Mermaid-blocket självbärande.** Ny `MermaidMetaComments`: fallback-parsern läser nu
+  ALLA `%%`-kommentarer (pos, size, rot, width/height, color, pack, style, note, prompt,
+  name, hidden-label, collapsed, link, table, line-end) → full round-trip utan state-JSON.
+- **Claude-typisk syntax stöds:** inline-kanter (`a["X"] --> b["Y"]`), ocitate labels
+  (`a[X]`), nakna id:n (`A --> B`), `==>`, `-- text -->`, `subgraph id` utan label,
+  `:::kategori`-suffix utan fantomnoder.
+- **iCloud-säker live-reload:** `FileChangeObserver` (NSFilePresenter) + innehålls-hash;
+  datum-polling kvar som fallback. Claudes ändringar syns utan omöppning.
+- **1-tryck "Kopiera Mermaid-kod"** i Lägen-menyn + pil-tips i tom-canvas-hinten (UX-009 delvis).
+- **`N8N-FLODE-KONTRAKT.md`:** kategori→n8n-nodtyp, kantetikett→villkor, prompt→trigger —
+  Claude bygger workflow/skill utan gissningar. Refereras i CLAUDE.md.
+- Nya tester: `V61FallbackParserTests` (13) + `V61LiveReloadTests` (2). Unit-sviten grön.
+- **41 gamla UI-tester lagade** (commit 544c5fa — föråldrade efter v50.2/v60: porträtt-launch-arg,
+  riktningsspecifika `connection.handle.*`, scenario-launch i stället för syntetiska drag).
+  Full svit: 66/66 unit + 107/111 UI i en sittning; de 4 (V48) är ordnings-flaky — 15/15 gröna
+  isolerat, direkt efter V46:s 30 utforskningstester kan 3–4 tima ut. Ingen app-regression.
+- **Kvar:** iPhone-deploy + Kims verifiering (även v60.1-punkterna: forcerad landskap,
+  container-känsla). Backlog: se nice-to-have-listan i `GAP-ANALYS-v61.md`.
+
+## v60.1 (deployad)
 
 *Tema:* Buggsvep efter v60 — forcerad rotation + container-barn (äkta idb-verifiering)
 

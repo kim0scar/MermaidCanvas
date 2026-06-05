@@ -271,7 +271,38 @@ JSON i HTML-comment är **autoritativ för positioner, kategorier och visuella a
 
 Använd MermaidCanvas-filen `canvas.md` (i Kims iCloud) som live-exempel.
 
-**Status:** v12 stöder Lager 1 (fidelity) fullt ut. Lager 2 (semantik) införs i MVP-2 (kategori-väljare + classDef-export).
+**Status:** Lager 1 (fidelity) + Lager 2 (semantik) stöds fullt ut. Sedan **v61** är
+mermaid-blocket dessutom **självbärande**: `%%`-kommentarerna nedan round-trippar all
+fidelity även om state-JSON saknas. State-JSON förblir autoritativ när den finns.
+
+### %%-metadata-kommentarer (självbärande mermaid, v61)
+
+Format: `%% <nod-id> <nyckel>: <värde>` (en rad per egenskap, skrivs av generatorn,
+läses av parsern). Radbrytning i text skrivs som ` ⏎ `, `%%` i text som `%-%`.
+
+| Nyckel | Exempel | Betyder |
+|---|---|---|
+| `pos` | `%% ui_N0 pos: 200,320` | Exakt position (canvas-pt) |
+| `size` | `%% ui_N0 size: 1.5` | Storleks-multiplikator |
+| `width` / `height` | `%% ui_N0 width: 2.00` | Fri-resize-multiplikatorer |
+| `rot` | `%% ui_N0 rot: 45°` | Rotation i grader |
+| `color` | `%% ui_N0 color: #ff0000` | Färg-override (hex) |
+| `pack` | `%% ui_N0 pack: rosa` | Färgpaket-id |
+| `style` | `%% ui_N0 style: r1` | Textstil (r1/r2/r3/body) |
+| `note` | `%% ui_N0 note: text` | Anteckning (syns ej på canvas) |
+| `name` | `%% ui_N0 name: text` | Nodens label (återställer dold etikett) |
+| `prompt` | `%% ui_N0 prompt: text` | n8n-prompt — se `N8N-FLODE-KONTRAKT.md` |
+| `hidden-label` | `%% ui_N0 hidden-label` | Etiketten är dold (flagga) |
+| `collapsed` | `%% ui_N0 collapsed` | Sub-trädet är kollapsat (flagga) |
+| `link` | `%% ui_N0 link: 1` | Hopplänk-parnummer |
+| `table` | `%% ui_N0 table: 3×4` | Tabell rader×kolumner |
+| `line-end` | `%% ui_N0 line-end: 280,140` | Lös linjes slutpunkt (absolut) |
+| `container-pos` | `%% cont_N1 container-pos: 400,300` | Containerns position |
+
+**När du som Claude skriver RÅ mermaid utan state-JSON:** lägg gärna `%% id pos: x,y`
+per nod om layouten spelar roll. Utan pos-kommentarer får noderna automatisk lagrad
+layout som följer `flowchart TD/LR/BT/RL` (v61) — strukturen blir rätt, exakta
+positioner väljer appen.
 
 ---
 

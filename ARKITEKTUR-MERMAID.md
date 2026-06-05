@@ -1,10 +1,10 @@
-# ARKITEKTUR-MERMAID — Version v60
-*Datum: 2026-06-02*
+# ARKITEKTUR-MERMAID — Version v61
+*Datum: 2026-06-05*
 
-**Aktuell version:** v60
+**Aktuell version:** v61
 **Single source of truth för version:** `app/MermaidCanvas/Sources/App/AppVersion.swift`
 
-> Detta dokument speglar **nuvarande** kod (v50.7). Den kompletta modul-kartan med
+> Detta dokument speglar **nuvarande** kod (v61). Den kompletta modul-kartan med
 > ansvarsfördelning bor i `BLUEPRINT.md` — det här dokumentet ger systemöversikten,
 > dataflödet och Mermaid-diagrammet. Tidigare arkitektur-versioner: `arkiv/ARKITEKTUR-MERMAID-vN.md`.
 
@@ -28,6 +28,7 @@ Sources/
 ├── App/
 │   ├── AppVersion.swift              versionsnummer (single source of truth)
 │   ├── MermaidCanvasApp.swift        app-entry
+│   ├── Orientation.swift             skärmläge porträtt/landskap (UIKit-livscykel, v60.1)
 │   ├── ContentView.swift             root: toolbar + canvas + sheets + tomt-tillstånd
 │   ├── Canvas/                        ZoomableCanvas (UIScrollView), CanvasViewportState, FloatingChipPreview
 │   ├── Models/                        CanvasModel (state/undo/collapse/multi-select/container),
@@ -35,20 +36,30 @@ Sources/
 │   ├── Views/                         CanvasView (ShapeView/EdgesView/geometri), ToolbarView,
 │   │                                  EditShapeSheet, EmptyCanvasHint, badges, popovers, sheets
 │   ├── Views/Handles/                 SelectionHandles (resize+rotation), SelectionOutline
-│   ├── Persistence/                   CanvasDocument (UIDocument), CanvasFileManager (iCloud)
+│   ├── Persistence/                   CanvasDocument (UIDocument), CanvasFileManager (iCloud),
+│   │                                  FileChangeObserver (NSFilePresenter live-reload, NY v61)
 │   └── Preview/                       Flow/Architecture/UI/Godot/Roadmap-renderare
-├── Mermaid/                           MermaidGenerator (canvas→kod), MermaidParser (kod→canvas), SpecType
+├── Mermaid/                           MermaidGenerator (canvas→kod), MermaidParser (kod→canvas),
+│                                      MermaidAutoLayout (lagrad layout för rå mermaid, NY v61),
+│                                      MermaidMetaComments (%%-kommentar-läsare, NY v61), SpecType
 └── ClaudeCode/                        Platform, PlatformRules, ShapeCategory, ShapePack
 ```
 
 **Kärninvarianter:**
-- **Chip ↔ canvas single source (v50.8):** toolbar-chip och canvas-rendering läser SAMMA
-  källa för geometri — `DesignTokens.Chip.iconSize(for:)` härleder chip-proportion från
-  `ShapeGeometry`-bas-storlek, och `DesignTokens.Shape.cornerRadius(for:height:)` ger hörn
-  som ratio. Inga hårdkodade chip-storlekar/canvas-radier → de kan inte glida isär.
-  `ComponentGallery` (launch-arg `-uitest-component-gallery`) verifierar matchningen.
-- **Modellen muteras aldrig direkt från View** — alltid via `CanvasModel`-metoder (varje muterande metod gör `snapshotForUndo()`).
-- **Förlustfri round-trip** (fidelity: positioner/storlekar/färger; semantik: kategori per nod) är icke förhandlingsbar — se `METOD-VISUELL-DIALOG.md`.
+- **Mermaid-blocket är självbärande (v61).** Fallback-parsern läser ALLA `%%`-metadata-
+  kommentarer (pos, size, rot, width/height, color, pack, style, note, prompt, name,
+  hidden-label, collapsed, link, table, line-end) → full round-trip även UTAN state-JSON.
+  State-JSON förblir autoritativ när den finns.
+- **Rå mermaid från Claude renderas som riktigt flödesschema (v61).** `MermaidAutoLayout`
+  ger lagrad BFS-layout som följer `flowchart TD/LR/BT/RL` — inte cirkel. Parsern förstår
+  inline-kanter (`a["X"] --> b["Y"]`), ocitate labels (`a[X]`), nakna id:n (`A --> B`),
+  tjocka pilar (`==>`) och inline-etiketter (`-- text -->`).
+- **Live-reload är iCloud-säker (v61).** `FileChangeObserver` (NSFilePresenter) får riktiga
+  notiser när Claude/iCloud skriver i filen; innehålls-hash skiljer extern ändring från egen.
+  Datum-polling kvar som fallback.
+- **Chip ↔ canvas single source (v50.8):** `DesignTokens` — chips och canvas kan inte glida isär.
+- **Modellen muteras aldrig direkt från View** — alltid via `CanvasModel`-metoder (undo-snapshot).
+- **Förlustfri round-trip** (fidelity + semantik) är icke förhandlingsbar — `METOD-VISUELL-DIALOG.md`.
 - **Ny data i ShapeNode/EdgeConnection** är alltid Codable med bakåtkompatibel default.
 
 ---
@@ -60,89 +71,71 @@ flowchart TD
     Kim["👤 Kim (iPhone 16 Pro)"]
     Claude["🤖 Claude Code (Mac)"]
 
-    subgraph App["📱 Visuali2e — MermaidCanvas v50.7"]
-        ContentView["ContentView<br/>(root + tomt-tillstånd UX-003)"]
-        ToolbarView["ToolbarView<br/>(form-chips, drag-to-canvas, a11y-labels)"]
+    subgraph App["📱 Visuali2e — MermaidCanvas v61"]
+        ContentView["ContentView<br/>(root + 1-tryck Kopiera Mermaid)"]
+        ToolbarView["ToolbarView<br/>(form-chips, drag-to-canvas)"]
         ZoomableCanvas["ZoomableCanvas<br/>(UIScrollView: pan/zoom/inertia)"]
-        CanvasView["CanvasView<br/>(ShapeView, EdgesView, geometri, hit-test)"]
-        SelectionHandles["SelectionHandles + SelectionOutline<br/>(markering UX-005, resize/rotation, a11y UX-007)"]
-        CanvasModel["CanvasModel<br/>(state, undo, collapse, multi-select,<br/>container, kaskad-offset UX-004)"]
-        MermaidGenerator
-        MermaidParser
+        CanvasView["CanvasView<br/>(ShapeView, EdgesView, geometri)"]
+        CanvasModel["CanvasModel<br/>(state, undo, collapse, multi-select, container)"]
+        MermaidGenerator["MermaidGenerator<br/>(canvas → mermaid + %%-meta + state-JSON)"]
+        MermaidParser["MermaidParser<br/>(state-JSON ELLER självbärande mermaid)"]
+        MermaidAutoLayout["MermaidAutoLayout (NY v61)<br/>(lagrad TD/LR/BT/RL-layout för rå mermaid)"]
+        MermaidMetaComments["MermaidMetaComments (NY v61)<br/>(%% pos/size/rot/color/prompt/…)"]
         CanvasDocument["CanvasDocument (UIDocument)"]
-        CanvasFileManager
-        AppVersion["AppVersion v50.7"]
+        CanvasFileManager["CanvasFileManager"]
+        FileChangeObserver["FileChangeObserver (NY v61)<br/>(NSFilePresenter — iCloud-säker live-reload)"]
     end
 
-    iCloud["📁 iCloud Drive<br/>&lt;namn&gt;.md (Mermaid + state-block)"]
+    iCloud["📁 iCloud Drive<br/>&lt;namn&gt;.md (frontmatter + mermaid + state-JSON)"]
 
     Kim -->|tap/drag chip| ToolbarView
     ToolbarView -->|addShape / drop| CanvasModel
     Kim -->|pan/zoom| ZoomableCanvas
     ZoomableCanvas --> CanvasView
-    Kim -->|tap/dra form| CanvasView
     CanvasView -->|mutationer| CanvasModel
     CanvasModel --> CanvasView
-    CanvasView --> SelectionHandles
     CanvasModel -->|spara| CanvasDocument
     CanvasDocument --> MermaidGenerator
     MermaidGenerator --> CanvasFileManager
     CanvasFileManager --> iCloud
-    iCloud --> CanvasFileManager
+    iCloud --> FileChangeObserver
+    FileChangeObserver -->|reloadTick| CanvasFileManager
     CanvasFileManager --> MermaidParser
+    MermaidParser --> MermaidMetaComments
+    MermaidParser --> MermaidAutoLayout
     MermaidParser --> CanvasModel
     iCloud -.->|läs på Mac| Claude
-    Claude -.->|skriv tillbaka| iCloud
+    Claude -.->|skriv rå mermaid eller full fil| iCloud
 ```
 
 ---
 
-## v50.7 — denna version (UX-svep efter persona-audit)
+## v61 — denna version (gap-analys + "ren mermaid i backend")
 
-Fixar UX-fynd från `UX_PERSONA_AUDIT.md` (6 personas via idb). Verifierade i simulator;
-känsel-/gest-fynd bekräftas på iPhone.
+Bygger på `GAP-ANALYS-v61.md` (4 granskar-agenter + adversarial verifiering, 23 agenter).
+Målet: Kim ritar → kopierar mermaid rakt av till Claude Code; Claude ritar → Kim SER det.
 
-- **UX-004 — kaskad-offset på nya former.** Nya former staplades pixel-exakt i center
-  (osynlig hög, sågs av 4/6). `CanvasModel.cascadedPosition(near:)` förskjuter nedåt-höger
-  tills platsen är fri. Gäller form, tabell, lös linje/pil.
-- **UX-005 — markeringsfeedback direkt vid tap.** Enkel-vald form fick tidigare bara handtag
-  (syntes vid drag). Nu ritas samma streckade `SelectionOutline` som multi-select direkt.
-- **UX-001/007/010/013 — VoiceOver-labels.** Toolbar-knappar, form-chips och resize/rotation-
-  handtag exponerade råa SF Symbol-namn / chip-id. `ToolbarView.a11yLabel(for:)` + labels på
-  handtagen ger läsbara svenska namn.
-- **UX-006 — träffytor ≥44pt.** Collapse-badge och 100%-zoomknapp fick expanderad tap-yta
-  (visuell storlek oförändrad). Resize/rotation-handtag hade redan ~2× tap-yta via `contentShape`.
-- **UX-003 — tomt-tillstånd.** `EmptyCanvasHint` vägleder förstagångsanvändare på tom canvas.
-- **UX-012 — rektangel-chip tydligare avlångt** (skiljs från kvadrat-chipet).
+1. **Rå mermaid från Claude → riktig layout.** Ny `MermaidAutoLayout`: BFS-nivåer från
+   kanterna, följer `flowchart TD/LR/BT/RL`. Ersätter cirkel-placeringen.
+2. **Mermaid-blocket självbärande.** Ny `MermaidMetaComments` läser alla `%%`-kommentarer
+   som generatorn redan skrev men parsern aldrig läste (pos, size, rot, color, prompt, …).
+3. **Claude-typisk syntax stöds:** inline-kanter `a["X"] --> b["Y"]`, ocitate labels,
+   nakna id:n, `==>`, `-- text -->`, `subgraph id` utan label, `:::kategori` utan fantomnoder.
+4. **iCloud-säker live-reload.** `FileChangeObserver` (NSFilePresenter) + innehålls-hash.
+5. **1-tryck "Kopiera Mermaid-kod"** i Lägen-menyn (hela dokumentet till urklipp + haptik).
+6. **Pil-tips i tom-canvas-hinten** (UX-009 delvis).
+7. **`N8N-FLODE-KONTRAKT.md`** — kategori→nodtyp, kantetikett→villkor, prompt→trigger;
+   Claude bygger n8n-workflow/skill utan att gissa.
 
-**Verifierat som icke-buggar (ingen ändring):** UX-002 (undo är korrekt per-steg),
-UX-008 (drag fungerar på omarkerad form — snabbsvep fångas av scroll-vyn by design),
-UX-014 (kosmetiskt animations-kantfall i a11y-trädet).
-
-**Kvar som follow-up (kräver dedikerad design):** UX-009 (pil-upptäckbarhet),
-UX-011 (tabell-redigerings-affordance).
+**Tester:** `V61FallbackParserTests` (13 st) + `V61LiveReloadTests` (2 st). Hela
+unit-sviten grön.
 
 ---
 
-## Versionsutveckling v40 → v50.7
+## Att verifiera på iPhone vid denna deploy (v61)
 
-v40–v50 växte fram via många små iterationer (root-cause-fixar, resize/edge/collapse-finputs,
-round-trip-härdning, ux-personas-test-verktyget). Per-version-detaljer finns i `ROADMAP.md`
-och git-loggen (`git log --oneline`); tidigare arkitektur-snapshots i `arkiv/`.
-
-Milstolpar värda att känna till:
-- **v47:** explicit `childOfContainerId` — container-barn följer med robust vid flytt.
-- **v50.5–v50.6:** chips ritas med samma geometri-tokens som canvas (`DesignTokens`),
-  long-press → egen popover (ingen snapshot-flash), round-trip-krasch (`-->` i text) fixad,
-  tabell-klamp `max(1,…)`, regressionstester (RoundTripTests).
-
----
-
-## Att verifiera på iPhone vid denna deploy (v50.7)
-
-- [ ] Tom canvas visar "Börja här"-hinten; försvinner när första formen läggs
-- [ ] Två snabba former staplas INTE — andra hamnar nedåt-höger (UX-004)
-- [ ] Tap på form ger direkt streckad markeringsram (UX-005)
-- [ ] VoiceOver läser "Former", "Färg", "Ångra", "Cirkel" osv. — inte symbolnamn (UX-001)
-- [ ] Collapse-badge och 100%-knapp är lätta att träffa med fingret (UX-006)
-- [ ] Round-trip mot iCloud-filen är förlustfri (oförändrat sedan v50.6)
+- [ ] Lägen-menyn → "Kopiera Mermaid-kod" → klistra in i Anteckningar = hela dokumentet
+- [ ] Claude skriver rå mermaid (utan state-JSON) i canvas-filen → appen visar flödesschema, inte cirkel
+- [ ] Claude ändrar i öppen fil → appen uppdaterar inom någon sekund (utan omöppning)
+- [ ] Tom canvas visar pil-tipset
+- [ ] Kvarstår från v60.1: forcerad landskap + container-drag-känsla
