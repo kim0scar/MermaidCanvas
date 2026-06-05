@@ -76,9 +76,12 @@ struct CanvasView: View {
     @Binding var zoomPercent: Int
     /// v25: trigger för Reset-zoom från toolbar (incrementeras → onChange → reset)
     var resetZoomTrigger: Int
+    /// v61: ägs nu av ContentView — så fil-öppning kan centrera vyn på innehållet
+    /// (Claude-ritade filer kan ligga var som helst på 3000×3000-canvasen).
+    /// Jump-links sätter den också (handleShapeSelect).
+    @Binding var centerOnPoint: CGPoint?
 
     @State private var zoomScale: CGFloat = 1.0
-    @State private var centerOnPoint: CGPoint? = nil
     @State private var connectionDrag: ConnectionDrag? = nil
 
     var body: some View {

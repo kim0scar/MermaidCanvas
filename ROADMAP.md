@@ -2,7 +2,20 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v61 (deployad till iPhone 2026-06-05)
+## Aktuell version: v61.1 (deployad till iPhone)
+
+*Tema:* Öppna-fil-buggen Kim hittade — vyn centrerar nu på innehållet
+
+**v61.1:**
+- **"Demon gick inte att öppna" = vyn stod på canvas-mitten (1500,1500) medan Claude-ritade
+  former låg på (115–285, 160–670)** → tomt vitt papper. Fix: `openFile` centrerar vyn på
+  innehållets mittpunkt; live-reload centrerar BARA om inget innehåll syns (stör inte mitt i arbete).
+- `centerOnPoint` flyttad CanvasView `@State` → ContentView-ägd `@Binding` (jump-links opåverkade).
+- **Visuellt verifierad i simulatorn** (idb): demo-filen öppnad via Files-pickern → lagrad
+  TD-layout, kategorifärger, "ja"-etikett, allt centrerat. Screenshot-bevisad.
+- Nytt test: `V61DemoFileTests` (demo-filens exakta innehåll → 5 former/4 kanter/layout-ordning).
+
+## v61 (2026-06-05)
 
 *Tema:* "Ren mermaid i backend" — gap-analys + Claude→Kim-riktningen fixad (natt-session)
 

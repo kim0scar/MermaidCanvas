@@ -37,6 +37,8 @@ struct ContentView: View {
     @State private var showRulesSheet: Bool = false
     @State private var zoomPercent: Int = 100
     @State private var resetZoomTrigger: Int = 0
+    /// v61: be canvasen centrera på en punkt (sätts vid fil-öppning + jump-links)
+    @State private var centerOnPoint: CGPoint? = nil
     @State private var showNotePopup: Bool = false
     /// v37: Mermaid-import från AI
     @State private var showMermaidImport: Bool = false
@@ -92,7 +94,8 @@ struct ContentView: View {
             onShapeShowNote: { id in notingShapeId = id },
             onTableEdit: { id in tableEditingShapeId = id },
             zoomPercent: $zoomPercent,
-            resetZoomTrigger: resetZoomTrigger
+            resetZoomTrigger: resetZoomTrigger,
+            centerOnPoint: $centerOnPoint
         )
     }
 
@@ -331,6 +334,9 @@ struct ContentView: View {
                          activeShapePacks: parsed.activeShapePacks,
                          collapsedIds: parsed.collapsedIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
+        // v61: centrera vyn på innehållet — annars kan en Claude-ritad fil se TOM ut
+        // (formerna utanför skärmen medan vyn står på canvas-mitten).
+        centerOnPoint = contentCenter(of: parsed.shapes)
     }
 
     private func reloadFromFile() {
@@ -344,6 +350,33 @@ struct ContentView: View {
                          activeShapePacks: parsed.activeShapePacks,
                          collapsedIds: parsed.collapsedIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
+        // v61: hoppa BARA om inget av innehållet syns (stör inte Kim mitt i arbetet)
+        if !isAnyContentVisible(parsed.shapes) {
+            centerOnPoint = contentCenter(of: parsed.shapes)
+        }
+    }
+
+    /// v61: mittpunkten av innehållets bounding-box. nil om canvasen är tom.
+    private func contentCenter(of shapes: [ShapeNode]) -> CGPoint? {
+        guard !shapes.isEmpty else { return nil }
+        let xs = shapes.map { $0.position.x }
+        let ys = shapes.map { $0.position.y }
+        return CGPoint(x: (xs.min()! + xs.max()!) / 2,
+                       y: (ys.min()! + ys.max()!) / 2)
+    }
+
+    /// v61: syns någon form i nuvarande viewport? (med 60pt marginal)
+    private func isAnyContentVisible(_ shapes: [ShapeNode]) -> Bool {
+        guard !shapes.isEmpty else { return true }
+        let scale = viewportState.zoomScale
+        guard scale > 0.001, viewportState.globalFrame.width > 0 else { return true }
+        let visible = CGRect(
+            x: viewportState.contentOffset.width / scale,
+            y: viewportState.contentOffset.height / scale,
+            width: viewportState.globalFrame.width / scale,
+            height: viewportState.globalFrame.height / scale
+        ).insetBy(dx: -60, dy: -60)
+        return shapes.contains { visible.contains($0.position) }
     }
 
     private func save() {

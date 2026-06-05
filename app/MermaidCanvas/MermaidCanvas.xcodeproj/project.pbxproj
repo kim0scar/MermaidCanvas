@@ -59,6 +59,7 @@
 		6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */; };
 		6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */; };
 		6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969A68524F5A084A0839C4 /* DesignTokens.swift */; };
+		7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
 		7BCCD9DB163AFD89CFA15B6E /* EdgeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */; };
 		7D95F212EDEA8077BE51BC5A /* test_diamond_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */; };
@@ -175,6 +176,7 @@
 		55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerOverlay.swift; sourceTree = "<group>"; };
 		568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidImportSheet.swift; sourceTree = "<group>"; };
 		56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadges.swift; sourceTree = "<group>"; };
+		58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V61DemoFileTests.swift; sourceTree = "<group>"; };
 		5B969A68524F5A084A0839C4 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCanvasSheet.swift; sourceTree = "<group>"; };
 		5F6F52E499ADD995928FF171 /* SnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotTests.swift; sourceTree = "<group>"; };
@@ -468,6 +470,7 @@
 				5F6F52E499ADD995928FF171 /* SnapshotTests.swift */,
 				D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */,
 				972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */,
+				58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */,
 				D821FB3C84390B33197E489D /* V61FallbackParserTests.swift */,
 				DD6C04EEC90346734FB9EA87 /* V61LiveReloadTests.swift */,
 				C27B478DB8B95307D57B1E0C /* __Snapshots__ */,
@@ -771,6 +774,7 @@
 				684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */,
 				AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */,
 				05D7C2B2DFD541EDEBB30893 /* V49ConnectionSelectionTest.swift in Sources */,
+				7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */,
 				D41DF508293DA8B03C6BF9C5 /* V61FallbackParserTests.swift in Sources */,
 				0B6CADDBF065261249DDE7A0 /* V61LiveReloadTests.swift in Sources */,
 			);
