@@ -19,6 +19,7 @@ final class V35BugHuntTests: XCTestCase {
     @MainActor
     func testAddTenShapesAllRemainVisible() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         sleep(2)
 
@@ -60,6 +61,7 @@ final class V35BugHuntTests: XCTestCase {
     @MainActor
     func testZoomChangesScrollViewState() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         sleep(2)
 
@@ -96,6 +98,7 @@ final class V35BugHuntTests: XCTestCase {
         // (hamnar i statisk canvas-mitten 2000,2000 som är utanför skärm).
         // v35 fix: canvasCenter räknas från viewportState.visibleCenterInCanvas.
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         sleep(2)
 
@@ -140,6 +143,7 @@ final class V35BugHuntTests: XCTestCase {
         // Kombinationen: lägg en form, sen zooma. Kim's bugg kan vara att zoom
         // går sönder efter shape-interaktioner.
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         sleep(2)
 

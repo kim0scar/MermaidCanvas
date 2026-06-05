@@ -11,6 +11,7 @@ final class V27FeatureTests: XCTestCase {
     @MainActor
     private func launchApp() -> XCUIApplication {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         return app
     }

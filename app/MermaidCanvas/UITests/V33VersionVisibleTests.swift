@@ -13,6 +13,7 @@ final class V33VersionVisibleTests: XCTestCase {
     @MainActor
     func testVersionIsVisibleInLägenMenu() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         sleep(1)
 

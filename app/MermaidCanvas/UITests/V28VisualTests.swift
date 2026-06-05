@@ -12,6 +12,7 @@ final class V28VisualTests: XCTestCase {
     @MainActor
     func testTakeScreenshotsForVisualReview() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
 
         // Screenshot 1: tom canvas vid start (50% scale så hela papperet syns)

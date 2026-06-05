@@ -16,6 +16,7 @@ final class V34PanSymmetryTests: XCTestCase {
     @MainActor
     func testCanvasStartsCenteredNotAtOrigin() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         sleep(2)  // ge layoutSubviews + fitToScreen tid att köra
 
@@ -39,6 +40,7 @@ final class V34PanSymmetryTests: XCTestCase {
     @MainActor
     func testPanWorksInAllFourDirections() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         sleep(2)
 

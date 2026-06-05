@@ -11,6 +11,7 @@ final class LayoutOverflowTests: XCTestCase {
     @MainActor
     func testToolbarFitsOnScreen() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         let window = app.windows.firstMatch
         XCTAssertTrue(window.waitForExistence(timeout: 4))
@@ -42,6 +43,7 @@ final class LayoutOverflowTests: XCTestCase {
     @MainActor
     func testShapesRowChipsFitOnScreen() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["-orientationMode", "portrait"]
         app.launch()
         let window = app.windows.firstMatch
         XCTAssertTrue(window.waitForExistence(timeout: 4))
