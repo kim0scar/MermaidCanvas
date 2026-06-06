@@ -31,6 +31,8 @@ struct ContentView: View {
     @State private var pendingDocument: CanvasDocument?
     @State private var editingShapeId: UUID? = nil
     @State private var notingShapeId: UUID? = nil
+    /// v63: snabbläsning av anteckning+prompt (badges på formen)
+    @State private var quickReadShapeId: UUID? = nil
     @State private var showCodeSheet: Bool = false
     @State private var showNewCanvasPrompt: Bool = false
     @State private var showNewCanvasSheet: Bool = false
@@ -92,6 +94,7 @@ struct ContentView: View {
             onShapeSelect: { id in model.selectShape(id) },
             onShapeDuplicate: { id in model.duplicateShape(id: id) },
             onShapeShowNote: { id in notingShapeId = id },
+            onShapeQuickRead: { id in quickReadShapeId = id },
             onTableEdit: { id in tableEditingShapeId = id },
             zoomPercent: $zoomPercent,
             resetZoomTrigger: resetZoomTrigger,
@@ -190,6 +193,22 @@ struct ContentView: View {
                 NoteMiniSheet(
                     note: $model.shapes[idx].note,
                     onDone: { notingShapeId = nil }
+                )
+            }
+        }
+        // v63: snabbläsning — read-only anteckning+prompt via badges på formen
+        .sheet(isPresented: quickReadBinding) {
+            if let id = quickReadShapeId,
+               let shape = model.shapes.first(where: { $0.id == id }) {
+                QuickReadSheet(
+                    title: shape.label,
+                    note: shape.note,
+                    prompt: shape.prompt,
+                    onEdit: {
+                        quickReadShapeId = nil
+                        editingShapeId = id
+                    },
+                    onClose: { quickReadShapeId = nil }
                 )
             }
         }
@@ -316,6 +335,13 @@ struct ContentView: View {
         )
     }
 
+    private var quickReadBinding: Binding<Bool> {
+        Binding(
+            get: { quickReadShapeId != nil },
+            set: { if !$0 { quickReadShapeId = nil } }
+        )
+    }
+
     private var tableEditingBinding: Binding<Bool> {
         Binding(get: { tableEditingShapeId != nil },
                 set: { if !$0 { tableEditingShapeId = nil } })
@@ -332,7 +358,7 @@ struct ContentView: View {
                          specType: parsed.specType,
                          platform: parsed.platform,
                          activeShapePacks: parsed.activeShapePacks,
-                         collapsedIds: parsed.collapsedIds)
+                         collapsedEdgeIds: parsed.collapsedEdgeIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
         // v61: centrera vyn på innehållet — annars kan en Claude-ritad fil se TOM ut
         // (formerna utanför skärmen medan vyn står på canvas-mitten).
@@ -348,7 +374,7 @@ struct ContentView: View {
                          specType: parsed.specType,
                          platform: parsed.platform,
                          activeShapePacks: parsed.activeShapePacks,
-                         collapsedIds: parsed.collapsedIds)
+                         collapsedEdgeIds: parsed.collapsedEdgeIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
         // v61: hoppa BARA om inget av innehållet syns (stör inte Kim mitt i arbetet)
         if !isAnyContentVisible(parsed.shapes) {
@@ -410,7 +436,7 @@ struct ContentView: View {
             specType: model.specType,
             platform: model.platform,
             activeShapePacks: model.activeShapePacks,
-            collapsedIds: model.collapsedIds
+            collapsedEdgeIds: model.collapsedEdgeIds
         )
     }
 

@@ -14,7 +14,7 @@ struct SelectionHandles: View {
         let center = shape.position
         let handleSize: CGFloat = max(24, 28 / canvasScale)
         let strokeWidth: CGFloat = max(1.5, 2.0 / canvasScale)
-        let rotationOffset: CGFloat = 36 / canvasScale
+        let rotationOffset: CGFloat = 48 / canvasScale
 
         ZStack {
             // v50.5 v4 F8/F10: markeringsramen följer formens EGEN GEOMETRI
@@ -42,12 +42,17 @@ struct SelectionHandles: View {
         }
     }
 
+    /// v63: hur långt utanför formens hörn handtagens CENTRUM ligger.
+    private var handleMargin: CGFloat { max(14, 18 / canvasScale) }
+
     // MARK: - Handle-views
 
     /// Proportional resize — bottom-right hörn.
     @ViewBuilder
     private func proportionalHandle(size: CGFloat, w: CGFloat, h: CGFloat) -> some View {
-        let pos = cornerPosition(dx: w / 2, dy: h / 2)
+        // v63: handtaget ligger UTANFÖR hörnet (Kims fynd: gick in i formen)
+        let m = handleMargin
+        let pos = cornerPosition(dx: w / 2 + m, dy: h / 2 + m)
         ZStack {
             Circle()
                 .fill(Color.white)
@@ -68,7 +73,9 @@ struct SelectionHandles: View {
     /// Fri resize — bottom-left hörn, diagonal ikon (tydlig resize-signal).
     @ViewBuilder
     private func freeResizeHandle(size: CGFloat, w: CGFloat, h: CGFloat) -> some View {
-        let pos = cornerPosition(dx: -w / 2, dy: h / 2)
+        // v63: utanför hörnet
+        let m = handleMargin
+        let pos = cornerPosition(dx: -w / 2 - m, dy: h / 2 + m)
         ZStack {
             Circle()
                 .fill(Color.white)
@@ -89,7 +96,8 @@ struct SelectionHandles: View {
     /// Rotation — top-left hörn, transparent bakgrund (som övriga handles).
     @ViewBuilder
     private func rotationHandle(size: CGFloat, offset: CGFloat, w: CGFloat, h: CGFloat) -> some View {
-        let pos = cornerPosition(dx: -w / 2 - offset / 2, dy: -h / 2 - offset / 2)
+        // v63: full offset utåt (var offset/2 → gick in i hörnet)
+        let pos = cornerPosition(dx: -w / 2 - offset, dy: -h / 2 - offset)
 
         ZStack {
             Circle()

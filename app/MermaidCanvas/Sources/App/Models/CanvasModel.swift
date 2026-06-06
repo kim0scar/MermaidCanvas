@@ -37,7 +37,9 @@ final class CanvasModel: ObservableObject {
     @Published var selectedShapeId: UUID? = nil
     @Published var multiSelection: Set<UUID> = []
     @Published var markerMode: Bool = false
-    @Published var collapsedIds: Set<UUID> = []
+    /// v63: kollaps är PER GREN (kant-id), inte per nod — Kims fynd: minus-badgen
+    /// på en pil kollapsade alla beroendepilar från samma symbol.
+    @Published var collapsedEdgeIds: Set<UUID> = []
 
     // v34: canvas är fast 4000×4000 — kvadratisk vit yta. UIScrollView hanterar
     // pan/zoom symmetriskt. Inga dynamiska expansioner (Kim valde fast storlek).
@@ -56,24 +58,23 @@ final class CanvasModel: ObservableObject {
     var isEdgeMode: Bool { edgeCreationMode != .off }
     var canUndo: Bool { !undoStack.isEmpty }
 
-    /// Noder som ska döljas pga någon av deras "föräldrar" är kollapsad.
-    /// BFS från varje collapsed-nod via edges; collapsed noden själv visas alltid.
+    /// Noder som ska döljas. v63: BFS NEDSTRÖMS från varje kollapsad KANT —
+    /// bara den grenens efterföljare döljs; syskon-grenar från samma nod visas.
+    /// (Förenkling som tidigare: en nod som även nås via en o-kollapsad väg
+    /// döljs ändå om den ligger nedströms den kollapsade kanten.)
     var hiddenShapeIds: Set<UUID> {
         var hidden: Set<UUID> = []
-        for cid in collapsedIds {
-            var queue: [UUID] = []
-            // Direct neighbors via edges (where collapsed is the source)
-            for e in edges {
-                if e.from == cid { queue.append(e.to) }
-            }
-            var visited: Set<UUID> = [cid]
+        for eid in collapsedEdgeIds {
+            guard let edge = edges.first(where: { $0.id == eid }) else { continue }
+            var visited: Set<UUID> = [edge.from]
+            var queue: [UUID] = [edge.to]
             while let cur = queue.first {
                 queue.removeFirst()
                 if visited.contains(cur) { continue }
                 visited.insert(cur)
                 hidden.insert(cur)
-                for e in edges where e.from == cur {
-                    if !visited.contains(e.to) { queue.append(e.to) }
+                for e in edges where e.from == cur && !visited.contains(e.to) {
+                    queue.append(e.to)
                 }
             }
         }
@@ -281,7 +282,7 @@ final class CanvasModel: ObservableObject {
         edges.removeAll()
         selectedShapeId = nil
         multiSelection.removeAll()
-        collapsedIds.removeAll()
+        collapsedEdgeIds.removeAll()
         canvasTitle = ""
     }
 
@@ -344,13 +345,26 @@ final class CanvasModel: ObservableObject {
         return result
     }
 
-    /// Toggle kollaps/expand för en form. Om expanderad: alla connected hide:as.
+    /// v63: toggle kollaps/expand för EN GREN (kant).
+    func toggleCollapseEdge(_ edgeId: UUID) {
+        snapshotForUndo()
+        if collapsedEdgeIds.contains(edgeId) {
+            collapsedEdgeIds.remove(edgeId)
+        } else {
+            collapsedEdgeIds.insert(edgeId)
+        }
+    }
+
+    /// Kompat-shim (gamla tester/scenarier): toggla ALLA nodens utgående grenar.
     func toggleCollapse(id: UUID) {
         snapshotForUndo()
-        if collapsedIds.contains(id) {
-            collapsedIds.remove(id)
+        let outgoing = edges.filter { $0.from == id }.map { $0.id }
+        guard !outgoing.isEmpty else { return }
+        let allCollapsed = outgoing.allSatisfy { collapsedEdgeIds.contains($0) }
+        if allCollapsed {
+            outgoing.forEach { collapsedEdgeIds.remove($0) }
         } else {
-            collapsedIds.insert(id)
+            outgoing.forEach { collapsedEdgeIds.insert($0) }
         }
     }
 
@@ -574,6 +588,13 @@ final class CanvasModel: ObservableObject {
         edges[idx].direction = direction
     }
 
+    /// v63: färg på en pil (hex eller nil = standard mörk).
+    func setEdgeColor(id: UUID, hex: String?) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        edges[idx].colorHex = hex
+    }
+
     /// v62: egen fyllningsfärg på markerad form (nil = tillbaka till paket/kategori).
     func setFillColor(id: UUID, hex: String?) {
         guard let idx = shapes.firstIndex(where: { $0.id == id }) else { return }
@@ -743,7 +764,7 @@ final class CanvasModel: ObservableObject {
                     specType: SpecType = .general,
                     platform: Platform? = nil,
                     activeShapePacks: Set<ShapePack>? = nil,
-                    collapsedIds: Set<UUID> = []) {
+                    collapsedEdgeIds: Set<UUID> = []) {
         self.shapes = shapes
         self.edges = edges
         self.canvasTitle = title
@@ -764,7 +785,7 @@ final class CanvasModel: ObservableObject {
             }
             self.activeShapePacks = packs
         }
-        self.collapsedIds = collapsedIds
+        self.collapsedEdgeIds = collapsedEdgeIds
         self.pendingEdgeFrom = nil
         self.edgeCreationMode = .off
         self.selectedShapeId = nil
@@ -778,7 +799,7 @@ final class CanvasModel: ObservableObject {
         snapshotForUndo()
         shapes.removeAll()
         edges.removeAll()
-        collapsedIds.removeAll()
+        collapsedEdgeIds.removeAll()
         canvasTitle = ""
         self.platform = platform
         self.specType = platform.legacySpecType

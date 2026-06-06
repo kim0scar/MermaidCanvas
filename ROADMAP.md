@@ -2,7 +2,30 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v62 (deployad till iPhone)
+## Aktuell version: v63 (deployad till iPhone)
+
+*Tema:* Kims sex fynd från v62-granskningen — pil-enhet, pilfärg, gren-kollaps, ikoner, läs-badges
+
+**v63 (alla sex sim-bevisade med screenshots):**
+1. **Pil = EN enhet:** linjen slutar bakom spetsbasen (11pt-inset), spets + linje ritas i
+   samma SOLIDA färg (tidigare 0.7/0.85-opacity → strecket lyste igenom spetsen).
+2. **Pilfärg:** `EdgeConnection.colorHex` — välj i pilens meny (tryck-håll mitt-ikonen →
+   "Färg på pilen", 8 färger). Round-trippar (state-JSON `color` + `%% e<i> color:`).
+3. **Kollaps PER GREN:** `collapsedEdgeIds` ersätter nod-kollaps — minus-badgen kollapsar
+   BARA den pilens efterföljare; syskon-grenar står kvar. `descendantsFromBranch`-logiken
+   används äntligen. Migration: gamla filer med `"collapsed": [nod]` / `%% nod collapsed`
+   → nodens alla utgående grenar. Persist: `"collapsed": true` på kanten + `%% e<i> collapsed: true`.
+4. **Handtag utanför hörnen:** SelectionHandles offsetas ut (margin 18pt, rotation 36→48 full).
+5. **Läs-badges:** indigo hjärn-prick (prompt) toppvänster + gul prick (anteckning) topphöger →
+   tap = `QuickReadSheet` (read-only, växer med texten, Redigera-knapp). Nya filer:
+   PromptBadge.swift + QuickReadSheet.swift.
+6. **Kollaps-badges separerade:** minus 16pt vinkelrätt från linjen (bort från midpoint-ikonen);
+   plus-stubbar solfjäder-sprids (±0.5 rad) när flera grenar kollapsats från samma nod, stub 50→62pt.
+- Nya tester: `V63RoundTripTests` (6 st: pilfärg båda vägarna, gren-kollaps, efterföljare,
+  round-trip per gren, migration ×2). Unit-sviten: **79/79 gröna.**
+- **Observerat (ej åtgärdat):** IMG_0552 visade halv svart skärm i landskap — verifieras separat.
+
+## v62 (deployad till iPhone)
 
 *Tema:* Kims tre fynd från v61.2-granskningen — pilspetsar, etikettplacering, separat färg
 

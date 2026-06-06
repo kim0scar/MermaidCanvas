@@ -51,6 +51,8 @@ struct EdgeConnection: Identifiable, Codable {
     var waypoints: [EdgeWaypoint]
     /// v62: etikettens placering (ovanför/under pilen). Default = .below.
     var labelPlacement: EdgeLabelPlacement
+    /// v63: pilens färg som hex "#rrggbb". nil = standard (mörk).
+    var colorHex: String?
 
     init(id: UUID = UUID(),
          from: UUID,
@@ -59,7 +61,8 @@ struct EdgeConnection: Identifiable, Codable {
          direction: EdgeDirection = .forward,
          style: EdgeStyle = .solid,
          waypoints: [EdgeWaypoint] = [],
-         labelPlacement: EdgeLabelPlacement = .below) {
+         labelPlacement: EdgeLabelPlacement = .below,
+         colorHex: String? = nil) {
         self.id = id
         self.from = from
         self.to = to
@@ -68,11 +71,13 @@ struct EdgeConnection: Identifiable, Codable {
         self.style = style
         self.waypoints = waypoints
         self.labelPlacement = labelPlacement
+        self.colorHex = colorHex
     }
 
     private enum CodingKeys: String, CodingKey {
         case id, from, to, label, direction, bidirectional, style, waypoints
         case labelPlacement  // v62
+        case colorHex        // v63
     }
 
     /// Migration: läser direction (v37) med fallback till bidirectional: Bool (v36 och äldre).
@@ -93,6 +98,7 @@ struct EdgeConnection: Identifiable, Codable {
         // v62: bakåtkompatibel default — gamla filer saknar fältet
         self.labelPlacement = try c.decodeIfPresent(EdgeLabelPlacement.self,
                                                     forKey: .labelPlacement) ?? .below
+        self.colorHex = try c.decodeIfPresent(String.self, forKey: .colorHex)  // v63
     }
 
     func encode(to encoder: Encoder) throws {
@@ -105,5 +111,6 @@ struct EdgeConnection: Identifiable, Codable {
         try c.encode(style, forKey: .style)
         try c.encode(waypoints, forKey: .waypoints)
         try c.encode(labelPlacement, forKey: .labelPlacement)
+        try c.encodeIfPresent(colorHex, forKey: .colorHex)
     }
 }

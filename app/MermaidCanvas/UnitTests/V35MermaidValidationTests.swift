@@ -116,7 +116,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.shapes.count, labels.count,
@@ -148,7 +148,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.shapes.count, emojiLabels.count,
@@ -182,7 +182,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.shapes.count, trickyLabels.count,
@@ -230,7 +230,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
 
         // Mermaid-block ska innehålla en pipe-omsluten label på minst en edge
@@ -298,7 +298,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic, .ui],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
 
         let parsed = MermaidParser.parse(doc.content)
@@ -359,7 +359,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed1 = MermaidParser.parse(doc1.content)
 
@@ -372,7 +372,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: parsed1.specType,
             platform: parsed1.platform ?? .blank,
             activeShapePacks: parsed1.activeShapePacks ?? [.basic],
-            collapsedIds: parsed1.collapsedIds
+            collapsedEdgeIds: parsed1.collapsedEdgeIds
         )
         let parsed2 = MermaidParser.parse(doc2.content)
 
@@ -502,7 +502,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
 
@@ -544,7 +544,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.shapes.count, 2)
@@ -574,7 +574,7 @@ final class V35MermaidValidationTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
 
@@ -748,7 +748,7 @@ final class V35MermaidValidationTests: XCTestCase {
             shapes: [container, child, orphan], edges: [],
             canvasSize: CGSize(width: 1200, height: 1200),
             specType: .general, platform: .blank,
-            activeShapePacks: [.basic], collapsedIds: []
+            activeShapePacks: [.basic], collapsedEdgeIds: []
         )
         XCTAssertTrue(doc.content.contains("\"childOfContainerId\""),
                       "Dokumentet ska innehålla childOfContainerId-nyckel.")
@@ -778,7 +778,7 @@ final class V35MermaidValidationTests: XCTestCase {
             shapes: [original], edges: [],
             canvasSize: CGSize(width: 600, height: 400),
             specType: .general, platform: .blank,
-            activeShapePacks: [.basic], collapsedIds: []
+            activeShapePacks: [.basic], collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.shapes.count, 1, "Round-trip ska bevara 1 form")

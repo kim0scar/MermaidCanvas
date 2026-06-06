@@ -18,7 +18,7 @@ struct MermaidCodeSheet: View {
             specType: model.specType,
             platform: model.platform,
             activeShapePacks: model.activeShapePacks,
-            collapsedIds: model.collapsedIds
+            collapsedEdgeIds: model.collapsedEdgeIds
         )
         return doc.content
     }

@@ -12,9 +12,9 @@ struct CanvasDocument: FileDocument {
          specType: SpecType,
          platform: Platform = .blank,
          activeShapePacks: Set<ShapePack> = [.basic],
-         collapsedIds: Set<UUID> = []) {
-        let mermaid = MermaidGenerator.generate(shapes: shapes, edges: edges, canvasSize: canvasSize, specType: specType, collapsedIds: collapsedIds)
-        let state = MermaidGenerator.canvasStateJSON(shapes: shapes, edges: edges, canvasSize: canvasSize, specType: specType, platform: platform, activeShapePacks: activeShapePacks, collapsedIds: collapsedIds)
+         collapsedEdgeIds: Set<UUID> = []) {
+        let mermaid = MermaidGenerator.generate(shapes: shapes, edges: edges, canvasSize: canvasSize, specType: specType, collapsedEdgeIds: collapsedEdgeIds)
+        let state = MermaidGenerator.canvasStateJSON(shapes: shapes, edges: edges, canvasSize: canvasSize, specType: specType, platform: platform, activeShapePacks: activeShapePacks, collapsedEdgeIds: collapsedEdgeIds)
         let timestamp = ISO8601DateFormatter().string(from: Date())
         let titleLine = title.isEmpty ? "Canvas — MermaidCanvas" : title
         let today = String(timestamp.prefix(10))

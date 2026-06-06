@@ -30,7 +30,7 @@ final class RoundTripTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let markdown = doc.content
 
@@ -98,7 +98,7 @@ final class RoundTripTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
 
@@ -121,7 +121,7 @@ final class RoundTripTests: XCTestCase {
             specType: .architecture,
             platform: .blank,
             activeShapePacks: [.basic, .architecture, .roadmap],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.platform, .blank, "Platform ska bevaras")
@@ -149,7 +149,7 @@ final class RoundTripTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
 
@@ -183,7 +183,7 @@ final class RoundTripTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         // Får inte krascha vid parse
         let parsed = MermaidParser.parse(doc.content)
@@ -204,7 +204,7 @@ final class RoundTripTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let parsed = MermaidParser.parse(doc.content)
         XCTAssertEqual(parsed.shapes.count, 1, "Åttahörningen ska överleva round-trip")
@@ -229,7 +229,7 @@ final class RoundTripTests: XCTestCase {
             specType: .general,
             platform: .blank,
             activeShapePacks: [.basic],
-            collapsedIds: []
+            collapsedEdgeIds: []
         )
         let md = doc.content
         XCTAssertTrue(md.contains("prompt: Skicka POST till n8n med payload X"),

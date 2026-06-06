@@ -124,7 +124,7 @@ Max 15 noder. Undvik subgraphs.
             specType: parsed.specType,
             platform: parsed.platform,
             activeShapePacks: parsed.activeShapePacks,
-            collapsedIds: parsed.collapsedIds
+            collapsedEdgeIds: parsed.collapsedEdgeIds
         )
         onClose()
     }

@@ -209,17 +209,19 @@ final class V61FallbackParserTests: XCTestCase {
     }
 
     func testFallback_CollapsedLases() {
+        // v63: kollaps är per GREN (kant) — round-trippar via %% e<i> collapsed: true
         let a = ShapeNode(type: .circle, position: CGPoint(x: 50, y: 60), label: "A")
         let b = ShapeNode(type: .circle, position: CGPoint(x: 250, y: 60), label: "B")
+        let edge = EdgeConnection(from: a.id, to: b.id)
         let doc = CanvasDocument(title: "T", shapes: [a, b],
-                                 edges: [EdgeConnection(from: a.id, to: b.id)],
+                                 edges: [edge],
                                  canvasSize: CGSize(width: 800, height: 800),
                                  specType: .general,
-                                 collapsedIds: [a.id])
+                                 collapsedEdgeIds: [edge.id])
         let parsed = MermaidParser.parse(stripStateJSON(doc.content))
-        XCTAssertEqual(parsed.collapsedIds.count, 1, "%% collapsed ska läsas i fallback")
-        let parsedA = parsed.shapes.first { $0.label == "A" }
-        XCTAssertEqual(parsed.collapsedIds.first, parsedA?.id)
+        XCTAssertEqual(parsed.collapsedEdgeIds.count, 1, "%% e0 collapsed ska läsas i fallback")
+        XCTAssertEqual(parsed.collapsedEdgeIds.first, parsed.edges.first?.id,
+                       "Den kollapsade grenen ska vara just den kanten")
     }
 
     func testFallback_TabellOchLank() {

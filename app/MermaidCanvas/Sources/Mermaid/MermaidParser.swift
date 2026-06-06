@@ -10,7 +10,9 @@ enum MermaidParser {
         var specType: SpecType = .general
         var platform: Platform? = nil  // v27 — nil = härleds från specType vid replaceAll
         var activeShapePacks: Set<ShapePack>? = nil  // v27 — nil = härleds från specType
-        var collapsedIds: Set<UUID> = []
+        /// v63: kollapsade GRENAR (EdgeConnection-id:n). Gamla filer med
+        /// nod-kollaps migreras: alla nodens utgående kanter blir kollapsade.
+        var collapsedEdgeIds: Set<UUID> = []
     }
 
     static func parse(_ markdown: String) -> ParsedCanvas {
@@ -207,6 +209,7 @@ enum MermaidParser {
         }
 
         var edgeList: [EdgeConnection] = []
+        var collapsedEdgeSet: Set<UUID> = []
         for edge in edges {
             guard let fromMid = edge["from"] as? String,
                   let toMid = edge["to"] as? String,
@@ -236,17 +239,26 @@ enum MermaidParser {
             // v62: etikett-placering (default .below för gamla filer)
             let placementRaw = (edge["labelPlacement"] as? String) ?? ""
             let labelPlacement = EdgeLabelPlacement(rawValue: placementRaw) ?? .below
-            edgeList.append(EdgeConnection(from: fromId, to: toId, label: label,
+            let connection = EdgeConnection(from: fromId, to: toId, label: label,
                                             direction: direction, style: style,
                                             waypoints: waypoints,
-                                            labelPlacement: labelPlacement))
+                                            labelPlacement: labelPlacement,
+                                            colorHex: edge["color"] as? String)
+            // v63: kollaps per gren — flagga på kant-dicten
+            if (edge["collapsed"] as? Bool) == true {
+                collapsedEdgeSet.insert(connection.id)
+            }
+            edgeList.append(connection)
         }
 
-        // Parse collapsed-array (mermaidIds → UUIDs via idMap)
-        var collapsedSet: Set<UUID> = []
+        // v63-migration: gamla filer har "collapsed": [nod-mermaidId] →
+        // alla nodens utgående kanter blir kollapsade grenar.
         if let collapsedRaw = obj["collapsed"] as? [String] {
             for mid in collapsedRaw {
-                if let uuid = idMap[mid] { collapsedSet.insert(uuid) }
+                guard let uuid = idMap[mid] else { continue }
+                for e in edgeList where e.from == uuid {
+                    collapsedEdgeSet.insert(e.id)
+                }
             }
         }
 
@@ -265,7 +277,7 @@ enum MermaidParser {
         var result = ParsedCanvas(shapes: shapes,
                                   edges: edgeList,
                                   canvasSize: parsedCanvasSize,
-                                  collapsedIds: collapsedSet)
+                                  collapsedEdgeIds: collapsedEdgeSet)
         result.platform = parsedPlatform
         result.activeShapePacks = parsedPacks
         return result
@@ -405,14 +417,25 @@ enum MermaidParser {
             }
         }
 
-        // v62: `%% e<index> labelPlacement: above`-kommentarer (kant-index i emit-ordning)
+        // v62/v63: `%% e<index> nyckel: värde`-kommentarer (kant-index i emit-ordning)
         var edgePlacements: [Int: EdgeLabelPlacement] = [:]
-        if let regex = try? NSRegularExpression(pattern: #"%%\s+e(\d+)\s+labelPlacement:\s+(\w+)"#) {
+        var edgeColors: [Int: String] = [:]
+        var collapsedEdgeIndices: Set<Int> = []
+        if let regex = try? NSRegularExpression(pattern: #"%%\s+e(\d+)\s+(\w+):\s+(\S+)"#) {
             for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
-                where m.numberOfRanges >= 3 {
-                if let idx = Int(ns.substring(with: m.range(at: 1))),
-                   let placement = EdgeLabelPlacement(rawValue: ns.substring(with: m.range(at: 2))) {
-                    edgePlacements[idx] = placement
+                where m.numberOfRanges >= 4 {
+                guard let idx = Int(ns.substring(with: m.range(at: 1))) else { continue }
+                let key = ns.substring(with: m.range(at: 2))
+                let value = ns.substring(with: m.range(at: 3))
+                switch key {
+                case "labelPlacement":
+                    if let p = EdgeLabelPlacement(rawValue: value) { edgePlacements[idx] = p }
+                case "color":
+                    edgeColors[idx] = value
+                case "collapsed":
+                    if value == "true" { collapsedEdgeIndices.insert(idx) }
+                default:
+                    break  // waypoint hanteras ej i fallback (sedan tidigare)
                 }
             }
         }
@@ -445,7 +468,7 @@ enum MermaidParser {
         }
 
         var idMap: [String: UUID] = [:]
-        var collapsedSet: Set<UUID> = []
+        var legacyCollapsedShapeIds: Set<UUID> = []  // v63: migreras till grenar nedan
         var shapes: [ShapeNode] = nodes.map { n in
             let m = meta[n.mermaidId]
             let pos = m?.position ?? autoPositions[n.mermaidId] ?? CGPoint(x: 200, y: 320)
@@ -478,7 +501,7 @@ enum MermaidParser {
                 colorPackId: m?.packId,
                 lineEnd: lineEnd
             )
-            if m?.collapsed == true { collapsedSet.insert(shape.id) }
+            if m?.collapsed == true { legacyCollapsedShapeIds.insert(shape.id) }
             idMap[n.mermaidId] = shape.id
             return shape
         }
@@ -492,6 +515,7 @@ enum MermaidParser {
         }
 
         var edges: [EdgeConnection] = []
+        var collapsedEdges: Set<UUID> = []
         for (i, raw) in rawEdges.enumerated() {
             guard let from = idMap[raw.from], let to = idMap[raw.to] else { continue }
             // Bestäm riktning baserat på prefix/suffix
@@ -508,13 +532,23 @@ enum MermaidParser {
                 direction = .none
             }
             let dashed = raw.arrow.contains(".")
-            edges.append(EdgeConnection(from: from, to: to, label: raw.label,
-                                         direction: direction,
-                                         style: dashed ? .dashed : .solid,
-                                         labelPlacement: edgePlacements[i] ?? .below))
+            let connection = EdgeConnection(from: from, to: to, label: raw.label,
+                                            direction: direction,
+                                            style: dashed ? .dashed : .solid,
+                                            labelPlacement: edgePlacements[i] ?? .below,
+                                            colorHex: edgeColors[i])
+            // v63: kollaps per gren (index = rå-kantens ordning, samma som i:t ovan)
+            if collapsedEdgeIndices.contains(i) {
+                collapsedEdges.insert(connection.id)
+            }
+            edges.append(connection)
         }
 
-        return ParsedCanvas(shapes: shapes, edges: edges, collapsedIds: collapsedSet)
+        // v63-migration: gamla `%% <nod> collapsed` → nodens alla utgående grenar.
+        for e in edges where legacyCollapsedShapeIds.contains(e.from) {
+            collapsedEdges.insert(e.id)
+        }
+        return ParsedCanvas(shapes: shapes, edges: edges, collapsedEdgeIds: collapsedEdges)
     }
 
     /// v61: Skala bort nod-kroppar och kommentarer inför kant-parsning.

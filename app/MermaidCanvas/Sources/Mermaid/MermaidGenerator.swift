@@ -9,7 +9,7 @@ enum MermaidGenerator {
                          edges: [EdgeConnection],
                          canvasSize: CGSize = .zero,
                          specType: SpecType = .ui,
-                         collapsedIds: Set<UUID> = []) -> String {
+                         collapsedEdgeIds: Set<UUID> = []) -> String {
         guard !shapes.isEmpty else {
             // v32: bara header — inget diagnostiskt "Tom canvas"-meddelande som kan tolkas som fel.
             return "%%{init: {\"flowchart\": {\"curve\": \"basis\"}}}%%\nflowchart TD\n"
@@ -79,9 +79,6 @@ enum MermaidGenerator {
                 let r = shape.tableRows ?? 3
                 let c = shape.tableCols ?? 3
                 lines.append("\(indent)%% \(id) table: \(r)×\(c)")
-            }
-            if collapsedIds.contains(shape.id) {
-                lines.append("\(indent)%% \(id) collapsed")
             }
             // v23: textstil + färg-paket
             if shape.textStyle != .body {
@@ -236,6 +233,14 @@ enum MermaidGenerator {
             if edge.labelPlacement != .below {
                 lines.append("\(indent)%% e\(i) labelPlacement: \(edge.labelPlacement.rawValue)")
             }
+            // v63: pilens färg
+            if let hex = edge.colorHex {
+                lines.append("\(indent)%% e\(i) color: \(hex)")
+            }
+            // v63: kollaps per GREN (ersätter %% <nod> collapsed)
+            if collapsedEdgeIds.contains(edge.id) {
+                lines.append("\(indent)%% e\(i) collapsed: true")
+            }
         }
 
         if needsFrame {
@@ -262,7 +267,7 @@ enum MermaidGenerator {
                                 specType: SpecType = .ui,
                                 platform: Platform = .blank,
                                 activeShapePacks: Set<ShapePack> = [.basic],
-                                collapsedIds: Set<UUID> = []) -> String {
+                                collapsedEdgeIds: Set<UUID> = []) -> String {
         let mermaidIds = makeMermaidIds(for: shapes)
         let nodes: [[String: Any]] = shapes.map { shape in
             var n: [String: Any] = [
@@ -343,10 +348,16 @@ enum MermaidGenerator {
             if edge.labelPlacement != .below {
                 e["labelPlacement"] = edge.labelPlacement.rawValue
             }
+            // v63: pilens färg
+            if let hex = edge.colorHex {
+                e["color"] = hex
+            }
+            // v63: kollaps per gren — flagga PÅ kanten (ersätter "collapsed"-nod-arrayen)
+            if collapsedEdgeIds.contains(edge.id) {
+                e["collapsed"] = true
+            }
             return e
         }
-        let collapsedMermaidIds = collapsedIds.compactMap { mermaidIds[$0] }
-
         // iPhone-frame inom canvasen — så Claude exakt kan översätta
         // canvas-position till iPhone-screen-position.
         let iphoneRect = iPhoneFrameMath.frame(in: canvasSize)
@@ -378,9 +389,9 @@ enum MermaidGenerator {
             "nodes": nodes,
             "edges": edgeArr
         ]
-        if !collapsedMermaidIds.isEmpty {
-            dict["collapsed"] = collapsedMermaidIds
-        }
+        // v63: kollaps skrivs per kant ("collapsed": true på kant-dicten) —
+        // den gamla "collapsed"-nod-arrayen skrivs inte längre (parsern
+        // migrerar gamla filer vid läsning).
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
               let str = String(data: data, encoding: .utf8) else { return "{}" }
         return str

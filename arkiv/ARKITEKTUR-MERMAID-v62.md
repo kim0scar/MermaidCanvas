@@ -1,10 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v63
+# ARKITEKTUR-MERMAID — Version v62
 *Datum: 2026-06-06*
-
-> **v63:** pil = solid enhet med valbar färg (`EdgeConnection.colorHex`), kollaps PER GREN
-> (`collapsedEdgeIds`, migration från nod-kollaps), markeringshandtag utanför hörnen,
-> läs-badges (PromptBadge + NoteBadge → QuickReadSheet), kollaps-badges separerade.
-> Detaljer i ROADMAP.md.
 
 **Aktuell version:** v62 — Kims tre fynd från v61.2: (1) pilspetsar följer linjens
 faktiska riktning (bezier-tangent, inte sid-normal), (2) kant-etiketter kan placeras
