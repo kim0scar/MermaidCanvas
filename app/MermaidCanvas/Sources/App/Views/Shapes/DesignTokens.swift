@@ -15,6 +15,18 @@ import CoreGraphics
 /// **Källa:** https://github.com/microsoft/fluentui-apple/wiki/Design-Tokens
 enum DesignTokens {}
 
+// MARK: - Skärm-konstant storlek (v66)
+
+extension DesignTokens {
+    /// v66: storlek/offset i canvas-punkter som ser LIKA stor ut på skärmen
+    /// oavsett zoom (inom 0.5x–2.5x; utanför växer/krymper den mjukt så
+    /// ikoner aldrig exploderar relativt formerna). Ersätter de spridda
+    /// `max(a, b / canvasScale)`-uttrycken med EN princip.
+    static func screenPt(_ base: CGFloat, scale: CGFloat) -> CGFloat {
+        base / min(max(scale, 0.5), 2.5)
+    }
+}
+
 // MARK: - Shape tokens
 
 /// Form-rendering konstanter — används av BÅDE ToolbarView (chip) och

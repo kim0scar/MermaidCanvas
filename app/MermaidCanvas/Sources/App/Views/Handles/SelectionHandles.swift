@@ -12,9 +12,12 @@ struct SelectionHandles: View {
         let w = ShapeGeometry.width(for: shape)
         let h = ShapeGeometry.height(for: shape)
         let center = shape.position
-        let handleSize: CGFloat = max(24, 28 / canvasScale)
+        let handleSize: CGFloat = DesignTokens.screenPt(26, scale: canvasScale)
         let strokeWidth: CGFloat = max(1.5, 2.0 / canvasScale)
-        let rotationOffset: CGFloat = 48 / canvasScale
+        // v66: 48 → 20 (Kims fynd: rotera-ikonen "väldigt långt ut") — ligger
+        // nu i nivå med resize-handtagen. Diagonal placering behålls medvetet:
+        // centrerat ovanför skulle krocka med fromSide=top-pilens utgång.
+        let rotationOffset: CGFloat = DesignTokens.screenPt(20, scale: canvasScale)
 
         ZStack {
             // v50.5 v4 F8/F10: markeringsramen följer formens EGEN GEOMETRI
@@ -43,7 +46,7 @@ struct SelectionHandles: View {
     }
 
     /// v63: hur långt utanför formens hörn handtagens CENTRUM ligger.
-    private var handleMargin: CGFloat { max(14, 18 / canvasScale) }
+    private var handleMargin: CGFloat { DesignTokens.screenPt(16, scale: canvasScale) }
 
     // MARK: - Handle-views
 

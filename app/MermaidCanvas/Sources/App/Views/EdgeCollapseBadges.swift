@@ -9,10 +9,9 @@ struct EdgeStubBadge: View {
     var onTap: () -> Void
 
     var body: some View {
-        // v50.4: storlek + färg + stroke från DesignTokens — synkat med
-        // minus-badgen så de visuellt hänger ihop.
-        let size: CGFloat = max(DesignTokens.Badge.plusSize,
-                                (DesignTokens.Badge.plusSize + 2) / canvasScale)
+        // v66: skärm-konstant storlek (samma princip som övriga handtag).
+        let size: CGFloat = DesignTokens.screenPt(DesignTokens.Badge.plusSize,
+                                                  scale: canvasScale)
         Button(action: onTap) {
             Image(systemName: "plus")
                 .font(.system(size: size * 0.55, weight: .heavy))
@@ -39,9 +38,9 @@ struct EdgeStartCollapseBadge: View {
     var onTap: () -> Void
 
     var body: some View {
-        // v50.4: storlek + färg + stroke + shadow från DesignTokens.
-        let size: CGFloat = max(DesignTokens.Badge.minusSize,
-                                (DesignTokens.Badge.minusSize + 2) / canvasScale)
+        // v66: skärm-konstant storlek (samma princip som övriga handtag).
+        let size: CGFloat = DesignTokens.screenPt(DesignTokens.Badge.minusSize,
+                                                  scale: canvasScale)
         Button(action: onTap) {
             Image(systemName: "minus")
                 .font(.system(size: size * 0.55, weight: .heavy))

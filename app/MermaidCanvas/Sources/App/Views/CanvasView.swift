@@ -379,9 +379,8 @@ struct ConnectionHandles: View {
     var body: some View {
         let w = ShapeGeometry.width(for: shape)
         let h = ShapeGeometry.height(for: shape)
-        // v50.2 F-3: matcha resize-handles storlek (28pt) — tydligare och
-        // mer touch-vänliga.
-        let size: CGFloat = max(24, 28 / canvasScale)
+        // v66: skärm-konstant storlek (DesignTokens.screenPt) som övriga handtag.
+        let size: CGFloat = DesignTokens.screenPt(26, scale: canvasScale)
         let gap: CGFloat = size / 2 + 10 / canvasScale
         handle(offset: CGPoint(x: w/2 + gap, y: 0), icon: "arrow.right",
                accId: "connection.handle.right", size: size)
@@ -1027,25 +1026,17 @@ struct EdgesView: View {
                                       canvasScale: canvasScale,
                                       onTap: { onToggleCollapseEdge(edge.id) })
                     } else if isFromSelected, !hiddenShapeIds.contains(edge.to) {
-                        let from = edgePoint(for: fromShape, towards: toShape.position)
-                        let cdx = toShape.position.x - fromShape.position.x
-                        let cdy = toShape.position.y - fromShape.position.y
-                        let clen = hypot(cdx, cdy)
-                        let badgePos: CGPoint = {
-                            guard clen > 0.1 else { return from }
-                            // v50.5 F11: 55pt min, 40% av pil-längd, cap 80pt längs pilen.
-                            let offset = max(55, min(80, clen * 0.40))
-                            let dxU = cdx / clen
-                            let dyU = cdy / clen
-                            // v63: + 16pt VINKELRÄTT från linjen så badgen inte
-                            // ligger på midpoint-ikonen (som sitter PÅ linjen).
-                            let perp: CGFloat = 16
-                            return CGPoint(x: from.x + dxU * offset - dyU * perp,
-                                           y: from.y + dyU * offset + dxU * perp)
-                        }()
-                        EdgeStartCollapseBadge(position: badgePos,
-                                               canvasScale: canvasScale,
-                                               onTap: { onToggleCollapseEdge(edge.id) })
+                        // v66: minus-badgen knyts till den FAKTISKA kurvans mitt
+                        // (samma anchors som midpoint-ikonen) och läggs 24pt
+                        // VINKELRÄTT — uppåt, eller nedåt om etiketten står ovanför.
+                        // Ersätter längs-pilen-offseten som klustrade med mitt-ikonen
+                        // på korta pilar (Kims fynd, skärmdump A).
+                        EdgeStartCollapseBadge(
+                            position: minusBadgePosition(edge: edge,
+                                                         fromShape: fromShape,
+                                                         toShape: toShape),
+                            canvasScale: canvasScale,
+                            onTap: { onToggleCollapseEdge(edge.id) })
                     }
                 }
             }
@@ -1068,6 +1059,22 @@ struct EdgesView: View {
                 )
             }
         }
+    }
+
+    /// v66: minus-badgens position — 24pt vinkelrätt från kurvans mitt
+    /// (uppåt på skärmen; nedåt om etiketten står ovanför).
+    private func minusBadgePosition(edge: EdgeConnection,
+                                    fromShape: ShapeNode,
+                                    toShape: ShapeNode) -> CGPoint {
+        let anchors = edgeAnchors(edge: edge, fromShape: fromShape, toShape: toShape)
+        let perpA = anchors.midAngle + .pi / 2
+        var px = CGFloat(cos(perpA))
+        var py = CGFloat(sin(perpA))
+        if py > 0 { px = -px; py = -py }                 // peka uppåt på skärmen
+        if edge.labelPlacement == .above, !edge.label.isEmpty {
+            px = -px; py = -py                           // etikett ovanför → minus under
+        }
+        return CGPoint(x: anchors.mid.x + px * 24, y: anchors.mid.y + py * 24)
     }
 
     @ViewBuilder
@@ -1106,7 +1113,7 @@ struct EdgesView: View {
             }
             return anchors.midAngle
         }()
-        let size: CGFloat = max(14, 18 / canvasScale)
+        let size: CGFloat = DesignTokens.screenPt(16, scale: canvasScale)
         let label = edge.wrappedValue.label
         // Handle
         ZStack {
@@ -1305,17 +1312,14 @@ struct EdgesView: View {
             end   = edgePoint(for: toShape,   towards: fromShape.position)
         }
 
-        // Bezier-kontrollpunkter baserade på ytornas normalvektorer (Lucidchart-stil)
+        // Bezier-kontrollpunkter baserade på ytornas normalvektorer (Lucidchart-stil).
+        // v66: delad vinkelmedveten matte (EdgeMath) — rund båge även när
+        // fromSide-normalen pekar bort från målet.
         let n1 = outwardNormal(for: fromShape, at: start)
         let n2 = outwardNormal(for: toShape,   at: end)
-        let dist    = hypot(end.x - start.x, end.y - start.y)
-        // v50 F-04: minskad från 0.42 → 0.18 så diagonala pilar blir mer raka.
-        // Lucidchart-böjning kvar för horisontella/vertikala (där normal och dir
-        // är parallella) men dämpad för diagonala (där normal är vinkelrät mot
-        // dir → ger annars en kraftig S-kurva).
-        let tension = min(dist * 0.18, 60)
-        var cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
-        var cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
+        let cps = EdgeMath.controlPoints(start: start, end: end, n1: n1, n2: n2)
+        var cp1 = cps.cp1
+        var cp2 = cps.cp2
 
         // v43: D5 — routa runt obstacles (andra former som ligger i vägen).
         // Bara aktivt när användaren inte själv satt waypoint (waypoint = manuell routing).
@@ -1574,14 +1578,11 @@ struct EdgesView: View {
         }
         let n1 = outwardNormal(for: fromShape, at: start)
         let n2 = outwardNormal(for: toShape,   at: end)
-        let dist    = hypot(end.x - start.x, end.y - start.y)
-        // v50 F-04: minskad från 0.42 → 0.18 så diagonala pilar blir mer raka.
-        // Lucidchart-böjning kvar för horisontella/vertikala (där normal och dir
-        // är parallella) men dämpad för diagonala (där normal är vinkelrät mot
-        // dir → ger annars en kraftig S-kurva).
-        let tension = min(dist * 0.18, 60)
-        var cp1 = CGPoint(x: start.x + n1.x * tension, y: start.y + n1.y * tension)
-        var cp2 = CGPoint(x: end.x   + n2.x * tension, y: end.y   + n2.y * tension)
+        // v66: SAMMA delade matte som drawEdge — annars hamnar midpoint-handtaget
+        // bredvid den synliga kurvan.
+        let cps = EdgeMath.controlPoints(start: start, end: end, n1: n1, n2: n2)
+        var cp1 = cps.cp1
+        var cp2 = cps.cp2
         if edge.waypoints.isEmpty {
             let obstacleBboxes: [CGRect] = shapes.compactMap { obstacle in
                 guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }

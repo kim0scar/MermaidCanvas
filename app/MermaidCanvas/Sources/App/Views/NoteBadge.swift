@@ -7,8 +7,9 @@ struct NoteBadge: View {
     var onTap: () -> Void
 
     var body: some View {
-        let visual: CGFloat = max(18, 22 / canvasScale)
-        let hit: CGFloat = max(30, 36 / canvasScale)
+        // v66: mindre + skärm-konstant (Kims fynd: "för stora och i vägen")
+        let visual: CGFloat = DesignTokens.screenPt(15, scale: canvasScale)
+        let hit: CGFloat = DesignTokens.screenPt(30, scale: canvasScale)
         Button(action: onTap) {
             ZStack {
                 Color.clear.frame(width: hit, height: hit) // utvidgad tap-target
