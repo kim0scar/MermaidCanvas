@@ -2,7 +2,24 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v61.1 (deployad till iPhone)
+## Aktuell version: v61.2 (deployad till iPhone)
+
+*Tema:* Skill-kedjor — slutmålet: rita flöde → kedja av Claude Code-skills
+
+**v61.2:**
+- **Parser: subgraph-medlemskap → `childOfContainerId` i fallback.** Utan den såg
+  edge-routingen containern som hinder för barnens pilar → pilarna svepte långt åt
+  sidan. Nu raka pilar genom container-gränser. Test: `V61KedjeFilTests` (68/68 gröna).
+- **Nytt koncept levererat + testat på riktigt:**
+  - `SKILL-KEDJA-KONTRAKT.md` — container = skill, violett memory-nod = överlämnings-fil,
+    prompt per nod = subagent-instruktion.
+  - Skill `~/.claude/skills/flode/` — "kör flödet X" / "bygg skills av flödet".
+  - Referens-kedja `morgonkoll-flode.md` (iCloud): mejl-svep → steg1-mejl.md →
+    sammanfatta → steg2-sammanfattning.md → rapport → svar i chatten.
+  - **E2E-körd på riktigt:** 20 Gmail-trådar → 3 filer i `morgonkoll/` → färdig
+    morgonrapport. Visuellt verifierad i simulatorn (screenshots).
+
+## v61.1 (deployad till iPhone)
 
 *Tema:* Öppna-fil-buggen Kim hittade — vyn centrerar nu på innehållet
 

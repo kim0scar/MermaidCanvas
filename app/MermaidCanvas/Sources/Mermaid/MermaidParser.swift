@@ -407,9 +407,28 @@ enum MermaidParser {
             edges: rawEdges.map { (from: $0.from, to: $0.to) },
             direction: flowDirection)
 
+        // v61.2: subgraph-medlemskap — noder deklarerade mellan `subgraph X` och `end`
+        // är containerns barn. Utan detta ser edge-routingen containern som hinder
+        // för barnens pilar (pilarna routas långt åt sidan).
+        var membership: [String: String] = [:]   // nod-id → container-id
+        var currentContainer: String? = nil
+        for rawLine in block.split(separator: "\n", omittingEmptySubsequences: true) {
+            let line = rawLine.trimmingCharacters(in: .whitespaces)
+            if line.hasPrefix("subgraph") {
+                let rest = line.dropFirst("subgraph".count).trimmingCharacters(in: .whitespaces)
+                let id = rest.prefix { $0.isLetter || $0.isNumber || $0 == "_" }
+                currentContainer = id.isEmpty ? nil : String(id)
+                continue
+            }
+            if line == "end" { currentContainer = nil; continue }
+            guard let container = currentContainer, !line.hasPrefix("%%") else { continue }
+            let nodeId = line.prefix { $0.isLetter || $0.isNumber || $0 == "_" }
+            if !nodeId.isEmpty { membership[String(nodeId)] = container }
+        }
+
         var idMap: [String: UUID] = [:]
         var collapsedSet: Set<UUID> = []
-        let shapes: [ShapeNode] = nodes.map { n in
+        var shapes: [ShapeNode] = nodes.map { n in
             let m = meta[n.mermaidId]
             let pos = m?.position ?? autoPositions[n.mermaidId] ?? CGPoint(x: 200, y: 320)
             // line-end skrivs absolut av generatorn → tillbaka till relativ offset
@@ -443,6 +462,14 @@ enum MermaidParser {
             if m?.collapsed == true { collapsedSet.insert(shape.id) }
             idMap[n.mermaidId] = shape.id
             return shape
+        }
+
+        // v61.2: andra-pass — koppla barnen till sina containrar (idMap är nu komplett)
+        for (i, n) in nodes.enumerated() {
+            guard let containerMid = membership[n.mermaidId],
+                  let parentUUID = idMap[containerMid],
+                  parentUUID != shapes[i].id else { continue }
+            shapes[i].childOfContainerId = parentUUID
         }
 
         var edges: [EdgeConnection] = []

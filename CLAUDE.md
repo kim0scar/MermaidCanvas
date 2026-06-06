@@ -86,7 +86,8 @@ Användarens canvas-filer ligger i:
 | `PRODUKT.md` | VARFÖR och VAD: vision, scope, vad som hör/inte hör hemma |
 | `MERMAID-FAKTA.md` | Blueprint för Mermaid: syntax, fallgropar, rendering, parsing, best practices |
 | `METOD-VISUELL-DIALOG.md` | Protokoll för delat visuellt språk Kim ↔ Claude Code. Portabel — gäller alla projekt med visuell yta. |
-| `N8N-FLODE-KONTRAKT.md` | Hur ett ritat flöde (`spec_type: flow`) blir n8n-workflow eller skill — entydigt, utan gissningar |
+| `N8N-FLODE-KONTRAKT.md` | Hur ett ritat flöde (`spec_type: flow`) blir n8n-workflow — entydigt, utan gissningar |
+| `SKILL-KEDJA-KONTRAKT.md` | Hur ett ritat flöde blir en KEDJA av Claude Code-skills (container=skill, memory-nod=överlämnings-fil). Körs via skillen `flode`. |
 | `VERSIONSHANTERING.md` | Exakt checklista vid varje deploy / ny version |
 | `ARKITEKTUR-MERMAID.md` | Aktuell arkitektur: mermaid-diagram + fil-tabell |
 | `BLUEPRINT.md` | **Komplett fil-index** + modul-ansvar + skalbarhetsprinciper + v39 feature-kluster |
