@@ -18,6 +18,8 @@ struct LägenMenu: View {
     var onToggleMarker: () -> Void
     /// v37: importera Mermaid-kod från AI.
     var onImportMermaid: () -> Void
+    /// v66: visa/dölj legend-panelen på canvasen.
+    var onToggleLegend: () -> Void = {}
 
     /// v51.2: speglar valt skärmläge för bock-markering.
     @AppStorage(OrientationStore.key) private var orientationMode: String = OrientationMode.portrait.rawValue
@@ -61,6 +63,11 @@ struct LägenMenu: View {
                 Label("Kopiera Mermaid-kod", systemImage: "doc.on.doc")
             }
             .accessibilityIdentifier("menu.copyCode")
+            // v66: legend — skriv vad varje form/kategori betyder (följer med i koden)
+            Button { onToggleLegend() } label: {
+                Label("Legend", systemImage: "list.bullet.rectangle")
+            }
+            .accessibilityIdentifier("menu.legend")
             Divider()
             // v51.2: skärmläge porträtt/landskap (äkta orientering)
             Menu {

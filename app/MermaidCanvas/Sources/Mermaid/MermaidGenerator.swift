@@ -9,7 +9,8 @@ enum MermaidGenerator {
                          edges: [EdgeConnection],
                          canvasSize: CGSize = .zero,
                          specType: SpecType = .ui,
-                         collapsedEdgeIds: Set<UUID> = []) -> String {
+                         collapsedEdgeIds: Set<UUID> = [],
+                         legend: [String: String] = [:]) -> String {
         guard !shapes.isEmpty else {
             // v32: bara header — inget diagnostiskt "Tom canvas"-meddelande som kan tolkas som fel.
             return "%%{init: {\"flowchart\": {\"curve\": \"basis\"}}}%%\nflowchart TD\n"
@@ -251,6 +252,16 @@ enum MermaidGenerator {
             lines.append("    end")
         }
 
+        // v66: legend — Kims förklaring av vad varje kategori betyder.
+        // Läsbar för Claude direkt i mermaid-blocket.
+        let legendKeys = legend.keys.sorted()
+        if !legendKeys.isEmpty {
+            lines.append("")
+            for key in legendKeys where !(legend[key] ?? "").isEmpty {
+                lines.append("    %% legend \(key): \(oneLine(legend[key]!))")
+            }
+        }
+
         // classDef per använd kategori + text-class + frame-class.
         let used = Set(shapes.map { $0.category })
         lines.append("")
@@ -271,7 +282,8 @@ enum MermaidGenerator {
                                 specType: SpecType = .ui,
                                 platform: Platform = .blank,
                                 activeShapePacks: Set<ShapePack> = [.basic],
-                                collapsedEdgeIds: Set<UUID> = []) -> String {
+                                collapsedEdgeIds: Set<UUID> = [],
+                                legend: [String: String] = [:]) -> String {
         let mermaidIds = makeMermaidIds(for: shapes)
         let nodes: [[String: Any]] = shapes.map { shape in
             var n: [String: Any] = [
@@ -400,9 +412,47 @@ enum MermaidGenerator {
         // v63: kollaps skrivs per kant ("collapsed": true på kant-dicten) —
         // den gamla "collapsed"-nod-arrayen skrivs inte längre (parsern
         // migrerar gamla filer vid läsning).
+        // v66: legend (kategori → Kims betydelse-text)
+        if !legend.isEmpty {
+            dict["legend"] = legend
+        }
         guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
               let str = String(data: data, encoding: .utf8) else { return "{}" }
         return str
+    }
+
+    /// v66: mermaid för EN skill — containern + dess barn (modellens EXPLICITA
+    /// childOfContainerId-koppling, inte positions-gissning) + interna kanter +
+    /// memory-noder som hänger i kanten (= skillens input-/output-filer enligt
+    /// SKILL-KEDJA-KONTRAKT). Resultatet är självbärande mermaid, redo att
+    /// klistras in hos Claude Code. Nästlade containrar stöds inte (v1).
+    static func generateForContainer(containerId: UUID,
+                                     shapes: [ShapeNode],
+                                     edges: [EdgeConnection],
+                                     legend: [String: String] = [:]) -> String {
+        var ids = Set<UUID>([containerId])
+        for s in shapes where s.childOfContainerId == containerId {
+            ids.insert(s.id)
+        }
+        var subsetEdges: [EdgeConnection] = []
+        for e in edges {
+            let fromIn = ids.contains(e.from)
+            let toIn = ids.contains(e.to)
+            if fromIn && toIn {
+                subsetEdges.append(e)
+            } else if fromIn || toIn {
+                // kant ut/in: ta med ENDAST om andra änden är en memory-nod
+                let otherId = fromIn ? e.to : e.from
+                if let other = shapes.first(where: { $0.id == otherId }),
+                   other.category == .memory {
+                    ids.insert(otherId)
+                    subsetEdges.append(e)
+                }
+            }
+        }
+        let subsetShapes = shapes.filter { ids.contains($0.id) }
+        return generate(shapes: subsetShapes, edges: subsetEdges,
+                        specType: .flow, legend: legend)
     }
 
     // MARK: - Privata helpers

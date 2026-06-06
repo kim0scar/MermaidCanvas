@@ -66,6 +66,18 @@ containernamnet.
 
 Kim kan kopiera BARA en container (med sina noder) — då körs/byggs bara den skillen.
 Memory-noder i kanten av urklippet tolkas som skillens input-/output-filer.
+**v66:** appen har knappen för detta — tryck-håll en container → **"Kopiera som skill"**
+ger exakt den delmängden (container + barn + memory-noder i kanten) som självbärande mermaid.
+
+## Regler som låstes i v66
+
+- **Prompt vs anteckning:** nodens `prompt` är subagent-instruktionen och ingår i skillen.
+  Nodens `note` (anteckning) är Kims egen kommentar — den round-trippar i mermaid
+  (`%% id note:`) men ingår ALDRIG i skill-prompten.
+- **En skill = EN container.** Nästlade containrar (skill-i-skill) stöds inte i v1.
+- **Pilar går nod → nod, aldrig till/från själva containern.** Containern är skill-GRÄNSEN.
+- **Legend:** `%% legend <kategori>: <text>`-rader i mermaid-blocket är Kims förklaring
+  av vad varje form/kategori betyder — läs dem som kontext, de är inte noder.
 
 ---
 

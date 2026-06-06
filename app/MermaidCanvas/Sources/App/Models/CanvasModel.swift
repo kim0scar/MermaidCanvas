@@ -40,6 +40,9 @@ final class CanvasModel: ObservableObject {
     /// v63: kollaps är PER GREN (kant-id), inte per nod — Kims fynd: minus-badgen
     /// på en pil kollapsade alla beroendepilar från samma symbol.
     @Published var collapsedEdgeIds: Set<UUID> = []
+    /// v66: legend — kategori-rawValue → Kims betydelse-text. Round-trippar
+    /// via state-JSON + %% legend-rader.
+    @Published var legend: [String: String] = [:]
 
     // v34: canvas är fast 4000×4000 — kvadratisk vit yta. UIScrollView hanterar
     // pan/zoom symmetriskt. Inga dynamiska expansioner (Kim valde fast storlek).
@@ -772,10 +775,12 @@ final class CanvasModel: ObservableObject {
                     specType: SpecType = .general,
                     platform: Platform? = nil,
                     activeShapePacks: Set<ShapePack>? = nil,
-                    collapsedEdgeIds: Set<UUID> = []) {
+                    collapsedEdgeIds: Set<UUID> = [],
+                    legend: [String: String] = [:]) {
         self.shapes = shapes
         self.edges = edges
         self.canvasTitle = title
+        self.legend = legend
         self.specType = specType
         // v27: härled platform + packs från fil, eller härled från legacy specType.
         if let p = platform {

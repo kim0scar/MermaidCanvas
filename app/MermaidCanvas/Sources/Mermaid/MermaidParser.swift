@@ -13,6 +13,8 @@ enum MermaidParser {
         /// v63: kollapsade GRENAR (EdgeConnection-id:n). Gamla filer med
         /// nod-kollaps migreras: alla nodens utgående kanter blir kollapsade.
         var collapsedEdgeIds: Set<UUID> = []
+        /// v66: legend — kategori-rawValue → Kims betydelse-text.
+        var legend: [String: String] = [:]
     }
 
     static func parse(_ markdown: String) -> ParsedCanvas {
@@ -33,6 +35,21 @@ enum MermaidParser {
         }
         if let packs = frontmatter.shapePacks {
             result.activeShapePacks = packs
+        }
+        // v66: legend — läs från state-JSON eller %% legend-rader (fallback)
+        if result.legend.isEmpty {
+            if let regex = try? NSRegularExpression(
+                pattern: #"%%\s+legend\s+(\w+):\s+(.+)"#) {
+                let ns = markdown as NSString
+                for m in regex.matches(in: markdown,
+                                       range: NSRange(location: 0, length: ns.length))
+                    where m.numberOfRanges >= 3 {
+                    let key = ns.substring(with: m.range(at: 1))
+                    let text = ns.substring(with: m.range(at: 2))
+                        .trimmingCharacters(in: .whitespaces)
+                    result.legend[key] = text
+                }
+            }
         }
         // v66-migrering: linjer/pilar äger nu sin längd via lineEnd DIREKT
         // (ändpunkts-handtag). Gamla filer skalade lineEnd med multipliers vid
@@ -295,6 +312,10 @@ enum MermaidParser {
                                   collapsedEdgeIds: collapsedEdgeSet)
         result.platform = parsedPlatform
         result.activeShapePacks = parsedPacks
+        // v66: legend ur state-JSON
+        if let lg = obj["legend"] as? [String: String] {
+            result.legend = lg
+        }
         return result
     }
 

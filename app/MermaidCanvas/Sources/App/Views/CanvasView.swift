@@ -81,6 +81,8 @@ struct CanvasView: View {
     /// v63: snabbläsning (badges på formen)
     var onShapeQuickRead: (UUID) -> Void
     var onTableEdit: (UUID) -> Void
+    /// v66: kopiera container som skill-mermaid till urklipp
+    var onCopySkill: (UUID) -> Void = { _ in }
 
     /// v25: rapporterar zoom-procent uppåt till toolbar
     @Binding var zoomPercent: Int
@@ -270,7 +272,8 @@ struct CanvasView: View {
                             } else {
                                 model.assignContainerForShape(id)
                             }
-                        }
+                        },
+                        onCopySkill: { id in onCopySkill(id) }
                     )
                     // v60 D: containrar ritas UNDER övriga former (barn fångar då inte
                     // containerns tap → namnbyte funkar; barn ligger visuellt ovanpå).
@@ -471,6 +474,8 @@ struct ShapeView: View {
     /// CanvasModel använder detta för att (om)tilldela `childOfContainerId` baserat på
     /// var formen landade.
     var onDragEnded: ((UUID) -> Void)? = nil
+    /// v66: kopiera container som skill-mermaid (bara containrar visar valet).
+    var onCopySkill: ((UUID) -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
@@ -623,7 +628,11 @@ struct ShapeView: View {
                 onEdit:      { showContextMenu = false; onEdit() },
                 onDuplicate: { showContextMenu = false; onDuplicate() },
                 onShowNote:  { showContextMenu = false; onShowNote() },
-                onDelete:    { showContextMenu = false; onDelete() }
+                onDelete:    { showContextMenu = false; onDelete() },
+                // v66: containrar kan kopieras som skill-mermaid
+                onCopySkill: shape.type == .container && onCopySkill != nil
+                    ? { showContextMenu = false; onCopySkill?(shape.id) }
+                    : nil
             )
             .presentationCompactAdaptation(.popover)
         }

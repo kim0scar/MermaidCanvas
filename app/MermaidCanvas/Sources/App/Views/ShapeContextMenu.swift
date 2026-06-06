@@ -11,6 +11,9 @@ struct ShapeContextMenu: View {
     let onDuplicate: () -> Void
     let onShowNote: () -> Void
     let onDelete: () -> Void
+    /// v66: bara för containrar — kopiera containern + barn + memory-noder
+    /// som självbärande mermaid (= EN skill enligt SKILL-KEDJA-KONTRAKT).
+    var onCopySkill: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -23,6 +26,11 @@ struct ShapeContextMenu: View {
             menuItem(label: noteIsEmpty ? "Lägg till anteckning" : "Visa anteckning",
                      systemImage: "note.text",
                      action: onShowNote)
+            if let copySkill = onCopySkill {
+                menuItem(label: "Kopiera som skill",
+                         systemImage: "square.and.arrow.up.on.square",
+                         action: copySkill)
+            }
             Divider().padding(.vertical, 4)
             menuItem(label: "Ta bort",
                      systemImage: "trash",

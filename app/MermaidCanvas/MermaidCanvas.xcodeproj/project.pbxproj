@@ -59,6 +59,7 @@
 		695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
 		6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */; };
 		6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */; };
+		6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B25CF04C2CA057CD0366B64 /* LegendPanel.swift */; };
 		6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969A68524F5A084A0839C4 /* DesignTokens.swift */; };
 		7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
@@ -83,6 +84,7 @@
 		A19DDD2B88B0271AFC397977 /* V65AutosparTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94D1AD9EBC06C41E7947C6F /* V65AutosparTests.swift */; };
 		A2D61FC3A2523D993BA72AE5 /* V46ExplorationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5958A7631F79A8FEB1B4108 /* V46ExplorationTest.swift */; };
 		A38386D414ADEA42388208A5 /* SelectionOutline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0807039C26319F36B77EEE0 /* SelectionOutline.swift */; };
+		AAB0E0E7D081504E0AA7159C /* V66LegendSkillTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B998AE460F35BAB33C5F354 /* V66LegendSkillTests.swift */; };
 		AB13E7A8AB6650E6F31CD1ED /* test_processarrow_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = A41F5BB86AF1A189F4D59116 /* test_processarrow_chip.1.png */; };
 		AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */; };
 		ACAD3D1912FDDEC2BB523429 /* V35BugHuntTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE1EFE7C5FDD982C0043924 /* V35BugHuntTests.swift */; };
@@ -219,8 +221,10 @@
 		75DBE1118CB6B8E7AD3B7E51 /* CanvasFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasFileManager.swift; sourceTree = "<group>"; };
 		773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidGenerator.swift; sourceTree = "<group>"; };
 		7AEE1B1C74B79EB4BCC084BF /* test_square_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_square_chip.1.png; sourceTree = "<group>"; };
+		7B25CF04C2CA057CD0366B64 /* LegendPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegendPanel.swift; sourceTree = "<group>"; };
 		7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndToEndTests.swift; sourceTree = "<group>"; };
 		7B7282ECFED87095333BB0D4 /* LägenMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LägenMenu.swift"; sourceTree = "<group>"; };
+		7B998AE460F35BAB33C5F354 /* V66LegendSkillTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V66LegendSkillTests.swift; sourceTree = "<group>"; };
 		7CA0633D9D062EB58932AA78 /* V61KedjeFilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V61KedjeFilTests.swift; sourceTree = "<group>"; };
 		7DA70C2BF0320E293B5E247C /* test_pill_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_pill_shape.1.png; sourceTree = "<group>"; };
 		7DE1EFE7C5FDD982C0043924 /* V35BugHuntTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V35BugHuntTests.swift; sourceTree = "<group>"; };
@@ -341,6 +345,7 @@
 				7551766C6C334EDA0CFD664E /* EditShapeSheet.swift */,
 				246DAEE1890CEA36F3801363 /* EmptyCanvasHint.swift */,
 				EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */,
+				7B25CF04C2CA057CD0366B64 /* LegendPanel.swift */,
 				7B7282ECFED87095333BB0D4 /* LägenMenu.swift */,
 				55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */,
 				20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */,
@@ -508,6 +513,7 @@
 				B94D1AD9EBC06C41E7947C6F /* V65AutosparTests.swift */,
 				EEE97DAAFD2C7BA329CC359D /* V65SkrapFlodeTests.swift */,
 				4ABF8F505A711743DBEECEB3 /* V66EdgeMathTests.swift */,
+				7B998AE460F35BAB33C5F354 /* V66LegendSkillTests.swift */,
 				2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */,
 				C27B478DB8B95307D57B1E0C /* __Snapshots__ */,
 			);
@@ -762,6 +768,7 @@
 				37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */,
 				04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */,
 				9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */,
+				6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */,
 				F74E2839E386F7AEC63A00F6 /* LineEndpointHandle.swift in Sources */,
 				B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */,
 				D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */,
@@ -824,6 +831,7 @@
 				A19DDD2B88B0271AFC397977 /* V65AutosparTests.swift in Sources */,
 				96DD3B025BE13643B58A0113 /* V65SkrapFlodeTests.swift in Sources */,
 				ECDE8A92B9B87918ED9D5206 /* V66EdgeMathTests.swift in Sources */,
+				AAB0E0E7D081504E0AA7159C /* V66LegendSkillTests.swift in Sources */,
 				C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -47,6 +47,8 @@ struct ToolbarView: View {
     var onShowNotePopup: () -> Void
     /// v37: importera Mermaid från AI.
     var onImportMermaid: () -> Void
+    /// v66: visa/dölj legend-panelen
+    var onToggleLegend: () -> Void = {}
     /// v39: multi-select-operationer
     var onDuplicateSelection: () -> Void
     var onDeleteSelection: () -> Void
@@ -121,7 +123,8 @@ struct ToolbarView: View {
                 onCopyCode: onCopyCode,
                 onShowRules: onShowRules,
                 onToggleMarker: onToggleMarker,
-                onImportMermaid: onImportMermaid
+                onImportMermaid: onImportMermaid,
+                onToggleLegend: onToggleLegend
             )
         }
     }

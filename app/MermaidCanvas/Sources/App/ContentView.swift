@@ -51,6 +51,8 @@ struct ContentView: View {
     @State private var tableEditingShapeId: UUID? = nil
     /// v50.4: visa Component Gallery (debug/visuell verifiering)
     @State private var showComponentGallery: Bool = false
+    /// v66: legend-panelen på canvasen
+    @State private var showLegend: Bool = false
 
     // v60: extraherade vyer för adaptiv layout (porträtt topp-bar / landskap vänster-sidebar).
     private func toolbarView(vertical: Bool) -> some View {
@@ -78,6 +80,7 @@ struct ContentView: View {
             onResetZoom: { resetZoomTrigger &+= 1 },
             onShowNotePopup: { showNotePopup = true },
             onImportMermaid: { showMermaidImport = true },
+            onToggleLegend: { showLegend.toggle() },
             onDuplicateSelection: { model.duplicateSelection() },
             onDeleteSelection: { model.deleteSelection() },
             onAlignHorizontal: { model.alignSelectionHorizontally() },
@@ -106,6 +109,15 @@ struct ContentView: View {
                 }
             },
             onTableEdit: { id in tableEditingShapeId = id },
+            // v66: kopiera container + barn + memory-noder som skill-mermaid
+            onCopySkill: { id in
+                UIPasteboard.general.string = MermaidGenerator.generateForContainer(
+                    containerId: id,
+                    shapes: model.shapes,
+                    edges: model.edges,
+                    legend: model.legend)
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            },
             zoomPercent: $zoomPercent,
             resetZoomTrigger: resetZoomTrigger,
             centerOnPoint: $centerOnPoint
@@ -149,6 +161,19 @@ struct ContentView: View {
                     .position(chipDragState.globalLocation)
                     .allowsHitTesting(false)
                     .transition(.scale.combined(with: .opacity))
+            }
+
+            // v66: legend-panel (nere till vänster) — togglas via Lägen-menyn
+            if showLegend {
+                VStack {
+                    Spacer()
+                    HStack {
+                        LegendPanel(model: model, onClose: { showLegend = false })
+                            .padding(.leading, 12)
+                            .padding(.bottom, 18)
+                        Spacer()
+                    }
+                }
             }
         }
         .onAppear {
@@ -354,7 +379,8 @@ struct ContentView: View {
                          specType: parsed.specType,
                          platform: parsed.platform,
                          activeShapePacks: parsed.activeShapePacks,
-                         collapsedEdgeIds: parsed.collapsedEdgeIds)
+                         collapsedEdgeIds: parsed.collapsedEdgeIds,
+                         legend: parsed.legend)
         if let size = parsed.canvasSize { model.canvasSize = size }
         // v65: baslinje för ändrings-koll — genererat innehåll direkt efter öppning
         contentAtOpen = makeDocument().content
@@ -372,7 +398,8 @@ struct ContentView: View {
                          specType: parsed.specType,
                          platform: parsed.platform,
                          activeShapePacks: parsed.activeShapePacks,
-                         collapsedEdgeIds: parsed.collapsedEdgeIds)
+                         collapsedEdgeIds: parsed.collapsedEdgeIds,
+                         legend: parsed.legend)
         if let size = parsed.canvasSize { model.canvasSize = size }
         // v65: extern skrivning (Claude/iCloud) = ny baslinje för ändrings-kollen
         contentAtOpen = makeDocument().content
@@ -449,7 +476,8 @@ struct ContentView: View {
             specType: model.specType,
             platform: model.platform,
             activeShapePacks: model.activeShapePacks,
-            collapsedEdgeIds: model.collapsedEdgeIds
+            collapsedEdgeIds: model.collapsedEdgeIds,
+            legend: model.legend
         )
     }
 
