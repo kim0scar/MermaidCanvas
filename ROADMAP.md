@@ -2,7 +2,24 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v63 (deployad till iPhone)
+## Aktuell version: v64
+
+*Tema:* mindre röra runt formerna — Kims fynd från v63-granskningen
+
+**v64 (sim-bevisad med screenshot, scenario 35):**
+1. **ETT connection-handtag** (ersätter de fyra): sitter i högerkanten på vald form.
+   Pilen får automatiskt närmaste utgångssida — mindre ikon-röra.
+2. **Valbar utgångssida:** nytt fält `EdgeConnection.fromSide` (top/right/bottom/left,
+   nil = automatisk). Ändras i pilens meny (tryck-håll mitt-ikonen → "Går ut från").
+   Round-trippar: state-JSON `fromSide` + `%% e<i> fromSide:`. Rotations-medveten
+   (`sidePoint` i CanvasView).
+3. **Tydliga läs-ikoner:** prompt = hjärn-IKON i indigo-cirkel, anteckning = text-IKON
+   i gul cirkel (prickarna i v63 var för dolda). Större (18–22pt) + större tap-yta.
+- UI-test-helpern `handleTowardCircle` förenklad (bara höger-handtaget finns).
+- Nytt sim-scenario: `35-fromside-and-badges`.
+- Nya tester: `V64RoundTripTests` (3 st). Unit-sviten: **82/82 gröna.**
+
+## v63 (deployad till iPhone)
 
 *Tema:* Kims sex fynd från v62-granskningen — pil-enhet, pilfärg, gren-kollaps, ikoner, läs-badges
 

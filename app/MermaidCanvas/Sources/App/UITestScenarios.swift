@@ -53,6 +53,8 @@ enum UITestScenarios {
         "32-arrowheads-8-dirs":         place32Arrowheads8DirsClean,
         "33-selected-pill":             place33SelectedPill,
         "34-selected-diamond":          place34SelectedDiamond,
+        // v64: ett connection-handtag + vald utgångssida + tydliga badges
+        "35-fromside-and-badges":       place35FromSideAndBadges,
     ]
 
     // MARK: - Builders
@@ -349,5 +351,21 @@ enum UITestScenarios {
         let d = ShapeNode(type: .diamond, position: c, label: "Beslut")
         model.shapes.append(d)
         model.selectedShapeId = d.id
+    }
+
+    /// v64: A är markerad (ETT connection-handtag ska synas), pilen A→B går ut
+    /// från A:s BOTTEN (fromSide), och C har både prompt och anteckning (badges).
+    private static func place35FromSideAndBadges(_ model: CanvasModel, _ c: CGPoint) {
+        let a = ShapeNode(type: .rectangle, position: CGPoint(x: c.x - 150, y: c.y - 80), label: "A")
+        let b = ShapeNode(type: .rectangle, position: CGPoint(x: c.x + 150, y: c.y - 80), label: "B")
+        var cShape = ShapeNode(type: .rectangle, position: CGPoint(x: c.x, y: c.y + 140), label: "C")
+        cShape.note = "En anteckning"
+        cShape.prompt = "En prompt"
+        model.shapes.append(contentsOf: [a, b, cShape])
+        model.addEdge(from: a.id, to: b.id)
+        if let edge = model.edges.last {
+            model.setEdgeFromSide(id: edge.id, side: .bottom)
+        }
+        model.selectedShapeId = a.id
     }
 }

@@ -1,13 +1,10 @@
-# ARKITEKTUR-MERMAID — Version v64
+# ARKITEKTUR-MERMAID — Version v63
 *Datum: 2026-06-06*
-
-> **v64:** ETT connection-handtag (ersätter fyra), valbar utgångssida per pil
-> (`EdgeConnection.fromSide` + "Går ut från"-menyn + `sidePoint`), tydliga
-> läs-IKONER (hjärna/text i stället för prickar). Detaljer i ROADMAP.md.
 
 > **v63:** pil = solid enhet med valbar färg (`EdgeConnection.colorHex`), kollaps PER GREN
 > (`collapsedEdgeIds`, migration från nod-kollaps), markeringshandtag utanför hörnen,
 > läs-badges (PromptBadge + NoteBadge → QuickReadSheet), kollaps-badges separerade.
+> Detaljer i ROADMAP.md.
 
 **Aktuell version:** v62 — Kims tre fynd från v61.2: (1) pilspetsar följer linjens
 faktiska riktning (bezier-tangent, inte sid-normal), (2) kant-etiketter kan placeras
