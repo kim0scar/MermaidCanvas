@@ -1,22 +1,10 @@
-# ARKITEKTUR-MERMAID — Version v66
-*Datum: 2026-06-07*
-
-> **v66 "n8n-redo":** rotorsaks-driven storstädning efter Kims 6 fynd + UI/UX-svep.
-> (1) `EdgeMath` — EN delad bezier-funktion, vinkelmedveten → rund båge för
-> fromSide-pilar; (2) lager: container UNDER pilar (zIndex -1/0/1), bara fri
-> resize för container, badges under headern; (3) läs-LAPPAR (`NoteCardsLayer`)
-> ersätter QuickReadSheet — flera samtidigt, "Prompt (blir skill)" / "Anteckning
-> (bara för dig)"; (4) `LineEndpointHandle` — strecket dras ut via lineEnd;
-> (5) städad toolbar + SEMANTISK FLÖDES-PALETT (Input/Agent/Verktyg/Router/
-> Memory/Output i ett tryck); (6) legend (state-JSON + `%% legend` + panel) och
-> "Kopiera som skill" (`generateForContainer`); (7) horisontella LR-kedjor
-> (webbskrap-flode-lr.md + morgonkoll-flode-lr.md) + LR-default för flow.
-> Detaljer i ROADMAP.md.
+# ARKITEKTUR-MERMAID — Version v65
+*Datum: 2026-06-06*
 
 > **v65:** autospar skriver ALDRIG över en öppnad befintlig fil — ändringar sparas
 > som kopia "namn 2.md" (`CanvasFileManager.openedExisting`/`saveAsCopy`/`nextFreeURL`
 > + baslinje-jämförelse `contentAtOpen` i ContentView). Ny referens-kedja med
-> router-vägval: `webbskrap-flode.md` (iCloud).
+> router-vägval: `webbskrap-flode.md` (iCloud). Detaljer i ROADMAP.md.
 
 > **v64:** ETT connection-handtag (ersätter fyra), valbar utgångssida per pil
 > (`EdgeConnection.fromSide` + "Går ut från"-menyn + `sidePoint`), tydliga

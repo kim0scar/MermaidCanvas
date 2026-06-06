@@ -2,7 +2,40 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v65
+## Aktuell version: v66 — "n8n-redo"
+
+*Tema:* Kims 6 fynd (rotorsaks-analyserade av 3 par subagenter + ifrågasättare) +
+egen UI/UX-svep. Sju faser, alla sim-bevisade.
+
+**v66:**
+1. **Rund båge (EdgeMath):** EN delad bezier-funktion (drawEdge + edgeAnchors, var
+   duplicerad). Vinkelmedveten tension + vinkelrät sväng — fromSide-pil som pekar
+   bort från målet blir rund båge (var 180°-knyck). Regressionslås: vanliga/diagonala
+   pilar EXAKT oförändrade. 32 parametriska testfall.
+2. **Lager-fix:** papper -3, grid -2, CONTAINER -1, pilar 0, noder 1, handtag 3 —
+   containern äter inte längre pilar/etiketter. Container: BARA fri resize.
+   Badges under container-headern (namnet syns).
+3. **Läs-LAPPAR:** NoteCardsLayer ersätter sheet — flera lappar samtidigt på
+   canvasen, skärm-space (läsbar text oavsett zoom), fält "Prompt (blir skill)" +
+   "Anteckning (bara för dig)", kryss + penna.
+4. **Strecket:** LineEndpointHandle drar lineEnd direkt (längd + vinkel);
+   bbox följer lineEnd; migrering av gamla multiplier-linjer.
+5. **Toolbar:** Rad A = 7 rena former; container → Rad B; tabell-ikon square.grid.3x3;
+   rotera-offset 48→20; pil-handtag GRÖNT (arrow.up.right). NY FLÖDES-PALETT:
+   Input/Agent/Verktyg/Router/Memory/Output — rätt form+kategori+färg i ett tryck.
+6. **Legend + skill-export:** legend round-trippar (state-JSON + %% legend-rader)
+   med redigerbar panel (Lägen → Legend). Tryck-håll container → "Kopiera som skill"
+   (generateForContainer: barn via childOfContainerId + memory-noder i kanten).
+   SKILL-KEDJA-KONTRAKT: prompt-vs-note, inga nästlade skills, pil aldrig till container.
+7. **Horisontellt:** webbskrap-flode-lr.md + morgonkoll-flode-lr.md (nya LR-referenser,
+   original orörda) + LR-default för spec_type flow utan explicit riktning.
+- DesignTokens.screenPt: skärm-konstant ikonstorlek (badges 15pt, handtag 26pt).
+- Nya tester: V66EdgeMath (4), V66LineEnd (3), V66LegendSkill (2), V66LRFlode (3).
+  Unit-sviten: **105/105 gröna.**
+- Kvar till v67 (backlog): snap-to-grid, auto-pil vid släpp intill, Flow-läge som
+  döljer icke-flödesverktyg, förenkla 3 storlekssystem, header-zon-skydd.
+
+## v65 (deployad till iPhone)
 
 *Tema:* säker autosparning + webbskrap-kedjan (router-vägval kod/MCP/LLM)
 
