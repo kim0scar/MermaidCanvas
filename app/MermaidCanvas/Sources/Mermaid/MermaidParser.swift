@@ -481,7 +481,17 @@ enum MermaidParser {
 
         // v61: Positioner. `%% pos:`-kommentar vinner; noder utan får lagrad
         // auto-layout som följer flowchart-riktningen (TD/LR/BT/RL) — inte cirkel.
-        let flowDirection = MermaidAutoLayout.direction(in: block)
+        // v66: flow-filer (skill-kedjor) utan EXPLICIT riktning får LR —
+        // horisontellt som n8n. Explicit "flowchart TD" respekteras alltid.
+        var flowDirection = MermaidAutoLayout.direction(in: block)
+        if flowDirection == .td, markdown.contains("spec_type: flow") {
+            let hasExplicit = block
+                .split(separator: "\n")
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .first { $0.lowercased().hasPrefix("flowchart") || $0.lowercased().hasPrefix("graph") }
+                .map { $0.split(separator: " ").count >= 2 } ?? false
+            if !hasExplicit { flowDirection = .lr }
+        }
         let autoPositions = MermaidAutoLayout.positions(
             nodeIds: nodes.map { $0.mermaidId },
             edges: rawEdges.map { (from: $0.from, to: $0.to) },
