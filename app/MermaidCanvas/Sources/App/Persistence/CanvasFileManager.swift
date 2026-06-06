@@ -5,6 +5,10 @@ import SwiftUI
 final class CanvasFileManager: ObservableObject {
     @Published private(set) var currentFileURL: URL?
     @Published private(set) var reloadTick: Int = 0
+    /// v65: true när aktuell fil är en BEFINTLIG fil som öppnats (inte en fil
+    /// appen själv skapade). Då får autospar ALDRIG skriva över den — ändringar
+    /// sparas till en kopia med nytt namn ("namn 2.md").
+    private(set) var openedExisting: Bool = false
 
     private var lastModificationDate: Date?
     private var lastContentHash: Int?
@@ -15,7 +19,9 @@ final class CanvasFileManager: ObservableObject {
     var hasOpenFile: Bool { currentFileURL != nil }
 
     /// Öppna en fil (security-scoped från fileImporter). Returnerar innehållet.
-    func open(url: URL) -> String? {
+    /// v65: `asExisting: false` när appen själv just skapat filen (fileExporter,
+    /// kopia) — då skriver autospar direkt till filen som vanligt.
+    func open(url: URL, asExisting: Bool = true) -> String? {
         if let prev = currentFileURL, prev != url {
             prev.stopAccessingSecurityScopedResource()
         }
@@ -25,6 +31,7 @@ final class CanvasFileManager: ObservableObject {
             return nil
         }
         currentFileURL = url
+        openedExisting = asExisting
         lastModificationDate = modificationDate(for: url)
         lastContentHash = content.hashValue
         startPolling()
@@ -47,6 +54,45 @@ final class CanvasFileManager: ObservableObject {
         try content.write(to: url, atomically: true, encoding: .utf8)
         lastModificationDate = modificationDate(for: url)
         lastContentHash = content.hashValue
+    }
+
+    /// v65: spara innehållet som KOPIA med nästa lediga namn ("namn 2.md") och
+    /// byt aktuell fil till kopian — originalet rörs aldrig. Faller tillbaka till
+    /// appens egna Documents-mapp om mappen bredvid originalet inte går att skriva i.
+    /// Returnerar kopians URL, eller nil om inget gick att skriva.
+    func saveAsCopy(_ content: String) -> URL? {
+        guard let url = currentFileURL else { return nil }
+        let sibling = Self.nextFreeURL(for: url)
+        if (try? content.write(to: sibling, atomically: true, encoding: .utf8)) != nil {
+            _ = open(url: sibling, asExisting: false)
+            return sibling
+        }
+        // Fallback: appens Documents (syns i Filer-appen under MermaidCanvas)
+        guard let docs = FileManager.default.urls(for: .documentDirectory,
+                                                  in: .userDomainMask).first else { return nil }
+        let inDocs = Self.nextFreeURL(for: docs.appendingPathComponent(url.lastPathComponent))
+        guard (try? content.write(to: inDocs, atomically: true, encoding: .utf8)) != nil else {
+            return nil
+        }
+        _ = open(url: inDocs, asExisting: false)
+        return inDocs
+    }
+
+    /// v65: nästa lediga "namn N.md" i samma mapp. Strippar befintligt
+    /// siffersuffix så "flöde 2" blir "flöde 3", inte "flöde 2 2".
+    static func nextFreeURL(for url: URL) -> URL {
+        let ext = url.pathExtension
+        var base = url.deletingPathExtension().lastPathComponent
+        if let r = base.range(of: #" \d+$"#, options: .regularExpression) {
+            base = String(base[..<r.lowerBound])
+        }
+        let dir = url.deletingLastPathComponent()
+        var n = 2
+        while true {
+            let candidate = dir.appendingPathComponent("\(base) \(n).\(ext)")
+            if !FileManager.default.fileExists(atPath: candidate.path) { return candidate }
+            n += 1
+        }
     }
 
     /// v25: Skriv en sidecar `<basename>-regler.md` bredvid canvas-filen.
@@ -75,6 +121,7 @@ final class CanvasFileManager: ObservableObject {
             url.stopAccessingSecurityScopedResource()
         }
         currentFileURL = nil
+        openedExisting = false
         lastModificationDate = nil
         lastContentHash = nil
     }

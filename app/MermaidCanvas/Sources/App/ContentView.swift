@@ -29,6 +29,9 @@ struct ContentView: View {
     @State private var showImporter: Bool = false
     @State private var showExporter: Bool = false
     @State private var pendingDocument: CanvasDocument?
+    /// v65: dokument-innehållet som det såg ut när filen öppnades — baslinje för
+    /// "har Kim ändrat något?". Oförändrat → autospar rör ingenting alls.
+    @State private var contentAtOpen: String?
     @State private var editingShapeId: UUID? = nil
     @State private var notingShapeId: UUID? = nil
     /// v63: snabbläsning av anteckning+prompt (badges på formen)
@@ -281,7 +284,8 @@ struct ContentView: View {
         ) { result in
             switch result {
             case .success(let url):
-                _ = fileManager.open(url: url)
+                // v65: filen skapades av appen själv → autospar får skriva direkt
+                _ = fileManager.open(url: url, asExisting: false)
                 // v25: skriv sidecar bredvid den nya filen
                 if let sidecar = PlatformRules.sidecarMarkdown(for: model.platform) {
                     fileManager.writeRulesSidecar(rulesText: sidecar)
@@ -360,6 +364,8 @@ struct ContentView: View {
                          activeShapePacks: parsed.activeShapePacks,
                          collapsedEdgeIds: parsed.collapsedEdgeIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
+        // v65: baslinje för ändrings-koll — genererat innehåll direkt efter öppning
+        contentAtOpen = makeDocument().content
         // v61: centrera vyn på innehållet — annars kan en Claude-ritad fil se TOM ut
         // (formerna utanför skärmen medan vyn står på canvas-mitten).
         centerOnPoint = contentCenter(of: parsed.shapes)
@@ -376,6 +382,8 @@ struct ContentView: View {
                          activeShapePacks: parsed.activeShapePacks,
                          collapsedEdgeIds: parsed.collapsedEdgeIds)
         if let size = parsed.canvasSize { model.canvasSize = size }
+        // v65: extern skrivning (Claude/iCloud) = ny baslinje för ändrings-kollen
+        contentAtOpen = makeDocument().content
         // v61: hoppa BARA om inget av innehållet syns (stör inte Kim mitt i arbetet)
         if !isAnyContentVisible(parsed.shapes) {
             centerOnPoint = contentCenter(of: parsed.shapes)
@@ -420,6 +428,19 @@ struct ContentView: View {
 
     private func saveToOpenFile() {
         let doc = makeDocument()
+        // v65: en ÖPPNAD befintlig fil skrivs aldrig över.
+        // Oförändrat innehåll → spara ingenting. Ändrat → spara som kopia
+        // ("namn 2.md") och fortsätt arbeta i kopian; originalet orört.
+        if fileManager.openedExisting {
+            if doc.content == contentAtOpen { return }
+            if fileManager.saveAsCopy(doc.content) != nil {
+                contentAtOpen = nil
+                if let sidecar = PlatformRules.sidecarMarkdown(for: model.platform) {
+                    fileManager.writeRulesSidecar(rulesText: sidecar)
+                }
+            }
+            return
+        }
         try? fileManager.write(doc.content)
         // v27: skriv sidecar med regler bredvid canvas-filen — bara om Godot
         if let sidecar = PlatformRules.sidecarMarkdown(for: model.platform) {
