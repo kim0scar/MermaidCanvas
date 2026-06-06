@@ -176,15 +176,19 @@ struct CanvasView: View {
     private var canvasContent: some View {
         ZStack(alignment: .topLeading) {
             // v34: vit pappersyta
+            // v66: explicit lågt zIndex — containrar (-1) ska ligga ÖVER
+            // papper/rutnät men UNDER pilarna (0) och noderna (1).
             Color.white
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
                 .allowsHitTesting(false)
+                .zIndex(-3)
 
             DotGridBackground()
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
                 .allowsHitTesting(false)
+                .zIndex(-2)
 
             if model.specType == .ui {
                 iPhoneFrameOverlay(canvasContentSize: model.contentSize)
@@ -209,6 +213,8 @@ struct CanvasView: View {
                       onToggleCollapseEdge: { id in model.toggleCollapseEdge(id) })
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
+                // v66: pilarna ligger ÖVER containrar (zIndex -1) men UNDER noder (1)
+                .zIndex(0)
 
             // Rubber-band-linje under aktiv connection-drag
             if let drag = connectionDrag,
@@ -260,7 +266,9 @@ struct CanvasView: View {
                     )
                     // v60 D: containrar ritas UNDER övriga former (barn fångar då inte
                     // containerns tap → namnbyte funkar; barn ligger visuellt ovanpå).
-                    .zIndex(shape.type == .container ? 0 : 1)
+                    // v66: container får NEGATIVT zIndex → hamnar även UNDER pilarna
+                    // (EdgesView zIndex 0) — Kims fynd: containern åt pilar/etiketter.
+                    .zIndex(shape.type == .container ? -1 : 1)
                 }
             }
 
@@ -520,10 +528,12 @@ struct ShapeView: View {
         .opacity(markerMode && !edgeMode ? 0.6 : 1.0)
         // v60: container-titeln bor nu i header-raden (se background) — ingen flytande tab.
         // v63: badge-tap → snabbläsning (read-only), inte redigering.
+        // v66: badges ligger PÅ formen (ingen utstickande offset — Kims fynd:
+        // "i vägen"); på container UNDER den 28pt höga headern så namnet syns.
         .overlay(alignment: .topTrailing) {
             if !shape.note.isEmpty && !markerMode {
                 NoteBadge(canvasScale: canvasScale, onTap: onQuickRead)
-                    .offset(x: 8 / canvasScale, y: -8 / canvasScale)
+                    .offset(x: -3, y: shape.type == .container ? 31 : 3)
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
@@ -531,7 +541,7 @@ struct ShapeView: View {
         .overlay(alignment: .topLeading) {
             if !shape.prompt.isEmpty && !markerMode {
                 PromptBadge(canvasScale: canvasScale, onTap: onQuickRead)
-                    .offset(x: -8 / canvasScale, y: -8 / canvasScale)
+                    .offset(x: 3, y: shape.type == .container ? 31 : 3)
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }

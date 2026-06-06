@@ -34,8 +34,12 @@ struct SelectionHandles: View {
             .position(center)
             .allowsHitTesting(false)
 
-            // Bottom-right: proportional resize (bevarar aspect ratio)
-            proportionalHandle(size: handleSize, w: w, h: h)
+            // Bottom-right: proportional resize (bevarar aspect ratio).
+            // v66: INTE för container — en container ska aldrig låsas till
+            // proportion (Kims fynd); fri resize är dess enda handtag.
+            if shape.type != .container {
+                proportionalHandle(size: handleSize, w: w, h: h)
+            }
 
             // Bottom-left: fri resize med diagonal ikon
             freeResizeHandle(size: handleSize, w: w, h: h)
