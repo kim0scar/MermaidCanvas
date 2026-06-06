@@ -1,7 +1,10 @@
-# ARKITEKTUR-MERMAID — Version v61
-*Datum: 2026-06-05*
+# ARKITEKTUR-MERMAID — Version v61.2
+*Datum: 2026-06-06*
 
-**Aktuell version:** v61
+**Aktuell version:** v61.2 (v61 + två fixar: v61.1 öppna-fil centrerar vyn på
+innehållet; v61.2 subgraph-barn får `childOfContainerId` i fallback-parse → raka
+pilar genom container-gränser. Plus: `SKILL-KEDJA-KONTRAKT.md` + skillen `flode` +
+referens-kedjan `morgonkoll-flode.md` — E2E-testad. Detaljer i ROADMAP.md.)
 **Single source of truth för version:** `app/MermaidCanvas/Sources/App/AppVersion.swift`
 
 > Detta dokument speglar **nuvarande** kod (v61). Den kompletta modul-kartan med
