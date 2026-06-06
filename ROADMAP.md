@@ -2,7 +2,27 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v64
+## Aktuell version: v65
+
+*Tema:* säker autosparning + webbskrap-kedjan (router-vägval kod/MCP/LLM)
+
+**v65 (sim-bevisad: original orört, kopia skapad, ingen tredje fil):**
+1. **Autospar skriver aldrig över en öppnad fil.** Öppnad befintlig fil +
+   ändringar → sparas som KOPIA med nästa lediga namn ("namn 2.md"), arbetet
+   fortsätter i kopian. Oförändrat innehåll → ingenting skrivs. Filer appen
+   själv skapat sparas som vanligt. Nytt: `CanvasFileManager.openedExisting`,
+   `saveAsCopy`, `nextFreeURL` (strippar siffersuffix: "flöde 2" → "flöde 3");
+   baslinje `contentAtOpen` i ContentView (uppdateras vid extern reload).
+2. **Ny referens-kedja `webbskrap-flode.md`** (iCloud 1. Mermaid/): skrapa webbsida —
+   skill `sidanalys` (hämta rå + identifiera teknisk uppbyggnad) → `steg1-analys.md` →
+   ROUTER "Vilket verktyg?" med tre grenar: "statisk html"→kod, "js-renderad"→
+   Playwright-MCP, annars→LLM → alla skriver `steg2-data.md` → `leverans` → svar.
+   Prompt på ALLA noder (INPUT/UPPGIFT/OUTPUT-nivå) + anteckningar. Första kedjan
+   som använder router-vägval enligt SKILL-KEDJA-KONTRAKT.
+- Nya tester: `V65AutosparTests` (6) + `V65SkrapFlodeTests` (6, exakta filinnehållet).
+  Unit-sviten: **93/93 gröna.**
+
+## v64 (deployad till iPhone)
 
 *Tema:* mindre röra runt formerna — Kims fynd från v63-granskningen
 

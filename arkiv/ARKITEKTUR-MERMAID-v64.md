@@ -1,14 +1,9 @@
-# ARKITEKTUR-MERMAID — Version v65
+# ARKITEKTUR-MERMAID — Version v64
 *Datum: 2026-06-06*
-
-> **v65:** autospar skriver ALDRIG över en öppnad befintlig fil — ändringar sparas
-> som kopia "namn 2.md" (`CanvasFileManager.openedExisting`/`saveAsCopy`/`nextFreeURL`
-> + baslinje-jämförelse `contentAtOpen` i ContentView). Ny referens-kedja med
-> router-vägval: `webbskrap-flode.md` (iCloud). Detaljer i ROADMAP.md.
 
 > **v64:** ETT connection-handtag (ersätter fyra), valbar utgångssida per pil
 > (`EdgeConnection.fromSide` + "Går ut från"-menyn + `sidePoint`), tydliga
-> läs-IKONER (hjärna/text i stället för prickar).
+> läs-IKONER (hjärna/text i stället för prickar). Detaljer i ROADMAP.md.
 
 > **v63:** pil = solid enhet med valbar färg (`EdgeConnection.colorHex`), kollaps PER GREN
 > (`collapsedEdgeIds`, migration från nod-kollaps), markeringshandtag utanför hörnen,
