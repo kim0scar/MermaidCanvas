@@ -421,8 +421,10 @@ struct ConnectionHandles: View {
     @ViewBuilder
     private func handle(offset: CGPoint, icon: String, accId: String, size: CGFloat) -> some View {
         ZStack {
-            Circle().fill(Color.accentColor)
-            Image(systemName: icon)
+            // v66: GRÖN + egen ikon — skiljer sig tydligt från de blå
+            // resize-handtagen (Kims/UX-fynd: två blå cirklar intill varandra).
+            Circle().fill(Color(hex: 0x15803d))
+            Image(systemName: "arrow.up.right")
                 .font(.system(size: size * 0.50, weight: .bold))
                 .foregroundStyle(Color.white)
         }

@@ -239,21 +239,22 @@ struct ToolbarView: View {
     @ViewBuilder
     private var shapesSecondary: some View {
         VStack(spacing: 8) {
-            // v60: ALLA 8 geometriska former på ÖVERSTA raden (Kims önskemål).
-            // 40pt-frame + 6pt mellanrum ryms i porträtt; tap-yta ≥44pt via contentShape-inset.
+            // v66: Rad A = 7 RIKTIGA former (container flyttad till Rad B —
+            // Kims fynd: "bara former uppe"). Mer luft per chip.
             HStack(spacing: 6) {
                 geoChip(.circle, accId: "chip.circle", frame: 40) { model.addShape(.circle, at: canvasCenter) }
                 geoChip(.pill, accId: "chip.pill", frame: 40) { model.addShape(.pill, at: canvasCenter) }
                 geoChip(.rectangle, accId: "chip.rectangle", frame: 40) { model.addShape(.rectangle, at: canvasCenter) }
                 geoChip(.square, accId: "chip.square", frame: 40) { model.addShape(.square, at: canvasCenter) }
-                geoChip(.container, accId: "chip.container", frame: 40) { model.addShape(.container, at: canvasCenter) }
                 geoChip(.diamond, accId: "chip.diamond", frame: 40) { model.addShape(.diamond, at: canvasCenter) }
                 geoChip(.processArrow, accId: "chip.processArrow", frame: 40) { model.addShape(.processArrow, at: canvasCenter) }
                 geoChip(.octagon, accId: "chip.octagon", frame: 40) { model.addShape(.octagon, at: canvasCenter) }
             }
-            // Rad B — verktyg (tabell, länk, linje, anteckningar)
+            // Rad B — behållare + verktyg (container, tabell, länk, linje, anteckningar)
             HStack(spacing: 8) {
-                shapeChip(.table, "tablecells",        accId: "chip.table", onTap: onAddTable)
+                geoChip(.container, accId: "chip.container", frame: 40) { model.addShape(.container, at: canvasCenter) }
+                // v66: 3x3-rutnät (Kims önskemål — 'tablecells' såg inte ut som tabell)
+                shapeChip(.table, "square.grid.3x3",   accId: "chip.table", onTap: onAddTable)
                 shapeChip(.link,  "link",              accId: "chip.link",  onTap: onAddJumpLink)
                 shapeChip(.line,  "minus",             accId: "chip.line") {
                     model.addFreeLine(at: canvasCenter, withArrow: false)
@@ -267,8 +268,59 @@ struct ToolbarView: View {
                 .accessibilityIdentifier("chip.notepopup")
                 .accessibilityLabel(a11yLabel(for: "chip.notepopup"))
             }
+            // v66: Rad C — SEMANTISK NOD-PALETT för skill-kedjor: ett tryck ger
+            // rätt form + kategori + färg (slut på manuell ihopparning som
+            // kunde bryta skill-exporten).
+            HStack(spacing: 6) {
+                flowChip(.pill, .input, "Input", accId: "chip.flow.input")
+                flowChip(.rectangle, .agent, "Agent", accId: "chip.flow.agent")
+                flowChip(.rectangle, .tool, "Verktyg", accId: "chip.flow.tool")
+                flowChip(.diamond, .router, "Router", accId: "chip.flow.router")
+                flowChip(.rectangle, .memory, "Memory", accId: "chip.flow.memory")
+                flowChip(.pill, .output, "Output", accId: "chip.flow.output")
+            }
         }
         .padding(.horizontal, 2)
+    }
+
+    /// v66: flödes-chip — formen i KATEGORINS färg + etikett under.
+    @ViewBuilder
+    private func flowChip(_ type: ShapeType, _ category: ShapeCategory,
+                          _ label: String, accId: String) -> some View {
+        Button {
+            model.addShape(type, at: canvasCenter, category: category)
+        } label: {
+            VStack(spacing: 2) {
+                ZStack {
+                    switch type {
+                    case .diamond:
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke(category.strokeColor, lineWidth: 2)
+                            .frame(width: 15, height: 15)
+                            .rotationEffect(.degrees(45))
+                    case .pill:
+                        Capsule()
+                            .stroke(category.strokeColor, lineWidth: 2)
+                            .frame(width: 24, height: 15)
+                    default:
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(category.strokeColor, lineWidth: 2)
+                            .frame(width: 24, height: 16)
+                    }
+                }
+                .frame(width: 36, height: 24)
+                .background(Circle().fill(.ultraThinMaterial).frame(width: 34, height: 34))
+                Text(label)
+                    .font(.system(size: 8.5, weight: .medium))
+                    .foregroundStyle(category.strokeColor)
+                    .lineLimit(1)
+            }
+            .frame(width: 52)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(accId)
+        .accessibilityLabel("Lägg till \(label)-nod")
     }
 
     /// v51.1: enhetlig geometri-chip. Storlek via `iconSize` (canvas-proportion) +
