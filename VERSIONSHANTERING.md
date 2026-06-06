@@ -61,11 +61,21 @@ git commit -m "vN: <vad ändrades på svenska>"
 
 Exempel: `git commit -m "v3: la till stöd för att rita pilar mellan former"`
 
-### 6. Pusha till GitHub
+### 6. Pusha till GitHub + tagga + ZIP
 
 ```bash
 git push
+git tag vN && git push origin vN
+# ZIP till iCloud så Kim själv kan backa version utan git:
+git archive --format=zip \
+  -o "/Users/kim/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/Visuali2e-versioner/Visuali2e-vN.zip" vN
 ```
+
+Varje version finns då på TRE sätt: git-historik, GitHub-tagg och separat ZIP i iCloud.
+
+**Rollback utan git (Kims väg):** öppna `Visuali2e-versioner/` i iCloud → packa upp
+önskad `Visuali2e-vN.zip` → be Claude Code bygga+deploya från den mappen.
+**Rollback med git:** `git checkout vN` (eller `git revert`).
 
 ### 7. Rapportera till Kim
 

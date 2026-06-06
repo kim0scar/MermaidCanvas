@@ -39,6 +39,9 @@ Den här tabellen är **alltid aktuell**. Uppdatera den så fort en ny sparplats
 | **Tidigare arkitektur-versioner** | `arkiv/ARKITEKTUR-MERMAID-vN.md` (en per deploy) | git |
 | **Appen på iPhone** | bundle-ID `com.kimlundqvist.mermaidcanvas`, Team `SFXR8MV6MP`, device F271CF8E-4260-5501-9E86-1C765EA1A38E | enbart på iPhone tills nästa deploy från Mac |
 | **Kims canvas-filer (i drift)** | `~/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/1. Mermaid/` | iCloud Drive — syns på både iPhone och Mac |
+| **Versions-ZIPar (rollback utan git)** | `~/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/Visuali2e-versioner/Visuali2e-vN.zip` — en ZIP per version-tagg, skapas vid varje deploy (`git archive`) | iCloud Drive (syns på iPhone + Mac) |
+| **Version-taggar (rollback med git)** | `git tag` — varje deploy taggas `vN` | GitHub (pushas med `git push origin --tags`) |
+| **Skill: flode (kör skill-kedjor)** | `~/.claude/skills/flode/SKILL.md` | endast lokalt på Macen |
 | **Memory (för framtida sessioner)** | `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/` | endast lokalt på Macen |
 | **Plan-fil (aktuell roadmap)** | `~/.claude/plans/vi-ska-bygga-en-magical-knuth.md` | endast lokalt på Macen |
 | **Versionssnapshot per deploy** | `arkiv/ARKITEKTUR-MERMAID-vN.md` | git |
