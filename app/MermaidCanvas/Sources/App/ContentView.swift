@@ -34,8 +34,8 @@ struct ContentView: View {
     @State private var contentAtOpen: String?
     @State private var editingShapeId: UUID? = nil
     @State private var notingShapeId: UUID? = nil
-    /// v63: snabbläsning av anteckning+prompt (badges på formen)
-    @State private var quickReadShapeId: UUID? = nil
+    /// v66: öppna läs-lappar (flera samtidigt) — ersätter v63:s QuickReadSheet
+    @State private var openCards: [UUID] = []
     @State private var showCodeSheet: Bool = false
     @State private var showNewCanvasPrompt: Bool = false
     @State private var showNewCanvasSheet: Bool = false
@@ -97,12 +97,26 @@ struct ContentView: View {
             onShapeSelect: { id in model.selectShape(id) },
             onShapeDuplicate: { id in model.duplicateShape(id: id) },
             onShapeShowNote: { id in notingShapeId = id },
-            onShapeQuickRead: { id in quickReadShapeId = id },
+            onShapeQuickRead: { id in
+                // v66: toggla lappen — flera kan vara öppna samtidigt
+                if openCards.contains(id) {
+                    openCards.removeAll { $0 == id }
+                } else {
+                    openCards.append(id)
+                }
+            },
             onTableEdit: { id in tableEditingShapeId = id },
             zoomPercent: $zoomPercent,
             resetZoomTrigger: resetZoomTrigger,
             centerOnPoint: $centerOnPoint
         )
+        // v66: läs-lappar i skärm-space ovanpå canvasen (följer formerna vid pan/zoom)
+        .overlay {
+            NoteCardsLayer(model: model,
+                           viewportState: viewportState,
+                           openCards: $openCards,
+                           onEdit: { id in editingShapeId = id })
+        }
     }
 
     var body: some View {
@@ -199,22 +213,7 @@ struct ContentView: View {
                 )
             }
         }
-        // v63: snabbläsning — read-only anteckning+prompt via badges på formen
-        .sheet(isPresented: quickReadBinding) {
-            if let id = quickReadShapeId,
-               let shape = model.shapes.first(where: { $0.id == id }) {
-                QuickReadSheet(
-                    title: shape.label,
-                    note: shape.note,
-                    prompt: shape.prompt,
-                    onEdit: {
-                        quickReadShapeId = nil
-                        editingShapeId = id
-                    },
-                    onClose: { quickReadShapeId = nil }
-                )
-            }
-        }
+        // v66: snabbläsning sker nu via läs-LAPPAR på canvasen (NoteCardsLayer)
         .sheet(isPresented: $showCodeSheet) {
             // v32: live från model (inte cached string)
             MermaidCodeSheet(model: model) {
@@ -336,13 +335,6 @@ struct ContentView: View {
         Binding(
             get: { notingShapeId != nil },
             set: { if !$0 { notingShapeId = nil } }
-        )
-    }
-
-    private var quickReadBinding: Binding<Bool> {
-        Binding(
-            get: { quickReadShapeId != nil },
-            set: { if !$0 { quickReadShapeId = nil } }
         )
     }
 
