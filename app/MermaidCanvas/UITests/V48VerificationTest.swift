@@ -382,22 +382,10 @@ final class V48VerificationTest: XCTestCase {
         return true
     }
 
-    /// v60-fix: välj det connection-handtag som pekar mot cirkeln. Cirkel under
-    /// rektangeln → botten-handtaget; annars (höger om) → höger-handtaget.
-    /// Riktningsspecifika id:n (connection.handle.right/bottom/...) infördes i v50.2;
-    /// gamla testerna använde det borttagna singular-id:t "connection.handle".
+    /// v64: ETT connection-handtag igen (Kims önskemål — mindre röra).
+    /// Handtaget sitter alltid i högerkanten; drag därifrån till valfri form skapar pil.
     @MainActor
     private func handleTowardCircle(_ app: XCUIApplication) -> XCUIElement {
-        let rect = app.descendants(matching: .any).matching(identifier: "shape.rectangle").firstMatch
-        let circle = app.descendants(matching: .any).matching(identifier: "shape.circle").firstMatch
-        if rect.exists, circle.exists {
-            let dy = circle.frame.midY - rect.frame.midY
-            let dx = circle.frame.midX - rect.frame.midX
-            if abs(dy) > abs(dx) {
-                return app.descendants(matching: .any)
-                    .matching(identifier: dy > 0 ? "connection.handle.bottom" : "connection.handle.top").firstMatch
-            }
-        }
         return app.descendants(matching: .any).matching(identifier: "connection.handle.right").firstMatch
     }
 

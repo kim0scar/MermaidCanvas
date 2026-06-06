@@ -237,6 +237,10 @@ enum MermaidGenerator {
             if let hex = edge.colorHex {
                 lines.append("\(indent)%% e\(i) color: \(hex)")
             }
+            // v64: vald utgångssida
+            if let side = edge.fromSide {
+                lines.append("\(indent)%% e\(i) fromSide: \(side.rawValue)")
+            }
             // v63: kollaps per GREN (ersätter %% <nod> collapsed)
             if collapsedEdgeIds.contains(edge.id) {
                 lines.append("\(indent)%% e\(i) collapsed: true")
@@ -351,6 +355,10 @@ enum MermaidGenerator {
             // v63: pilens färg
             if let hex = edge.colorHex {
                 e["color"] = hex
+            }
+            // v64: vald utgångssida
+            if let side = edge.fromSide {
+                e["fromSide"] = side.rawValue
             }
             // v63: kollaps per gren — flagga PÅ kanten (ersätter "collapsed"-nod-arrayen)
             if collapsedEdgeIds.contains(edge.id) {

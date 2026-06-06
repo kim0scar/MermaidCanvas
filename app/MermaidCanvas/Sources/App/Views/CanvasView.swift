@@ -203,6 +203,7 @@ struct CanvasView: View {
                       onEdgeSetDirection: { id, dir in model.setEdgeDirection(id: id, direction: dir) },
                       onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) },
                       onEdgeSetColor: { id, hex in model.setEdgeColor(id: id, hex: hex) },
+                      onEdgeSetFromSide: { id, side in model.setEdgeFromSide(id: id, side: side) },
                       onEdgeRename: { id, label, placement in
                           model.setEdgeLabel(id: id, label: label, placement: placement) },
                       onToggleCollapseEdge: { id in model.toggleCollapseEdge(id) })
@@ -366,10 +367,9 @@ struct ConnectionRubberBand: View {
 
 // MARK: - ConnectionHandles
 
-/// v50.2 F-3: FYRA connection-handtag (top/höger/botten/vänster) — alltid
-/// synliga på vald form. Storlek matchar resize-handles (28pt) och de sitter
-/// LITE LÄNGRE UT (gap 10pt) så de inte krockar med formens kant eller med
-/// resize/rotation-handtag. Drag från handtag till annan form skapar pil.
+/// v64 (Kims önskemål): ETT connection-handtag i stället för fyra — mindre röra
+/// runt formen. Sitter i högerkanten; pilen får automatiskt närmaste utgångssida,
+/// och sidan kan ändras i efterhand via pilens kontextmeny ("Går ut från").
 struct ConnectionHandles: View {
     let shape: ShapeNode
     let canvasScale: CGFloat
@@ -383,12 +383,8 @@ struct ConnectionHandles: View {
         // mer touch-vänliga.
         let size: CGFloat = max(24, 28 / canvasScale)
         let gap: CGFloat = size / 2 + 10 / canvasScale
-        ZStack {
-            handle(offset: CGPoint(x:  w/2 + gap, y: 0),    icon: "arrow.right", accId: "connection.handle.right",  size: size)
-            handle(offset: CGPoint(x: -w/2 - gap, y: 0),    icon: "arrow.left",  accId: "connection.handle.left",   size: size)
-            handle(offset: CGPoint(x: 0, y: -h/2 - gap),    icon: "arrow.up",    accId: "connection.handle.top",    size: size)
-            handle(offset: CGPoint(x: 0, y:  h/2 + gap),    icon: "arrow.down",  accId: "connection.handle.bottom", size: size)
-        }
+        handle(offset: CGPoint(x: w/2 + gap, y: 0), icon: "arrow.right",
+               accId: "connection.handle.right", size: size)
         .frame(width: w, height: h)
         .position(shape.position)
         .rotationEffect(.degrees(shape.rotation))
@@ -937,6 +933,8 @@ struct EdgesView: View {
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
     /// v63: färg på pilen (hex eller nil = standard)
     var onEdgeSetColor: (UUID, String?) -> Void
+    /// v64: byt utgångssida på pilen (nil = automatisk)
+    var onEdgeSetFromSide: (UUID, EdgeSide?) -> Void
     var onEdgeRename: (UUID, String, EdgeLabelPlacement) -> Void
     /// v48: toggle-callback för collapse-badges. Tar shape-ID.
     /// v63: kollapsa/expandera EN gren (kant-id).
@@ -1180,6 +1178,26 @@ struct EdgesView: View {
             } label: {
                 Label("Färg på pilen", systemImage: "paintpalette")
             }
+            // v64: välj vilken sida pilen går ut från (ersätter de fyra handtagen)
+            Menu {
+                Button { onEdgeSetFromSide(edge.wrappedValue.id, nil) } label: {
+                    Label("Automatisk (närmaste sida)", systemImage: "sparkles")
+                }
+                Button { onEdgeSetFromSide(edge.wrappedValue.id, .top) } label: {
+                    Label("Uppåt", systemImage: "arrow.up")
+                }
+                Button { onEdgeSetFromSide(edge.wrappedValue.id, .right) } label: {
+                    Label("Höger", systemImage: "arrow.right")
+                }
+                Button { onEdgeSetFromSide(edge.wrappedValue.id, .bottom) } label: {
+                    Label("Neråt", systemImage: "arrow.down")
+                }
+                Button { onEdgeSetFromSide(edge.wrappedValue.id, .left) } label: {
+                    Label("Vänster", systemImage: "arrow.left")
+                }
+            } label: {
+                Label("Går ut från", systemImage: "arrow.up.right.square")
+            }
             Divider()
             if hasWaypoint {
                 Button {
@@ -1273,14 +1291,17 @@ struct EdgesView: View {
                           toShape: ShapeNode) {
         let strokeStyle = Self.strokeStyle(for: edge.style)
 
-        // Start-/slutpunkter på formernas ytor
+        // Start-/slutpunkter på formernas ytor.
+        // v64: vald utgångssida (fromSide) vinner över automatiken.
         let start: CGPoint
         let end: CGPoint
         if let wp = edge.waypoints.first {
-            start = edgePoint(for: fromShape, towards: wp.point)
+            start = edge.fromSide.map { sidePoint(for: fromShape, side: $0) }
+                ?? edgePoint(for: fromShape, towards: wp.point)
             end   = edgePoint(for: toShape,   towards: wp.point)
         } else {
-            start = edgePoint(for: fromShape, towards: toShape.position)
+            start = edge.fromSide.map { sidePoint(for: fromShape, side: $0) }
+                ?? edgePoint(for: fromShape, towards: toShape.position)
             end   = edgePoint(for: toShape,   towards: fromShape.position)
         }
 
@@ -1434,6 +1455,32 @@ struct EdgesView: View {
         return canvasRotatePoint(localPoint, around: center, byDegrees: shape.rotation)
     }
 
+    /// v64: punkt mitt på en VALD sida (i stället för närmaste) — med rotationsstöd.
+    /// Används när användaren valt utgångssida via pilens kontextmeny.
+    private func sidePoint(for shape: ShapeNode, side: EdgeSide) -> CGPoint {
+        let center = shape.position
+        let hw: CGFloat
+        let hh: CGFloat
+        switch shape.type {
+        case .circle, .link:
+            let r = ShapeGeometry.circleRadius(for: shape)
+            hw = r; hh = r
+        case .line, .arrow:
+            return center
+        default:
+            hw = ShapeGeometry.halfWidth(for: shape)
+            hh = ShapeGeometry.halfHeight(for: shape)
+        }
+        let local: CGPoint
+        switch side {
+        case .top:    local = CGPoint(x: center.x,      y: center.y - hh)
+        case .bottom: local = CGPoint(x: center.x,      y: center.y + hh)
+        case .left:   local = CGPoint(x: center.x - hw, y: center.y)
+        case .right:  local = CGPoint(x: center.x + hw, y: center.y)
+        }
+        return canvasRotatePoint(local, around: center, byDegrees: shape.rotation)
+    }
+
     /// Hjälpfunktion: rotera en punkt runt ett center med grader.
     private func canvasRotatePoint(_ p: CGPoint, around c: CGPoint, byDegrees deg: Double) -> CGPoint {
         guard abs(deg) > 0.5 else { return p }
@@ -1517,10 +1564,12 @@ struct EdgesView: View {
         let start: CGPoint
         let end: CGPoint
         if let wp = edge.waypoints.first {
-            start = edgePoint(for: fromShape, towards: wp.point)
+            start = edge.fromSide.map { sidePoint(for: fromShape, side: $0) }
+                ?? edgePoint(for: fromShape, towards: wp.point)
             end   = edgePoint(for: toShape,   towards: wp.point)
         } else {
-            start = edgePoint(for: fromShape, towards: toShape.position)
+            start = edge.fromSide.map { sidePoint(for: fromShape, side: $0) }
+                ?? edgePoint(for: fromShape, towards: toShape.position)
             end   = edgePoint(for: toShape,   towards: fromShape.position)
         }
         let n1 = outwardNormal(for: fromShape, at: start)

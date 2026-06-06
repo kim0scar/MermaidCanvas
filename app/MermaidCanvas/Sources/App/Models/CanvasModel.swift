@@ -595,6 +595,14 @@ final class CanvasModel: ObservableObject {
         edges[idx].colorHex = hex
     }
 
+    /// v64: vilken sida pilen går ut från (nil = automatisk).
+    func setEdgeFromSide(id: UUID, side: EdgeSide?) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        guard edges[idx].fromSide != side else { return }
+        snapshotForUndo()
+        edges[idx].fromSide = side
+    }
+
     /// v62: egen fyllningsfärg på markerad form (nil = tillbaka till paket/kategori).
     func setFillColor(id: UUID, hex: String?) {
         guard let idx = shapes.firstIndex(where: { $0.id == id }) else { return }

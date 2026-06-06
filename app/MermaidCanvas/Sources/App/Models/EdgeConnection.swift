@@ -38,6 +38,14 @@ enum EdgeLabelPlacement: String, Codable, CaseIterable {
     case below
 }
 
+/// v64: vilken sida pilen går UT från på from-formen. nil = automatisk (närmaste sida).
+enum EdgeSide: String, Codable, CaseIterable {
+    case top
+    case right
+    case bottom
+    case left
+}
+
 struct EdgeConnection: Identifiable, Codable {
     let id: UUID
     var from: UUID
@@ -53,6 +61,8 @@ struct EdgeConnection: Identifiable, Codable {
     var labelPlacement: EdgeLabelPlacement
     /// v63: pilens färg som hex "#rrggbb". nil = standard (mörk).
     var colorHex: String?
+    /// v64: utgångssida på from-formen. nil = automatisk.
+    var fromSide: EdgeSide?
 
     init(id: UUID = UUID(),
          from: UUID,
@@ -62,7 +72,8 @@ struct EdgeConnection: Identifiable, Codable {
          style: EdgeStyle = .solid,
          waypoints: [EdgeWaypoint] = [],
          labelPlacement: EdgeLabelPlacement = .below,
-         colorHex: String? = nil) {
+         colorHex: String? = nil,
+         fromSide: EdgeSide? = nil) {
         self.id = id
         self.from = from
         self.to = to
@@ -72,12 +83,14 @@ struct EdgeConnection: Identifiable, Codable {
         self.waypoints = waypoints
         self.labelPlacement = labelPlacement
         self.colorHex = colorHex
+        self.fromSide = fromSide
     }
 
     private enum CodingKeys: String, CodingKey {
         case id, from, to, label, direction, bidirectional, style, waypoints
         case labelPlacement  // v62
         case colorHex        // v63
+        case fromSide        // v64
     }
 
     /// Migration: läser direction (v37) med fallback till bidirectional: Bool (v36 och äldre).
@@ -99,6 +112,7 @@ struct EdgeConnection: Identifiable, Codable {
         self.labelPlacement = try c.decodeIfPresent(EdgeLabelPlacement.self,
                                                     forKey: .labelPlacement) ?? .below
         self.colorHex = try c.decodeIfPresent(String.self, forKey: .colorHex)  // v63
+        self.fromSide = try c.decodeIfPresent(EdgeSide.self, forKey: .fromSide)  // v64
     }
 
     func encode(to encoder: Encoder) throws {
@@ -112,5 +126,6 @@ struct EdgeConnection: Identifiable, Codable {
         try c.encode(waypoints, forKey: .waypoints)
         try c.encode(labelPlacement, forKey: .labelPlacement)
         try c.encodeIfPresent(colorHex, forKey: .colorHex)
+        try c.encodeIfPresent(fromSide, forKey: .fromSide)
     }
 }

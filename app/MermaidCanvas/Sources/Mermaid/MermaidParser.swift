@@ -243,7 +243,9 @@ enum MermaidParser {
                                             direction: direction, style: style,
                                             waypoints: waypoints,
                                             labelPlacement: labelPlacement,
-                                            colorHex: edge["color"] as? String)
+                                            colorHex: edge["color"] as? String,
+                                            fromSide: (edge["fromSide"] as? String)
+                                                .flatMap(EdgeSide.init))
             // v63: kollaps per gren — flagga på kant-dicten
             if (edge["collapsed"] as? Bool) == true {
                 collapsedEdgeSet.insert(connection.id)
@@ -420,6 +422,7 @@ enum MermaidParser {
         // v62/v63: `%% e<index> nyckel: värde`-kommentarer (kant-index i emit-ordning)
         var edgePlacements: [Int: EdgeLabelPlacement] = [:]
         var edgeColors: [Int: String] = [:]
+        var edgeFromSides: [Int: EdgeSide] = [:]
         var collapsedEdgeIndices: Set<Int> = []
         if let regex = try? NSRegularExpression(pattern: #"%%\s+e(\d+)\s+(\w+):\s+(\S+)"#) {
             for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
@@ -432,6 +435,8 @@ enum MermaidParser {
                     if let p = EdgeLabelPlacement(rawValue: value) { edgePlacements[idx] = p }
                 case "color":
                     edgeColors[idx] = value
+                case "fromSide":
+                    if let s = EdgeSide(rawValue: value) { edgeFromSides[idx] = s }
                 case "collapsed":
                     if value == "true" { collapsedEdgeIndices.insert(idx) }
                 default:
@@ -536,7 +541,8 @@ enum MermaidParser {
                                             direction: direction,
                                             style: dashed ? .dashed : .solid,
                                             labelPlacement: edgePlacements[i] ?? .below,
-                                            colorHex: edgeColors[i])
+                                            colorHex: edgeColors[i],
+                                            fromSide: edgeFromSides[i])
             // v63: kollaps per gren (index = rå-kantens ordning, samma som i:t ovan)
             if collapsedEdgeIndices.contains(i) {
                 collapsedEdges.insert(connection.id)
