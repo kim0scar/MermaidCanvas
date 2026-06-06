@@ -34,6 +34,19 @@ enum MermaidParser {
         if let packs = frontmatter.shapePacks {
             result.activeShapePacks = packs
         }
+        // v66-migrering: linjer/pilar äger nu sin längd via lineEnd DIREKT
+        // (ändpunkts-handtag). Gamla filer skalade lineEnd med multipliers vid
+        // rendering — baka in dem så strecket ser likadant ut som förut.
+        for i in result.shapes.indices {
+            let s = result.shapes[i]
+            guard s.type == .line || s.type == .arrow, let e = s.lineEnd,
+                  s.effectiveWidth != 1 || s.effectiveHeight != 1 else { continue }
+            result.shapes[i].lineEnd = CGPoint(x: e.x * s.effectiveWidth,
+                                               y: e.y * s.effectiveHeight)
+            result.shapes[i].sizeMultiplier = 1
+            result.shapes[i].widthMultiplier = nil
+            result.shapes[i].heightMultiplier = nil
+        }
         return result
     }
 

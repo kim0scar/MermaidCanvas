@@ -26,10 +26,18 @@ enum ShapeGeometry {
     }
 
     static func width(for shape: ShapeNode) -> CGFloat {
-        typeBaseWidth(for: shape.type) * shape.effectiveWidth
+        // v66: linjens/pilens bbox följer lineEnd-spannet — ändpunkts-handtaget
+        // styr längden direkt, inte multipliers (som klippte utdragna streck).
+        if shape.type == .line || shape.type == .arrow, let e = shape.lineEnd {
+            return max(abs(e.x) * 2 + 24, 44)
+        }
+        return typeBaseWidth(for: shape.type) * shape.effectiveWidth
     }
     static func height(for shape: ShapeNode) -> CGFloat {
-        typeBaseHeight(for: shape.type) * shape.effectiveHeight
+        if shape.type == .line || shape.type == .arrow, let e = shape.lineEnd {
+            return max(abs(e.y) * 2 + 24, 44)
+        }
+        return typeBaseHeight(for: shape.type) * shape.effectiveHeight
     }
     static func halfWidth(for shape: ShapeNode) -> CGFloat { width(for: shape) / 2 }
     static func halfHeight(for shape: ShapeNode) -> CGFloat { height(for: shape) / 2 }
@@ -291,6 +299,15 @@ struct CanvasView: View {
             // Connection-handtag + selection-handtag på vald form
             if model.multiSelection.isEmpty,
                let selectedId = model.selectedShapeId,
+               let idx = model.shapes.firstIndex(where: { $0.id == selectedId }),
+               model.shapes[idx].type == .line || model.shapes[idx].type == .arrow {
+                // v66: linjer/pilar får ETT ändpunkts-handtag i stället för
+                // resize-handtagen (bbox-skalning kunde aldrig förlänga strecket).
+                // zIndex 3: över formerna (1) — annars äter linjens bbox gesten.
+                LineEndpointHandle(shape: $model.shapes[idx], canvasScale: zoomScale)
+                    .zIndex(3)
+            } else if model.multiSelection.isEmpty,
+               let selectedId = model.selectedShapeId,
                let idx = model.shapes.firstIndex(where: { $0.id == selectedId }) {
                 let s = model.shapes[idx]
                 // v50.7 UX-005: mjuk markerings-outline direkt vid tap (samma
@@ -310,6 +327,9 @@ struct CanvasView: View {
                     shape: $model.shapes[idx],
                     canvasScale: zoomScale
                 )
+                // v66: handtagen över formerna (zIndex 1) — annars kan en
+                // grannforms bbox äta handtags-gesten.
+                .zIndex(3)
                 // v44: ConnectionHandle är ALLTID synlig på vald form — ett enskilt
                 // handtag i högerkanten. Drag från det skapar en pil.
                 ConnectionHandles(
@@ -332,6 +352,7 @@ struct CanvasView: View {
                         connectionDrag = nil
                     }
                 )
+                .zIndex(3)
             }
 
             // v44: MarkerOverlay alltid synlig i markerMode — löser låsning vid
@@ -883,12 +904,11 @@ struct FreeLineView: View {
         Canvas { ctx, size in
             guard let end = shape.lineEnd else { return }
             let from = CGPoint(x: size.width / 2, y: size.height / 2)
-            // v44: skala lineEnd direkt med effectiveWidth/effectiveHeight så att
-            // fri-resize gör linjen längre/bredare även när bounding-boxen sträcks.
-            // Tidigare logik (v36.1) hade samma effekt via size.width/2 men föll
-            // ibland tillbaka när Canvas-storleken inte uppdaterades synkat.
-            let scaledX = end.x * shape.effectiveWidth
-            let scaledY = end.y * shape.effectiveHeight
+            // v66: lineEnd används DIREKT (ändpunkts-handtaget skriver det) —
+            // multipliers är utfasade för linjer (migreras vid inläsning).
+            // Bboxen växer med lineEnd via ShapeGeometry så inget clippas.
+            let scaledX = end.x
+            let scaledY = end.y
             let to = CGPoint(x: size.width / 2 + scaledX, y: size.height / 2 + scaledY)
 
             // Linje — 1.5pt matchar EdgesView kant-linjer

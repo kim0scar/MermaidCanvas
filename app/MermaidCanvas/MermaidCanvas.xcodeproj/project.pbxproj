@@ -94,6 +94,7 @@
 		B98CB3E584346224B1671C65 /* EdgeRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C857637FAB48F6C5E7460F8 /* EdgeRouting.swift */; };
 		C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */; };
 		C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */; };
+		C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */; };
 		C7D21B76F43B09290E13E630 /* V61KedjeFilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA0633D9D062EB58932AA78 /* V61KedjeFilTests.swift */; };
 		C854816CA241FED858ABD2AE /* V64RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C40B3396814B4ACFE3B46F4 /* V64RoundTripTests.swift */; };
 		CAA79A1EB7C4EBFAE9CE614B /* NoteMiniSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */; };
@@ -122,6 +123,7 @@
 		F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */; };
 		F53B7FFA3D8FF13EF388CADB /* UITestScenarios.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C546896307FCCDB4AC2C2F /* UITestScenarios.swift */; };
 		F703FF17F99496CE16469821 /* test_diamond_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = C15C2D1CD9CB0FFE5A6F1C69 /* test_diamond_chip_vs_canvas_side_by_side.1.png */; };
+		F74E2839E386F7AEC63A00F6 /* LineEndpointHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */; };
 		F8FD936BEBCBD237D90BCD12 /* test_processarrow_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F645AAD0567E912FC35F400 /* test_processarrow_chip_vs_canvas_side_by_side.1.png */; };
 		F981FB6DBB390CE175179931 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = CC205BE752FCB6EEF9752960 /* SnapshotTesting */; };
 		FA1737FF5856B37C8337F489 /* METOD-VISUELL-DIALOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */; };
@@ -163,6 +165,7 @@
 		1AD05DC75C3DACAAAA666424 /* PromptBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptBadge.swift; sourceTree = "<group>"; };
 		1FCD095D020EF17998E82F01 /* test_pill_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_pill_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
 		20E758503F87EFE8F022D1C4 /* MermaidCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidCodeSheet.swift; sourceTree = "<group>"; };
+		2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V66LineEndTests.swift; sourceTree = "<group>"; };
 		228F689846F0D1503749250D /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		23D164BF747C4ACF00F0921D /* ToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarView.swift; sourceTree = "<group>"; };
 		246DAEE1890CEA36F3801363 /* EmptyCanvasHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCanvasHint.swift; sourceTree = "<group>"; };
@@ -189,6 +192,7 @@
 		5241E0B28FCA54237EFD6C8D /* test_processarrow_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_processarrow_shape.1.png; sourceTree = "<group>"; };
 		52F65576D84E01864C005B7D /* test_square_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_square_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
 		535348C28035BBC3C632F26A /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
+		53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineEndpointHandle.swift; sourceTree = "<group>"; };
 		55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerOverlay.swift; sourceTree = "<group>"; };
 		568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidImportSheet.swift; sourceTree = "<group>"; };
 		56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadges.swift; sourceTree = "<group>"; };
@@ -413,6 +417,7 @@
 			isa = PBXGroup;
 			children = (
 				4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */,
+				53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */,
 				7052AEAD21FE4BBA576C49FE /* MultiSelectResizeHandle.swift */,
 				74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */,
 				A0807039C26319F36B77EEE0 /* SelectionOutline.swift */,
@@ -503,6 +508,7 @@
 				B94D1AD9EBC06C41E7947C6F /* V65AutosparTests.swift */,
 				EEE97DAAFD2C7BA329CC359D /* V65SkrapFlodeTests.swift */,
 				4ABF8F505A711743DBEECEB3 /* V66EdgeMathTests.swift */,
+				2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */,
 				C27B478DB8B95307D57B1E0C /* __Snapshots__ */,
 			);
 			path = UnitTests;
@@ -756,6 +762,7 @@
 				37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */,
 				04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */,
 				9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */,
+				F74E2839E386F7AEC63A00F6 /* LineEndpointHandle.swift in Sources */,
 				B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */,
 				D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */,
 				87D91925AB13DCBEE7F5A9EA /* MermaidAutoLayout.swift in Sources */,
@@ -817,6 +824,7 @@
 				A19DDD2B88B0271AFC397977 /* V65AutosparTests.swift in Sources */,
 				96DD3B025BE13643B58A0113 /* V65SkrapFlodeTests.swift in Sources */,
 				ECDE8A92B9B87918ED9D5206 /* V66EdgeMathTests.swift in Sources */,
+				C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
