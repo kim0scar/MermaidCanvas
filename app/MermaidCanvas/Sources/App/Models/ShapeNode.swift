@@ -56,8 +56,11 @@ struct ShapeNode: Identifiable, Codable {
     var prompt: String
     var category: ShapeCategory
     var rotation: CGFloat
-    /// v19: överskrid kategori-färg per form. Hex-sträng "#rrggbb" eller nil = använd kategori.
+    /// v19: överskrid FYLLNINGS-färg per form. Hex-sträng "#rrggbb" eller nil = paket/kategori.
+    /// (v62: påverkar nu även renderingen i appen, inte bara Mermaid-exporten.)
     var colorOverride: String?
+    /// v62: överskrid RAM-färg (stroke) separat. nil = paket/kategori som vanligt.
+    var strokeColorOverride: String?
     /// v19: jump-link parnummer. nil för icke-link-former.
     var linkNumber: Int?
     /// v19: tabell-rader (för type=.table). nil = default 3.
@@ -99,6 +102,7 @@ struct ShapeNode: Identifiable, Codable {
          category: ShapeCategory = .ui,
          rotation: CGFloat = 0,
          colorOverride: String? = nil,
+         strokeColorOverride: String? = nil,
          linkNumber: Int? = nil,
          tableRows: Int? = nil,
          tableCols: Int? = nil,
@@ -124,6 +128,7 @@ struct ShapeNode: Identifiable, Codable {
         self.category = category
         self.rotation = rotation
         self.colorOverride = colorOverride
+        self.strokeColorOverride = strokeColorOverride
         self.linkNumber = linkNumber
         self.tableRows = tableRows
         self.tableCols = tableCols
@@ -150,7 +155,7 @@ extension ShapeNode {
     private enum CodingKeys: String, CodingKey {
         case id, type, position, label, showLabel, sizeMultiplier
         case widthMultiplier, heightMultiplier, note, prompt, category, rotation
-        case colorOverride, linkNumber, tableRows, tableCols, tableCells, textStyle
+        case colorOverride, strokeColorOverride, linkNumber, tableRows, tableCols, tableCells, textStyle
         case colorPackId, lineEnd, textAlignment, hasBullets
         case hasNumberedList, indentLevel
         case childOfContainerId  // v47
@@ -180,6 +185,7 @@ extension ShapeNode {
         category        = try c.decodeIfPresent(ShapeCategory.self, forKey: .category) ?? .ui
         rotation        = try c.decodeIfPresent(CGFloat.self, forKey: .rotation) ?? 0
         colorOverride   = try c.decodeIfPresent(String.self, forKey: .colorOverride)
+        strokeColorOverride = try c.decodeIfPresent(String.self, forKey: .strokeColorOverride)  // v62
         linkNumber      = try c.decodeIfPresent(Int.self, forKey: .linkNumber)
         tableRows       = try c.decodeIfPresent(Int.self, forKey: .tableRows)
         tableCols       = try c.decodeIfPresent(Int.self, forKey: .tableCols)

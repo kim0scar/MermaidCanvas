@@ -55,6 +55,10 @@ enum MermaidGenerator {
             if let color = shape.colorOverride {
                 lines.append("\(indent)%% \(id) color: \(color)")
             }
+            // v62: separat ram-färg
+            if let stroke = shape.strokeColorOverride {
+                lines.append("\(indent)%% \(id) stroke: \(stroke)")
+            }
             // v35.1: separat bredd/höjd om de avviker från sizeMultiplier
             if let w = shape.widthMultiplier {
                 lines.append("\(indent)%% \(id) width: \(String(format: "%.2f", w))")
@@ -172,12 +176,26 @@ enum MermaidGenerator {
             case .center:   break
             }
 
-            // Färg: colorOverride → colorPack → text-transparens (i prioritetsordning).
-            // colorOverride och colorPack emitteras som inline style → slår alltid igenom
-            // mot classDef:s vita fyllning.
-            if let color = shape.colorOverride, !color.isEmpty {
-                styleProps.append("fill:\(color)")
-                styleProps.append("stroke:\(color)")
+            // Färg: egna färger → colorPack (i prioritetsordning). Emitteras som
+            // inline style → slår alltid igenom mot classDef:s vita fyllning.
+            // v62: fyllning (colorOverride) och ram (strokeColorOverride) är separata.
+            if shape.colorOverride != nil || shape.strokeColorOverride != nil {
+                let packHex = shape.colorPackId.flatMap {
+                    $0 == "none" ? nil : colorPackHex($0)
+                }
+                if let fill = shape.colorOverride, !fill.isEmpty {
+                    styleProps.append("fill:\(fill)")
+                } else if let packHex {
+                    styleProps.append("fill:\(packHex.fill)")
+                }
+                if let stroke = shape.strokeColorOverride, !stroke.isEmpty {
+                    styleProps.append("stroke:\(stroke)")
+                } else if let fill = shape.colorOverride, !fill.isEmpty {
+                    // bakåtkompatibelt: en färg utan egen ram = båda (som v19)
+                    styleProps.append("stroke:\(fill)")
+                } else if let packHex {
+                    styleProps.append("stroke:\(packHex.stroke)")
+                }
             } else if let packId = shape.colorPackId, packId != "none",
                       let hex = colorPackHex(packId) {
                 // v35.1: ColorPack-färger → inline style så de syns i Mermaid-export.
@@ -213,6 +231,10 @@ enum MermaidGenerator {
             // Waypoints som synliga kommentarer
             for wp in edge.waypoints {
                 lines.append("\(indent)%% e\(i) waypoint: \(Int(wp.x.rounded())),\(Int(wp.y.rounded()))")
+            }
+            // v62: etikett-placering (bara när den avviker från default)
+            if edge.labelPlacement != .below {
+                lines.append("\(indent)%% e\(i) labelPlacement: \(edge.labelPlacement.rawValue)")
             }
         }
 
@@ -256,6 +278,7 @@ enum MermaidGenerator {
                 "note": shape.note
             ]
             if let color = shape.colorOverride { n["color"] = color }
+            if let stroke = shape.strokeColorOverride { n["strokeColor"] = stroke }  // v62
             if let link = shape.linkNumber { n["linkNumber"] = link }
             if shape.type == .table {
                 n["tableRows"] = shape.tableRows ?? 3
@@ -315,6 +338,10 @@ enum MermaidGenerator {
             ]
             if !edge.waypoints.isEmpty {
                 e["waypoints"] = edge.waypoints.map { ["x": $0.x, "y": $0.y] }
+            }
+            // v62: etikett-placering round-trippas (bara icke-default)
+            if edge.labelPlacement != .below {
+                e["labelPlacement"] = edge.labelPlacement.rawValue
             }
             return e
         }

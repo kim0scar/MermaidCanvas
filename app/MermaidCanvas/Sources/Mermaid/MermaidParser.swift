@@ -135,6 +135,7 @@ enum MermaidParser {
             let rotationRaw = node["rotation"]
             let rotation = rotationRaw.map { numberValue($0) } ?? 0
             let colorOverride = node["color"] as? String
+            let strokeColorOverride = node["strokeColor"] as? String  // v62
             let linkNumber = node["linkNumber"] as? Int
             let tableRows = node["tableRows"] as? Int
             let tableCols = node["tableCols"] as? Int
@@ -176,6 +177,7 @@ enum MermaidParser {
                 category: category,
                 rotation: max(-360, min(360, rotation)),
                 colorOverride: colorOverride,
+                strokeColorOverride: strokeColorOverride,
                 linkNumber: linkNumber,
                 tableRows: tableRows,
                 tableCols: tableCols,
@@ -231,9 +233,13 @@ enum MermaidParser {
                     waypoints.append(EdgeWaypoint(x: Double(wx), y: Double(wy)))
                 }
             }
+            // v62: etikett-placering (default .below för gamla filer)
+            let placementRaw = (edge["labelPlacement"] as? String) ?? ""
+            let labelPlacement = EdgeLabelPlacement(rawValue: placementRaw) ?? .below
             edgeList.append(EdgeConnection(from: fromId, to: toId, label: label,
                                             direction: direction, style: style,
-                                            waypoints: waypoints))
+                                            waypoints: waypoints,
+                                            labelPlacement: labelPlacement))
         }
 
         // Parse collapsed-array (mermaidIds → UUIDs via idMap)
@@ -399,6 +405,18 @@ enum MermaidParser {
             }
         }
 
+        // v62: `%% e<index> labelPlacement: above`-kommentarer (kant-index i emit-ordning)
+        var edgePlacements: [Int: EdgeLabelPlacement] = [:]
+        if let regex = try? NSRegularExpression(pattern: #"%%\s+e(\d+)\s+labelPlacement:\s+(\w+)"#) {
+            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
+                where m.numberOfRanges >= 3 {
+                if let idx = Int(ns.substring(with: m.range(at: 1))),
+                   let placement = EdgeLabelPlacement(rawValue: ns.substring(with: m.range(at: 2))) {
+                    edgePlacements[idx] = placement
+                }
+            }
+        }
+
         // v61: Positioner. `%% pos:`-kommentar vinner; noder utan får lagrad
         // auto-layout som följer flowchart-riktningen (TD/LR/BT/RL) — inte cirkel.
         let flowDirection = MermaidAutoLayout.direction(in: block)
@@ -452,6 +470,7 @@ enum MermaidParser {
                 category: n.category,
                 rotation: max(-360, min(360, m?.rotation ?? 0)),
                 colorOverride: m?.color,
+                strokeColorOverride: m?.stroke,
                 linkNumber: m?.link,
                 tableRows: m?.tableRows,
                 tableCols: m?.tableCols,
@@ -473,7 +492,7 @@ enum MermaidParser {
         }
 
         var edges: [EdgeConnection] = []
-        for raw in rawEdges {
+        for (i, raw) in rawEdges.enumerated() {
             guard let from = idMap[raw.from], let to = idMap[raw.to] else { continue }
             // Bestäm riktning baserat på prefix/suffix
             let direction: EdgeDirection
@@ -491,7 +510,8 @@ enum MermaidParser {
             let dashed = raw.arrow.contains(".")
             edges.append(EdgeConnection(from: from, to: to, label: raw.label,
                                          direction: direction,
-                                         style: dashed ? .dashed : .solid))
+                                         style: dashed ? .dashed : .solid,
+                                         labelPlacement: edgePlacements[i] ?? .below))
         }
 
         return ParsedCanvas(shapes: shapes, edges: edges, collapsedIds: collapsedSet)

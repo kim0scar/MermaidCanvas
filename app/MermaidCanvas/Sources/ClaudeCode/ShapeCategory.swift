@@ -317,6 +317,25 @@ extension Color {
         self.init(red: r, green: g, blue: b)
     }
 
+    /// v62: "#rrggbb"-sträng → Color. nil vid ogiltigt format.
+    init?(hexString: String) {
+        let raw = hexString.trimmingCharacters(in: .whitespaces)
+            .replacingOccurrences(of: "#", with: "")
+        guard raw.count == 6, let value = UInt32(raw, radix: 16) else { return nil }
+        self.init(hex: value)
+    }
+
+    /// v62: är hex-färgen mörk? (YIQ-luminans) — styr svart/vit text på egen fyllning.
+    static func isDarkHex(_ hexString: String) -> Bool {
+        let raw = hexString.trimmingCharacters(in: .whitespaces)
+            .replacingOccurrences(of: "#", with: "")
+        guard raw.count == 6, let value = UInt32(raw, radix: 16) else { return false }
+        let r = Double((value >> 16) & 0xff)
+        let g = Double((value >> 8) & 0xff)
+        let b = Double(value & 0xff)
+        return (r * 299 + g * 587 + b * 114) / 1000 < 128
+    }
+
     /// Hex-string för Mermaid-classDef (i format "#rrggbb").
     var hex: String {
         // Bästa-möjliga: läs ut UIColor-komponenter.

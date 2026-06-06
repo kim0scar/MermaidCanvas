@@ -2,7 +2,25 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v61.2 (deployad till iPhone)
+## Aktuell version: v62 (deployad till iPhone)
+
+*Tema:* Kims tre fynd från v61.2-granskningen — pilspetsar, etikettplacering, separat färg
+
+**v62:**
+- **Pilspets-fix (kritisk):** spetsen följer nu den SYNLIGA linjens riktning vid änden
+  (bezier-tangent t=0.92/0.08 på faktiska kontrollpunkter, inkl. obstacle-routade).
+  v60 hade låst vinkeln till sidans normal → skeva spetsar på diagonala pilar.
+  Visuellt verifierad i sim (förstorad screenshot av båda gren-pilarna).
+- **Kant-etikett ovanför/under:** nytt fält `labelPlacement` (above/below, default below),
+  segmented-val i Pil-text-sheeten, round-trippar via state-JSON + `%% e<i> labelPlacement:`.
+  Demo-filerna har nu både "ja" och "nej" på grenarna.
+- **Separat fyllnings- och ram-färg:** `strokeColorOverride` per form; färg-raden har
+  segmenten **Paket | Fyllning | Ram** (swatchar + ta bort-chip). Egen fyllning ger
+  automatiskt svart/vit text via luminans. `colorOverride` påverkar nu även renderingen
+  i appen (tidigare bara exporten). Round-trip: state-JSON `strokeColor` + `%% stroke:`.
+- Nya tester: `V62RoundTripTests` (5 st). Unit-sviten: **73/73 gröna.**
+
+## v61.2 (deployad till iPhone)
 
 *Tema:* Skill-kedjor — slutmålet: rita flöde → kedja av Claude Code-skills
 

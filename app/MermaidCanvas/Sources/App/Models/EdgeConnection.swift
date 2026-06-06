@@ -32,6 +32,12 @@ enum EdgeDirection: String, Codable, CaseIterable {
     case none           // — (inget pilhuvud)
 }
 
+/// v62: var etiketten står relativt pilen. Default = .below (som tidigare).
+enum EdgeLabelPlacement: String, Codable, CaseIterable {
+    case above
+    case below
+}
+
 struct EdgeConnection: Identifiable, Codable {
     let id: UUID
     var from: UUID
@@ -43,6 +49,8 @@ struct EdgeConnection: Identifiable, Codable {
     var style: EdgeStyle
     /// v19: valfri mid-punkt för L-formad path. Tom = rak linje.
     var waypoints: [EdgeWaypoint]
+    /// v62: etikettens placering (ovanför/under pilen). Default = .below.
+    var labelPlacement: EdgeLabelPlacement
 
     init(id: UUID = UUID(),
          from: UUID,
@@ -50,7 +58,8 @@ struct EdgeConnection: Identifiable, Codable {
          label: String = "",
          direction: EdgeDirection = .forward,
          style: EdgeStyle = .solid,
-         waypoints: [EdgeWaypoint] = []) {
+         waypoints: [EdgeWaypoint] = [],
+         labelPlacement: EdgeLabelPlacement = .below) {
         self.id = id
         self.from = from
         self.to = to
@@ -58,10 +67,12 @@ struct EdgeConnection: Identifiable, Codable {
         self.direction = direction
         self.style = style
         self.waypoints = waypoints
+        self.labelPlacement = labelPlacement
     }
 
     private enum CodingKeys: String, CodingKey {
         case id, from, to, label, direction, bidirectional, style, waypoints
+        case labelPlacement  // v62
     }
 
     /// Migration: läser direction (v37) med fallback till bidirectional: Bool (v36 och äldre).
@@ -79,6 +90,9 @@ struct EdgeConnection: Identifiable, Codable {
         }
         self.style = try c.decodeIfPresent(EdgeStyle.self, forKey: .style) ?? .solid
         self.waypoints = (try? c.decode([EdgeWaypoint].self, forKey: .waypoints)) ?? []
+        // v62: bakåtkompatibel default — gamla filer saknar fältet
+        self.labelPlacement = try c.decodeIfPresent(EdgeLabelPlacement.self,
+                                                    forKey: .labelPlacement) ?? .below
     }
 
     func encode(to encoder: Encoder) throws {
@@ -90,5 +104,6 @@ struct EdgeConnection: Identifiable, Codable {
         try c.encode(direction, forKey: .direction)
         try c.encode(style, forKey: .style)
         try c.encode(waypoints, forKey: .waypoints)
+        try c.encode(labelPlacement, forKey: .labelPlacement)
     }
 }

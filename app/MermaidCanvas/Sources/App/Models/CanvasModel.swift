@@ -305,6 +305,7 @@ final class CanvasModel: ObservableObject {
             category: o.category,
             rotation: o.rotation,
             colorOverride: o.colorOverride,
+            strokeColorOverride: o.strokeColorOverride,   // v62
             linkNumber: nil, // jump-link ska INTE dupliceras (skulle bli orphan-länk)
             tableRows: o.tableRows,
             tableCols: o.tableCols,
@@ -573,11 +574,27 @@ final class CanvasModel: ObservableObject {
         edges[idx].direction = direction
     }
 
+    /// v62: egen fyllningsfärg på markerad form (nil = tillbaka till paket/kategori).
+    func setFillColor(id: UUID, hex: String?) {
+        guard let idx = shapes.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        shapes[idx].colorOverride = hex
+    }
+
+    /// v62: egen ram-färg på markerad form (nil = tillbaka till paket/kategori).
+    func setStrokeColor(id: UUID, hex: String?) {
+        guard let idx = shapes.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        shapes[idx].strokeColorOverride = hex
+    }
+
     /// v38: sätt kant-etikett (visas bredvid midpoint-handtaget).
-    func setEdgeLabel(id: UUID, label: String) {
+    /// v62: även placering (ovanför/under pilen).
+    func setEdgeLabel(id: UUID, label: String, placement: EdgeLabelPlacement = .below) {
         guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
         snapshotForUndo()
         edges[idx].label = label
+        edges[idx].labelPlacement = placement
     }
 
     /// v27: hel eller streckad linje.
@@ -626,7 +643,9 @@ final class CanvasModel: ObservableObject {
                 heightMultiplier: shape.heightMultiplier, note: shape.note,
                 prompt: shape.prompt,   // v60
                 category: shape.category, rotation: shape.rotation,
-                colorOverride: shape.colorOverride, linkNumber: nil,
+                colorOverride: shape.colorOverride,
+                strokeColorOverride: shape.strokeColorOverride,   // v62
+                linkNumber: nil,
                 tableRows: shape.tableRows, tableCols: shape.tableCols,
                 tableCells: shape.tableCells,
                 textStyle: shape.textStyle, colorPackId: shape.colorPackId,

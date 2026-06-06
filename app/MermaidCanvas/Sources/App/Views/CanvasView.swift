@@ -199,7 +199,8 @@ struct CanvasView: View {
                       onEdgeDelete: onEdgeDelete,
                       onEdgeSetDirection: { id, dir in model.setEdgeDirection(id: id, direction: dir) },
                       onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) },
-                      onEdgeRename: { id, label in model.setEdgeLabel(id: id, label: label) },
+                      onEdgeRename: { id, label, placement in
+                          model.setEdgeLabel(id: id, label: label, placement: placement) },
                       onToggleCollapse: { id in model.toggleCollapse(id: id) })
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
@@ -447,11 +448,22 @@ struct ShapeView: View {
     @State private var showContextMenu: Bool = false
 
     private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
-    private var effectiveFill: Color { pack.fillColor }
-    private var effectiveStroke: Color {
-        pack.id != "none" ? pack.strokeColor : shape.category.strokeColor
+    // v62: egna färger (fyllning + ram separat) går före paket/kategori.
+    private var effectiveFill: Color {
+        if let hex = shape.colorOverride, let c = Color(hexString: hex) { return c }
+        return pack.fillColor
     }
-    private var effectiveTextColor: Color { pack.textColor }
+    private var effectiveStroke: Color {
+        if let hex = shape.strokeColorOverride, let c = Color(hexString: hex) { return c }
+        return pack.id != "none" ? pack.strokeColor : shape.category.strokeColor
+    }
+    private var effectiveTextColor: Color {
+        // Egen fyllning → välj svart/vit på luminans så texten alltid syns.
+        if let hex = shape.colorOverride, Color(hexString: hex) != nil {
+            return Color.isDarkHex(hex) ? .white : Color(hex: 0x111827)
+        }
+        return pack.textColor
+    }
 
     /// v39: formatterat label med bullets/numrering + indrag.
     private var formattedLabel: String {
@@ -905,7 +917,7 @@ struct EdgesView: View {
     var onEdgeDelete: (UUID) -> Void
     var onEdgeSetDirection: (UUID, EdgeDirection) -> Void
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
-    var onEdgeRename: (UUID, String) -> Void
+    var onEdgeRename: (UUID, String, EdgeLabelPlacement) -> Void
     /// v48: toggle-callback för collapse-badges. Tar shape-ID.
     var onToggleCollapse: (UUID) -> Void
 
@@ -1025,8 +1037,9 @@ struct EdgesView: View {
                let edge = edges.first(where: { $0.id == id }) {
                 EdgeLabelSheet(
                     initial: edge.label,
-                    onSave: { newLabel in
-                        onEdgeRename(id, newLabel)
+                    initialPlacement: edge.labelPlacement,
+                    onSave: { newLabel, newPlacement in
+                        onEdgeRename(id, newLabel, newPlacement)
                         renamingEdgeId = nil
                     },
                     onCancel: { renamingEdgeId = nil }
@@ -1143,8 +1156,12 @@ struct EdgesView: View {
                 Label("Ta bort pil", systemImage: "trash")
             }
         }
-        // v38: kant-etikett under midpoint
+        // v38: kant-etikett vid midpoint. v62: ovanför/under enligt labelPlacement.
         if !label.isEmpty {
+            let labelOffset = size * 0.85 + 8 / canvasScale
+            let labelY = edge.wrappedValue.labelPlacement == .above
+                ? mid.y - labelOffset
+                : mid.y + labelOffset
             Text(label)
                 .font(.system(size: max(8, 10 / canvasScale), weight: .medium, design: .rounded))
                 .foregroundStyle(Color.accentColor)
@@ -1154,7 +1171,7 @@ struct EdgesView: View {
                 .background(Color(.systemBackground).opacity(0.88))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .allowsHitTesting(false)
-                .position(CGPoint(x: mid.x, y: mid.y + size * 0.85 + 8 / canvasScale))
+                .position(CGPoint(x: mid.x, y: labelY))
         }
     }
 
@@ -1275,20 +1292,29 @@ struct EdgesView: View {
             }
         }
 
-        // Pilhuvud-vinklar (bezier-tangent vid endpoint).
-        // v50.2 F-1: tidigare användes atan2(end - cp2) som matematiskt är
-        // exakt tangenten vid t=1, MEN när cp2 är nära end (kort pil eller
-        // låg tension) blir vektorn liten och atan2 numeriskt känslig →
-        // pilspetsen blir sned. Lösning: sampla bezier vid t=0.92 och peka
-        // från den punkten mot end. Det ger en stabil "near-endpoint-tangent"
-        // som matchar pilens visuella riktning även för korta pilar.
-        // v60: pilhuvudet pekar längs sidans INÅT-normal (-n) → möter alltid sidan
-        // VINKELRÄTT ("rakt in"). n1/n2 är enhetsvektorer och bezier-tangenten vid
-        // t=1 är exakt -n (eftersom cp = endpoint + n·tension), så pilhuvudet ligger
-        // i linje med kurvans faktiska slut — stabilt för korta/diagonala/roterade pilar.
-        // (Ersätter tidigare t=0.92-tangent-sampling som gav snett möte.)
-        let endAngle   = atan2(-n2.y, -n2.x)
-        let startAngle = atan2(-n1.y, -n1.x)
+        // Pilhuvud-vinklar.
+        // v62: spetsen följer den SYNLIGA linjens riktning vid änden — sampla kurvan
+        // nära spetsen (t=0.92/0.08) med de FAKTISKA kontrollpunkterna (inkl. routade).
+        // v60 låste vinkeln till sidans inåt-normal, vilket gjorde spetsen skev när
+        // linjen kom in diagonalt (Kims fynd i v61.2): linje och spets pekade åt olika
+        // håll. Near-endpoint-sampling är numeriskt stabil även för korta pilar
+        // (v50.2-resonemanget); normal-vinkeln behålls bara som fallback om samplet
+        // degenererar (sammanfallande punkter).
+        let nearEnd: CGPoint
+        let nearStart: CGPoint
+        if let wp = edge.waypoints.first {
+            nearEnd   = Self.quadBezier(t: 0.92, p0: wp.point, p1: cp2, p2: end)
+            nearStart = Self.quadBezier(t: 0.08, p0: start, p1: cp1, p2: wp.point)
+        } else {
+            nearEnd   = Self.cubicBezier(t: 0.92, p0: start, p1: cp1, p2: cp2, p3: end)
+            nearStart = Self.cubicBezier(t: 0.08, p0: start, p1: cp1, p2: cp2, p3: end)
+        }
+        let endVec   = CGPoint(x: end.x - nearEnd.x,     y: end.y - nearEnd.y)
+        let startVec = CGPoint(x: start.x - nearStart.x, y: start.y - nearStart.y)
+        let endAngle   = hypot(endVec.x, endVec.y) > 0.01
+            ? atan2(endVec.y, endVec.x)   : atan2(-n2.y, -n2.x)
+        let startAngle = hypot(startVec.x, startVec.y) > 0.01
+            ? atan2(startVec.y, startVec.x) : atan2(-n1.y, -n1.x)
 
         // v48 Fel #1: dra in linjens endpoint med lineWidth/2 i den änden där
         // pilspets ritas — så .round-cap inte sticker fram förbi spetsen
@@ -1417,6 +1443,16 @@ struct EdgesView: View {
         return CGPoint(
             x: uuu * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * p3.x,
             y: uuu * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * p3.y
+        )
+    }
+
+    /// v62: kvadratisk bezier — för pilspets-vinkeln på waypoint-kanter
+    /// (de ritas som två quad-segment, se drawEdge).
+    static func quadBezier(t: CGFloat, p0: CGPoint, p1: CGPoint, p2: CGPoint) -> CGPoint {
+        let u = 1 - t
+        return CGPoint(
+            x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+            y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y
         )
     }
 

@@ -1,13 +1,10 @@
-# ARKITEKTUR-MERMAID — Version v62
+# ARKITEKTUR-MERMAID — Version v61.2
 *Datum: 2026-06-06*
 
-**Aktuell version:** v62 — Kims tre fynd från v61.2: (1) pilspetsar följer linjens
-faktiska riktning (bezier-tangent, inte sid-normal), (2) kant-etiketter kan placeras
-ovanför/under pilen (`EdgeConnection.labelPlacement`), (3) separat fyllnings- och
-ram-färg per form (`colorOverride`/`strokeColorOverride` + Paket|Fyllning|Ram-segment
-i färg-raden). Bygger på v61-serien: självbärande mermaid, auto-layout för rå
-Claude-mermaid, iCloud-live-reload, skill-kedjor (`SKILL-KEDJA-KONTRAKT.md` +
-skillen `flode`). Detaljer per version i ROADMAP.md.
+**Aktuell version:** v61.2 (v61 + två fixar: v61.1 öppna-fil centrerar vyn på
+innehållet; v61.2 subgraph-barn får `childOfContainerId` i fallback-parse → raka
+pilar genom container-gränser. Plus: `SKILL-KEDJA-KONTRAKT.md` + skillen `flode` +
+referens-kedjan `morgonkoll-flode.md` — E2E-testad. Detaljer i ROADMAP.md.)
 **Single source of truth för version:** `app/MermaidCanvas/Sources/App/AppVersion.swift`
 
 > Detta dokument speglar **nuvarande** kod (v61). Den kompletta modul-kartan med

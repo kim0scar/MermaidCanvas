@@ -13,6 +13,8 @@ enum MermaidMetaComments {
         var width: CGFloat?
         var height: CGFloat?
         var color: String?
+        /// v62: separat ram-färg (`%% id stroke: #hex`)
+        var stroke: String?
         var note: String?
         var prompt: String?
         var textStyleRaw: String?
@@ -84,6 +86,8 @@ enum MermaidMetaComments {
             if let d = Double(value) { meta.height = CGFloat(d) }
         case "color":
             meta.color = value
+        case "stroke":
+            meta.stroke = value
         case "note":
             meta.note = multiLine(value)
         case "prompt":
