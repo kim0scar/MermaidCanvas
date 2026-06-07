@@ -2,7 +2,33 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v66 — "n8n-redo"
+## Aktuell version: v67 — "lugnare canvas"
+
+*Tema:* Kims 6 fynd efter v66-test på iPhone. Tre krävde vägval (kollaps, 3D, paket-
+omfång) — Kim valde. Sim-verifierat: n8n-paket, iPhone-ram (centrerad).
+
+**v67:**
+1. **n8n-PAKET:** flödesnoderna (Input/Agent/Verktyg/Router/Memory/Output) flyttade
+   från Former-raden till ett eget "n8n"-paket (`ShapePack.n8n`). Paket-raden visar
+   de 6 flödes-chipsen när paketet är aktivt. Färg per kategori behålls.
+2. **Läs-LAPPAR på canvasen:** `NoteCardsLayer` ritas nu i CANVAS-space (inuti
+   `CanvasView`-ZStacken) → lappen panorerar och zoomar med tavlan och försvinner ur
+   vy när Kim panorerar bort, i stället för att sitta fast på skärmen och täcka saker.
+3. **Kollaps-minus:** sitter vid pilens utgångspunkt på källnodens KANT (inte mitt på
+   pilen) och syns bara när noden är markerad. Per-gren-kollaps behålls. Pilen är ren
+   i normalläge. (`minusBadgePosition` utgår från `anchors.start`.)
+4. **Mitten-fix:** nya former byggs i mitten. Rotorsak: `visibleCenterInCanvas` föll
+   till (0,0) när `globalFrame` ännu var `.zero` (precis efter fil-öppning) → former
+   landade i övre vänstra hörnet. Guarden faller nu tillbaka till canvas-mitten.
+5. **iPhone 16 Pro-ram:** ny `ShapeType.phoneFrame` (bezel + skärm + dynamic island)
+   bland basformerna, för att bygga UI ovanpå. Round-trip via state-JSON +
+   `%% shape-type`-kommentar (självbärande mermaid). `PhoneFrameShape`/`PhoneFrameBackground`.
+6. **3D-print:** medvetet skjutet till senare version (Kims val). Plan: 3D-paket
+   (kub/cylinder/klot/kon), mått i prompt/anteckning, Claude Code → OpenSCAD → STL.
+- Nya tester: V67Tests (5: mitten-fix, phoneFrame round-trip ×2, n8n-paket).
+  V35-validering utökad med phoneFrame. Unit-sviten: **110/110 gröna.**
+
+## v66 — "n8n-redo"
 
 *Tema:* Kims 6 fynd (rotorsaks-analyserade av 3 par subagenter + ifrågasättare) +
 egen UI/UX-svep. Sju faser, alla sim-bevisade.

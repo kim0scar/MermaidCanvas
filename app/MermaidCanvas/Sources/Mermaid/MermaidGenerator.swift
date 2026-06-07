@@ -81,6 +81,11 @@ enum MermaidGenerator {
                 let c = shape.tableCols ?? 3
                 lines.append("\(indent)%% \(id) table: \(r)×\(c)")
             }
+            // v67: telefon-ram saknar egen Mermaid-syntax → bevara typen explicit
+            // så den självbärande fallback-parsern återskapar den (state-JSON ändå autoritativ).
+            if shape.type == .phoneFrame {
+                lines.append("\(indent)%% \(id) shape-type: phoneFrame")
+            }
             // v23: textstil + färg-paket
             if shape.textStyle != .body {
                 lines.append("\(indent)%% \(id) style: \(shape.textStyle.rawValue)")
@@ -546,6 +551,7 @@ enum MermaidGenerator {
         // v44: container — renderas som subgraph i en separat loop (se generate())
         case .container:    return "(\"\(label)\")"    // fallback om någon container skulle hamna i shape-loop
         case .octagon:      return "(\"\(label)\")"    // v51.1: Mermaid saknar oktagon; rundad rektangel-fallback (round-trip via state-JSON)
+        case .phoneFrame:   return "[\"\(label)\"]"    // v67: Mermaid saknar telefon-form; rektangel-fallback (typ bevaras via %% shape-type + state-JSON)
         }
     }
 

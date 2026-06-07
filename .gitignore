@@ -3,6 +3,7 @@
 
 # Xcode
 DerivedData/
+DerivedDataDevice/
 DerivedData-sim/
 DerivedData-v34/
 *.xcuserstate

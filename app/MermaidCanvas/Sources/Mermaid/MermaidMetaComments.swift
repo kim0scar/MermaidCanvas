@@ -30,6 +30,8 @@ enum MermaidMetaComments {
         /// Absolut slutpunkt för lösa linjer/pilar (generatorn skriver absolut;
         /// görs om till relativ offset när positionen är känd).
         var lineEndAbsolute: CGPoint?
+        /// v67: explicit form-typ för former utan egen Mermaid-syntax (t.ex. phoneFrame).
+        var shapeTypeRaw: String?
     }
 
     /// Skannar ett mermaid-block rad för rad. Returnerar metadata per mermaid-id.
@@ -109,6 +111,8 @@ enum MermaidMetaComments {
             }
         case "line-end":
             if let p = point(value) { meta.lineEndAbsolute = p }
+        case "shape-type":
+            meta.shapeTypeRaw = value
         default:
             break // okänd nyckel (t.ex. "name" — label kommer från nod-syntaxen) — ignorera
         }

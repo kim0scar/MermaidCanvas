@@ -1,12 +1,12 @@
 import SwiftUI
 
-/// v66: Kvarliggande läs-LAPPAR på canvasen (ersätter QuickReadSheet-modalen,
+/// v66/v67: Kvarliggande läs-LAPPAR PÅ canvasen (ersätter QuickReadSheet-modalen,
 /// Kims fynd: "popup som ligger kvar så man kan läsa alla"). Flera samtidigt.
-/// Ritas i SKÄRM-space ovanpå canvasen → texten alltid läsbar oavsett zoom,
-/// och ingen konflikt med canvasens pan-gester. Följer sin form vid pan/zoom.
+/// v67: ritas i CANVAS-space (inuti den zoombara tavlan) → lappen panorerar och
+/// zoomar med formen och försvinner ur vy när Kim panorerar bort, i stället för att
+/// sitta fast på skärmen och täcka saker (Kims fynd 2).
 struct NoteCardsLayer: View {
     @ObservedObject var model: CanvasModel
-    @ObservedObject var viewportState: CanvasViewportState
     @Binding var openCards: [UUID]
     var onEdit: (UUID) -> Void
 
@@ -24,17 +24,13 @@ struct NoteCardsLayer: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
-    /// Lappen läggs intill formen (höger sida), clampad så den alltid syns.
+    /// Canvas-koordinat: lappen läggs intill formen (höger sida). Ingen skärm-klamp —
+    /// den hör till tavlan, inte skärmen.
+    static let cardWidth: CGFloat = 260
     private func cardPosition(for shape: ShapeNode) -> CGPoint {
-        let scale = viewportState.zoomScale
-        let sx = shape.position.x * scale - viewportState.contentOffset.width
-        let sy = shape.position.y * scale - viewportState.contentOffset.height
-        let w = max(viewportState.globalFrame.width, 280)
-        let h = max(viewportState.globalFrame.height, 300)
-        let halfShapeW = ShapeGeometry.width(for: shape) / 2 * scale
-        let x = min(max(sx + halfShapeW + 145, 135), w - 135)
-        let y = min(max(sy, 130), h - 150)
-        return CGPoint(x: x, y: y)
+        let halfShapeW = ShapeGeometry.width(for: shape) / 2
+        let x = shape.position.x + halfShapeW + Self.cardWidth / 2 + 16
+        return CGPoint(x: x, y: shape.position.y)
     }
 }
 

@@ -118,17 +118,13 @@ struct ContentView: View {
                     legend: model.legend)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
             },
+            openCards: $openCards,
             zoomPercent: $zoomPercent,
             resetZoomTrigger: resetZoomTrigger,
             centerOnPoint: $centerOnPoint
         )
-        // v66: läs-lappar i skärm-space ovanpå canvasen (följer formerna vid pan/zoom)
-        .overlay {
-            NoteCardsLayer(model: model,
-                           viewportState: viewportState,
-                           openCards: $openCards,
-                           onEdit: { id in editingShapeId = id })
-        }
+        // v67: läs-lappar ritas nu PÅ canvasen (canvas-space) inuti CanvasView —
+        // de panorerar med tavlan i stället för att sitta fast på skärmen (Kims fynd 2).
     }
 
     var body: some View {
@@ -533,6 +529,7 @@ struct ContentView: View {
         // v44
         case .container:    return "rectangle.dashed"
         case .octagon:      return "octagon"
+        case .phoneFrame:   return "iphone"
         }
     }
 

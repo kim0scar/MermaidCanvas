@@ -185,3 +185,43 @@ struct OctagonShape: Shape {
         return len > 0.001 ? CGVector(dx: dx / len, dy: dy / len) : .zero
     }
 }
+
+// MARK: - iPhone-ram v67
+
+/// v67: yttre bezel-silhuett för iPhone-ramen — används av stroke/highlight/selection.
+/// Rundningen följer min-sidan (bredden) så den ser ut som en telefon vid alla storlekar.
+struct PhoneFrameShape: Shape {
+    var cornerRadiusRatio: CGFloat = DesignTokens.Shape.phoneFrameCornerRadiusRatio
+    func path(in rect: CGRect) -> Path {
+        let r = min(rect.width, rect.height) * cornerRadiusRatio
+        return Path(roundedRect: rect, cornerRadius: r, style: .continuous)
+    }
+}
+
+/// v67: iPhone 16 Pro-ram — mörk bezel + ljus skärm + dynamic island.
+/// Bezel = formens ram-färg (mörk default), skärm = formens fyllning (ljus default),
+/// så Kim kan bygga UI ovanpå och färgväljaren funkar som på andra former.
+struct PhoneFrameBackground: View {
+    var bezel: Color
+    var screen: Color
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height
+            let r = min(w, h) * DesignTokens.Shape.phoneFrameCornerRadiusRatio
+            let inset: CGFloat = max(4, w * 0.045)
+            ZStack {
+                RoundedRectangle(cornerRadius: r, style: .continuous)
+                    .fill(bezel)
+                    .shadow(color: .black.opacity(0.10), radius: 4, y: 2)
+                RoundedRectangle(cornerRadius: max(2, r - inset), style: .continuous)
+                    .fill(screen)
+                    .padding(inset)
+                // Dynamic island
+                Capsule()
+                    .fill(bezel)
+                    .frame(width: w * 0.34, height: max(8, h * 0.028))
+                    .position(x: w / 2, y: inset + h * 0.035)
+            }
+        }
+    }
+}

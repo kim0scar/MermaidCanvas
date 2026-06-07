@@ -45,8 +45,12 @@ final class CanvasViewportState: ObservableObject {
     }
 
     /// Canvas-koordinat för MITTEN av nuvarande synliga viewport.
+    /// v67: faller tillbaka till canvas-mitten (2000,2000) också när `globalFrame`
+    /// ännu är `.zero` — annars blev resultatet (0,0) och nya former landade i
+    /// övre vänstra hörnet om Kim tappade en chip innan vyn hunnit mätas (Kims fynd 4).
+    /// 2000,2000 är samma punkt som `fitToScreen` centrerar på → formen hamnar mitt på skärmen.
     var visibleCenterInCanvas: CGPoint {
-        guard zoomScale > 0.0001 else { return CGPoint(x: 2000, y: 2000) }
+        guard zoomScale > 0.0001, globalFrame != .zero else { return CGPoint(x: 2000, y: 2000) }
         let scrollCenterX = contentOffset.width + globalFrame.width / 2
         let scrollCenterY = contentOffset.height + globalFrame.height / 2
         return CGPoint(x: scrollCenterX / zoomScale, y: scrollCenterY / zoomScale)

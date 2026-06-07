@@ -10,6 +10,9 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
     case ui
     /// v31: Claude/AI-agent-flow (n8n-inspirerat) — subagent, prompt, skill, tool, memory, output.
     case promptProcess
+    /// v67: n8n-paket — flödesnoderna (Input/Agent/Verktyg/Router/Memory/Output)
+    /// flyttade hit från Former-raden (Kims fynd: "ha n8n som paket-typ").
+    case n8n
     /// v31: legacy (kvar för fil-bakåtkompat — migreras till .note vid öppning)
     case roadmap
     case architecture
@@ -18,13 +21,14 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     /// v31: pack:er som visas i form-pack-rad. .basic är alltid på, legacy är dolda.
-    static var userToggleable: [ShapePack] { [.ui, .promptProcess] }
+    static var userToggleable: [ShapePack] { [.ui, .promptProcess, .n8n] }
 
     var displayName: String {
         switch self {
         case .basic: return "Basformer"
         case .ui: return "UI"
         case .promptProcess: return "Prompt-Process"
+        case .n8n: return "n8n"
         case .roadmap: return "Roadmap (utfasad)"
         case .architecture: return "Arkitektur (utfasad)"
         case .flow: return "Flow (utfasad)"
@@ -36,6 +40,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .basic: return "square.on.circle"
         case .ui: return "iphone"
         case .promptProcess: return "brain.head.profile"
+        case .n8n: return "arrow.triangle.branch"
         case .roadmap: return "map"
         case .architecture: return "rectangle.3.group"
         case .flow: return "arrow.triangle.branch"
@@ -47,6 +52,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .basic: return "Cirkel, rektangel, diamant, pill, text, tabell, länk, lös linje/pil."
         case .ui: return "UI-element, zoner, overlays."
         case .promptProcess: return "Subagents, prompter, skills, tools, memory, output (Claude/agent-flow)."
+        case .n8n: return "Input, Agent, Verktyg, Router, Memory, Output — n8n-lika flödesnoder."
         case .roadmap, .architecture, .flow: return "Utfasad i v31 — formerna migreras till anteckning."
         }
     }
@@ -57,6 +63,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .basic: return []
         case .ui: return [.ui, .zone, .overlay]
         case .promptProcess: return [.subagent, .prompt, .skill, .tool, .memory, .output]
+        case .n8n: return [.input, .agent, .tool, .router, .memory, .output]
         case .roadmap, .architecture, .flow: return []  // v31: tomt
         }
     }
@@ -67,6 +74,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .basic: return nil
         case .ui: return .ui
         case .promptProcess: return .subagent
+        case .n8n: return .input
         case .roadmap, .architecture, .flow: return nil
         }
     }

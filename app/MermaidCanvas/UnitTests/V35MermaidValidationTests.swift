@@ -32,7 +32,9 @@ final class V35MermaidValidationTests: XCTestCase {
             // v44 — container (subgraph i Mermaid)
             ShapeNode(type: .container,    position: CGPoint(x: 1200, y: 100), label: "Container"),
             // v51.1 — åttahörning (Mermaid-fallback = rundad rektangel; round-trip via state-JSON)
-            ShapeNode(type: .octagon,      position: CGPoint(x: 1300, y: 100), label: "Åttahörning")
+            ShapeNode(type: .octagon,      position: CGPoint(x: 1300, y: 100), label: "Åttahörning"),
+            // v67 — iPhone-ram (Mermaid-fallback = rektangel; typ bevaras via %% shape-type + state-JSON)
+            ShapeNode(type: .phoneFrame,   position: CGPoint(x: 1400, y: 100), label: "iPhone-ram")
         ]
         XCTAssertEqual(shapes.count, ShapeType.allCases.count, "Testet ska täcka alla ShapeType-fall")
         // Sanity check: alla ShapeType-fall ska finnas representerade
@@ -78,6 +80,9 @@ final class V35MermaidValidationTests: XCTestCase {
         XCTAssertTrue(mermaid.contains("\"Container\""), "Container-label saknas i output")
         // v51.1: åttahörning
         XCTAssertTrue(mermaid.contains("\"Åttahörning\""), "Åttahörning-label saknas i output")
+        // v67: iPhone-ram
+        XCTAssertTrue(mermaid.contains("\"iPhone-ram\""), "iPhone-ram-label saknas i output")
+        XCTAssertTrue(mermaid.contains("shape-type: phoneFrame"), "iPhone-ram ska ha %% shape-type")
 
         // Tabell-metadata ska finnas som mermaid-kommentar
         XCTAssertTrue(mermaid.contains("table: 3×4"),

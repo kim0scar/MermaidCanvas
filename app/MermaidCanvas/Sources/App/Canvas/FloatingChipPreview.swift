@@ -34,6 +34,7 @@ struct FloatingChipPreview: View {
         // v44
         case .container:    return "rectangle.dashed"
         case .octagon:      return "octagon"
+        case .phoneFrame:   return "iphone"
         }
     }
 }

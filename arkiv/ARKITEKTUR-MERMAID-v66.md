@@ -1,17 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v67
+# ARKITEKTUR-MERMAID — Version v66
 *Datum: 2026-06-07*
-
-> **v67 "lugnare canvas":** Kims 6 fynd efter v66-test.
-> (1) flödesnoderna flyttade från Former-raden till ett **n8n-PAKET** (`ShapePack.n8n`
-> + paket-raden visar de 6 flödes-chipsen när paketet är aktivt); (2) läs-LAPPARNA
-> ritas nu i **CANVAS-space** (`NoteCardsLayer` inuti `CanvasView`-ZStacken) → de
-> panorerar med tavlan i stället för att sitta fast på skärmen; (3) kollaps-**minus
-> sitter vid pilens utgångspunkt på nodens kant** och bara när noden är markerad
-> (`minusBadgePosition` utgår från `anchors.start`); (4) nya former **byggs i mitten**
-> (`visibleCenterInCanvas` faller tillbaka till canvas-mitten när `globalFrame` ännu
-> är `.zero`); (5) ny form **iPhone 16 Pro-ram** (`ShapeType.phoneFrame` +
-> `PhoneFrameShape`/`PhoneFrameBackground` — bezel/skärm/dynamic island, round-trip via
-> state-JSON + `%% shape-type`); (6) 3D-print = senare version. Detaljer i ROADMAP.md.
 
 > **v66 "n8n-redo":** rotorsaks-driven storstädning efter Kims 6 fynd + UI/UX-svep.
 > (1) `EdgeMath` — EN delad bezier-funktion, vinkelmedveten → rund båge för

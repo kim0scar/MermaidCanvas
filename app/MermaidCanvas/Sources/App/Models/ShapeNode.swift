@@ -30,6 +30,8 @@ enum ShapeType: String, Codable, CaseIterable {
     case container
     /// v51.1: åttahörning (octagon) med rundade hörn.
     case octagon
+    /// v67: iPhone 16 Pro-skärmram — en telefon-bezel att bygga UI ovanpå.
+    case phoneFrame
 }
 
 extension ShapeType: Transferable {

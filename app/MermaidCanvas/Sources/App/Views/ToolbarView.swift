@@ -252,6 +252,8 @@ struct ToolbarView: View {
                 geoChip(.diamond, accId: "chip.diamond", frame: 40) { model.addShape(.diamond, at: canvasCenter) }
                 geoChip(.processArrow, accId: "chip.processArrow", frame: 40) { model.addShape(.processArrow, at: canvasCenter) }
                 geoChip(.octagon, accId: "chip.octagon", frame: 40) { model.addShape(.octagon, at: canvasCenter) }
+                // v67: iPhone 16 Pro-ram (för att bygga UI ovanpå) — bland basformerna
+                geoChip(.phoneFrame, accId: "chip.phoneFrame", frame: 40) { model.addShape(.phoneFrame, at: canvasCenter) }
             }
             // Rad B — behållare + verktyg (container, tabell, länk, linje, anteckningar)
             HStack(spacing: 8) {
@@ -271,19 +273,23 @@ struct ToolbarView: View {
                 .accessibilityIdentifier("chip.notepopup")
                 .accessibilityLabel(a11yLabel(for: "chip.notepopup"))
             }
-            // v66: Rad C — SEMANTISK NOD-PALETT för skill-kedjor: ett tryck ger
-            // rätt form + kategori + färg (slut på manuell ihopparning som
-            // kunde bryta skill-exporten).
-            HStack(spacing: 6) {
-                flowChip(.pill, .input, "Input", accId: "chip.flow.input")
-                flowChip(.rectangle, .agent, "Agent", accId: "chip.flow.agent")
-                flowChip(.rectangle, .tool, "Verktyg", accId: "chip.flow.tool")
-                flowChip(.diamond, .router, "Router", accId: "chip.flow.router")
-                flowChip(.rectangle, .memory, "Memory", accId: "chip.flow.memory")
-                flowChip(.pill, .output, "Output", accId: "chip.flow.output")
-            }
+            // v67: flödesnoderna (f.d. Rad C) flyttade till n8n-paketet (packs-raden).
         }
         .padding(.horizontal, 2)
+    }
+
+    /// v66/v67: SEMANTISK NOD-PALETT för skill-kedjor — ett tryck ger rätt form +
+    /// kategori + färg. Visas i n8n-paketet (packs-raden).
+    @ViewBuilder
+    private var n8nFlowChips: some View {
+        HStack(spacing: 6) {
+            flowChip(.pill, .input, "Input", accId: "chip.flow.input")
+            flowChip(.rectangle, .agent, "Agent", accId: "chip.flow.agent")
+            flowChip(.rectangle, .tool, "Verktyg", accId: "chip.flow.tool")
+            flowChip(.diamond, .router, "Router", accId: "chip.flow.router")
+            flowChip(.rectangle, .memory, "Memory", accId: "chip.flow.memory")
+            flowChip(.pill, .output, "Output", accId: "chip.flow.output")
+        }
     }
 
     /// v66: flödes-chip — formen i KATEGORINS färg + etikett under.
@@ -369,6 +375,8 @@ struct ToolbarView: View {
             ProcessArrowShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
         case .octagon:
             OctagonShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        case .phoneFrame:
+            PhoneFrameShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
         default:
             EmptyView()
         }
@@ -389,12 +397,18 @@ struct ToolbarView: View {
         .accessibilityLabel(a11yLabel(for: "chip.pack.\(pack.rawValue)"))
     }
 
-    /// v31: Form-paket-rad — togglar för UI och Prompt-Process.
+    /// v31: Form-paket-rad — togglar för UI, Prompt-Process och n8n.
+    /// v67: när n8n-paketet är aktivt visas flödesnoderna direkt under togglarna.
     @ViewBuilder
     private var packsSecondary: some View {
-        HStack(spacing: 10) {
-            ForEach(ShapePack.userToggleable, id: \.self) { pack in
-                packToggle(pack)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                ForEach(ShapePack.userToggleable, id: \.self) { pack in
+                    packToggle(pack)
+                }
+            }
+            if model.activeShapePacks.contains(.n8n) {
+                n8nFlowChips
             }
         }
         .padding(.horizontal, 2)
@@ -514,6 +528,7 @@ struct ToolbarView: View {
         case "chip.link": return "Hopplänk"
         case "chip.line": return "Linje"
         case "chip.octagon": return "Åttahörning"
+        case "chip.phoneFrame": return "iPhone-ram"
         case "chip.notepopup": return "Visa anteckningar"
         default:
             if accId.hasPrefix("chip.pack.") || accId.hasPrefix("toggle.pack.") { return "Formpaket" }

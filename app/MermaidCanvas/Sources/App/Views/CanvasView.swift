@@ -13,15 +13,17 @@ enum ShapeGeometry {
         case .processArrow: return 110   // kompakt pil (spets 40% av bredden)
         case .container:    return 280   // v44: grupperande container ska rymma flera former
         case .octagon:      return 80    // v51.1: symmetrisk åttahörning
+        case .phoneFrame:   return 180   // v67: iPhone 16 Pro-proportion (~0.46 b/h)
         default:            return baseWidth
         }
     }
     static func typeBaseHeight(for type: ShapeType) -> CGFloat {
         switch type {
-        case .square:    return 80    // liksidig kvadrat
-        case .container: return 200   // v44: container — högre default-höjd
-        case .octagon:   return 80    // v51.1: symmetrisk åttahörning
-        default:         return baseHeight
+        case .square:     return 80    // liksidig kvadrat
+        case .container:  return 200   // v44: container — högre default-höjd
+        case .octagon:    return 80    // v51.1: symmetrisk åttahörning
+        case .phoneFrame: return 390   // v67: iPhone 16 Pro-proportion (180×390 ≈ 0.46)
+        default:          return baseHeight
         }
     }
 
@@ -83,6 +85,8 @@ struct CanvasView: View {
     var onTableEdit: (UUID) -> Void
     /// v66: kopiera container som skill-mermaid till urklipp
     var onCopySkill: (UUID) -> Void = { _ in }
+    /// v67: öppna läs-lappar — ligger PÅ canvasen (canvas-space), panorerar med tavlan.
+    @Binding var openCards: [UUID]
 
     /// v25: rapporterar zoom-procent uppåt till toolbar
     @Binding var zoomPercent: Int
@@ -282,6 +286,17 @@ struct CanvasView: View {
                     .zIndex(shape.type == .container ? -1 : 1)
                 }
             }
+
+            // v67: läs-LAPPAR ligger PÅ canvasen (canvas-space) — de panorerar och
+            // zoomar med tavlan och försvinner ur vy när Kim panorerar bort, i stället
+            // för att sitta fast på skärmen och täcka saker (Kims fynd 2).
+            NoteCardsLayer(model: model,
+                           openCards: $openCards,
+                           onEdit: { id in onShapeEdit(id) })
+                .frame(width: model.contentSize.width,
+                       height: model.contentSize.height,
+                       alignment: .topLeading)
+                .zIndex(5)
 
             // v50.5 v4 F10: multi-selection-ram följer formens egen geometri
             // (samma som SelectionHandles enkelmarkering). Tidigare alltid
@@ -758,6 +773,9 @@ struct ShapeView: View {
             OctagonShape()
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
+        case .phoneFrame:
+            // v67: mörk bezel (ram-färg) + ljus skärm (fyllning) + dynamic island.
+            PhoneFrameBackground(bezel: effectiveStroke, screen: effectiveFill)
         case .line, .arrow:
             EmptyView()
         }
@@ -783,6 +801,9 @@ struct ShapeView: View {
         case .container:
             // v44: container — streckad ram redan ritad i background
             EmptyView()
+        case .phoneFrame:
+            // v67: bezeln ÄR ramen (ritad i background)
+            EmptyView()
         case .table, .link, .line, .arrow:
             EmptyView()
         }
@@ -806,6 +827,8 @@ struct ShapeView: View {
                 ProcessArrowShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .octagon:
                 OctagonShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .phoneFrame:
+                PhoneFrameShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .container:
                 RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
@@ -1067,11 +1090,9 @@ struct EdgesView: View {
                                       canvasScale: canvasScale,
                                       onTap: { onToggleCollapseEdge(edge.id) })
                     } else if isFromSelected, !hiddenShapeIds.contains(edge.to) {
-                        // v66: minus-badgen knyts till den FAKTISKA kurvans mitt
-                        // (samma anchors som midpoint-ikonen) och läggs 24pt
-                        // VINKELRÄTT — uppåt, eller nedåt om etiketten står ovanför.
-                        // Ersätter längs-pilen-offseten som klustrade med mitt-ikonen
-                        // på korta pilar (Kims fynd, skärmdump A).
+                        // v67: minus-badgen sitter vid pilens UTGÅNGSPUNKT på
+                        // källnodens kant (inte mitt på pilen) och bara när noden
+                        // är markerad — Kims fynd 3. Pilen blir ren i normalläge.
                         EdgeStartCollapseBadge(
                             position: minusBadgePosition(edge: edge,
                                                          fromShape: fromShape,
@@ -1102,20 +1123,22 @@ struct EdgesView: View {
         }
     }
 
-    /// v66: minus-badgens position — 24pt vinkelrätt från kurvans mitt
-    /// (uppåt på skärmen; nedåt om etiketten står ovanför).
+    /// v67: minus-badgens position — vid pilens UTGÅNGSPUNKT på källnodens kant
+    /// (inte mitt på pilen). Liten radiell knuff utåt + vinkelrätt så den ligger
+    /// på kanten utan att täcka linjen. Flera grenar lämnar olika perimeter-
+    /// punkter → badges hamnar naturligt isär (Kims fynd 3).
     private func minusBadgePosition(edge: EdgeConnection,
                                     fromShape: ShapeNode,
                                     toShape: ShapeNode) -> CGPoint {
         let anchors = edgeAnchors(edge: edge, fromShape: fromShape, toShape: toShape)
-        let perpA = anchors.midAngle + .pi / 2
-        var px = CGFloat(cos(perpA))
-        var py = CGFloat(sin(perpA))
+        let dx = anchors.start.x - fromShape.position.x
+        let dy = anchors.start.y - fromShape.position.y
+        let len = max(hypot(dx, dy), 0.001)
+        let tx = dx / len, ty = dy / len                 // radiell riktning utåt från noden
+        var px = -ty, py = tx                             // vinkelrät mot utgångsriktningen
         if py > 0 { px = -px; py = -py }                 // peka uppåt på skärmen
-        if edge.labelPlacement == .above, !edge.label.isEmpty {
-            px = -px; py = -py                           // etikett ovanför → minus under
-        }
-        return CGPoint(x: anchors.mid.x + px * 24, y: anchors.mid.y + py * 24)
+        return CGPoint(x: anchors.start.x + tx * 6 + px * 16,
+                       y: anchors.start.y + ty * 6 + py * 16)
     }
 
     @ViewBuilder
@@ -1491,7 +1514,7 @@ struct EdgesView: View {
             localPoint = CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
         case .diamond:
             localPoint = diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
-        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon:
+        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon, .phoneFrame:
             localPoint = rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
             return center

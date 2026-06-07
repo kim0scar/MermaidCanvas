@@ -31,6 +31,8 @@ struct SelectionOutline: View {
                 ProcessArrowShape().stroke(Color.accentColor, style: dashStyle)
             case .octagon:
                 OctagonShape().stroke(Color.accentColor, style: dashStyle)
+            case .phoneFrame:
+                PhoneFrameShape().stroke(Color.accentColor, style: dashStyle)
             case .circle:
                 Circle().stroke(Color.accentColor, style: dashStyle)
             case .pill:

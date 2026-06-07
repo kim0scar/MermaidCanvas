@@ -62,6 +62,7 @@
 		6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B25CF04C2CA057CD0366B64 /* LegendPanel.swift */; };
 		6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969A68524F5A084A0839C4 /* DesignTokens.swift */; };
 		7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */; };
+		7467706C41CF4EAC940B5B06 /* V67Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C515D01227ECFFACAFCE12 /* V67Tests.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
 		7BCCD9DB163AFD89CFA15B6E /* EdgeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */; };
 		7D95F212EDEA8077BE51BC5A /* test_diamond_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */; };
@@ -181,6 +182,7 @@
 		2D0E6420DE137F57D019A7EB /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
 		34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_shape.1.png; sourceTree = "<group>"; };
+		36C515D01227ECFFACAFCE12 /* V67Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V67Tests.swift; sourceTree = "<group>"; };
 		37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C40B3396814B4ACFE3B46F4 /* V64RoundTripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V64RoundTripTests.swift; sourceTree = "<group>"; };
 		3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPack.swift; sourceTree = "<group>"; };
@@ -518,6 +520,7 @@
 				7B998AE460F35BAB33C5F354 /* V66LegendSkillTests.swift */,
 				2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */,
 				EF4ECFD80C82FFC6521E9E77 /* V66LRFlodeTests.swift */,
+				36C515D01227ECFFACAFCE12 /* V67Tests.swift */,
 				C27B478DB8B95307D57B1E0C /* __Snapshots__ */,
 			);
 			path = UnitTests;
@@ -837,6 +840,7 @@
 				CAABE56FFDCCA79218FD0018 /* V66LRFlodeTests.swift in Sources */,
 				AAB0E0E7D081504E0AA7159C /* V66LegendSkillTests.swift in Sources */,
 				C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */,
+				7467706C41CF4EAC940B5B06 /* V67Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
