@@ -58,9 +58,10 @@ final class V67Tests: XCTestCase {
 
     func testN8nPaket_FinnsOchHarRattKategorier() {
         XCTAssertTrue(ShapePack.userToggleable.contains(.n8n), "n8n syns i paket-raden")
-        XCTAssertEqual(ShapePack.n8n.categories,
-                       [.input, .agent, .tool, .router, .memory, .output],
-                       "n8n innehåller flödesnoderna")
+        // v68: paletten utökad — verifiera att grund-flödesnoderna finns med.
+        for c in [ShapeCategory.input, .agent, .tool, .router, .memory, .output] {
+            XCTAssertTrue(ShapePack.n8n.categories.contains(c), "n8n saknar \(c.rawValue)")
+        }
         XCTAssertEqual(ShapePack.n8n.defaultCategory, .input)
     }
 }

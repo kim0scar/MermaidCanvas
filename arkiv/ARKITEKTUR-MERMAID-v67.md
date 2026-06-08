@@ -1,16 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v68
-*Datum: 2026-06-08*
-
-> **v68 "former klara + komplett n8n":** Kims 6 fynd efter v67.
-> (2) ny **liksidig trekant** (`TriangleShape`) — grundformerna kompletta; round-trip
-> som octagon/phoneFrame (rektangel-kropp + `%% shape-type: triangle`, alltid giltig
-> mermaid); (5) canvas-former **+10%** (`ShapeGeometry.canvasScaleBoost` i width/height,
-> chips opåverkade); (4) **inramad tabell-ikon** (`TableGlyph`) ersätter grid-symbolen;
-> (3) **etiketter under Rad B-chipsen** (Container/Tabell/Länk/Linje/Notis); (1) iPhone-ramen
-> flyttad från Former-raden till en **"Mallar"-meny** i paket-raden (iPhone 16 Pro, mått
-> 180×391 = 0.460; modellnamn som caption på ramen via `PhoneFrameBackground.caption`);
-> (6) **komplett n8n-palett** (9 chips i 2 rader: Input, Skill=container, Subagent, Agent,
-> Verktyg, Router, MD-fil, Prompt, Output — `ShapePack.n8n.categories` utökad). Detaljer i ROADMAP.md.
+# ARKITEKTUR-MERMAID — Version v67
+*Datum: 2026-06-07*
 
 > **v67 "lugnare canvas":** Kims 6 fynd efter v66-test.
 > (1) flödesnoderna flyttade från Former-raden till ett **n8n-PAKET** (`ShapePack.n8n`

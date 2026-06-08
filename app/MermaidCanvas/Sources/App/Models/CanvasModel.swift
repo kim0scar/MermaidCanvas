@@ -217,6 +217,17 @@ final class CanvasModel: ObservableObject {
         expandCanvasIfNeeded(near: position)
     }
 
+    /// v68: lägg en form med förvald label (Mallar-menyn — t.ex. iPhone-modellnamn).
+    func addShape(_ type: ShapeType, at position: CGPoint, label: String) {
+        snapshotForUndo()
+        let position = cascadedPosition(near: position)
+        let cat = specType.defaultCategory
+        let node = ShapeNode(type: type, position: position, label: label, category: cat)
+        shapes.append(node)
+        if type != .container { assignContainerForShape(node.id) }
+        expandCanvasIfNeeded(near: position)
+    }
+
     /// v31: lös linje eller pil — endpoint sätts 60pt åt höger om center som default.
     /// `withArrow=true` ger en lös pil med pilhuvud, false ger ett vanligt streck.
     func addFreeLine(at position: CGPoint, withArrow: Bool) {

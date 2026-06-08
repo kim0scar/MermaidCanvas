@@ -32,6 +32,8 @@ enum ShapeType: String, Codable, CaseIterable {
     case octagon
     /// v67: iPhone 16 Pro-skärmram — en telefon-bezel att bygga UI ovanpå.
     case phoneFrame
+    /// v68: liksidig trekant.
+    case triangle
 }
 
 extension ShapeType: Transferable {

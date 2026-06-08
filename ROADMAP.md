@@ -2,7 +2,30 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v67 — "lugnare canvas"
+## Aktuell version: v68 — "former klara + komplett n8n"
+
+*Tema:* Kims 6 fynd efter v67. Tre subagenter kartlade koden; två vägval valda av Kim
+(bara iPhone 16 Pro nu; komplett n8n-palett). Sim-verifierat.
+
+**v68:**
+1. **Trekant:** ny liksidig `TriangleShape` bland grundformerna (de är nu kompletta).
+   Round-trip som octagon/phoneFrame: rektangel-kropp i mermaid + `%% shape-type: triangle`
+   + state-JSON. Mermaid blir ALLTID giltig (det var Kims krav — gamla trekanten kraschade den).
+2. **+10% på canvas:** `ShapeGeometry.canvasScaleBoost = 1.10` i `width/height(for:)` (efter
+   lineEnd-returen). Lättare att greppa/ändra storlek. Toolbar-chips opåverkade.
+3. **Etiketter under Rad B-chipsen:** Container, Tabell, Länk, Linje, Notis får liten
+   8.5pt-etikett (samma som flödes-chipsen) — tydligare vad varje ikon är.
+4. **Inramad tabell-ikon:** egenritad `TableGlyph` (ram + 3×3-rutnät) ersätter SF-symbolen
+   som inte såg ut som en tabell.
+5. **iPhone-ram → "Mallar"-meny:** flyttad från Former-raden till en Mallar-knapp (iPhone-ikon)
+   i paket-raden. Bara iPhone 16 Pro nu (förberedd för fler). Mått 180×391 = 0.460 (exakt
+   16 Pro). Modellnamnet visas som diskret caption på ramen, skärmytan fri för UI-bygge.
+6. **Komplett n8n-palett:** 9 chips i 2 rader — Input · Skill (container=skill-gränsen) ·
+   Subagent · Agent · Verktyg / Router · MD-fil (memory, tydligare namn) · Prompt · Output.
+   Hela skill-kedjan kan nu ritas (per SKILL-KEDJA-KONTRAKT + N8N-FLODE-KONTRAKT).
+- Nya tester: V68Tests (7) + V35 utökad med trekant. Unit-sviten: **117/117 gröna.**
+
+## v67 — "lugnare canvas"
 
 *Tema:* Kims 6 fynd efter v66-test på iPhone. Tre krävde vägval (kollaps, 3D, paket-
 omfång) — Kim valde. Sim-verifierat: n8n-paket, iPhone-ram (centrerad).

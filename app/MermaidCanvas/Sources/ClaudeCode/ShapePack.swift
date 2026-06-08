@@ -63,7 +63,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .basic: return []
         case .ui: return [.ui, .zone, .overlay]
         case .promptProcess: return [.subagent, .prompt, .skill, .tool, .memory, .output]
-        case .n8n: return [.input, .agent, .tool, .router, .memory, .output]
+        case .n8n: return [.input, .skill, .subagent, .agent, .tool, .router, .memory, .prompt, .output]
         case .roadmap, .architecture, .flow: return []  // v31: tomt
         }
     }

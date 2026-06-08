@@ -14,6 +14,7 @@ enum ShapeGeometry {
         case .container:    return 280   // v44: grupperande container ska rymma flera former
         case .octagon:      return 80    // v51.1: symmetrisk åttahörning
         case .phoneFrame:   return 180   // v67: iPhone 16 Pro-proportion (~0.46 b/h)
+        case .triangle:     return 88    // v68: liksidig trekant (bredd ≈ höjd-ram)
         default:            return baseWidth
         }
     }
@@ -22,10 +23,16 @@ enum ShapeGeometry {
         case .square:     return 80    // liksidig kvadrat
         case .container:  return 200   // v44: container — högre default-höjd
         case .octagon:    return 80    // v51.1: symmetrisk åttahörning
-        case .phoneFrame: return 390   // v67: iPhone 16 Pro-proportion (180×390 ≈ 0.46)
+        case .phoneFrame: return 391   // v67/v68: exakt iPhone 16 Pro-proportion (180×391 = 0.460)
+        case .triangle:   return 80    // v68: liksidig trekant
         default:          return baseHeight
         }
     }
+
+    /// v68: canvas-formerna ritas 10% större (Kim: lättare att greppa/ändra storlek).
+    /// Gäller BARA canvas-rendering — toolbar-chips läser typeBaseWidth/Height direkt
+    /// och påverkas inte. Lösa linjer/pilar (lineEnd-baserade) returnerar före faktorn.
+    static let canvasScaleBoost: CGFloat = 1.10
 
     static func width(for shape: ShapeNode) -> CGFloat {
         // v66: linjens/pilens bbox följer lineEnd-spannet — ändpunkts-handtaget
@@ -33,13 +40,13 @@ enum ShapeGeometry {
         if shape.type == .line || shape.type == .arrow, let e = shape.lineEnd {
             return max(abs(e.x) * 2 + 24, 44)
         }
-        return typeBaseWidth(for: shape.type) * shape.effectiveWidth
+        return typeBaseWidth(for: shape.type) * shape.effectiveWidth * canvasScaleBoost
     }
     static func height(for shape: ShapeNode) -> CGFloat {
         if shape.type == .line || shape.type == .arrow, let e = shape.lineEnd {
             return max(abs(e.y) * 2 + 24, 44)
         }
-        return typeBaseHeight(for: shape.type) * shape.effectiveHeight
+        return typeBaseHeight(for: shape.type) * shape.effectiveHeight * canvasScaleBoost
     }
     static func halfWidth(for shape: ShapeNode) -> CGFloat { width(for: shape) / 2 }
     static func halfHeight(for shape: ShapeNode) -> CGFloat { height(for: shape) / 2 }
@@ -553,7 +560,7 @@ struct ShapeView: View {
             // v50.3 R3: Containers label hanteras via separat .overlay nedan
             // (Lucidchart-stil ovanför ramen). Andra former behåller centrerad
             // text inuti ZStack:en.
-            if shape.showLabel && shape.type != .container {
+            if shape.showLabel && shape.type != .container && shape.type != .phoneFrame {
                 Text(formattedLabel)
                     .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
                                   weight: shape.textStyle.fontWeight,
@@ -774,8 +781,13 @@ struct ShapeView: View {
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .phoneFrame:
-            // v67: mörk bezel (ram-färg) + ljus skärm (fyllning) + dynamic island.
-            PhoneFrameBackground(bezel: effectiveStroke, screen: effectiveFill)
+            // v67/v68: mörk bezel + ljus skärm + dynamic island + diskret modell-caption.
+            PhoneFrameBackground(bezel: effectiveStroke, screen: effectiveFill,
+                                 caption: shape.showLabel ? shape.label : "")
+        case .triangle:
+            TriangleShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .line, .arrow:
             EmptyView()
         }
@@ -798,6 +810,8 @@ struct ShapeView: View {
             ProcessArrowShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .octagon:
             OctagonShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+        case .triangle:
+            TriangleShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .container:
             // v44: container — streckad ram redan ritad i background
             EmptyView()
@@ -829,6 +843,8 @@ struct ShapeView: View {
                 OctagonShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .phoneFrame:
                 PhoneFrameShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .triangle:
+                TriangleShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .container:
                 RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
@@ -1514,7 +1530,7 @@ struct EdgesView: View {
             localPoint = CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
         case .diamond:
             localPoint = diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
-        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon, .phoneFrame:
+        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon, .phoneFrame, .triangle:
             localPoint = rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
             return center

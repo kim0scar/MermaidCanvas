@@ -530,6 +530,7 @@ struct ContentView: View {
         case .container:    return "rectangle.dashed"
         case .octagon:      return "octagon"
         case .phoneFrame:   return "iphone"
+        case .triangle:     return "triangle"
         }
     }
 

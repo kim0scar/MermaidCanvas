@@ -186,6 +186,77 @@ struct OctagonShape: Shape {
     }
 }
 
+// MARK: - Trekant v68
+
+/// v68: liksidig trekant med rundade hörn. Topp-vertex centrerad upptill,
+/// nedre två hörnen i botten — höjden anpassas så sidorna blir lika långa
+/// inom ramen (ShapeGeometry ger 80×80, men vi ritar den liksidiga triangeln
+/// centrerad). Rundade hörn via quadCurve (samma mönster som OctagonShape).
+struct TriangleShape: Shape {
+    var cornerRadiusRatio: CGFloat = DesignTokens.Shape.triangleCornerRadiusRatio
+    func path(in rect: CGRect) -> Path {
+        // Liksidig triangel centrerad i rect: sidlängd = min(bredd, höjd-anpassad).
+        let side = min(rect.width, rect.height * 2 / sqrt(3))
+        let h = side * sqrt(3) / 2
+        let cx = rect.midX
+        let cy = rect.midY
+        let top    = CGPoint(x: cx,            y: cy - h / 2)
+        let left   = CGPoint(x: cx - side / 2, y: cy + h / 2)
+        let right  = CGPoint(x: cx + side / 2, y: cy + h / 2)
+        let r = min(h * cornerRadiusRatio, side / 4)
+
+        func unit(from a: CGPoint, to b: CGPoint) -> CGVector {
+            let dx = b.x - a.x, dy = b.y - a.y
+            let len = sqrt(dx * dx + dy * dy)
+            return len > 0.001 ? CGVector(dx: dx / len, dy: dy / len) : .zero
+        }
+        func off(_ p: CGPoint, by v: CGVector, _ amt: CGFloat) -> CGPoint {
+            CGPoint(x: p.x + v.dx * amt, y: p.y + v.dy * amt)
+        }
+        let t_l = unit(from: top, to: left)
+        let l_r = unit(from: left, to: right)
+        let r_t = unit(from: right, to: top)
+
+        var p = Path()
+        p.move(to: off(top, by: t_l, r))
+        p.addLine(to: off(left, by: t_l, -r))
+        p.addQuadCurve(to: off(left, by: l_r, r), control: left)
+        p.addLine(to: off(right, by: l_r, -r))
+        p.addQuadCurve(to: off(right, by: r_t, r), control: right)
+        p.addLine(to: off(top, by: r_t, -r))
+        p.addQuadCurve(to: off(top, by: t_l, r), control: top)
+        p.closeSubpath()
+        return p
+    }
+}
+
+// MARK: - Tabell-glyf v68
+
+/// v68: inramad tabell-ikon för toolbar-chipet (Kims fynd: SF-symbolen såg inte
+/// ut som en tabell). Yttre rundad ram + 2 lodräta + 2 vågräta inre linjer = 3×3.
+struct TableGlyph: View {
+    var stroke: Color = .primary
+    var lineWidth: CGFloat = 1.5
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height
+            ZStack {
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .stroke(stroke, lineWidth: lineWidth)
+                Path { p in
+                    // Lodräta inre linjer (3 kolumner)
+                    p.move(to: CGPoint(x: w / 3, y: 0));     p.addLine(to: CGPoint(x: w / 3, y: h))
+                    p.move(to: CGPoint(x: 2 * w / 3, y: 0)); p.addLine(to: CGPoint(x: 2 * w / 3, y: h))
+                    // Vågräta inre linjer (3 rader)
+                    p.move(to: CGPoint(x: 0, y: h / 3));     p.addLine(to: CGPoint(x: w, y: h / 3))
+                    p.move(to: CGPoint(x: 0, y: 2 * h / 3)); p.addLine(to: CGPoint(x: w, y: 2 * h / 3))
+                }
+                .stroke(stroke, lineWidth: lineWidth * 0.8)
+            }
+        }
+    }
+}
+
 // MARK: - iPhone-ram v67
 
 /// v67: yttre bezel-silhuett för iPhone-ramen — används av stroke/highlight/selection.
@@ -204,6 +275,8 @@ struct PhoneFrameShape: Shape {
 struct PhoneFrameBackground: View {
     var bezel: Color
     var screen: Color
+    /// v68: modellnamn (t.ex. "iPhone 16 Pro") som liten caption under dynamic island.
+    var caption: String = ""
     var body: some View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
@@ -221,6 +294,14 @@ struct PhoneFrameBackground: View {
                     .fill(bezel)
                     .frame(width: w * 0.34, height: max(8, h * 0.028))
                     .position(x: w / 2, y: inset + h * 0.035)
+                // v68: diskret modell-caption upptill, lämnar skärmytan fri för UI-bygge
+                if !caption.isEmpty {
+                    Text(caption)
+                        .font(.system(size: max(8, w * 0.075), weight: .semibold, design: .rounded))
+                        .foregroundStyle(bezel.opacity(0.75))
+                        .lineLimit(1)
+                        .position(x: w / 2, y: inset + h * 0.085)
+                }
             }
         }
     }

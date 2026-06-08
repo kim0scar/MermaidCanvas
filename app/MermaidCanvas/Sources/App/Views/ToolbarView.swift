@@ -252,43 +252,84 @@ struct ToolbarView: View {
                 geoChip(.diamond, accId: "chip.diamond", frame: 40) { model.addShape(.diamond, at: canvasCenter) }
                 geoChip(.processArrow, accId: "chip.processArrow", frame: 40) { model.addShape(.processArrow, at: canvasCenter) }
                 geoChip(.octagon, accId: "chip.octagon", frame: 40) { model.addShape(.octagon, at: canvasCenter) }
-                // v67: iPhone 16 Pro-ram (för att bygga UI ovanpå) — bland basformerna
-                geoChip(.phoneFrame, accId: "chip.phoneFrame", frame: 40) { model.addShape(.phoneFrame, at: canvasCenter) }
+                // v68: liksidig trekant (grundformerna kompletta)
+                geoChip(.triangle, accId: "chip.triangle", frame: 40) { model.addShape(.triangle, at: canvasCenter) }
             }
-            // Rad B — behållare + verktyg (container, tabell, länk, linje, anteckningar)
-            HStack(spacing: 8) {
-                geoChip(.container, accId: "chip.container", frame: 40) { model.addShape(.container, at: canvasCenter) }
-                // v66: 3x3-rutnät (Kims önskemål — 'tablecells' såg inte ut som tabell)
-                shapeChip(.table, "square.grid.3x3",   accId: "chip.table", onTap: onAddTable)
-                shapeChip(.link,  "link",              accId: "chip.link",  onTap: onAddJumpLink)
-                shapeChip(.line,  "minus",             accId: "chip.line") {
-                    model.addFreeLine(at: canvasCenter, withArrow: false)
+            // Rad B — behållare + verktyg, NU med små etiketter under ikonen (Kims fynd 3).
+            HStack(alignment: .top, spacing: 8) {
+                VStack(spacing: 2) {
+                    geoChip(.container, accId: "chip.container", frame: 40) { model.addShape(.container, at: canvasCenter) }
+                    chipLabel("Container")
                 }
-                Button {
-                    onShowNotePopup()
-                } label: {
-                    ChipFace(systemImage: "bubble.left.and.text.bubble.right")
+                VStack(spacing: 2) {
+                    // v68: egenritad inramad tabell-glyf (Kims fynd 4 — grid-symbolen såg inte ut som tabell)
+                    shapeChipGeneric(type: .table, accId: "chip.table", onTap: onAddTable) {
+                        TableGlyph(stroke: .primary, lineWidth: 1.6)
+                            .frame(width: 20, height: 18)
+                            .frame(width: 44, height: 44)
+                            .background(Circle().fill(.ultraThinMaterial))
+                            .overlay(Circle().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+                            .contentShape(Circle())
+                    }
+                    chipLabel("Tabell")
                 }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("chip.notepopup")
-                .accessibilityLabel(a11yLabel(for: "chip.notepopup"))
+                VStack(spacing: 2) {
+                    shapeChip(.link, "link", accId: "chip.link", onTap: onAddJumpLink)
+                    chipLabel("Länk")
+                }
+                VStack(spacing: 2) {
+                    shapeChip(.line, "minus", accId: "chip.line") {
+                        model.addFreeLine(at: canvasCenter, withArrow: false)
+                    }
+                    chipLabel("Linje")
+                }
+                VStack(spacing: 2) {
+                    Button {
+                        onShowNotePopup()
+                    } label: {
+                        ChipFace(systemImage: "bubble.left.and.text.bubble.right")
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("chip.notepopup")
+                    .accessibilityLabel(a11yLabel(for: "chip.notepopup"))
+                    chipLabel("Notis")
+                }
             }
             // v67: flödesnoderna (f.d. Rad C) flyttade till n8n-paketet (packs-raden).
         }
         .padding(.horizontal, 2)
     }
 
-    /// v66/v67: SEMANTISK NOD-PALETT för skill-kedjor — ett tryck ger rätt form +
-    /// kategori + färg. Visas i n8n-paketet (packs-raden).
+    /// v68: liten etikett under ett verktygs-chip (Kims fynd 3). Samma kompakta
+    /// font som flödes-chipsen, ryms under ikonen utan att ta plats.
+    @ViewBuilder
+    private func chipLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 8.5, weight: .medium))
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .frame(width: 52)
+    }
+
+    /// v66/v67/v68: SEMANTISK NOD-PALETT för skill-kedjor — ett tryck ger rätt form +
+    /// kategori + färg. Visas i n8n-paketet (packs-raden). v68: komplett uppsättning
+    /// för en HEL skill-kedja (Skill=container, Subagent, Prompt; Memory→"MD-fil").
     @ViewBuilder
     private var n8nFlowChips: some View {
-        HStack(spacing: 6) {
-            flowChip(.pill, .input, "Input", accId: "chip.flow.input")
-            flowChip(.rectangle, .agent, "Agent", accId: "chip.flow.agent")
-            flowChip(.rectangle, .tool, "Verktyg", accId: "chip.flow.tool")
-            flowChip(.diamond, .router, "Router", accId: "chip.flow.router")
-            flowChip(.rectangle, .memory, "Memory", accId: "chip.flow.memory")
-            flowChip(.pill, .output, "Output", accId: "chip.flow.output")
+        VStack(spacing: 8) {
+            HStack(spacing: 6) {
+                flowChip(.pill, .input, "Input", accId: "chip.flow.input")
+                flowChip(.container, .skill, "Skill", accId: "chip.flow.skill")
+                flowChip(.rectangle, .subagent, "Subagent", accId: "chip.flow.subagent")
+                flowChip(.rectangle, .agent, "Agent", accId: "chip.flow.agent")
+                flowChip(.rectangle, .tool, "Verktyg", accId: "chip.flow.tool")
+            }
+            HStack(spacing: 6) {
+                flowChip(.diamond, .router, "Router", accId: "chip.flow.router")
+                flowChip(.rectangle, .memory, "MD-fil", accId: "chip.flow.memory")
+                flowChip(.rectangle, .prompt, "Prompt", accId: "chip.flow.prompt")
+                flowChip(.pill, .output, "Output", accId: "chip.flow.output")
+            }
         }
     }
 
@@ -377,6 +418,8 @@ struct ToolbarView: View {
             OctagonShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
         case .phoneFrame:
             PhoneFrameShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
+        case .triangle:
+            TriangleShape().stroke(Color.primary, lineWidth: stroke).frame(width: s.width, height: s.height)
         default:
             EmptyView()
         }
@@ -406,12 +449,38 @@ struct ToolbarView: View {
                 ForEach(ShapePack.userToggleable, id: \.self) { pack in
                     packToggle(pack)
                 }
+                mallarMenu
             }
             if model.activeShapePacks.contains(.n8n) {
                 n8nFlowChips
             }
         }
         .padding(.horizontal, 2)
+    }
+
+    /// v68: Mallar-meny — fördefinierade former att bygga UI på (iPhone-modeller).
+    /// Förberedd för fler modeller; en post nu (Kims val: bara 16 Pro).
+    @ViewBuilder
+    private var mallarMenu: some View {
+        Menu {
+            Button {
+                model.addShape(.phoneFrame, at: canvasCenter, label: "iPhone 16 Pro")
+            } label: {
+                Label("iPhone 16 Pro", systemImage: "iphone")
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "iphone").font(.subheadline)
+                Text("Mallar").font(.subheadline.weight(.medium))
+            }
+            .foregroundStyle(Color.primary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Capsule().fill(Color(.systemBackground)))
+            .overlay(Capsule().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+        }
+        .accessibilityIdentifier("toolbar.mallar")
+        .accessibilityLabel("Mallar")
     }
 
     @ViewBuilder
@@ -528,6 +597,7 @@ struct ToolbarView: View {
         case "chip.link": return "Hopplänk"
         case "chip.line": return "Linje"
         case "chip.octagon": return "Åttahörning"
+        case "chip.triangle": return "Triangel"
         case "chip.phoneFrame": return "iPhone-ram"
         case "chip.notepopup": return "Visa anteckningar"
         default:
