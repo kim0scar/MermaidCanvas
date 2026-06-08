@@ -36,6 +36,7 @@ struct FloatingChipPreview: View {
         case .octagon:      return "octagon"
         case .phoneFrame:   return "iphone"
         case .triangle:     return "triangle"
+        case .cylinder:     return "cylinder"
         }
     }
 }

@@ -1,15 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v69
-*Datum: 2026-06-09*
-
-> **v69 "process-kontroll + första MFP-kedjan":** efter rådgivning om MFP-produkten.
-> Ny **process-kontroll-vokabulär** för pålitliga skill-kedjor: (1) **Grind** (`ShapeCategory.gate`,
-> romb, rosa) = måste-passera, skild från Router (väljer väg); (2) **Bevis** (`ShapeCategory.evidence`
-> + ny `ShapeType.cylinder`/`CylinderShape`) = sparade belägg, NATIVE mermaid `[(...)]` (round-trip
-> UTAN `%% shape-type`); (3) **Manual** (`ShapeCategory.manual`, åttahörning, röd) = mänsklig koll;
-> (4) **Script** (`ShapeCategory.script`, rektangel, cyan) = deterministisk kod. n8n-paletten utökad
-> till **13 chips i 3 rader** (`ShapePack.n8n.categories`). Medvetet bortvalt: tung Nod-inspektör.
-> Levererat utanför appen: canvas-filen `mfp-site-intelligence.md` + skillen
-> `~/.claude/skills/mfp-site-intelligence/SKILL.md`, validerad mot Canon Sverige. Detaljer i ROADMAP.md.
+# ARKITEKTUR-MERMAID — Version v68
+*Datum: 2026-06-08*
 
 > **v68 "former klara + komplett n8n":** Kims 6 fynd efter v67.
 > (2) ny **liksidig trekant** (`TriangleShape`) — grundformerna kompletta; round-trip

@@ -553,6 +553,7 @@ enum MermaidGenerator {
         case .octagon:      return "(\"\(label)\")"    // v51.1: Mermaid saknar oktagon; rundad rektangel-fallback (round-trip via state-JSON)
         case .phoneFrame:   return "[\"\(label)\"]"    // v67: Mermaid saknar telefon-form; rektangel-fallback (typ bevaras via %% shape-type + state-JSON)
         case .triangle:     return "[\"\(label)\"]"    // v68: rektangel-fallback (alltid giltig mermaid); typ bevaras via %% shape-type + state-JSON
+        case .cylinder:     return "[(\"\(label)\")]"  // v69: native mermaid-cylinder (databas/bevis) — round-trippar utan %% shape-type
         }
     }
 

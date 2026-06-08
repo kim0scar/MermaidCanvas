@@ -37,6 +37,12 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
     case prompt
     case skill
 
+    // v69 — process-kontroll-vokabulär (för pålitliga skill-kedjor)
+    case gate       // måste-passera-kontroll (≠ router som bara väljer väg)
+    case evidence   // sparade belägg (skärmdump, HTML, URL)
+    case manual     // mänsklig kontroll krävs — stoppa automatiken
+    case script     // deterministisk kod (curl/jq/python), ingen LLM-gissning
+
     // Godot-läge — kategorier matchar Godot UI-noder
     case godot_scene       // .tscn scene-root (motsvarar "Screen")
     case godot_control     // generisk Control-nod
@@ -81,6 +87,10 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .subagent:        return "Subagent"
         case .prompt:          return "Prompt"
         case .skill:           return "Skill"
+        case .gate:            return "Grind"
+        case .evidence:        return "Bevis"
+        case .manual:          return "Manual"
+        case .script:          return "Script"
         }
     }
 
@@ -94,6 +104,7 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .godot_scene, .godot_control, .godot_container, .godot_panel,
              .godot_button, .godot_label, .godot_signal, .godot_script: return .godot
         case .subagent, .prompt, .skill: return .flow // v31: Prompt-Process delar SpecType.flow
+        case .gate, .evidence, .manual, .script: return .flow // v69: process-kontroll hör till flow
         case .note: return .ui // note är gemensam men hör hem i UI som default
         }
     }
@@ -163,6 +174,11 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .subagent:        return Color(hex: 0x7c3aed) // violett (agent-delegering)
         case .prompt:          return Color(hex: 0x10b981) // emerald (text-input)
         case .skill:           return Color(hex: 0xf97316) // orange (kapacitet)
+        // v69 process-kontroll
+        case .gate:            return Color(hex: 0xe11d48) // rose (måste-passera)
+        case .evidence:        return Color(hex: 0x64748b) // slate (sparat belägg)
+        case .manual:          return Color(hex: 0xdc2626) // röd (stopp/manuell)
+        case .script:          return Color(hex: 0x06b6d4) // cyan (deterministisk kod)
         }
     }
 
@@ -199,6 +215,11 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .subagent:        return Color(hex: 0x5b21b6)
         case .prompt:          return Color(hex: 0x059669)
         case .skill:           return Color(hex: 0xc2410c)
+        // v69 process-kontroll
+        case .gate:            return Color(hex: 0x9f1239) // rose-900
+        case .evidence:        return Color(hex: 0x334155) // slate-700
+        case .manual:          return Color(hex: 0x7f1d1d) // röd-900
+        case .script:          return Color(hex: 0x0e7490) // cyan-700
         }
     }
 
@@ -209,7 +230,8 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
              .module, .service, .data, .input, .agent, .tool,
              .router, .memory, .output,
              .godot_scene, .godot_control, .godot_container,
-             .subagent, .prompt, .skill:
+             .subagent, .prompt, .skill,
+             .gate, .evidence, .manual, .script:
             return Color(hex: 0xf9fafb)
         // Ljusa fyllningar → mörk text
         case .zone, .folder, .file,
@@ -268,6 +290,10 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .subagent:        return "Subagent"
         case .prompt:          return "Prompt"
         case .skill:           return "Skill"
+        case .gate:            return "Grind"
+        case .evidence:        return "Bevis"
+        case .manual:          return "Manual"
+        case .script:          return "Script"
         }
     }
 
@@ -303,6 +329,10 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .subagent:        return "Subagent — delegerad uppgift till annan Claude-instans."
         case .prompt:          return "Prompt — text till LLM/agent."
         case .skill:           return "Skill — predefined kapacitet/protokoll."
+        case .gate:            return "Grind — kvalitetskontroll som MÅSTE passeras (≠ router som bara väljer väg)."
+        case .evidence:        return "Bevis — sparade belägg (skärmdump, HTML, URL) för spårbarhet."
+        case .manual:          return "Manual — mänsklig kontroll krävs, stoppa automatiken hellre än att gissa."
+        case .script:          return "Script — deterministisk kod (curl/jq/python), ingen LLM-gissning."
         }
     }
 }

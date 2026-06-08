@@ -317,6 +317,7 @@ struct ToolbarView: View {
     @ViewBuilder
     private var n8nFlowChips: some View {
         VStack(spacing: 8) {
+            // Rad 1 — aktörer
             HStack(spacing: 6) {
                 flowChip(.pill, .input, "Input", accId: "chip.flow.input")
                 flowChip(.container, .skill, "Skill", accId: "chip.flow.skill")
@@ -324,9 +325,17 @@ struct ToolbarView: View {
                 flowChip(.rectangle, .agent, "Agent", accId: "chip.flow.agent")
                 flowChip(.rectangle, .tool, "Verktyg", accId: "chip.flow.tool")
             }
+            // Rad 2 — kontroll (v69: Grind/Manual/Script)
             HStack(spacing: 6) {
                 flowChip(.diamond, .router, "Router", accId: "chip.flow.router")
+                flowChip(.diamond, .gate, "Grind", accId: "chip.flow.gate")
+                flowChip(.octagon, .manual, "Manual", accId: "chip.flow.manual")
+                flowChip(.rectangle, .script, "Script", accId: "chip.flow.script")
+            }
+            // Rad 3 — data/artefakter (v69: Bevis)
+            HStack(spacing: 6) {
                 flowChip(.rectangle, .memory, "MD-fil", accId: "chip.flow.memory")
+                flowChip(.cylinder, .evidence, "Bevis", accId: "chip.flow.evidence")
                 flowChip(.rectangle, .prompt, "Prompt", accId: "chip.flow.prompt")
                 flowChip(.pill, .output, "Output", accId: "chip.flow.output")
             }
@@ -352,6 +361,14 @@ struct ToolbarView: View {
                         Capsule()
                             .stroke(category.strokeColor, lineWidth: 2)
                             .frame(width: 24, height: 15)
+                    case .octagon:
+                        OctagonShape()
+                            .stroke(category.strokeColor, lineWidth: 2)
+                            .frame(width: 18, height: 18)
+                    case .cylinder:
+                        CylinderShape()
+                            .stroke(category.strokeColor, lineWidth: 2)
+                            .frame(width: 20, height: 18)
                     default:
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(category.strokeColor, lineWidth: 2)

@@ -35,6 +35,8 @@ struct SelectionOutline: View {
                 PhoneFrameShape().stroke(Color.accentColor, style: dashStyle)
             case .triangle:
                 TriangleShape().stroke(Color.accentColor, style: dashStyle)
+            case .cylinder:
+                CylinderShape().stroke(Color.accentColor, style: dashStyle)
             case .circle:
                 Circle().stroke(Color.accentColor, style: dashStyle)
             case .pill:

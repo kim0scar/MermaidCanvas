@@ -15,6 +15,7 @@ enum ShapeGeometry {
         case .octagon:      return 80    // v51.1: symmetrisk åttahörning
         case .phoneFrame:   return 180   // v67: iPhone 16 Pro-proportion (~0.46 b/h)
         case .triangle:     return 88    // v68: liksidig trekant (bredd ≈ höjd-ram)
+        case .cylinder:     return 100   // v69: databas/bevis-cylinder
         default:            return baseWidth
         }
     }
@@ -25,6 +26,7 @@ enum ShapeGeometry {
         case .octagon:    return 80    // v51.1: symmetrisk åttahörning
         case .phoneFrame: return 391   // v67/v68: exakt iPhone 16 Pro-proportion (180×391 = 0.460)
         case .triangle:   return 80    // v68: liksidig trekant
+        case .cylinder:   return 90    // v69: databas/bevis-cylinder
         default:          return baseHeight
         }
     }
@@ -788,6 +790,10 @@ struct ShapeView: View {
             TriangleShape()
                 .fill(effectiveFill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
+        case .cylinder:
+            CylinderShape()
+                .fill(effectiveFill)
+                .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .line, .arrow:
             EmptyView()
         }
@@ -812,6 +818,8 @@ struct ShapeView: View {
             OctagonShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .triangle:
             TriangleShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
+        case .cylinder:
+            CylinderShape().stroke(effectiveStroke, lineWidth: DesignTokens.Shape.canvasStrokeWidth)
         case .container:
             // v44: container — streckad ram redan ritad i background
             EmptyView()
@@ -845,6 +853,8 @@ struct ShapeView: View {
                 PhoneFrameShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .triangle:
                 TriangleShape().stroke(Color.accentColor, lineWidth: 3.5)
+            case .cylinder:
+                CylinderShape().stroke(Color.accentColor, lineWidth: 3.5)
             case .container:
                 RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
@@ -1530,7 +1540,7 @@ struct EdgesView: View {
             localPoint = CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
         case .diamond:
             localPoint = diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
-        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon, .phoneFrame, .triangle:
+        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon, .phoneFrame, .triangle, .cylinder:
             localPoint = rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
             return center

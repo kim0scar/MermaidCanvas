@@ -36,7 +36,9 @@ final class V35MermaidValidationTests: XCTestCase {
             // v67 — iPhone-ram (Mermaid-fallback = rektangel; typ bevaras via %% shape-type + state-JSON)
             ShapeNode(type: .phoneFrame,   position: CGPoint(x: 1400, y: 100), label: "iPhone-ram"),
             // v68 — liksidig trekant (Mermaid-fallback = rektangel; typ bevaras via %% shape-type)
-            ShapeNode(type: .triangle,     position: CGPoint(x: 1500, y: 100), label: "Trekant")
+            ShapeNode(type: .triangle,     position: CGPoint(x: 1500, y: 100), label: "Trekant"),
+            // v69 — cylinder (native mermaid [(...)] — round-trippar UTAN %% shape-type)
+            ShapeNode(type: .cylinder,     position: CGPoint(x: 1600, y: 100), label: "Cylinder")
         ]
         XCTAssertEqual(shapes.count, ShapeType.allCases.count, "Testet ska täcka alla ShapeType-fall")
         // Sanity check: alla ShapeType-fall ska finnas representerade
@@ -88,6 +90,8 @@ final class V35MermaidValidationTests: XCTestCase {
         // v68: trekant
         XCTAssertTrue(mermaid.contains("\"Trekant\""), "Trekant-label saknas i output")
         XCTAssertTrue(mermaid.contains("shape-type: triangle"), "Trekant ska ha %% shape-type")
+        // v69: cylinder — native mermaid-syntax [("...")], INGEN %% shape-type behövs
+        XCTAssertTrue(mermaid.contains("[(\"Cylinder\")]"), "Cylinder ska exporteras som native [(\"...\")]")
 
         // Tabell-metadata ska finnas som mermaid-kommentar
         XCTAssertTrue(mermaid.contains("table: 3×4"),

@@ -34,6 +34,8 @@ enum ShapeType: String, Codable, CaseIterable {
     case phoneFrame
     /// v68: liksidig trekant.
     case triangle
+    /// v69: cylinder (databas/bevis) — native mermaid `[(...)]`.
+    case cylinder
 }
 
 extension ShapeType: Transferable {

@@ -230,6 +230,31 @@ struct TriangleShape: Shape {
     }
 }
 
+// MARK: - Cylinder v69
+
+/// v69: cylinder/databas-form (för Bevis-noder). Topp-ellips + raka sidor +
+/// botten-båge. Round-trippar som native mermaid `[(...)]`.
+struct CylinderShape: Shape {
+    /// Ellipsens höjd som andel av formens höjd (locket).
+    var capRatio: CGFloat = 0.18
+    func path(in rect: CGRect) -> Path {
+        let ry = min(rect.height * capRatio, rect.height / 2)
+        let topRect = CGRect(x: rect.minX, y: rect.minY, width: rect.width, height: ry * 2)
+        var p = Path()
+        // Vänster sida ned
+        p.move(to: CGPoint(x: rect.minX, y: rect.minY + ry))
+        p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - ry))
+        // Botten-båge (framsidan)
+        p.addArc(center: CGPoint(x: rect.midX, y: rect.maxY - ry),
+                 radius: rect.width / 2, startAngle: .degrees(180), endAngle: .degrees(0), clockwise: true)
+        // Höger sida upp
+        p.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + ry))
+        // Topp-ellips (hela locket)
+        p.addEllipse(in: topRect)
+        return p
+    }
+}
+
 // MARK: - Tabell-glyf v68
 
 /// v68: inramad tabell-ikon för toolbar-chipet (Kims fynd: SF-symbolen såg inte

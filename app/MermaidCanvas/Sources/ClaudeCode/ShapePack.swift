@@ -52,7 +52,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .basic: return "Cirkel, rektangel, diamant, pill, text, tabell, länk, lös linje/pil."
         case .ui: return "UI-element, zoner, overlays."
         case .promptProcess: return "Subagents, prompter, skills, tools, memory, output (Claude/agent-flow)."
-        case .n8n: return "Input, Agent, Verktyg, Router, Memory, Output — n8n-lika flödesnoder."
+        case .n8n: return "Hel skill-kedja: Input, Skill, Subagent, Agent, Verktyg, Router, Grind, Manual, Script, MD-fil, Bevis, Prompt, Output."
         case .roadmap, .architecture, .flow: return "Utfasad i v31 — formerna migreras till anteckning."
         }
     }
@@ -63,7 +63,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .basic: return []
         case .ui: return [.ui, .zone, .overlay]
         case .promptProcess: return [.subagent, .prompt, .skill, .tool, .memory, .output]
-        case .n8n: return [.input, .skill, .subagent, .agent, .tool, .router, .memory, .prompt, .output]
+        case .n8n: return [.input, .skill, .subagent, .agent, .tool, .router, .gate, .manual, .script, .memory, .evidence, .prompt, .output]
         case .roadmap, .architecture, .flow: return []  // v31: tomt
         }
     }

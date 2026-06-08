@@ -68,6 +68,7 @@ extension DesignTokens {
             case .octagon:             return height * octagonCornerRadiusRatio
             case .phoneFrame:          return height * 0.072   // v67 (mest för exhaustivitet)
             case .triangle:            return height * triangleCornerRadiusRatio
+            case .cylinder:            return height * 0.10   // v69 (mest för exhaustivitet — egen path)
             case .pill, .circle:       return height / 2
             case .line, .arrow, .link: return 0
             }
@@ -88,7 +89,7 @@ extension DesignTokens {
             switch shapeType {
             case .pill, .circle:
                 return min(width, height) / 2
-            case .diamond, .processArrow, .octagon, .phoneFrame, .triangle, .line, .arrow, .link:
+            case .diamond, .processArrow, .octagon, .phoneFrame, .triangle, .cylinder, .line, .arrow, .link:
                 // egna geometrier — SelectionOutline ritar formen, ingen rect-radie
                 return 0
             case .rectangle, .container, .table, .square:

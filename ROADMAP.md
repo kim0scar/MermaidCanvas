@@ -2,7 +2,30 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v68 — "former klara + komplett n8n"
+## Aktuell version: v69 — "process-kontroll: grind, bevis, manual + första MFP-kedjan"
+
+*Tema:* Efter rådgivning (två AI-källor) om MFP-skrap-produkten. Dom: börja med
+"hitta rätt officiell källa" (site-intelligence), inte "skrapa sida"; gå djupt på EN
+kedja. Mycket fanns redan (container=skill, memory=fil, %% prompt, "Kopiera som skill").
+Det som SAKNADES — och nu byggts — är process-kontroll-vokabulär för pålitliga kedjor.
+Medvetet bortvalt: tung Nod-inspektör/9-fälts-formulär (skadar Kims visuella flöde).
+
+**v69:**
+1. **Grind** (`ShapeCategory.gate`, romb, rosa) — måste-passera-kontroll, semantiskt skild
+   från Router (som bara väljer väg). Rådgivarens huvudpoäng.
+2. **Bevis** (`ShapeCategory.evidence` + ny `ShapeType.cylinder`/`CylinderShape`) — sparade
+   belägg. Cylindern är NATIVE mermaid `[(...)]` → round-trippar UTAN `%% shape-type`.
+3. **Manual** (`ShapeCategory.manual`, åttahörning, röd) — mänsklig koll krävs, stoppa
+   automatiken hellre än att gissa.
+4. **Script** (`ShapeCategory.script`, rektangel, cyan) — deterministisk kod, ingen LLM-gissning.
+5. **n8n-paletten utökad till 13 chips i 3 rader** — aktörer / kontroll (Router·Grind·Manual·Script)
+   / data (MD-fil·Bevis·Prompt·Output).
+6. **Första riktiga MFP-kedjan** ritad: `mfp-site-intelligence.md` (canvas-fil i iCloud) +
+   skill `~/.claude/skills/mfp-site-intelligence/SKILL.md`. Validerad genom att köras mot
+   Canon Sverige → `official_source_map.md`. Ersätter grova `mfp-inventory-source-pack`.
+- Nya tester: V69Tests (6) + V35 utökad med cylinder. Unit-sviten grön.
+
+## v68 — "former klara + komplett n8n"
 
 *Tema:* Kims 6 fynd efter v67. Tre subagenter kartlade koden; två vägval valda av Kim
 (bara iPhone 16 Pro nu; komplett n8n-palett). Sim-verifierat.

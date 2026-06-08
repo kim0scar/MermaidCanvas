@@ -25,6 +25,7 @@
 		150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
 		155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */; };
 		17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */; };
+		2044E6C34377DE47106D01A7 /* V69Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */; };
 		26BA18040735A21CC95E37DC /* V34DropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D49F47552871CE2D445E1F /* V34DropTests.swift */; };
 		2801B7CB05578020FBB75138 /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */; };
 		283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228F689846F0D1503749250D /* CanvasView.swift */; };
@@ -247,6 +248,7 @@
 		A41F5BB86AF1A189F4D59116 /* test_processarrow_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_processarrow_chip.1.png; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
+		AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V69Tests.swift; sourceTree = "<group>"; };
 		ADAFD7500719BA94561524F9 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
 		B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapRenderer.swift; sourceTree = "<group>"; };
 		B5958A7631F79A8FEB1B4108 /* V46ExplorationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V46ExplorationTest.swift; sourceTree = "<group>"; };
@@ -524,6 +526,7 @@
 				EF4ECFD80C82FFC6521E9E77 /* V66LRFlodeTests.swift */,
 				36C515D01227ECFFACAFCE12 /* V67Tests.swift */,
 				2E3CAD65F3CEBBD3CFE9B088 /* V68Tests.swift */,
+				AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */,
 				C27B478DB8B95307D57B1E0C /* __Snapshots__ */,
 			);
 			path = UnitTests;
@@ -845,6 +848,7 @@
 				C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */,
 				7467706C41CF4EAC940B5B06 /* V67Tests.swift in Sources */,
 				AB064C847E289BEAA8552B9A /* V68Tests.swift in Sources */,
+				2044E6C34377DE47106D01A7 /* V69Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
