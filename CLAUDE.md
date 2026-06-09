@@ -43,8 +43,8 @@ Den här tabellen är **alltid aktuell**. Uppdatera den så fort en ny sparplats
 | **Versions-ZIPar (rollback utan git)** | `~/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/Visuali2e-versioner/Visuali2e-vN.zip` — en ZIP per version-tagg, skapas vid varje deploy (`git archive`) | iCloud Drive (syns på iPhone + Mac) |
 | **Version-taggar (rollback med git)** | `git tag` — varje deploy taggas `vN` | GitHub (pushas med `git push origin --tags`) |
 | **Skill: flode (kör skill-kedjor / dirigent)** | `~/.claude/skills/flode/SKILL.md` | endast lokalt på Macen |
-| **MFP-pipeline: skill** | `~/.claude/skills/mfp-site-intelligence/SKILL.md` (Skill 1; körs/byggs via `flode`) | endast lokalt på Macen |
-| **MFP-pipeline: ritade flöden** | iCloud-Mermaid-mappen: `mfp-pipeline.md` (helheten, 4 skill-containrar) + `mfp-site-intelligence.md` (Skill 1) | iCloud Drive |
+| **MFP-pipeline: skills** | `~/.claude/skills/mfp-site-intelligence/SKILL.md` (Skill 1 v2: 4-vägs discovery + gap-analys + konsensus) + `~/.claude/skills/mfp-sortiment/SKILL.md` (Skill 2: E1/E2-par per sida) — körs via `flode` | endast lokalt på Macen |
+| **MFP-pipeline: ritade flöden** | iCloud-Mermaid-mappen: `mfp-pipeline.md` (helheten, 4 skill-containrar) + `mfp-site-intelligence.md` (Skill 1 v2; v1 i `mfp-site-intelligence-v1-arkiv.md`) + `mfp-sortiment.md` (Skill 2) | iCloud Drive |
 | **MFP-pipeline: körresultat** | iCloud-Mermaid-mappen: `mfp-site-intelligence/official_source_map.md` + `evidence/` (Skill 1 körd mot Canon) | iCloud Drive |
 | **Memory (för framtida sessioner)** | `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/` | endast lokalt på Macen |
 | **Plan-fil (aktuell roadmap)** | `~/.claude/plans/vi-ska-bygga-en-magical-knuth.md` | endast lokalt på Macen |
