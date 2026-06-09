@@ -38,6 +38,9 @@ struct ContentView: View {
     @State private var openCards: [UUID] = []
     /// v70: bekräftelse efter "Spara skill som fil".
     @State private var skillSavedMessage: String? = nil
+    /// v73: namn-fråga innan skill sparas (container utan riktigt namn → fråga Kim).
+    @State private var skillNameContainerId: UUID? = nil
+    @State private var skillNameInput: String = ""
     @State private var showCodeSheet: Bool = false
     @State private var showNewCanvasPrompt: Bool = false
     @State private var showNewCanvasSheet: Bool = false
@@ -124,24 +127,13 @@ struct ContentView: View {
             // bredvid pipeline-filen. Kim stannar kvar i helheten.
             onSaveSkillFile: { id in
                 guard let container = model.shapes.first(where: { $0.id == id }) else { return }
-                let subset = MermaidGenerator.containerSubset(
-                    containerId: id, shapes: model.shapes, edges: model.edges)
-                let doc = CanvasDocument(
-                    title: container.label.isEmpty ? "skill" : container.label,
-                    shapes: subset.shapes,
-                    edges: subset.edges,
-                    canvasSize: model.canvasSize,
-                    specType: .flow,
-                    platform: model.platform,
-                    activeShapePacks: model.activeShapePacks,
-                    collapsedEdgeIds: [],
-                    legend: model.legend)
-                if let url = fileManager.saveSkillFile(doc.content, named: container.label) {
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
-                    skillSavedMessage = "Sparad som \(url.lastPathComponent)"
+                // v73: utan riktigt namn → fråga Kim först (annars blir filen "skill.md")
+                let name = container.label.trimmingCharacters(in: .whitespaces)
+                if name.isEmpty || name == "Grupp" {
+                    skillNameInput = ""
+                    skillNameContainerId = id
                 } else {
-                    UINotificationFeedbackGenerator().notificationOccurred(.error)
-                    skillSavedMessage = "Kunde inte spara skill-filen"
+                    performSaveSkillFile(containerId: id, name: name)
                 }
             },
             openCards: $openCards,
@@ -331,6 +323,26 @@ struct ContentView: View {
         } message: {
             Text(skillSavedMessage ?? "")
         }
+        // v73: namn-fråga innan skill sparas (container hette inget / "Grupp")
+        .alert("Vad heter skillen?", isPresented: Binding(
+            get: { skillNameContainerId != nil },
+            set: { if !$0 { skillNameContainerId = nil } }
+        )) {
+            TextField("t.ex. mfp-sortiment", text: $skillNameInput)
+            Button("Spara") {
+                if let id = skillNameContainerId {
+                    let name = skillNameInput.trimmingCharacters(in: .whitespaces)
+                    if !name.isEmpty {
+                        model.renameShape(id: id, label: name)
+                        performSaveSkillFile(containerId: id, name: name)
+                    }
+                }
+                skillNameContainerId = nil
+            }
+            Button("Avbryt", role: .cancel) { skillNameContainerId = nil }
+        } message: {
+            Text("Namnet blir filnamn och containerns namn på canvasen.")
+        }
         .fileExporter(
             isPresented: $showExporter,
             document: pendingDocument,
@@ -510,6 +522,30 @@ struct ContentView: View {
             collapsedEdgeIds: model.collapsedEdgeIds,
             legend: model.legend
         )
+    }
+
+    /// v73: själva skill-sparandet — körs direkt om containern har namn,
+    /// annars efter namn-frågan (alerten ovan).
+    private func performSaveSkillFile(containerId: UUID, name: String) {
+        let subset = MermaidGenerator.containerSubset(
+            containerId: containerId, shapes: model.shapes, edges: model.edges)
+        let doc = CanvasDocument(
+            title: name,
+            shapes: subset.shapes,
+            edges: subset.edges,
+            canvasSize: model.canvasSize,
+            specType: .flow,
+            platform: model.platform,
+            activeShapePacks: model.activeShapePacks,
+            collapsedEdgeIds: [],
+            legend: model.legend)
+        if let url = fileManager.saveSkillFile(doc.content, named: name) {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            skillSavedMessage = "Sparad som \(url.lastPathComponent)"
+        } else {
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            skillSavedMessage = "Kunde inte spara skill-filen"
+        }
     }
 
     private func showMermaidCode() {

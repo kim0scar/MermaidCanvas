@@ -181,8 +181,10 @@ final class CanvasModel: ObservableObject {
     /// Om en form redan ligger nära `position`, förskjut den nya i en kaskad
     /// (nedåt-höger) tills platsen är fri. Deterministiskt, ingen extra state.
     private func cascadedPosition(near position: CGPoint) -> CGPoint {
-        let step: CGFloat = 28
-        let threshold: CGFloat = 20
+        // v73: 28pt-steget var mindre än formerna (120×80) — högen bara gled isär lite.
+        // 96pt diagonalt ger fri yta vertikalt (96 > basHöjd 80).
+        let step: CGFloat = 96
+        let threshold: CGFloat = 64
         var p = position
         var guardCount = 0
         while shapes.contains(where: { abs($0.position.x - p.x) < threshold && abs($0.position.y - p.y) < threshold }),
@@ -413,6 +415,13 @@ final class CanvasModel: ObservableObject {
         shapes[index].textAlignment = textAlignment
         shapes[index].hasBullets = hasBullets
         shapes[index].prompt = prompt   // v60
+    }
+
+    /// v73: byt bara namn (skill-spara-namnfrågan döper containern).
+    func renameShape(id: UUID, label: String) {
+        guard let i = shapes.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        shapes[i].label = label
     }
 
     /// v41: uppdatera tabell-form med nytt innehåll (från TableEditorSheet).

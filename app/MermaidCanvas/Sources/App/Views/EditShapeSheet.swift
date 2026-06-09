@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Slimmad ShapeEdit (v23) — bara namn, toggle, textstil, anteckning.
 /// v37: textAlignment + hasBullets tillagda.
-struct ShapeEdit {
+struct ShapeEdit: Equatable {
     var label: String
     var showLabel: Bool
     var note: String
@@ -69,17 +69,18 @@ struct EditShapeSheet: View {
                     }
                 }
 
-                Section("Anteckning (osynlig på canvasen)") {
+                // v60: prompt-fält. v73: flyttad ÖVER anteckningen + ny rubrik —
+                // prompten är skill-kedjornas kärna och ska synas utan scroll.
+                Section("Prompt (instruktionen till Claude — blir del av skillen)") {
+                    TextField("Input → uppgift → output. Subagenten ser bara detta.", text: $draft.prompt, axis: .vertical)
+                        .lineLimit(3...12)
+                        .accessibilityIdentifier("edit.prompt")
+                }
+
+                Section("Anteckning (din egen — ingår aldrig i skillen)") {
                     TextField("Skriv anteckning här", text: $draft.note, axis: .vertical)
                         .lineLimit(2...8)
                         .accessibilityIdentifier("edit.note")
-                }
-
-                // v60: prompt-fält — följer med i Mermaid-koden för n8n-flöden.
-                Section("Prompt (för n8n-flöde)") {
-                    TextField("Prompt-text som följer med i Mermaid-koden", text: $draft.prompt, axis: .vertical)
-                        .lineLimit(3...12)
-                        .accessibilityIdentifier("edit.prompt")
                 }
 
                 Section {
@@ -115,5 +116,7 @@ struct EditShapeSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+        // v73: osparade ändringar får inte försvinna av ett svep — stäng via Klar/Avbryt.
+        .interactiveDismissDisabled(draft != initial)
     }
 }
