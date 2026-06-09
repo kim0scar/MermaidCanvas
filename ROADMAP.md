@@ -2,7 +2,23 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v70 — "skill-containrar: spara en container som egen skill-fil"
+## Aktuell version: v71 — "legend som alltid-närvarande översättare"
+
+*Tema:* Kim ville att varje skill-flödes mermaid ALLTID bär en legend som översätter varje
+formtyp (kategori) → betydelse, så Claude läser koden självförklarande. Förut: legenden var
+manuell och oftast tom = ingen översättare.
+
+**v71:**
+1. **Auto-legend:** `MermaidGenerator.generate()` skriver nu en `%% legend <kategori>: <text>`
+   per ANVÄND formtyp, alltid. Manuellt ifylld rad (LegendPanel) vinner, annars kategorins
+   `pickerHint` som standard. Legenden översätter kategorin (en rad per typ), inte varje ruta.
+2. **MermaidCodeSheet** skickar nu `model.legend` (saknades → kod-vyn tappade Kims override).
+3. **State-JSON** lagrar fortsatt bara Kims MANUELLA legend-poster (defaults pollar inte staten).
+4. **Note vs prompt (bekräftat, ingen kodändring):** `prompt` = skill-instruktionen; `note` =
+   Kims privata kommentar som round-trippar i filen men ALDRIG blir del av skillen (kontraktet).
+- Nya tester: V71Tests (3). Unit-sviten grön.
+
+## v70 — "skill-containrar: spara en container som egen skill-fil"
 
 *Tema:* Kim utredde arkitekturen för hur ritade flöden blir skills + navigering helhet↔skill.
 Research (Claude Code-dokumentationen) + kodkartläggning → Kims egen idé valdes: **en

@@ -1,12 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v71
+# ARKITEKTUR-MERMAID — Version v70
 *Datum: 2026-06-09*
-
-> **v71 "legend som översättare":** varje skill-flödes mermaid bär nu ALLTID en legend som
-> översätter formtyp → betydelse. `MermaidGenerator.generate()` auto-fyller `%% legend
-> <kategori>: <text>` per använd kategori (manuell rad vinner, annars `ShapeCategory.pickerHint`).
-> `MermaidCodeSheet` skickar nu `model.legend`. State-JSON lagrar bara manuella poster.
-> Note/prompt-regel bekräftad (ingen kodändring): `prompt` blir skill, `note` är privat och
-> round-trippar men ingår aldrig i skillen. Detaljer i ROADMAP.md.
 
 > **v70 "skill-containrar":** efter utredning av hur ritade flöden blir skills + navigering.
 > Vald arkitektur (Kims idé): **en pipeline-fil = helheten, varje skill = en container,

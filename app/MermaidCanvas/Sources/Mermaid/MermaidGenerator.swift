@@ -257,13 +257,18 @@ enum MermaidGenerator {
             lines.append("    end")
         }
 
-        // v66: legend — Kims förklaring av vad varje kategori betyder.
-        // Läsbar för Claude direkt i mermaid-blocket.
-        let legendKeys = legend.keys.sorted()
-        if !legendKeys.isEmpty {
+        // v66/v71: legend — översätter varje använd formtyp (kategori) → betydelse,
+        // alltid med i mermaid som översättare för Claude. v71: AUTO-FYLL — en rad per
+        // använd kategori. Manuellt ifylld rad (LegendPanel) vinner, annars kategorins
+        // pickerHint som standard.
+        let usedCats = Set(shapes.map { $0.category })
+        let legendCats = ShapeCategory.allCases.filter { usedCats.contains($0) }
+        if !legendCats.isEmpty {
             lines.append("")
-            for key in legendKeys where !(legend[key] ?? "").isEmpty {
-                lines.append("    %% legend \(key): \(oneLine(legend[key]!))")
+            for cat in legendCats {
+                let manual = legend[cat.rawValue]
+                let text = (manual?.isEmpty == false) ? manual! : cat.pickerHint
+                lines.append("    %% legend \(cat.rawValue): \(oneLine(text))")
             }
         }
 
