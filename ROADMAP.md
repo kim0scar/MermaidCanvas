@@ -2,7 +2,15 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v71 — "legend som alltid-närvarande översättare"
+## Aktuell version: v72 — "save/handover (dokumentations-milstolpe)"
+
+*Tema:* Trygg savepoint inför `/clear`. Ingen feature-/logik-ändring — bara AppVersion-bump +
+fullständig dokumentation. Ny **`arkiv/HANDOVER-v72.md`** (beslutslogg: vägval + varför för
+v69→v72, MFP-pipelinens nuläge, nästa steg). Plan-filen (`vi-ska-bygga-en-magical-knuth.md`)
+uppdaterad från v61.2 → v72. CLAUDE.md:s spar-tabell pekar nu på MFP-skill + iCloud-canvas-filer
++ handover. ARKITEKTUR v71 arkiverad. Läs HANDOVER-v72 för helheten.
+
+## v71 — "legend som alltid-närvarande översättare"
 
 *Tema:* Kim ville att varje skill-flödes mermaid ALLTID bär en legend som översätter varje
 formtyp (kategori) → betydelse, så Claude läser koden självförklarande. Förut: legenden var

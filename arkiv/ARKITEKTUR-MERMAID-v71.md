@@ -1,9 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v72
+# ARKITEKTUR-MERMAID — Version v71
 *Datum: 2026-06-09*
-
-> **v72 "save/handover":** dokumentations-milstolpe inför `/clear`. INGEN arkitektur-/kod-ändring
-> (bara AppVersion v71→v72). Full beslutslogg + nuläge: **`arkiv/HANDOVER-v72.md`**. Arkitekturen
-> nedan beskriver fortsatt v71-koden. Plan-filen + CLAUDE.md uppdaterade att peka på MFP-pipelinen.
 
 > **v71 "legend som översättare":** varje skill-flödes mermaid bär nu ALLTID en legend som
 > översätter formtyp → betydelse. `MermaidGenerator.generate()` auto-fyller `%% legend

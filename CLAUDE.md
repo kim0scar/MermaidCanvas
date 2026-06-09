@@ -9,12 +9,13 @@ Detta är styrdokumentet för Claude Code i det här projektet. Kort med flit. N
 Detta är minimum för att fortsätta arbeta:
 
 1. **`CLAUDE.md`** (denna fil) — alla regler + var allt är
-2. **`app/MermaidCanvas/Sources/AppVersion.swift`** — nuvarande version-nummer (single source of truth)
-3. **`ARKITEKTUR-MERMAID.md`** — exakt vad nuvarande version har för funktioner + filöversikt
-4. **`~/.claude/plans/vi-ska-bygga-en-magical-knuth.md`** — vad som är gjort + nästa steg
-5. **`ROADMAP.md`** — versioner + roadmap framåt
-6. **Memory:** `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/MEMORY.md` (laddas automatiskt)
-7. **Git-loggen:** `git log --oneline -10` för senaste 10 commits
+2. **`app/MermaidCanvas/Sources/App/AppVersion.swift`** — nuvarande version-nummer (single source of truth)
+3. **`arkiv/HANDOVER-vN.md`** (senaste, t.ex. v72) — beslutslogg: vägval + varför + nuläge + nästa steg
+4. **`ARKITEKTUR-MERMAID.md`** — exakt vad nuvarande version har för funktioner + filöversikt
+5. **`~/.claude/plans/vi-ska-bygga-en-magical-knuth.md`** — vad som är gjort + nästa steg
+6. **`ROADMAP.md`** — versioner + roadmap framåt
+7. **Memory:** `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/MEMORY.md` (laddas automatiskt)
+8. **Git-loggen:** `git log --oneline -10` för senaste 10 commits
 
 Om något verkar saknas, fråga Kim: "Är allt sparat enligt CLAUDE.md sanningskälla?"
 
@@ -41,9 +42,13 @@ Den här tabellen är **alltid aktuell**. Uppdatera den så fort en ny sparplats
 | **Kims canvas-filer (i drift)** | `~/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/1. Mermaid/` | iCloud Drive — syns på både iPhone och Mac |
 | **Versions-ZIPar (rollback utan git)** | `~/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/Visuali2e-versioner/Visuali2e-vN.zip` — en ZIP per version-tagg, skapas vid varje deploy (`git archive`) | iCloud Drive (syns på iPhone + Mac) |
 | **Version-taggar (rollback med git)** | `git tag` — varje deploy taggas `vN` | GitHub (pushas med `git push origin --tags`) |
-| **Skill: flode (kör skill-kedjor)** | `~/.claude/skills/flode/SKILL.md` | endast lokalt på Macen |
+| **Skill: flode (kör skill-kedjor / dirigent)** | `~/.claude/skills/flode/SKILL.md` | endast lokalt på Macen |
+| **MFP-pipeline: skill** | `~/.claude/skills/mfp-site-intelligence/SKILL.md` (Skill 1; körs/byggs via `flode`) | endast lokalt på Macen |
+| **MFP-pipeline: ritade flöden** | iCloud-Mermaid-mappen: `mfp-pipeline.md` (helheten, 4 skill-containrar) + `mfp-site-intelligence.md` (Skill 1) | iCloud Drive |
+| **MFP-pipeline: körresultat** | iCloud-Mermaid-mappen: `mfp-site-intelligence/official_source_map.md` + `evidence/` (Skill 1 körd mot Canon) | iCloud Drive |
 | **Memory (för framtida sessioner)** | `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/` | endast lokalt på Macen |
 | **Plan-fil (aktuell roadmap)** | `~/.claude/plans/vi-ska-bygga-en-magical-knuth.md` | endast lokalt på Macen |
+| **Beslutslogg / handover (per save)** | `arkiv/HANDOVER-vN.md` (senaste = v72: vägval + varför + nuläge) | git |
 | **Versionssnapshot per deploy** | `arkiv/ARKITEKTUR-MERMAID-vN.md` | git |
 
 **Verifiera sparat-status:** `git status` (ska säga clean) + `git log --oneline -5` (sista commit syns) + `git status -sb` (ska säga `up to date with origin/main`).
