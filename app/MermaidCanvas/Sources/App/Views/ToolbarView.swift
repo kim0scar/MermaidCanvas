@@ -471,8 +471,37 @@ struct ToolbarView: View {
             if model.activeShapePacks.contains(.n8n) {
                 n8nFlowChips
             }
+            // v73: UI- och Prompt-Process-paketen hade ALDRIG chips (P5-fynd:
+            // segmentet såg dött ut). Samma mönster som n8n.
+            if model.activeShapePacks.contains(.promptProcess) {
+                promptProcessChips
+            }
+            if model.activeShapePacks.contains(.ui) {
+                uiPackChips
+            }
         }
         .padding(.horizontal, 2)
+    }
+
+    /// v73: chips för Prompt-Process-paketet (kategorier ur ShapePack.categories).
+    private var promptProcessChips: some View {
+        HStack(spacing: 6) {
+            flowChip(.rectangle, .subagent, "Subagent", accId: "chip.pp.subagent")
+            flowChip(.rectangle, .prompt, "Prompt", accId: "chip.pp.prompt")
+            flowChip(.container, .skill, "Skill", accId: "chip.pp.skill")
+            flowChip(.rectangle, .tool, "Verktyg", accId: "chip.pp.tool")
+            flowChip(.rectangle, .memory, "MD-fil", accId: "chip.pp.memory")
+            flowChip(.pill, .output, "Output", accId: "chip.pp.output")
+        }
+    }
+
+    /// v73: chips för UI-paketet.
+    private var uiPackChips: some View {
+        HStack(spacing: 6) {
+            flowChip(.rectangle, .ui, "UI", accId: "chip.uipack.ui")
+            flowChip(.rectangle, .zone, "Zon", accId: "chip.uipack.zone")
+            flowChip(.rectangle, .overlay, "Overlay", accId: "chip.uipack.overlay")
+        }
     }
 
     /// v68: Mallar-meny — fördefinierade former att bygga UI på (iPhone-modeller).
