@@ -528,17 +528,12 @@ enum MermaidGenerator {
     /// v44: returnerar UUIDs för shapes vars position ligger innanför en container's bounds.
     /// Lokal implementation — vi importerar inte CanvasModel i Mermaid-paketet.
     private static func containerChildrenIds(container: ShapeNode, allShapes: [ShapeNode]) -> [UUID] {
-        // Replicera ShapeGeometry-bredd/-höjd-beräkning lokalt (typ-specifik base × multipliers)
-        let baseW: CGFloat = container.type == .container ? 280 : 120
-        let baseH: CGFloat = container.type == .container ? 200 : 80
-        let w = baseW * (container.widthMultiplier ?? container.sizeMultiplier)
-        let h = baseH * (container.heightMultiplier ?? container.sizeMultiplier)
-        let rect = CGRect(x: container.position.x - w/2,
-                          y: container.position.y - h/2,
-                          width: w, height: h)
-        return allShapes.compactMap { s in
+        // v73 (UX-110): explicit childOfContainerId är sanningen — samma källa som
+        // state-JSON. Positions-gissning gav mermaid/JSON-inkonsistens: en nod som
+        // bara råkade LIGGA på containern exporterades som subgraph-medlem.
+        allShapes.compactMap { s in
             guard s.id != container.id, s.type != .container else { return nil }
-            return rect.contains(s.position) ? s.id : nil
+            return s.childOfContainerId == container.id ? s.id : nil
         }
     }
 
