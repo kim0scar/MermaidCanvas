@@ -30,6 +30,10 @@ står I flödet: inga gissningar.
 | **`tool`-nod i container** | Verktygs-steg (Gmail, web, fil, MCP...) | `prompt` = exakt vad verktyget ska göra + parametrar |
 | **`memory`-nod** (violett) MELLAN containrar | **Överlämnings-fil** (output → input) | `label` = filnamn. `prompt` = sökväg + förväntat innehållsformat |
 | **`router`-nod** | Villkor | Gren-etikett = villkoret; gren utan etikett = annars |
+| **`gate`-nod** (rosa romb) | **Grind** — måste-passera-kontroll | `prompt` = villkoret + vad som händer vid STOPP. Grind ≠ router: den släpper igenom eller stoppar, väljer aldrig väg. |
+| **`subagent`-nod** (lila) | Väg i en redundans-våg | `prompt` = hela väginstruktionen + VERKTYG + egen rapportfil. Blind för systervägarna. |
+| **`evidence`-nod** (cylinder) | Bevis-lager | `prompt` = sökväg till `evidence/`. Allt som hävdas ska gå att härleda hit. |
+| **`manual`-nod** (åttahörning) | Mänsklig koll — automatiken stoppar | `prompt` = filens sökväg + format. Gissa aldrig i stället för att flagga. |
 | **`output`-nod** (röd) | Kedjans slutresultat | `prompt` = vart: "svar i chatten", fil, mejl... |
 | **Kant-etikett** | Villkor eller vad som lämnas över | |
 
@@ -74,10 +78,42 @@ ger exakt den delmängden (container + barn + memory-noder i kanten) som självb
 - **Prompt vs anteckning:** nodens `prompt` är subagent-instruktionen och ingår i skillen.
   Nodens `note` (anteckning) är Kims egen kommentar — den round-trippar i mermaid
   (`%% id note:`) men ingår ALDRIG i skill-prompten.
-- **En skill = EN container.** Nästlade containrar (skill-i-skill) stöds inte i v1.
+- **En skill = EN container.** Skill-i-skill stöds inte. **Undantag (v73): en inre
+  container INUTI en skill-container är en VÅG-GRUPP, inte en skill** — se nedan.
 - **Pilar går nod → nod, aldrig till/från själva containern.** Containern är skill-GRÄNSEN.
 - **Legend:** `%% legend <kategori>: <text>`-rader i mermaid-blocket är Kims förklaring
   av vad varje form/kategori betyder — läs dem som kontext, de är inte noder.
+
+## Redundans-mönstret (v73 — Kims arkitektur från !MERMAID BETA)
+
+Det här mönstret är hur en kedja blir PÅLITLIG i stället för en gissning. Det består av
+fem delar som alltid hänger ihop:
+
+1. **Våg-grupp** — en inre container inuti en skill-container. Den är INTE en egen skill.
+   Dess barn (subagent-noder) löser SAMMA uppgift med OLIKA metoder/verktyg, körs
+   **parallellt** som egna subagents, **blinda för varandra**. Varje väg skriver sin EGEN
+   rapportfil (samma format — formatet står i memory-noden vågen pekar på).
+   Våg-gruppens `prompt` = uppgiften + redundanspolicyn.
+2. **Gap-analys** (agent-nod) — läser ENBART vägarnas rapportfiler. Klassar varje
+   påstående: BEKRÄFTAT (≥2 vägar) / ENSAMT (1 väg) / KONFLIKT (motsägelse).
+3. **Konsensus-grind** (gate-nod) — släpper bara igenom det BEKRÄFTADE. Diffar går till
+   verifieringsvågen. Max 2 varv (varv-räknare i gap-analys-filen).
+4. **Verifieringsvåg** (agent-nod, loop-pil tillbaka till gap-analysen) — utreder ENBART
+   diffarna, med starkaste verktyget för fallet, och noterar VARFÖR vägarna diffade.
+   "Varför" säger var processen ska brytas ner djupare.
+5. **Manual-utgång** — kvarstående diff efter 2 varv flaggas i manual-nodens fil och
+   leveransens Status sätts till PARTIAL. Aldrig tyst igenom, aldrig gissat.
+
+**Redundanspolicy (default):** 4 vägar i discovery (okänd terräng), 2 vägar (par) i
+extraktion (känd terräng). Ger 10 körningar i rad full konsensus utan verifieringsvarv →
+dra ner antalet vägar ett steg. Vid första diff → upp igen.
+
+**Körregel för våg-grupp:** en BLOCKERAD väg (bot-skydd, nätfel) är INTE ett kedjefel —
+den noteras med orsak i sin rapport och de andra vägarna fortsätter. Kedjefel = ALLA
+vägar blockerade.
+
+**Referens-exempel:** `mfp-site-intelligence.md` (4-vägs discovery) och
+`mfp-sortiment.md` (E1/E2-par) i iCloud-Mermaid-mappen.
 
 ---
 
