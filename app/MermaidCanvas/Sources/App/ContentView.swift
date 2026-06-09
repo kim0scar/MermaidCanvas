@@ -36,6 +36,8 @@ struct ContentView: View {
     @State private var notingShapeId: UUID? = nil
     /// v66: öppna läs-lappar (flera samtidigt) — ersätter v63:s QuickReadSheet
     @State private var openCards: [UUID] = []
+    /// v70: bekräftelse efter "Spara skill som fil".
+    @State private var skillSavedMessage: String? = nil
     @State private var showCodeSheet: Bool = false
     @State private var showNewCanvasPrompt: Bool = false
     @State private var showNewCanvasSheet: Bool = false
@@ -117,6 +119,30 @@ struct ContentView: View {
                     edges: model.edges,
                     legend: model.legend)
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
+            },
+            // v70: spara containern (= en skill) som EGEN canvas-fil i iCloud,
+            // bredvid pipeline-filen. Kim stannar kvar i helheten.
+            onSaveSkillFile: { id in
+                guard let container = model.shapes.first(where: { $0.id == id }) else { return }
+                let subset = MermaidGenerator.containerSubset(
+                    containerId: id, shapes: model.shapes, edges: model.edges)
+                let doc = CanvasDocument(
+                    title: container.label.isEmpty ? "skill" : container.label,
+                    shapes: subset.shapes,
+                    edges: subset.edges,
+                    canvasSize: model.canvasSize,
+                    specType: .flow,
+                    platform: model.platform,
+                    activeShapePacks: model.activeShapePacks,
+                    collapsedEdgeIds: [],
+                    legend: model.legend)
+                if let url = fileManager.saveSkillFile(doc.content, named: container.label) {
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    skillSavedMessage = "Sparad som \(url.lastPathComponent)"
+                } else {
+                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                    skillSavedMessage = "Kunde inte spara skill-filen"
+                }
             },
             openCards: $openCards,
             zoomPercent: $zoomPercent,
@@ -295,6 +321,15 @@ struct ContentView: View {
                 if let url = urls.first { openFile(url) }
             case .failure: break
             }
+        }
+        // v70: bekräftelse efter "Spara skill som fil"
+        .alert("Skill sparad", isPresented: Binding(
+            get: { skillSavedMessage != nil },
+            set: { if !$0 { skillSavedMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { skillSavedMessage = nil }
+        } message: {
+            Text(skillSavedMessage ?? "")
         }
         .fileExporter(
             isPresented: $showExporter,

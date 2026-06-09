@@ -435,6 +435,18 @@ enum MermaidGenerator {
                                      shapes: [ShapeNode],
                                      edges: [EdgeConnection],
                                      legend: [String: String] = [:]) -> String {
+        let subset = containerSubset(containerId: containerId, shapes: shapes, edges: edges)
+        return generate(shapes: subset.shapes, edges: subset.edges,
+                        specType: .flow, legend: legend)
+    }
+
+    /// v70: delmängden för EN container — containern + dess barn (`childOfContainerId`)
+    /// + memory-noder som hänger i kanten (skillens in-/output-filer enligt
+    /// SKILL-KEDJA-KONTRAKT) + de interna kanterna. Återanvänds av både
+    /// `generateForContainer` (urklipp) och "Spara skill som fil" (egen CanvasDocument).
+    static func containerSubset(containerId: UUID,
+                                shapes: [ShapeNode],
+                                edges: [EdgeConnection]) -> (shapes: [ShapeNode], edges: [EdgeConnection]) {
         var ids = Set<UUID>([containerId])
         for s in shapes where s.childOfContainerId == containerId {
             ids.insert(s.id)
@@ -456,8 +468,7 @@ enum MermaidGenerator {
             }
         }
         let subsetShapes = shapes.filter { ids.contains($0.id) }
-        return generate(shapes: subsetShapes, edges: subsetEdges,
-                        specType: .flow, legend: legend)
+        return (subsetShapes, subsetEdges)
     }
 
     // MARK: - Privata helpers

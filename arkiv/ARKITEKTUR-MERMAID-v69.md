@@ -1,15 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v70
+# ARKITEKTUR-MERMAID — Version v69
 *Datum: 2026-06-09*
-
-> **v70 "skill-containrar":** efter utredning av hur ritade flöden blir skills + navigering.
-> Vald arkitektur (Kims idé): **en pipeline-fil = helheten, varje skill = en container,
-> varje container ejectbar.** Nytt: **"Spara skill som fil"** (tryck-håll container → sparar
-> container + barn + kant-memory som egen `.md` i iCloud, utan att byta aktuell fil).
-> `containerSubset()` bröts ut ur `generateForContainer` (delas av urklipp + fil-export);
-> `CanvasFileManager.saveSkillFile` + `sanitizeFileName`. Hexagon-markör i container-headern
-> när `category == .skill`. Reference-fil i iCloud: `mfp-pipeline.md` (4 skill-containrar).
-> Utrett (svar+memory): mermaid→skill **konverteras till prosa** i SKILL.md (`flode` gör det);
-> kedjor orkestreras av en dirigent. Detaljer i ROADMAP.md.
 
 > **v69 "process-kontroll + första MFP-kedjan":** efter rådgivning om MFP-produkten.
 > Ny **process-kontroll-vokabulär** för pålitliga skill-kedjor: (1) **Grind** (`ShapeCategory.gate`,

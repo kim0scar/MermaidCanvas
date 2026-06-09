@@ -2,7 +2,27 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v69 — "process-kontroll: grind, bevis, manual + första MFP-kedjan"
+## Aktuell version: v70 — "skill-containrar: spara en container som egen skill-fil"
+
+*Tema:* Kim utredde arkitekturen för hur ritade flöden blir skills + navigering helhet↔skill.
+Research (Claude Code-dokumentationen) + kodkartläggning → Kims egen idé valdes: **en
+pipeline-fil = helheten, varje skill = en container, varje container ejectbar.** Det matchar
+SKILL-KEDJA-KONTRAKTet och var redan ~80 % byggt (`generateForContainer` + "Kopiera som skill").
+
+**v70:**
+1. **"Spara skill som fil":** tryck-håll en container → spara just den containern (+ barn +
+   kant-memory) som EGEN `.md` i iCloud bredvid pipeline-filen — utan att byta aktuell fil.
+   Förenar en-fil och flera-filer: en pipeline-fil knoppar av fristående skill-filer på begäran.
+2. **`containerSubset()`** bröts ut ur `generateForContainer` (återanvänds av både urklipp
+   och fil-export). `CanvasFileManager.saveSkillFile` + namn-sanering.
+3. **Tydlig skill-container:** hexagon-markör i container-headern när `category == .skill`.
+4. **Fakta-utredning (i svar + memory):** mermaid → skill ska **konverteras till prosa-steg**
+   i SKILL.md (pålitligt); mermaid kvar som referens — `flode` gör redan detta. Skill-kedjor
+   orkestreras av en **dirigent** (`flode`), skill anropar inte skill direkt.
+5. **`mfp-pipeline.md`** (iCloud): hela MFP-flödet i EN fil, 4 skill-containrar + handoff-filer.
+- Nya tester: V70Tests (3). Unit-sviten grön.
+
+## v69 — "process-kontroll: grind, bevis, manual + första MFP-kedjan"
 
 *Tema:* Efter rådgivning (två AI-källor) om MFP-skrap-produkten. Dom: börja med
 "hitta rätt officiell källa" (site-intelligence), inte "skrapa sida"; gå djupt på EN

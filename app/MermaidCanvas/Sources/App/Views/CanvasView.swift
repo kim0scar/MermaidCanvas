@@ -94,6 +94,7 @@ struct CanvasView: View {
     var onTableEdit: (UUID) -> Void
     /// v66: kopiera container som skill-mermaid till urklipp
     var onCopySkill: (UUID) -> Void = { _ in }
+    var onSaveSkillFile: (UUID) -> Void = { _ in }
     /// v67: öppna läs-lappar — ligger PÅ canvasen (canvas-space), panorerar med tavlan.
     @Binding var openCards: [UUID]
 
@@ -286,7 +287,8 @@ struct CanvasView: View {
                                 model.assignContainerForShape(id)
                             }
                         },
-                        onCopySkill: { id in onCopySkill(id) }
+                        onCopySkill: { id in onCopySkill(id) },
+                        onSaveSkillFile: { id in onSaveSkillFile(id) }
                     )
                     // v60 D: containrar ritas UNDER övriga former (barn fångar då inte
                     // containerns tap → namnbyte funkar; barn ligger visuellt ovanpå).
@@ -500,6 +502,8 @@ struct ShapeView: View {
     var onDragEnded: ((UUID) -> Void)? = nil
     /// v66: kopiera container som skill-mermaid (bara containrar visar valet).
     var onCopySkill: ((UUID) -> Void)? = nil
+    /// v70: spara container som egen skill-fil (bara containrar visar valet).
+    var onSaveSkillFile: ((UUID) -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
@@ -656,6 +660,9 @@ struct ShapeView: View {
                 // v66: containrar kan kopieras som skill-mermaid
                 onCopySkill: shape.type == .container && onCopySkill != nil
                     ? { showContextMenu = false; onCopySkill?(shape.id) }
+                    : nil,
+                onSaveSkillFile: shape.type == .container && onSaveSkillFile != nil
+                    ? { showContextMenu = false; onSaveSkillFile?(shape.id) }
                     : nil
             )
             .presentationCompactAdaptation(.popover)
@@ -743,12 +750,20 @@ struct ShapeView: View {
             // v60: container i Lucidchart-stil — solid header-rad med titel + ljus kropp
             // + tunn solid ram. Titeln bor i headern (ej flytande tab).
             VStack(spacing: 0) {
-                HStack(spacing: 0) {
+                HStack(spacing: 5) {
+                    // v70: skill-markör — visar att containern är en skill-gräns.
+                    if shape.category == .skill {
+                        Image(systemName: "hexagon.fill")
+                            .font(.system(size: 9 * min(shape.sizeMultiplier, 1.4)))
+                            .foregroundStyle(Color.white.opacity(0.85))
+                            .padding(.leading, 10)
+                    }
                     Text(shape.label.isEmpty ? "Grupp" : formattedLabel)
                         .font(.system(size: 13 * min(shape.sizeMultiplier, 1.4), weight: .semibold, design: .rounded))
                         .foregroundStyle(Color.white)
                         .lineLimit(1)
-                        .padding(.horizontal, 10)
+                        .padding(.leading, shape.category == .skill ? 0 : 10)
+                        .padding(.trailing, 10)
                     Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity)

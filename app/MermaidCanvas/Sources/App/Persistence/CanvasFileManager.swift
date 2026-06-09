@@ -95,6 +95,42 @@ final class CanvasFileManager: ObservableObject {
         }
     }
 
+    /// v70: spara en delmängd (en skill-container) som EGEN fil `<namn>.md` bredvid
+    /// aktuell fil — UTAN att byta aktuell fil (Kim stannar kvar i pipeline-filen,
+    /// helheten). Faller tillbaka till appens Documents om mappen inte går att skriva i.
+    /// Returnerar den skapade filens URL, eller nil.
+    func saveSkillFile(_ content: String, named rawName: String) -> URL? {
+        let name = Self.sanitizeFileName(rawName)
+        let dir: URL
+        if let url = currentFileURL {
+            dir = url.deletingLastPathComponent()
+            let target = Self.freeURL(in: dir, name: name, ext: "md")
+            if (try? content.write(to: target, atomically: true, encoding: .utf8)) != nil {
+                return target
+            }
+        }
+        // Fallback: appens Documents (syns i Filer-appen under MermaidCanvas)
+        guard let docs = FileManager.default.urls(for: .documentDirectory,
+                                                  in: .userDomainMask).first else { return nil }
+        let inDocs = Self.freeURL(in: docs, name: name, ext: "md")
+        return (try? content.write(to: inDocs, atomically: true, encoding: .utf8)) != nil ? inDocs : nil
+    }
+
+    /// v70: `<dir>/<name>.md` om ledig, annars `<name> 2.md` osv.
+    static func freeURL(in dir: URL, name: String, ext: String) -> URL {
+        let first = dir.appendingPathComponent("\(name).\(ext)")
+        if !FileManager.default.fileExists(atPath: first.path) { return first }
+        return nextFreeURL(for: first)
+    }
+
+    /// v70: sanera ett container-namn till ett giltigt filnamn. Tomt → "skill".
+    static func sanitizeFileName(_ raw: String) -> String {
+        let bad = CharacterSet(charactersIn: "/\\:?%*|\"<>")
+        let cleaned = raw.components(separatedBy: bad).joined(separator: "-")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return cleaned.isEmpty ? "skill" : cleaned
+    }
+
     /// v25: Skriv en sidecar `<basename>-regler.md` bredvid canvas-filen.
     /// Innehåller plattform-reglerna så Claude Code direkt har dem när
     /// Kim refererar till canvasen från Mac:en.

@@ -14,6 +14,9 @@ struct ShapeContextMenu: View {
     /// v66: bara för containrar — kopiera containern + barn + memory-noder
     /// som självbärande mermaid (= EN skill enligt SKILL-KEDJA-KONTRAKT).
     var onCopySkill: (() -> Void)? = nil
+    /// v70: bara för containrar — spara containern + barn + memory-noder som EGEN
+    /// canvas-fil (skill) i iCloud bredvid pipeline-filen.
+    var onSaveSkillFile: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -30,6 +33,11 @@ struct ShapeContextMenu: View {
                 menuItem(label: "Kopiera som skill",
                          systemImage: "square.and.arrow.up.on.square",
                          action: copySkill)
+            }
+            if let saveSkill = onSaveSkillFile {
+                menuItem(label: "Spara skill som fil",
+                         systemImage: "folder.badge.plus",
+                         action: saveSkill)
             }
             Divider().padding(.vertical, 4)
             menuItem(label: "Ta bort",
