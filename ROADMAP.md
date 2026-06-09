@@ -2,7 +2,39 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v72 — "save/handover (dokumentations-milstolpe)"
+## Aktuell version: v73 — "audit-fixar + redundans-pipeline"
+
+*Tema:* Kim bad Claude testa appen som användare och bygga målbilden från ChatGPT-konvot
+"!MERMAID BETA" (determinism genom process: subagent-par, gap-analys, konsensus). Full
+UX-audit kördes (Claude själv + alla 6 personas via idb, två simulatorer parallellt) →
+`UX_PERSONA_AUDIT.md` (22 unika fynd, 9 fixade direkt). Jämfört med v50.6-auditen är
+8 av 14 gamla fynd nu åtgärdade och bekräftade.
+
+**App-fixar (alla verifierade i sim):**
+1. **UX-110 (HÖG, round-trip):** subgraph-medlemskap genereras nu från `childOfContainerId`
+   (= state-JSON:s sanning), inte positions-gissning. Container adopterar barn direkt vid
+   spawn och kaskadas inte själv. Mermaid och JSON kan inte längre säga olika saker.
+2. **UX-101:** kaskad-steg 96pt — nya noder hamnar fritt i stället för i en hög (v50.6-arvet).
+3. **UX-102:** "Spara skill som fil" frågar efter namn (döper även containern) — slut på "skill.md"/"Grupp".
+4. **UX-103/104:** prompt-fältet överst i Redigera-arket med ärlig rubrik; svep kan inte
+   längre kasta osparade ändringar.
+5. **UX-105 (HÖG, a11y):** canvas-former finns nu i a11y-trädet med svensk label — VoiceOver
+   OCH AI-agenter ser canvasen. Pilhandtaget heter "Skapa pil".
+6. **UX-106:** tomma noder visar typ-platshållare ("Script", "Bevis"...) tills Kim döper dem.
+7. **UX-107/108:** UI- och Prompt-Process-paketen fick chips (var döda segment); ingen radbrytning.
+
+**Skill-lagret (utanför app-koden):**
+- **mfp-site-intelligence v2:** discovery görs av 4 oberoende subagent-vägar
+  (meny/sök/sitemap/API) → gap-analys → konsensus-grind → verifieringsvåg (loop max 2 varv)
+  → manual_review för det obevisade. Ritad spec + SKILL.md synkade; v1 arkiverad.
+- **mfp-sortiment (Skill 2) byggd:** E1 (routerns metod) + E2 (oberoende kontrollväg) per
+  sortimentsida, samma gap/konsensus-mönster. Output: product_candidates.md.
+- **SKILL-KEDJA-KONTRAKT.md:** redundans-mönstret låst (våg-grupp = inre container ≠ skill,
+  gap-analys, konsensus-grind, verifieringsloop, redundanspolicy 4→2 vägar).
+
+Kvarstående fynd (UX-111–122) prioriterade i `UX_PERSONA_AUDIT.md`. Tester: unit-sviten grön.
+
+## v72 — "save/handover (dokumentations-milstolpe)"
 
 *Tema:* Trygg savepoint inför `/clear`. Ingen feature-/logik-ändring — bara AppVersion-bump +
 fullständig dokumentation. Ny **`arkiv/HANDOVER-v72.md`** (beslutslogg: vägval + varför för

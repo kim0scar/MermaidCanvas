@@ -1,23 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v73
-*Datum: 2026-06-10*
-
-> **v73 "audit-fixar + redundans-pipeline":** full UX-audit (Claude + 6 personas, se
-> `UX_PERSONA_AUDIT.md`) följd av 11 fixar samma session. Kod-ändringar:
-> (1) **UX-110 round-trip:** `MermaidGenerator.containerChildrenIds` använder nu explicit
-> `childOfContainerId` (samma sanning som state-JSON) i stället för positions-gissning;
-> `CanvasModel.addShape` låter containrar **adoptera direkt vid spawn** (`claimChildren`)
-> och **kaskadas inte** (de ska wrappa mitten). (2) **Kaskad-steg 96pt** (var 28 — mindre än
-> formerna, högen bara gled isär). (3) **"Spara skill som fil" frågar efter namn** när
-> containern saknar riktigt namn (ny alert + `CanvasModel.renameShape`; namnet döper även
-> containern). (4) **EditShapeSheet:** prompt-fältet flyttat ÖVER anteckningen + ny rubrik;
-> `interactiveDismissDisabled` vid osparade ändringar (dataförlust-skydd); `ShapeEdit: Equatable`.
-> (5) **A11y:** canvas-former exponeras som element med svensk label (kategori + namn);
-> pilhandtaget heter "Skapa pil" (var "arrow.up.right"). (6) **Tomma noder** visar kategori-
-> platshållare (bara visning, exporten orörd). (7) **UI- och Prompt-Process-paketen fick chips**
-> (var döda segment — `availableCategories` var död kod); pack-chips radbryts inte längre.
-> Skill-lagret (utanför appen): Skill 1 **mfp-site-intelligence v2** (4-vägs discovery-våg +
-> gap-analys + konsensus-grind + verifieringsloop) och Skill 2 **mfp-sortiment** (E1/E2-par)
-> byggda; redundans-mönstret låst i `SKILL-KEDJA-KONTRAKT.md` (våg-grupp = inre container).
+# ARKITEKTUR-MERMAID — Version v72
+*Datum: 2026-06-09*
 
 > **v72 "save/handover":** dokumentations-milstolpe inför `/clear`. INGEN arkitektur-/kod-ändring
 > (bara AppVersion v71→v72). Full beslutslogg + nuläge: **`arkiv/HANDOVER-v72.md`**. Arkitekturen
