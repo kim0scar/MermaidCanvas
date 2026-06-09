@@ -508,7 +508,10 @@ struct ToolbarView: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: pack.systemImage).font(.subheadline)
+                // v73: aldrig radbrytning (P5: "Prompt-Process" blev 2 rader → ojämn rad)
                 Text(pack.displayName).font(.subheadline.weight(.medium))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 if isActive {
                     Image(systemName: "checkmark").font(.caption.weight(.bold))
                 }

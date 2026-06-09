@@ -466,6 +466,10 @@ struct ConnectionHandles: View {
                 .onChanged { v in onDragChanged(v.location) }
                 .onEnded { v in onDragEnded(v.location) }
         )
+        // v73: svensk label i stället för rått symbolnamn ("arrow.up.right")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Skapa pil — dra till en annan form")
+        .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier(accId)
     }
 }
@@ -567,11 +571,16 @@ struct ShapeView: View {
             // (Lucidchart-stil ovanför ramen). Andra former behåller centrerad
             // text inuti ZStack:en.
             if shape.showLabel && shape.type != .container && shape.type != .phoneFrame {
-                Text(formattedLabel)
+                // v73: tom nod visar sin typ som svag platshållare (P4: "bara form+färg
+                // skiljer Script från Bevis") — försvinner så fort Kim skriver eget namn.
+                // Bara visning; exporten påverkas inte.
+                Text(shape.label.isEmpty ? shape.category.displayName : formattedLabel)
                     .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
                                   weight: shape.textStyle.fontWeight,
                                   design: .rounded))
-                    .foregroundStyle(effectiveTextColor)
+                    .foregroundStyle(shape.label.isEmpty
+                        ? effectiveTextColor.opacity(0.35)
+                        : effectiveTextColor)
                     .multilineTextAlignment(textAlignment)
                     .lineLimit(6)
                     .minimumScaleFactor(0.6)
@@ -604,6 +613,13 @@ struct ShapeView: View {
         // v48 Fel #3+#4: CollapseBadge är flyttad från ShapeView till EdgesView
         // (renderas per utgående kant, vid kantens start). Se EdgeCollapseBadges.swift.
         .contentShape(Rectangle())
+        // v73: formen som ETT a11y-element med begriplig svensk label —
+        // för VoiceOver och för AI-agenter som läser a11y-trädet.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(shape.label.isEmpty
+            ? shape.category.displayName
+            : "\(shape.category.displayName): \(shape.label)")
+        .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("shape.\(shape.type.rawValue)")
         .position(
             x: shape.position.x + dragOffset.width,
