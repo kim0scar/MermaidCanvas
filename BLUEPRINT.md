@@ -54,7 +54,8 @@ Sources/
 │   │
 │   ├── Persistence/
 │   │   ├── CanvasDocument.swift      ← UIDocument-subclass (läs/skriv .md-fil)
-│   │   └── CanvasFileManager.swift   ← iCloud-fil-hantering, öppna/spara/lista
+│   │   ├── CanvasFileManager.swift   ← iCloud-fil-hantering, öppna/spara/lista
+│   │   └── SkillFileComposer.swift   ← v74: portabel skill-export (frontmatter + kontrakt + mermaid)
 │   │
 │   └── Preview/
 │       ├── FlowRenderer.swift        ← flowchart-preview-rendering
@@ -73,7 +74,8 @@ Sources/
     ├── Platform.swift                ← plattform-enum (Blank/Godot)
     ├── PlatformRules.swift           ← regler per plattform
     ├── ShapeCategory.swift           ← form-kategorier + färger
-    └── ShapePack.swift               ← form-paket-enum
+    ├── ShapePack.swift               ← form-paket-enum
+    └── SkillExportContract.swift     ← v74: fryst exekverings-kontrakt (master: EXPORT-KONTRAKT.md)
 ```
 
 ---

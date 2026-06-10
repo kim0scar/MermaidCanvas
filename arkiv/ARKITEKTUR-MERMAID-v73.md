@@ -1,25 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v74
-*Datum: 2026-06-11*
-
-> **v74 "portabel skill-export + skill-nummer":** exporten är nu SJÄLVBÄRANDE — en
-> exporterad skill-fil fungerar på vilken Claude Code som helst, utan skills och utan
-> projekt (bevisat med främmande agenter: pass-, fail- och tomt-flöde-körningar).
-> Kod-ändringar: (1) **`SkillExportContract.swift`** (ny, Sources/ClaudeCode/) — det frysta
-> exekverings-kontraktet v1; master i repo-roten `EXPORT-KONTRAKT.md`. (2) **`SkillFileComposer.swift`**
-> (ny, Sources/App/Persistence/) — "Spara skill som fil" bygger nu frontmatter
-> (skill_name/skill_nr/contract_version) + kontrakt + mermaid + state-JSON;
-> `ContentView.performSaveSkillFile` använder composern i stället för rå CanvasDocument.
-> (3) **`ShapeNode.skillNumber`** (kedje-ordningsnummer, "Skill 2") — round-trippar via
-> state-JSON OCH `%% <id> skill-nr: N`-kommentar (MermaidGenerator/MetaComments/Parser).
-> (4) **Parserfix:** subgraph-containrar i ren-mermaid-fallback får kategori via id-prefix
-> (var hårdkodad `.ui` → skill-identiteten tappades utan state-JSON). (5) **EditShapeSheet:**
-> skill-containrar får sektionen "Skill-nummer (ordning i kedjan)" (toggle + stepper).
-> (6) **Container-rendering:** skill-headern visar "Skill N · namn", lång text krymper/
-> trunkeras snyggt, skill-ram 2pt/0.8 (vanlig grupp 1.5pt/0.6). Tester: `V74SkillNrTests`
-> (5 st) + UI-testet `V74SkillExportUITest` som kör appen själv: skapar skill-container,
-> sätter Skill 1, exporterar via long-press-menyn — filen verifierad portabel.
-> Utanför appen: `visual-flow-test-portabel.md` + `demo-skill.md` (appens egen export) i
-> iCloud-Mermaid; mfp-ritningarna har skill-nr 1 (site-intelligence) och 2 (sortiment).
+# ARKITEKTUR-MERMAID — Version v73
+*Datum: 2026-06-10*
 
 > **v73 "audit-fixar + redundans-pipeline":** full UX-audit (Claude + 6 personas, se
 > `UX_PERSONA_AUDIT.md`) följd av 11 fixar samma session. Kod-ändringar:

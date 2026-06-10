@@ -2,7 +2,24 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v73 — "audit-fixar + redundans-pipeline"
+## Aktuell version: v74 — "portabel skill-export + skill-nummer"
+
+*Tema:* M2 i PROJEKTPLAN.md — exporten ska fungera på VILKEN Claude Code som helst,
+på någon annans dator, utan skills och utan projekt. Kim ritar → exporterar → ger bort filen.
+
+1. **Portabel export:** "Spara skill som fil" bäddar nu in det frysta exekverings-kontraktet
+   (`EXPORT-KONTRAKT.md` v1 → `SkillExportContract.swift`) + legend + skill-frontmatter
+   (skill_name/skill_nr/contract_version) via nya `SkillFileComposer.swift`.
+2. **Skill-nummer (ordning i kedjan):** skill-containrar kan få nummer — headern visar
+   "Skill 1 · mfp-site-intelligence". Round-trippar via state-JSON och `%% skill-nr`.
+3. **Parserfix:** skill-kategorin överlever nu ren-mermaid-round-trip (id-prefix, var hårdkodad .ui).
+4. **Container-städning:** tydligare skill-ram, lång rubriktext krymper/trunkeras.
+5. **Bevisen:** främmande agenter (utan skills/projekt) körde portabla filer: pass → resultat.md,
+   fail-injektion → manual_review.md (grinden fångade), tom nod → ärligt stopp med exakt
+   saknas-lista. UI-testet `V74SkillExportUITest` körde APPEN själv: skapade skill-container,
+   satte Skill 1, exporterade — filen verifierad. 23 unit-testsviter gröna.
+
+## v73 — "audit-fixar + redundans-pipeline"
 
 *Tema:* Kim bad Claude testa appen som användare och bygga målbilden från ChatGPT-konvot
 "!MERMAID BETA" (determinism genom process: subagent-par, gap-analys, konsensus). Full
