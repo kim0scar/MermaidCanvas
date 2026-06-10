@@ -1,7 +1,7 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ M2 — steg 9: Claude kör appen själv (UI-test + export + skärmdumpar)
-[███████▓░░░░] 3/5 — 60%   ·   💡 Idébanken: 3 fångade, 2 byggda
-SENAST KLART: Steg 7+8 ✅ (2026-06-11) — skill-nr round-trippar, portabel export i appen, 23 testsviter gröna
+NU: ⏳ M2 — steg 10: deploy v74 + Kims ögon
+[█████████▓░░] 4/5 — 80%   ·   💡 Idébanken: 3 fångade, 2 byggda
+SENAST KLART: Steg 9 ✅ (2026-06-11) — appen körd av Claude via UI-test: export gjord i appen, bevisad portabel
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
 ## Milstolpe M1 — exportkedjan bevisad ✅ 🎉 (2026-06-10, se 🎉-listan)
@@ -28,12 +28,12 @@ SkillFileComposer: "Spara skill som fil" bäddar in kontraktet + legend + skill-
 Klart när: composer-test grönt och den exporterade filen parsas tillbaka till samma flöde.
 Kräver: Steg 7 ✅
 
-### ⏳ Steg 9 — Claude kör appen själv (UI-test + skärmdumpar)
+### ✅ Steg 9 — Claude kör appen själv (UI-test + skärmdumpar)
 Driv appen i simulator: gör exporten själv via UI:t, granska containrar/ikoner/helhet, fixa det röriga.
 Klart när: export-fil skapad AV APPEN är verifierat portabel + före/efter-skärmdumpar visade för Kim.
 Kräver: Steg 8 ✅
 
-### ☐ Steg 10 — Deploy v74 + Kims ögon
+### ⏳ Steg 10 — Deploy v74 + Kims ögon
 Deploya till iPhone enligt VERSIONSHANTERING.md.
 Klart när: Kim ser skill-containern, gör en export och säger "klart" på iPhone.
 Kräver: Steg 9 ✅
@@ -63,6 +63,7 @@ Kräver: Steg 9 ✅
 - 2026-06-10 · Steg 3 ✅ prompt-mall + skill-gräns + "installera skillen" i kontraktet; RUN_REPORT ren
 - 2026-06-10 · Steg 4 ✅ mfp-skillsen pekar-modell (bootloader + flow.md + REN rapport, 0 saknade fält)
 - 2026-06-10 · Steg 5 ✅ Canon-körningen: konsensus 77/89, 0 olösta · official_source_map.md COMPLETE + 3 scope-beslut i manual_review.md
+- 2026-06-11 · Steg 9 ✅ UI-test skapade skill-container + Skill 1 + exporterade i appen; främmande agent verifierade filen (stoppade ärligt på tom nod); mfp-ritningarna fick skill-nr 1+2
 - 2026-06-11 · Steg 7 ✅ skillNumber + skill-nr-kommentar + parserfix (subgraph-kategori) — round-trip grön båda vägar
 - 2026-06-11 · Steg 8 ✅ SkillFileComposer + SkillExportContract — portabel fil med kontrakt, 23 testsviter gröna
 - 2026-06-11 · Steg 6 ✅ EXPORT-KONTRAKT.md v1 + visual-flow-test-portabel.md körd av främmande agent: pass → resultat.md, fail-injektion → manual_review.md
