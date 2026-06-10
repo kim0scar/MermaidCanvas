@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ M2 — steg 10: deploy v74 + Kims ögon
+NU: ⏳ M2 — steg 10: v74 DEPLOYAD på iPhone — väntar bara Kims ögon
 [█████████▓░░] 4/5 — 80%   ·   💡 Idébanken: 3 fångade, 2 byggda
 SENAST KLART: Steg 9 ✅ (2026-06-11) — appen körd av Claude via UI-test: export gjord i appen, bevisad portabel
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
