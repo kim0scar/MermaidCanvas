@@ -169,6 +169,7 @@ enum MermaidParser {
             let colorOverride = node["color"] as? String
             let strokeColorOverride = node["strokeColor"] as? String  // v62
             let linkNumber = node["linkNumber"] as? Int
+            let skillNumber = node["skillNumber"] as? Int  // v74
             let tableRows = node["tableRows"] as? Int
             let tableCols = node["tableCols"] as? Int
             // v23: textstil + färg-paket (optional för bakåtkompatibilitet)
@@ -211,6 +212,7 @@ enum MermaidParser {
                 colorOverride: colorOverride,
                 strokeColorOverride: strokeColorOverride,
                 linkNumber: linkNumber,
+                skillNumber: skillNumber,  // v74
                 tableRows: tableRows,
                 tableCols: tableCols,
                 tableCells: tableCells,
@@ -396,7 +398,12 @@ enum MermaidParser {
                 } else {
                     label = id
                 }
-                nodes.append(ParsedNode(mermaidId: id, type: .container, label: label, category: .ui))
+                // v74: kategori via id-prefix (skill_N5 → .skill) — tidigare hårdkodad .ui,
+                // vilket tappade skill-identiteten i ren-mermaid-round-trip.
+                let category = categoryFor(mermaidId: id,
+                                           classSuffixRange: NSRange(location: NSNotFound, length: 0),
+                                           ns: ns)
+                nodes.append(ParsedNode(mermaidId: id, type: .container, label: label, category: category))
             }
         }
 
@@ -549,6 +556,7 @@ enum MermaidParser {
                 colorOverride: m?.color,
                 strokeColorOverride: m?.stroke,
                 linkNumber: m?.link,
+                skillNumber: m?.skillNumber,  // v74
                 tableRows: m?.tableRows,
                 tableCols: m?.tableCols,
                 textStyle: m?.textStyleRaw.flatMap { TextStyle(rawValue: $0) } ?? .body,

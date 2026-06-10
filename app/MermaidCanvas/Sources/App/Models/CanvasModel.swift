@@ -412,7 +412,8 @@ final class CanvasModel: ObservableObject {
                      textStyle: TextStyle,
                      textAlignment: TextAlignMode = .center,
                      hasBullets: Bool = false,
-                     prompt: String = "") {
+                     prompt: String = "",
+                     skillNumber: Int? = nil) {
         guard let index = shapes.firstIndex(where: { $0.id == id }) else { return }
         snapshotForUndo()
         shapes[index].label = label
@@ -422,6 +423,10 @@ final class CanvasModel: ObservableObject {
         shapes[index].textAlignment = textAlignment
         shapes[index].hasBullets = hasBullets
         shapes[index].prompt = prompt   // v60
+        // v74: skill-nummer skrivs bara på containrar — andra former rörs inte.
+        if shapes[index].type == .container {
+            shapes[index].skillNumber = skillNumber
+        }
     }
 
     /// v73: byt bara namn (skill-spara-namnfrågan döper containern).

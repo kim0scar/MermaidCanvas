@@ -558,6 +558,14 @@ struct ShapeView: View {
         }
     }
 
+    /// v74: container-rubrik — skill-containrar visar kedjenumret ("Skill 2 · namn").
+    private var containerHeaderTitle: String {
+        let name = shape.label.isEmpty ? "Grupp" : formattedLabel
+        guard shape.category == .skill else { return name }
+        if let nr = shape.skillNumber { return "Skill \(nr) · \(name)" }
+        return name
+    }
+
     var body: some View {
         ZStack {
             background
@@ -774,10 +782,12 @@ struct ShapeView: View {
                             .foregroundStyle(Color.white.opacity(0.85))
                             .padding(.leading, 10)
                     }
-                    Text(shape.label.isEmpty ? "Grupp" : formattedLabel)
+                    Text(containerHeaderTitle)
                         .font(.system(size: 13 * min(shape.sizeMultiplier, 1.4), weight: .semibold, design: .rounded))
                         .foregroundStyle(Color.white)
                         .lineLimit(1)
+                        .truncationMode(.tail)
+                        .minimumScaleFactor(0.85)
                         .padding(.leading, shape.category == .skill ? 0 : 10)
                         .padding(.trailing, 10)
                     Spacer(minLength: 0)
@@ -790,7 +800,9 @@ struct ShapeView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: DesignTokens.Shape.cornerRadius(for: .container, height: ShapeGeometry.height(for: shape)), style: .continuous)
-                    .stroke(shape.category.strokeColor.opacity(0.6), lineWidth: 1.5)
+                    // v74: skill-containrar får tydligare ram än vanliga grupper.
+                    .stroke(shape.category.strokeColor.opacity(shape.category == .skill ? 0.8 : 0.6),
+                            lineWidth: shape.category == .skill ? 2 : 1.5)
             )
         case .table:
             TableShapeBackground(rows: shape.tableRows ?? 3,

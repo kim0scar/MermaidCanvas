@@ -69,6 +69,8 @@ struct ShapeNode: Identifiable, Codable {
     var strokeColorOverride: String?
     /// v19: jump-link parnummer. nil för icke-link-former.
     var linkNumber: Int?
+    /// v74: kedje-ordningsnummer för skill-containrar ("Skill 2"). nil för allt annat.
+    var skillNumber: Int?
     /// v19: tabell-rader (för type=.table). nil = default 3.
     var tableRows: Int?
     /// v19: tabell-kolumner (för type=.table). nil = default 3.
@@ -110,6 +112,7 @@ struct ShapeNode: Identifiable, Codable {
          colorOverride: String? = nil,
          strokeColorOverride: String? = nil,
          linkNumber: Int? = nil,
+         skillNumber: Int? = nil,
          tableRows: Int? = nil,
          tableCols: Int? = nil,
          tableCells: [[String]]? = nil,
@@ -136,6 +139,7 @@ struct ShapeNode: Identifiable, Codable {
         self.colorOverride = colorOverride
         self.strokeColorOverride = strokeColorOverride
         self.linkNumber = linkNumber
+        self.skillNumber = skillNumber
         self.tableRows = tableRows
         self.tableCols = tableCols
         self.tableCells = tableCells
@@ -162,6 +166,7 @@ extension ShapeNode {
         case id, type, position, label, showLabel, sizeMultiplier
         case widthMultiplier, heightMultiplier, note, prompt, category, rotation
         case colorOverride, strokeColorOverride, linkNumber, tableRows, tableCols, tableCells, textStyle
+        case skillNumber  // v74
         case colorPackId, lineEnd, textAlignment, hasBullets
         case hasNumberedList, indentLevel
         case childOfContainerId  // v47
@@ -193,6 +198,7 @@ extension ShapeNode {
         colorOverride   = try c.decodeIfPresent(String.self, forKey: .colorOverride)
         strokeColorOverride = try c.decodeIfPresent(String.self, forKey: .strokeColorOverride)  // v62
         linkNumber      = try c.decodeIfPresent(Int.self, forKey: .linkNumber)
+        skillNumber     = try c.decodeIfPresent(Int.self, forKey: .skillNumber)  // v74
         tableRows       = try c.decodeIfPresent(Int.self, forKey: .tableRows)
         tableCols       = try c.decodeIfPresent(Int.self, forKey: .tableCols)
         tableCells      = try c.decodeIfPresent([[String]].self, forKey: .tableCells)

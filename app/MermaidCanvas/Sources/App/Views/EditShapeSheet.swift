@@ -11,11 +11,15 @@ struct ShapeEdit: Equatable {
     var hasBullets: Bool
     /// v60: prompt-text för n8n-flöden (följer med i Mermaid-exporten).
     var prompt: String
+    /// v74: kedje-ordningsnummer för skill-containrar. nil = inget nummer.
+    var skillNumber: Int?
 }
 
 struct EditShapeSheet: View {
     let shapeId: UUID
     let initial: ShapeEdit
+    /// v74: visar skill-nummer-sektionen (bara skill-containrar).
+    let isSkillContainer: Bool
     var onSave: (ShapeEdit) -> Void
     var onCancel: () -> Void
     var onDelete: () -> Void
@@ -26,11 +30,13 @@ struct EditShapeSheet: View {
 
     init(shapeId: UUID,
          initial: ShapeEdit,
+         isSkillContainer: Bool = false,
          onSave: @escaping (ShapeEdit) -> Void,
          onCancel: @escaping () -> Void,
          onDelete: @escaping () -> Void) {
         self.shapeId = shapeId
         self.initial = initial
+        self.isSkillContainer = isSkillContainer
         self.onSave = onSave
         self.onCancel = onCancel
         self.onDelete = onDelete
@@ -66,6 +72,23 @@ struct EditShapeSheet: View {
                             Image(systemName: "list.bullet")
                         }
                         .toggleStyle(.button)
+                    }
+                }
+
+                // v74: skill-nummer — ordningen i kedjan ("Skill 2 · namn" i rubriken).
+                if isSkillContainer {
+                    Section("Skill-nummer (ordning i kedjan)") {
+                        Toggle("Har nummer", isOn: Binding(
+                            get: { draft.skillNumber != nil },
+                            set: { draft.skillNumber = $0 ? (draft.skillNumber ?? 1) : nil }
+                        ))
+                        if let nr = draft.skillNumber {
+                            Stepper("Skill \(nr)", value: Binding(
+                                get: { draft.skillNumber ?? 1 },
+                                set: { draft.skillNumber = $0 }
+                            ), in: 1...20)
+                            .accessibilityIdentifier("edit.skillNumber")
+                        }
                     }
                 }
 

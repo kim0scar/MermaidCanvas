@@ -128,6 +128,10 @@ enum MermaidGenerator {
             if let h = container.heightMultiplier {
                 lines.append("\(indent)%% \(cid) height: \(String(format: "%.2f", h))")
             }
+            // v74: kedje-ordningsnummer för skill-containrar.
+            if let nr = container.skillNumber {
+                lines.append("\(indent)%% \(cid) skill-nr: \(nr)")
+            }
             // v60: namn (= subgraph-label ovan) + prompt för n8n.
             if !container.prompt.isEmpty {
                 lines.append("\(indent)%% \(cid) prompt: \(oneLine(container.prompt))")
@@ -311,6 +315,7 @@ enum MermaidGenerator {
             if let color = shape.colorOverride { n["color"] = color }
             if let stroke = shape.strokeColorOverride { n["strokeColor"] = stroke }  // v62
             if let link = shape.linkNumber { n["linkNumber"] = link }
+            if let nr = shape.skillNumber { n["skillNumber"] = nr }  // v74
             if shape.type == .table {
                 n["tableRows"] = shape.tableRows ?? 3
                 n["tableCols"] = shape.tableCols ?? 3

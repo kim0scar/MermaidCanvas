@@ -22,6 +22,8 @@ enum MermaidMetaComments {
         var hiddenLabel: Bool = false
         var collapsed: Bool = false
         var link: Int?
+        /// v74: kedje-ordningsnummer för skill-containrar (`%% id skill-nr: N`)
+        var skillNumber: Int?
         var tableRows: Int?
         var tableCols: Int?
         /// Label från `%% name:` — återställer text när mermaid-kroppen visar " "
@@ -102,6 +104,8 @@ enum MermaidMetaComments {
             meta.name = multiLine(value)
         case "link":
             if let i = Int(value) { meta.link = i }
+        case "skill-nr":
+            if let i = Int(value) { meta.skillNumber = i }
         case "table":
             // Skrivs som "3×4"
             let parts = value.split(separator: "×")

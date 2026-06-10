@@ -220,8 +220,10 @@ struct ContentView: View {
                         textStyle: shape.textStyle,
                         textAlignment: shape.textAlignment,
                         hasBullets: shape.hasBullets,
-                        prompt: shape.prompt
+                        prompt: shape.prompt,
+                        skillNumber: shape.skillNumber
                     ),
+                    isSkillContainer: shape.type == .container && shape.category == .skill,
                     onSave: { edit in
                         model.updateShape(
                             id: id,
@@ -231,7 +233,8 @@ struct ContentView: View {
                             textStyle: edit.textStyle,
                             textAlignment: edit.textAlignment,
                             hasBullets: edit.hasBullets,
-                            prompt: edit.prompt
+                            prompt: edit.prompt,
+                            skillNumber: edit.skillNumber
                         )
                         editingShapeId = nil
                     },
@@ -526,20 +529,21 @@ struct ContentView: View {
 
     /// v73: själva skill-sparandet — körs direkt om containern har namn,
     /// annars efter namn-frågan (alerten ovan).
+    /// v74: portabel fil via SkillFileComposer — kontrakt + skill-frontmatter inbäddat.
     private func performSaveSkillFile(containerId: UUID, name: String) {
         let subset = MermaidGenerator.containerSubset(
             containerId: containerId, shapes: model.shapes, edges: model.edges)
-        let doc = CanvasDocument(
-            title: name,
+        let skillNumber = model.shapes.first(where: { $0.id == containerId })?.skillNumber
+        let content = SkillFileComposer.compose(
+            skillName: name,
+            skillNumber: skillNumber,
             shapes: subset.shapes,
             edges: subset.edges,
             canvasSize: model.canvasSize,
-            specType: .flow,
             platform: model.platform,
             activeShapePacks: model.activeShapePacks,
-            collapsedEdgeIds: [],
             legend: model.legend)
-        if let url = fileManager.saveSkillFile(doc.content, named: name) {
+        if let url = fileManager.saveSkillFile(content, named: name) {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             skillSavedMessage = "Sparad som \(url.lastPathComponent)"
         } else {
