@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
 NU: Steg 0 av 6 — Mini-testflöde med gate + manual
-[░░░░░░░░░░░░] 0/6 — 0%   ·   💡 Idébanken: 0 fångade, 0 byggda
+[░░░░░░░░░░░░] 0/6 — 0%   ·   💡 Idébanken: 2 fångade, 2 byggda
 SENAST KLART: — (planen skapad 2026-06-10)
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -48,10 +48,12 @@ Kräver: Steg 4 ✅
 - Skill-builder/debugger-metaskillen (växer ur 2–3 verkliga körningar)
 
 ## 💡 Idébanken — fångas direkt, byggs ALDRIG nu (väljs ur vid milstolpe-slut · max 15 rader)
-(tom)
+- 2026-06-10 · 💡#1 Metoden som portabelt paket för nya projekt · BYGGD på Kims order (se Revideringar)
+- 2026-06-10 · 💡#2 Ritad vy av planen i appen · BYGGD på Kims order (se Revideringar)
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
 - 2026-06-10 · Planen skapad · startläge för M1.
+- 2026-06-10 · 💡#1+#2 byggda direkt (mall+ZIP+intervju, ritad vy) · Kim bad explicit; rör inga M1-steg.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)
 (tomt)

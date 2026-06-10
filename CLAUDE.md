@@ -29,6 +29,8 @@ Den här tabellen är **alltid aktuell**. Uppdatera den så fort en ny sparplats
 |---|---|---|
 | **Projektkod + styrdokument** | `/Users/kim/2e Mermaid Code/` | git (lokalt) + GitHub |
 | **Projektplan (LAGEN: steg + milstolpar + idébank)** | `PROJEKTPLAN.md` (regel 13) | git |
+| **Projektplan: ritad vy (för appen)** | iCloud-Mermaid-mappen: `projektplan.md` — VY, regenereras av Claude vid status-ändring | iCloud Drive |
+| **Projektplan-metoden (portabel, för nya projekt)** | `~/.claude/templates/projektplan-metod/` (README + MALL + REGEL + INTERVJU) | ZIP: iCloud `00000. Claude Code/projektplan-metod-v1.zip` |
 | **Metodfil: visuellt språk** | `METOD-VISUELL-DIALOG.md` (portabel — ska finnas med i alla projekt) | git |
 | **Metoder (arbetssätt)** | `Metoder/` — CLI-parallell bug-jakt + AI-användartest (idb) | git |
 | **GitHub-repo (privat)** | https://github.com/kim0scar/MermaidCanvas | molnbackup, `kim0scar`-kontot |
@@ -94,6 +96,7 @@ Användarens canvas-filer ligger i:
     - **Meta-spärr:** idéer om att förbättra planen/metoden själv parkeras likadant — metoden är fryst tills milstolpen är klar.
     - **Avvikelse/ändring av steg:** revideringsrad i planen FÖRE arbetet (datum · vad · varför). Klart-kriterier mjukas aldrig upp utan revideringsrad.
     - **Tak:** planen ≤ 100 rader, 1 mening per steg. I vardagen är bara tre saker skrivbara: status, idérad, krympt steg.
+    - **Ritad vy:** iCloud-Mermaid `projektplan.md` är en VY av planen (status i etiketterna) — regenerera den vid varje status-ändring. Textfilen är alltid lagen.
 
 ## Filer du som Claude Code styrs av
 
