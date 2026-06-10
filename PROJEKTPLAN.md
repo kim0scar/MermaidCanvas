@@ -1,7 +1,7 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: Steg 5 av 6 — MFP Canon-körning (skarpt prov)
-[██████████░░] 5/6 — 83%   ·   💡 Idébanken: 2 fångade, 2 byggda
-SENAST KLART: Steg 4 ✅ (2026-06-10)
+NU: 🎉 M1 KLAR — väntar Kims slutkontroll (se nedan) innan M2 detaljeras
+[████████████] 6/6 — 100%   ·   💡 Idébanken: 2 fångade, 2 byggda
+SENAST KLART: Steg 5 ✅ — M1 🎉 (2026-06-10)
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
 ## Milstolpe M1 — exportkedjan bevisad
@@ -35,7 +35,7 @@ Kompilera om mfp-site-intelligence + mfp-sortiment: ritningen blir enda sanninge
 Klart när: noll dubblerad logik i SKILL.md-filerna och RUN_REPORT ren för båda.
 Kräver: Steg 3 ✅
 
-### ⏳ Steg 5 — MFP Canon-körning (skarpt prov)
+### ✅ Steg 5 — MFP Canon-körning (skarpt prov)
 Kör "mfp-site-intelligence Canon Sverige multifunktionsskrivare" med den kompilerade skillen.
 Klart när: official_source_map.md har konsensus-spår och allt obevisat står i manual_review.md — inget gissat.
 Kräver: Steg 4 ✅
@@ -62,3 +62,5 @@ Kräver: Steg 4 ✅
 - 2026-06-10 · Steg 2 ✅ visual-flow-compiler byggd; visual-flow-test installerad som riktig skill + körd (kaffe)
 - 2026-06-10 · Steg 3 ✅ prompt-mall + skill-gräns + "installera skillen" i kontraktet; RUN_REPORT ren
 - 2026-06-10 · Steg 4 ✅ mfp-skillsen pekar-modell (bootloader + flow.md + REN rapport, 0 saknade fält)
+- 2026-06-10 · Steg 5 ✅ Canon-körningen: 4 vägar → gap → 2 verifieringsvarv → konsensus 77/89, 0 olösta · official_source_map.md COMPLETE + 3 scope-beslut i manual_review.md
+- 2026-06-10 · 🎉 M1 KLAR — exportkedjan bevisad hela vägen: ritning → kompilator → installerad skill → skarp körning. Kims slutkontroll: (1) öppna visual-flow-test + projektplan i appen, (2) svara på 3 scope-beslut i manual_review.md
