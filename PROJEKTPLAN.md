@@ -1,46 +1,44 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: 🎉 M1 KLAR — väntar Kims slutkontroll (se nedan) innan M2 detaljeras
-[████████████] 6/6 — 100%   ·   💡 Idébanken: 2 fångade, 2 byggda
-SENAST KLART: Steg 5 ✅ — M1 🎉 (2026-06-10)
+NU: ⏳ M2 — steg 7: skill-nummer + round-trip i appen
+[██▓░░░░░░░░░] 1/5 — 20%   ·   💡 Idébanken: 3 fångade, 2 byggda
+SENAST KLART: Steg 6 ✅ (2026-06-11) — portabel fil körd av agent utan skills, pass+fail
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
-## Milstolpe M1 — exportkedjan bevisad
-Ett ritat flöde med grind + manual kan köras och kompileras till en skill — utan
-handpåläggning. Det är beviset hela n8n-idén står eller faller med.
+## Milstolpe M1 — exportkedjan bevisad ✅ 🎉 (2026-06-10, se 🎉-listan)
+
+## Milstolpe M2 — exporten självbärande + appen testad på riktigt
+En exporterad skill-fil ska fungera på VILKEN Claude Code som helst (kontrakt + legend
+inbäddat), skill-containern får namn + kedjenummer, och Claude kör appen själv
+(UI-test + skärmdumpar) — gör exporten själv och städar UI:t Apple-snyggt.
 
 ## Steg  (☐ ej påbörjad · ⏳ PÅGÅR, max 1 · ✅ klar · ✂ struken)
 
-### ✅ Steg 0 — Mini-testflöde med gate + manual
-Skapa `visual-flow-test.md` i iCloud-Mermaid, i appens format: input → script → agent → grind → pass: output / fail: manual, prompts enligt mallen.
-Klart när: filen öppnas i appen och round-trippar utan diff — Kim säger "klart" efter att ha sett den på iPhone.
+### ✅ Steg 6 — Portabelt export-format (bevis för hand)
+Skriv EXPORT-KONTRAKT.md (frusen standardtext) + bygg en portabel testfil för hand.
+Klart när: en agent UTAN skills och UTAN projekt kör filen och får samma resultat som flode-körningen.
 Kräver: —
 
-### ✅ Steg 1 — Körtest via flode
-Kör mini-flödet med skillen `flode` — inget får fyllas i tyst, saknat = fel.
-Klart när: pass-körningen ger resultatfilen OCH fail-körningen (filen borttagen) ger manual_review.md — båda exakt enligt ritningen.
-Kräver: Steg 0 ✅
+### ⏳ Steg 7 — Skill-nummer + round-trip i appen
+skillNumber i modellen, "%% skill-nr"-kommentar, state-JSON, parser-fix (subgraph-kategori), fält i redigeringen.
+Klart när: unit-tester gröna för round-trip via state-JSON OCH via ren mermaid.
+Kräver: Steg 6 ✅
 
-### ✅ Steg 2 — visual-flow-compiler
-Ny skill som läser en exporterad canvas-fil, validerar varje nod och bygger skill-mapp + RUN_REPORT.md (saknade fält rapporteras, aldrig tyst ifyllda).
-Klart när: körd på visual-flow-test ger en installerad skill vars körning ger samma resultat som Steg 1 + ärlig RUN_REPORT.
-Kräver: Steg 1 ✅
+### ☐ Steg 8 — Portabel export i appen
+SkillFileComposer: "Spara skill som fil" bäddar in kontraktet + legend + skill-frontmatter.
+Klart när: composer-test grönt och den exporterade filen parsas tillbaka till samma flöde.
+Kräver: Steg 7 ✅
 
-### ✅ Steg 3 — Prompt-mall + skill-gräns in i kontraktet
-Mallen `Input:/Uppgift:/Output:/PASS:/FAIL:`, skill-gräns-kriterierna och kommandot "installera skillen" in i SKILL-KEDJA-KONTRAKT.md + flode.
-Klart när: kompilatorn validerar mot mallen och testflödets RUN_REPORT är ren (noll saknade fält).
-Kräver: Steg 2 ✅
+### ☐ Steg 9 — Claude kör appen själv (UI-test + skärmdumpar)
+Driv appen i simulator: gör exporten själv via UI:t, granska containrar/ikoner/helhet, fixa det röriga.
+Klart när: export-fil skapad AV APPEN är verifierat portabel + före/efter-skärmdumpar visade för Kim.
+Kräver: Steg 8 ✅
 
-### ✅ Steg 4 — mfp-skills till pekar-modellen
-Kompilera om mfp-site-intelligence + mfp-sortiment: ritningen blir enda sanningen, handskrivna SKILL.md ersätts av kompilerad bootloader.
-Klart när: noll dubblerad logik i SKILL.md-filerna och RUN_REPORT ren för båda.
-Kräver: Steg 3 ✅
+### ☐ Steg 10 — Deploy v74 + Kims ögon
+Deploya till iPhone enligt VERSIONSHANTERING.md.
+Klart när: Kim ser skill-containern, gör en export och säger "klart" på iPhone.
+Kräver: Steg 9 ✅
 
-### ✅ Steg 5 — MFP Canon-körning (skarpt prov)
-Kör "mfp-site-intelligence Canon Sverige multifunktionsskrivare" med den kompilerade skillen.
-Klart när: official_source_map.md har konsensus-spår och allt obevisat står i manual_review.md — inget gissat.
-Kräver: Steg 4 ✅
-
-## Efter M1 (bara rubriker — detaljeras först när M1 är 🎉)
+## Efter M2 (bara rubriker — detaljeras först när M2 är 🎉)
 - n8n-initiera (byggar-skillen: intervju → research → ritat utkast på canvasen)
 - Styrningsregler i kontraktet (nivå A–D, R0–R4, gap-frågelistan)
 - Skill 3 mfp-spec (Excel) + Skill 4 dashboard
@@ -48,13 +46,15 @@ Kräver: Steg 4 ✅
 - Skill-builder/debugger-metaskillen (växer ur 2–3 verkliga körningar)
 
 ## 💡 Idébanken — fångas direkt, byggs ALDRIG nu (väljs ur vid milstolpe-slut · max 15 rader)
-- 2026-06-10 · 💡#1 Metoden som portabelt paket för nya projekt · BYGGD på Kims order (se Revideringar)
-- 2026-06-10 · 💡#2 Ritad vy av planen i appen · BYGGD på Kims order (se Revideringar)
+- 2026-06-10 · 💡#1 Metoden som portabelt paket för nya projekt · BYGGD på Kims order
+- 2026-06-10 · 💡#2 Ritad vy av planen i appen · BYGGD på Kims order
+- 2026-06-11 · 💡#3 "Kopiera som skill" (urklipp) får också kontraktet inbäddat · väntar
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
 - 2026-06-10 · Planen skapad · startläge för M1.
 - 2026-06-10 · 💡#1+#2 byggda direkt (mall+ZIP+intervju, ritad vy) · Kim bad explicit; rör inga M1-steg.
-- 2026-06-10 · Kim beordrade "/goal bygg allt" · stegen körs i följd med maskinbevis; Kims iPhone-bockar (Steg 0) samlas i en slutkontroll i stället för att blockera kedjan.
+- 2026-06-10 · Kim beordrade "/goal bygg allt" · stegen körs i följd med maskinbevis; Kims iPhone-bockar samlas i slutkontroll.
+- 2026-06-11 · M2 detaljerad på Kims order · export till främmande dator + skill-container (namn+nummer, ordning i kedjan) + Claude UI-testar appen själv och städar containrarnas utseende.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)
 - 2026-06-10 · Steg 0 ✅ visual-flow-test.md skapad, parser-stöd verifierat i kod (Kims iPhone-koll: slutlistan)
@@ -62,5 +62,6 @@ Kräver: Steg 4 ✅
 - 2026-06-10 · Steg 2 ✅ visual-flow-compiler byggd; visual-flow-test installerad som riktig skill + körd (kaffe)
 - 2026-06-10 · Steg 3 ✅ prompt-mall + skill-gräns + "installera skillen" i kontraktet; RUN_REPORT ren
 - 2026-06-10 · Steg 4 ✅ mfp-skillsen pekar-modell (bootloader + flow.md + REN rapport, 0 saknade fält)
-- 2026-06-10 · Steg 5 ✅ Canon-körningen: 4 vägar → gap → 2 verifieringsvarv → konsensus 77/89, 0 olösta · official_source_map.md COMPLETE + 3 scope-beslut i manual_review.md
-- 2026-06-10 · 🎉 M1 KLAR — exportkedjan bevisad hela vägen: ritning → kompilator → installerad skill → skarp körning. Kims slutkontroll: (1) öppna visual-flow-test + projektplan i appen, (2) svara på 3 scope-beslut i manual_review.md
+- 2026-06-10 · Steg 5 ✅ Canon-körningen: konsensus 77/89, 0 olösta · official_source_map.md COMPLETE + 3 scope-beslut i manual_review.md
+- 2026-06-11 · Steg 6 ✅ EXPORT-KONTRAKT.md v1 + visual-flow-test-portabel.md körd av främmande agent: pass → resultat.md, fail-injektion → manual_review.md
+- 2026-06-10 · 🎉 M1 KLAR — ritning → kompilator → installerad skill → skarp körning. Kims slutkontroll: (1) visual-flow-test + projektplan i appen, (2) 3 scope-beslut i manual_review.md
