@@ -474,19 +474,12 @@ Se `arkiv/ARKITEKTUR-MERMAID-v25.md` till v30 för historia.
 - Multi-agent-konsensus-metod för pilspets-asymmetri + minus-badge-state
 - Launch-arg-baserade test-scenarier för visuell verifiering
 
-## Planerat: v51+
+## Framåt
 
-(Backlog — Kim styr prioritering)
-
-- Collaborative cursors (om Kim vill det)
-- Splittning av kvarvarande monoliter (ToolbarView, CanvasModel, ContentView)
-- Eventuell infinite-expand-canvas om 4000² blir för litet
-- MVP2 från `mvp2.md`-spec
-
-## Planerat: v40+ (långsiktigt)
-
-- Infinite-expand-canvas (Microsoft Whiteboard-stil) om Kim når 4000²-kanten
-- Realtidssamarbete på samma canvas
+**All framåtblick ligger i `PROJEKTPLAN.md` (lagen, regel 13 i CLAUDE.md).**
+Denna fil är ren version-HISTORIK. Gamla backlog-idéer (collaborative cursors,
+monolit-splittning, infinite canvas, MVP2) ligger kvar som kandidater för
+PROJEKTPLAN.md:s idébank — de byggs inte härifrån.
 
 ## Filer
 
