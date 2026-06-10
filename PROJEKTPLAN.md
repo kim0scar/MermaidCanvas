@@ -1,7 +1,7 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: Steg 0 av 6 — Mini-testflöde med gate + manual
-[░░░░░░░░░░░░] 0/6 — 0%   ·   💡 Idébanken: 2 fångade, 2 byggda
-SENAST KLART: — (planen skapad 2026-06-10)
+NU: Steg 5 av 6 — MFP Canon-körning (skarpt prov)
+[██████████░░] 5/6 — 83%   ·   💡 Idébanken: 2 fångade, 2 byggda
+SENAST KLART: Steg 4 ✅ (2026-06-10)
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
 ## Milstolpe M1 — exportkedjan bevisad
@@ -10,32 +10,32 @@ handpåläggning. Det är beviset hela n8n-idén står eller faller med.
 
 ## Steg  (☐ ej påbörjad · ⏳ PÅGÅR, max 1 · ✅ klar · ✂ struken)
 
-### ⏳ Steg 0 — Mini-testflöde med gate + manual
+### ✅ Steg 0 — Mini-testflöde med gate + manual
 Skapa `visual-flow-test.md` i iCloud-Mermaid, i appens format: input → script → agent → grind → pass: output / fail: manual, prompts enligt mallen.
 Klart när: filen öppnas i appen och round-trippar utan diff — Kim säger "klart" efter att ha sett den på iPhone.
 Kräver: —
 
-### ☐ Steg 1 — Körtest via flode
+### ✅ Steg 1 — Körtest via flode
 Kör mini-flödet med skillen `flode` — inget får fyllas i tyst, saknat = fel.
 Klart när: pass-körningen ger resultatfilen OCH fail-körningen (filen borttagen) ger manual_review.md — båda exakt enligt ritningen.
 Kräver: Steg 0 ✅
 
-### ☐ Steg 2 — visual-flow-compiler
+### ✅ Steg 2 — visual-flow-compiler
 Ny skill som läser en exporterad canvas-fil, validerar varje nod och bygger skill-mapp + RUN_REPORT.md (saknade fält rapporteras, aldrig tyst ifyllda).
 Klart när: körd på visual-flow-test ger en installerad skill vars körning ger samma resultat som Steg 1 + ärlig RUN_REPORT.
 Kräver: Steg 1 ✅
 
-### ☐ Steg 3 — Prompt-mall + skill-gräns in i kontraktet
+### ✅ Steg 3 — Prompt-mall + skill-gräns in i kontraktet
 Mallen `Input:/Uppgift:/Output:/PASS:/FAIL:`, skill-gräns-kriterierna och kommandot "installera skillen" in i SKILL-KEDJA-KONTRAKT.md + flode.
 Klart när: kompilatorn validerar mot mallen och testflödets RUN_REPORT är ren (noll saknade fält).
 Kräver: Steg 2 ✅
 
-### ☐ Steg 4 — mfp-skills till pekar-modellen
+### ✅ Steg 4 — mfp-skills till pekar-modellen
 Kompilera om mfp-site-intelligence + mfp-sortiment: ritningen blir enda sanningen, handskrivna SKILL.md ersätts av kompilerad bootloader.
 Klart när: noll dubblerad logik i SKILL.md-filerna och RUN_REPORT ren för båda.
 Kräver: Steg 3 ✅
 
-### ☐ Steg 5 — MFP Canon-körning (skarpt prov)
+### ⏳ Steg 5 — MFP Canon-körning (skarpt prov)
 Kör "mfp-site-intelligence Canon Sverige multifunktionsskrivare" med den kompilerade skillen.
 Klart när: official_source_map.md har konsensus-spår och allt obevisat står i manual_review.md — inget gissat.
 Kräver: Steg 4 ✅
@@ -57,4 +57,8 @@ Kräver: Steg 4 ✅
 - 2026-06-10 · Kim beordrade "/goal bygg allt" · stegen körs i följd med maskinbevis; Kims iPhone-bockar (Steg 0) samlas i en slutkontroll i stället för att blockera kedjan.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)
-(tomt)
+- 2026-06-10 · Steg 0 ✅ visual-flow-test.md skapad, parser-stöd verifierat i kod (Kims iPhone-koll: slutlistan)
+- 2026-06-10 · Steg 1 ✅ pass-körning → resultat.md, fail-injektion → manual_review.md
+- 2026-06-10 · Steg 2 ✅ visual-flow-compiler byggd; visual-flow-test installerad som riktig skill + körd (kaffe)
+- 2026-06-10 · Steg 3 ✅ prompt-mall + skill-gräns + "installera skillen" i kontraktet; RUN_REPORT ren
+- 2026-06-10 · Steg 4 ✅ mfp-skillsen pekar-modell (bootloader + flow.md + REN rapport, 0 saknade fält)
