@@ -54,6 +54,7 @@ Kräver: Steg 4 ✅
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
 - 2026-06-10 · Planen skapad · startläge för M1.
 - 2026-06-10 · 💡#1+#2 byggda direkt (mall+ZIP+intervju, ritad vy) · Kim bad explicit; rör inga M1-steg.
+- 2026-06-10 · Kim beordrade "/goal bygg allt" · stegen körs i följd med maskinbevis; Kims iPhone-bockar (Steg 0) samlas i en slutkontroll i stället för att blockera kedjan.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)
 (tomt)

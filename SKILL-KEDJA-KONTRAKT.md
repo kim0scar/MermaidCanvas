@@ -41,6 +41,23 @@ står I flödet: inga gissningar.
 ALDRIG sett kedjan. Skriv alltid: (1) input — vad steget får, (2) uppgiften,
 (3) output — exakt format och var det ska sparas.
 
+**Prompt-mallen (v74 — kompilatorn validerar mot den):**
+
+| Nodtyp | Prompten MÅSTE innehålla |
+|---|---|
+| agent/tool/script/subagent | `Input:` · `Uppgift:` · `Verktyg:` (skriv "inget" vid ren LLM-skrivning) · `Output:` · `PASS:` · `FAIL:` |
+| gate | `PASS:`-villkor OCH `FAIL:`-väg (båda gren-kanterna ritade) |
+| memory | sökväg + exakt format |
+| manual | sökväg + vad som ska stå |
+| input | trigger-fras/villkor |
+| output | vart resultatet ska |
+| container (skill) | namn + syfte i en mening |
+
+**Skill-gräns-kriterier (vad som avgör att en container är EN skill):**
+eget syfte i EN mening · egen input-fil + output-fil (nästa skill läser filen, inte
+kontexten) · litet kontextbehov (körbar utan att läsa hela canvasen) · egen
+pass/fail/manual-utgång · återanvändbar (nästa leverantör/fall utan omritning).
+
 ## Körregler för Claude
 
 1. **Ordning** = topologisk ordning från pilarna. Container körs när dess inputs finns.
@@ -56,12 +73,13 @@ ALDRIG sett kedjan. Skriv alltid: (1) input — vad steget får, (2) uppgiften,
 7. **Gissa aldrig credentials/konton** — använd det som redan är inloggat (MCP),
    annars stoppa och fråga.
 
-## Två kommandon
+## Tre kommandon
 
 | Kim säger | Claude gör |
 |---|---|
 | **"kör flödet"** (+ mermaid/filnamn) | Exekverar kedjan EN gång, nu. Subagent per container. |
-| **"bygg skills av flödet"** | Skapar en permanent skill per container i `~/.claude/skills/<namn>/SKILL.md` + en kedje-skill som kopplar ihop dem. |
+| **"installera skillen"** (+ fil/namn) | Kör `visual-flow-compiler`: validerar noderna mot prompt-mallen, skapar `~/.claude/skills/<namn>/` med BOOTLOADER-SKILL.md (pekar på ritningen — ritningen förblir enda sanningen) + flow.md-kopia + ärlig RUN_REPORT.md. **Detta är standardvägen ritning → skill (v74).** |
+| **"bygg skills av flödet"** | Äldre väg: handskriven SKILL.md per container. Använd bara när pekar-modellen inte räcker. |
 
 Skill-namn: containerns namn i kebab-case. Trigger-fraser: input-nodens prompt +
 containernamnet.
