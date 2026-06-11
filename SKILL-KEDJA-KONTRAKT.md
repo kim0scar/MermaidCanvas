@@ -45,13 +45,24 @@ ALDRIG sett kedjan. Skriv alltid: (1) input — vad steget får, (2) uppgiften,
 
 | Nodtyp | Prompten MÅSTE innehålla |
 |---|---|
-| agent/tool/script/subagent | `Input:` · `Uppgift:` · `Verktyg:` (skriv "inget" vid ren LLM-skrivning) · `Output:` · `PASS:` · `FAIL:` |
+| agent/tool/script | `Input:` · `Uppgift:` · `Verktyg:` (skriv "inget" vid ren LLM-skrivning) · `Output:` · `PASS:` · `FAIL:` |
+| **subagent** (v76) | `Input:` · `Uppgift:` · `Tool capability:` · `Preferred tools:` · `Fallback:` · `Forbidden:` · `Output:` (egen markdown-fil) · `PASS:` · `FAIL:` |
 | gate | `PASS:`-villkor OCH `FAIL:`-väg (båda gren-kanterna ritade) |
 | memory | sökväg + exakt format |
 | manual | sökväg + vad som ska stå |
 | input | trigger-fras/villkor |
 | output | vart resultatet ska |
 | container (skill) | namn + syfte i en mening |
+
+**Subagent-mönstret (v76 — Kims rättelse av demo-skill-2):** i RESEARCH-steg är
+**subagent** huvudnoden — tool är METADATA i subagentens prompt (capability +
+preferred + fallback + forbidden), aldrig en egen huvudnod. En subagent = egen
+agent, eget kontextfönster, egen uppgift, EGEN output-fil. Par/vågor av subagents
+körs parallellt och är BLINDA för varandras filer. En **agent**-nod efteråt gör
+gap/syntes och läser ENDAST subagentfilerna — den surfar aldrig.
+Tool capability-ord: `web_search` · `browser_nav` · `network_inspect` ·
+`static_fetch` · `file_read_write` · `llm_synthesis` · `validator_script`.
+Referens-exempel: `demo-skill-3-subagents.md` i iCloud-Mermaid-mappen.
 
 **Skill-gräns-kriterier (vad som avgör att en container är EN skill):**
 eget syfte i EN mening · egen input-fil + output-fil (nästa skill läser filen, inte
