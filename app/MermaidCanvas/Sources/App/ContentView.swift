@@ -38,6 +38,12 @@ struct ContentView: View {
     @State private var openCards: [UUID] = []
     /// v70: bekräftelse efter "Spara skill som fil".
     @State private var skillSavedMessage: String? = nil
+    /// v75: skill-exporten går via riktig "Spara som"-dialog (Files). Tyst skrivning
+    /// bredvid originalet nekas av sandlådan när filen öppnats via Filer-väljaren —
+    /// exporten hamnade osynligt i appens egen mapp (Kims fynd på iPhone).
+    /// Återanvänder den befintliga fileExportern (en extra krockar — visas aldrig).
+    @State private var skillExportMode: Bool = false
+    @State private var skillExportFileName: String = "skill.md"
     /// v73: namn-fråga innan skill sparas (container utan riktigt namn → fråga Kim).
     @State private var skillNameContainerId: UUID? = nil
     @State private var skillNameInput: String = ""
@@ -350,8 +356,24 @@ struct ContentView: View {
             isPresented: $showExporter,
             document: pendingDocument,
             contentType: .plainText,
-            defaultFilename: model.canvasTitle.isEmpty ? "canvas.md" : "\(model.canvasTitle).md"
+            defaultFilename: skillExportMode
+                ? skillExportFileName
+                : (model.canvasTitle.isEmpty ? "canvas.md" : "\(model.canvasTitle).md")
         ) { result in
+            // v75: skill-läget — Kim valde mapp för den portabla skill-filen.
+            // Aktuell fil byts ALDRIG (Kim stannar i pipeline-filen), ingen sidecar.
+            if skillExportMode {
+                switch result {
+                case .success(let url):
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    skillSavedMessage = "Sparad som \(url.lastPathComponent)"
+                case .failure:
+                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                    skillSavedMessage = "Kunde inte spara skill-filen"
+                }
+                skillExportMode = false
+                return
+            }
             switch result {
             case .success(let url):
                 // v65: filen skapades av appen själv → autospar får skriva direkt
@@ -543,12 +565,13 @@ struct ContentView: View {
             platform: model.platform,
             activeShapePacks: model.activeShapePacks,
             legend: model.legend)
-        if let url = fileManager.saveSkillFile(content, named: name) {
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-            skillSavedMessage = "Sparad som \(url.lastPathComponent)"
-        } else {
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
-            skillSavedMessage = "Kunde inte spara skill-filen"
+        // v75: alltid "Spara som"-dialog — Kim väljer mappen, inget hamnar osynligt.
+        // Liten fördröjning: long-press-menyns popover måste hinna stängas först.
+        skillExportFileName = "\(CanvasFileManager.sanitizeFileName(name)).md"
+        skillExportMode = true
+        pendingDocument = CanvasDocument(content: content)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            showExporter = true
         }
     }
 

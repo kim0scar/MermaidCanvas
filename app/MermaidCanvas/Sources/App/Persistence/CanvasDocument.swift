@@ -50,6 +50,11 @@ struct CanvasDocument: FileDocument {
         """
     }
 
+    /// v75: wrappa redan komponerat innehåll (t.ex. SkillFileComposer → fileExporter).
+    init(content: String) {
+        self.content = content
+    }
+
     init(configuration: ReadConfiguration) throws {
         guard let data = configuration.file.regularFileContents,
               let text = String(data: data, encoding: .utf8) else {

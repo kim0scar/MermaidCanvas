@@ -68,8 +68,9 @@ final class V74SkillExportUITest: XCTestCase {
         XCTAssertTrue(container.waitForExistence(timeout: 4), "skill-containern ska finnas på canvas")
         snap("03-skill-container-skapad")
 
-        // 3. Long-press → Redigera: döp till demo-skill + sätt Skill-nummer 1
-        container.press(forDuration: 0.7)
+        // 3. Long-press på container-HEADERN (mitten är barnets yta) → Redigera
+        let headerPoint = container.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.04))
+        headerPoint.press(forDuration: 0.8)
         let editBtn = app.buttons["Redigera"]
         XCTAssertTrue(editBtn.waitForExistence(timeout: 4), "context-menyn ska öppnas")
         editBtn.tap()
@@ -95,12 +96,22 @@ final class V74SkillExportUITest: XCTestCase {
         sleep(1)
         snap("05-skill1-header")
 
-        // 4. Long-press → Spara skill som fil (portabel export)
-        container.press(forDuration: 0.7)
+        // 4. Long-press på headern → Spara skill som fil → v75: "Spara som"-dialog (Files)
+        headerPoint.press(forDuration: 0.8)
         let saveBtn = app.buttons["Spara skill som fil"]
         XCTAssertTrue(saveBtn.waitForExistence(timeout: 4), "spara-knappen ska finnas i menyn")
         saveBtn.tap()
         sleep(2)
-        snap("06-export-klar")
+        snap("06-spara-som-dialog")
+        // Files-pickern: bekräfta med Spara (default-mappen duger i testet)
+        let confirm = app.buttons["Spara"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 8), "Spara som-dialogen ska visas")
+        snap("06b-spara-som")
+        confirm.tap()
+        // Bekräftelse-alerten ska tala om VAR filen hamnade
+        let alert = app.alerts["Skill sparad"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 6), "bekräftelsen 'Skill sparad' ska visas")
+        snap("07-export-klar")
+        alert.buttons["OK"].tap()
     }
 }

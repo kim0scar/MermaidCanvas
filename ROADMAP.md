@@ -2,7 +2,17 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v74 — "portabel skill-export + skill-nummer"
+## Aktuell version: v75 — "Spara som-dialog för skill-export + demo-skill-2"
+
+*Tema:* Kims test visade att exporten hamnade osynligt i appens egen mapp (sandlådan
+nekar skrivning bredvid filer öppnade via Filer). Nu öppnar "Spara skill som fil" en
+riktig **Spara som-dialog** — Kim väljer mappen, alerten säger filnamnet, inget göms.
+Ny ritning **demo-skill-2.md**: hela skillen i EN box, vänster→höger som n8n
+(input → script → WebSearch-verktyg → agent → grind → pass/fail → output), körd
+framgångsrikt av främmande agent med riktig webbsökning. UI-testet kör hela kedjan
+inklusive Files-dialogen. 23 unit-testsviter gröna.
+
+## v74 — "portabel skill-export + skill-nummer"
 
 *Tema:* M2 i PROJEKTPLAN.md — exporten ska fungera på VILKEN Claude Code som helst,
 på någon annans dator, utan skills och utan projekt. Kim ritar → exporterar → ger bort filen.

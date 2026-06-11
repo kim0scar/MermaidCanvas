@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ M2 — steg 10: v74 DEPLOYAD på iPhone — väntar bara Kims ögon
+NU: ⏳ M2 — steg 10: v75 DEPLOYAD (Spara som-dialog + demo-skill-2) — väntar bara Kims ögon
 [█████████▓░░] 4/5 — 80%   ·   💡 Idébanken: 3 fångade, 2 byggda
 SENAST KLART: Steg 9 ✅ (2026-06-11) — appen körd av Claude via UI-test: export gjord i appen, bevisad portabel
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -54,6 +54,7 @@ Kräver: Steg 9 ✅
 - 2026-06-10 · Planen skapad · startläge för M1.
 - 2026-06-10 · 💡#1+#2 byggda direkt (mall+ZIP+intervju, ritad vy) · Kim bad explicit; rör inga M1-steg.
 - 2026-06-10 · Kim beordrade "/goal bygg allt" · stegen körs i följd med maskinbevis; Kims iPhone-bockar samlas i slutkontroll.
+- 2026-06-11 · Steg 10 utökat efter Kims test: exporten hamnade osynligt i appens mapp (sandlåda) → "Spara skill som fil" får riktig Spara som-dialog; + demo-skill-2.md byggs (komplett LR-skill med verktyg + exakta in/ut-filer).
 - 2026-06-11 · M2 detaljerad på Kims order · export till främmande dator + skill-container (namn+nummer, ordning i kedjan) + Claude UI-testar appen själv och städar containrarnas utseende.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)

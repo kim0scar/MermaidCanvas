@@ -1,21 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v75
+# ARKITEKTUR-MERMAID — Version v74
 *Datum: 2026-06-11*
-
-> **v75 "Spara som-dialog för skill-export + demo-skill-2":** Kims iPhone-test avslöjade
-> att exporten hamnade OSYNLIGT i appens egen mapp — sandlådan nekar skrivning bredvid en
-> fil som öppnats via Filer-väljaren, och v70-fallbacken gömde filen utan att säga det.
-> Fix: **"Spara skill som fil" öppnar nu en riktig "Spara som"-dialog (Files)** så Kim
-> väljer mappen själv. Kod: `performSaveSkillFile` sätter skill-läge + återanvänder den
-> BEFINTLIGA fileExportern i `ContentView` (en andra fileExporter på samma vy krockar och
-> visas aldrig — verifierat i UI-test); presentationen fördröjs 0,5 s så long-press-menyn
-> hinner stängas. `CanvasDocument` fick `init(content:)`. Skill-läget byter ALDRIG aktuell
-> fil och skriver ingen sidecar. Bekräftelse-alerten säger filnamnet.
-> UI-testet `V74SkillExportUITest` kör nu HELA vägen: skapa skill-container → Skill 1 →
-> long-press → Spara skill som fil → Files-dialogen → Spara → "Skill sparad".
-> Utanför appen: **`demo-skill-2.md`** (iCloud-Mermaid) — komplett skill i EN box,
-> vänster→höger (n8n-stil): input → script → verktyg (WebSearch) → agent → grind →
-> pass/fail → output, alla prompts med Input/Uppgift/Verktyg/Output/PASS/FAIL.
-> Körd av främmande agent utan skills: riktig webbsökning, grind PASS, resultat.md.
 
 > **v74 "portabel skill-export + skill-nummer":** exporten är nu SJÄLVBÄRANDE — en
 > exporterad skill-fil fungerar på vilken Claude Code som helst, utan skills och utan
