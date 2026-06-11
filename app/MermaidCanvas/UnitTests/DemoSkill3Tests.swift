@@ -32,10 +32,10 @@ final class DemoSkill3Tests: XCTestCase {
 
         // ALLA noder bor i containern (Kims krav: containern fångar allt)
         let children = p.shapes.filter { $0.childOfContainerId == container?.id }
-        XCTAssertEqual(children.count, 11, "alla 11 noder ska vara barn i containern")
+        XCTAssertEqual(children.count, 12, "alla 12 noder ska vara barn i containern")
 
-        // Nodtyperna finns: gate, manual (octagon), memory x3, agent, script, input, output
-        XCTAssertEqual(p.shapes.filter { $0.category == .memory }.count, 3)
+        // Nodtyperna finns: gate, manual (octagon), memory x4 (inkl. run_manifest), agent, script, input, output
+        XCTAssertEqual(p.shapes.filter { $0.category == .memory }.count, 4)
         XCTAssertTrue(p.shapes.contains { $0.category == .gate })
         XCTAssertTrue(p.shapes.contains { $0.category == .manual && $0.type == .octagon })
         XCTAssertTrue(p.shapes.contains { $0.category == .agent })
@@ -44,13 +44,22 @@ final class DemoSkill3Tests: XCTestCase {
         func pos(_ label: String) -> CGPoint? { p.shapes.first { $0.label == label }?.position }
         guard let input = pos("Input: ämne"),
               let gap = pos("Gap-agent: jämför filerna"),
-              let output = pos("Visa resultatfilen") else {
+              let output = pos("Visa aktiv output") else {
             return XCTFail("huvudlinjens noder saknas")
         }
         XCTAssertLessThan(input.x, gap.x)
         XCTAssertLessThan(gap.x, output.x)
 
-        // Kanterna: 12 st, inkl. pass/fail från grinden
-        XCTAssertEqual(p.edges.count, 12)
+        // Kanterna: 14 st, inkl. pass/fail från grinden + manifest-noden
+        XCTAssertEqual(p.edges.count, 14)
+
+        // Revisionshygien (steg 12): manifest-nod + run-mapps-sökvägar i prompterna
+        let manifest = p.shapes.first { $0.label == "run_manifest.md" }
+        XCTAssertNotNil(manifest, "run_manifest.md ska vara egen memory-nod")
+        XCTAssertEqual(manifest?.category, .memory)
+        XCTAssertTrue(manifest?.prompt.contains("aktiv outputfil") ?? false)
+        for s in subagents {
+            XCTAssertTrue(s.prompt.contains("runs/<run_id>/"), "subagent-output ska ligga i run-mappen")
+        }
     }
 }
