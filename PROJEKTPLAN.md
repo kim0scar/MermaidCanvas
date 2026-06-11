@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ M2 — steg 10+11 väntar Kims bock (allt maskinarbete klart, inkl. steg 12)
-[█████████░░░] 5/7 — 71%   ·   💡 Idébanken: 4 fångade, 2 byggda
+NU: ⏳ M2 — steg 10+11 väntar Kims bock (allt maskinarbete klart, inkl. steg 12+13)
+[█████████░░░] 6/8 — 75%   ·   💡 Idébanken: 4 fångade, 2 byggda
 SENAST KLART: Steg 9 ✅ (2026-06-11) — appen körd av Claude via UI-test: export gjord i appen, bevisad portabel
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -48,6 +48,11 @@ Varje körning får unik run_id under runs/<run_id>/ med run_manifest.md (input,
 Klart när: FAIL-run har manual_review.md utan aktiv resultat.md; PASS-run tvärtom; latest/run_manifest.md pekar rätt; ingen gammal fil kan misstolkas som aktiv; RUN_REPORT uppdaterad.
 Kräver: Steg 11 (maskindel) ✅
 
+### ✅ Steg 13 — Run-hygiene-validator (scripts/validate_run_hygiene.py)
+Python-validator kontrollerar varje run: manifest-fält, PASS/FAIL-regler, fillista, latest-pekare, ren rot, gateutfall mot gap_analys.md; rapport i validation_report.md.
+Klart när: validatorn ger PASS för båda runs + latest; arkivet markerat inaktivt; RUN_REPORT uppdaterad med att validatorn passerar.
+Kräver: Steg 12 ✅
+
 ## Efter M2 (bara rubriker — detaljeras först när M2 är 🎉)
 - n8n-initiera (byggar-skillen: intervju → research → ritat utkast på canvasen)
 - Styrningsregler i kontraktet (nivå A–D, R0–R4, gap-frågelistan)
@@ -69,6 +74,7 @@ Kräver: Steg 11 (maskindel) ✅
 - 2026-06-11 · Steg 10 utökat efter Kims test: exporten hamnade osynligt i appens mapp (sandlåda) → "Spara skill som fil" får riktig Spara som-dialog; + demo-skill-2.md byggs (komplett LR-skill med verktyg + exakta in/ut-filer).
 - 2026-06-11 · M2 detaljerad på Kims order · export till främmande dator + skill-container (namn+nummer, ordning i kedjan) + Claude UI-testar appen själv och städar containrarnas utseende.
 - 2026-06-11 · Steg 12 tillagt på Kims order: demo-skill-3:s FAIL- och PASS-filer låg sida vid sida och motsade varandra → run_id + runs/<run_id>/ + run_manifest.md + latest/ · MFP och appbygge fortsatt stoppat.
+- 2026-06-11 · Steg 13 tillagt på Kims order: revisionshygienen ska vara maskinellt verifierbar (validate_run_hygiene.py) · demo-skill-3 godkänd som arkitekturmönster; MFP/dashboard/appbygge fortsatt stoppat tills validatorn är grön.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)
 - 2026-06-10 · Steg 0 ✅ visual-flow-test.md skapad, parser-stöd verifierat i kod (Kims iPhone-koll: slutlistan)
@@ -78,6 +84,7 @@ Kräver: Steg 11 (maskindel) ✅
 - 2026-06-10 · Steg 4 ✅ mfp-skillsen pekar-modell (bootloader + flow.md + REN rapport, 0 saknade fält)
 - 2026-06-10 · Steg 5 ✅ Canon-körningen: konsensus 77/89, 0 olösta · official_source_map.md COMPLETE + 3 scope-beslut i manual_review.md
 - 2026-06-11 · Steg 9 ✅ UI-test skapade skill-container + Skill 1 + exporterade i appen; främmande agent verifierade filen (stoppade ärligt på tom nod); mfp-ritningarna fick skill-nr 1+2
+- 2026-06-11 · Steg 13 ✅ validate_run_hygiene.py grön för båda runs + latest + rot + arkiv (validation_report.md); fel-injektion bevisade att den fångar brott (exit 1); RUN_REPORT uppdaterad
 - 2026-06-11 · Steg 12 ✅ run_id + runs/<run_id>/ + run_manifest.md + latest-pekare; FAIL-run (elcyklar: manual, ingen resultat) + PASS-run (regler-elcyklar: resultat, ingen manual) i separata mappar; gamla rotfiler arkiverade; RUN_REPORT + parser-test uppdaterade
 - 2026-06-11 · Steg 7 ✅ skillNumber + skill-nr-kommentar + parserfix (subgraph-kategori) — round-trip grön båda vägar
 - 2026-06-11 · Steg 8 ✅ SkillFileComposer + SkillExportContract — portabel fil med kontrakt, 23 testsviter gröna
