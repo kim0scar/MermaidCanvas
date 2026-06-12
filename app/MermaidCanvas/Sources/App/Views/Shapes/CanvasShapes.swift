@@ -244,9 +244,18 @@ struct CylinderShape: Shape {
         // Vänster sida ned
         p.move(to: CGPoint(x: rect.minX, y: rect.minY + ry))
         p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - ry))
-        // Botten-båge (framsidan)
-        p.addArc(center: CGPoint(x: rect.midX, y: rect.maxY - ry),
-                 radius: rect.width / 2, startAngle: .degrees(180), endAngle: .degrees(0), clockwise: true)
+        // Botten-halvellips (framsidan) — samma ellipshöjd som locket, håller sig
+        // inom formens ram (tidigare cirkelbåge med radie = halva bredden svämmade
+        // över ramen och fick breda cylindrar att se ut som djupa koppar).
+        let k: CGFloat = 0.5523
+        let rx = rect.width / 2
+        let cy = rect.maxY - ry
+        p.addCurve(to: CGPoint(x: rect.midX, y: rect.maxY),
+                   control1: CGPoint(x: rect.minX, y: cy + k * ry),
+                   control2: CGPoint(x: rect.midX - k * rx, y: rect.maxY))
+        p.addCurve(to: CGPoint(x: rect.maxX, y: cy),
+                   control1: CGPoint(x: rect.midX + k * rx, y: rect.maxY),
+                   control2: CGPoint(x: rect.maxX, y: cy + k * ry))
         // Höger sida upp
         p.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + ry))
         // Topp-ellips (hela locket)

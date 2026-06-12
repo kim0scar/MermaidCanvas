@@ -775,12 +775,12 @@ struct ShapeView: View {
             // + tunn solid ram. Titeln bor i headern (ej flytande tab).
             VStack(spacing: 0) {
                 HStack(spacing: 5) {
+                    Spacer(minLength: 10)   // v76: titel centrerad (fönster-stil) — syns även mitt i breda containrar
                     // v70: skill-markör — visar att containern är en skill-gräns.
                     if shape.category == .skill {
                         Image(systemName: "hexagon.fill")
                             .font(.system(size: 9 * min(shape.sizeMultiplier, 1.4)))
                             .foregroundStyle(Color.white.opacity(0.85))
-                            .padding(.leading, 10)
                     }
                     Text(containerHeaderTitle)
                         .font(.system(size: 13 * min(shape.sizeMultiplier, 1.4), weight: .semibold, design: .rounded))
@@ -788,9 +788,7 @@ struct ShapeView: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .minimumScaleFactor(0.85)
-                        .padding(.leading, shape.category == .skill ? 0 : 10)
-                        .padding(.trailing, 10)
-                    Spacer(minLength: 0)
+                    Spacer(minLength: 10)
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 28)

@@ -47,6 +47,7 @@
 		4CBA5CE815AFDDCC6E0D9143 /* ios-swiftui-rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 26849544B1328648A4C1C344 /* ios-swiftui-rules.md */; };
 		4D6BFFBE6BC5EE66A23D05DA /* test_diamond_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = A29372DCECBC709B68A13662 /* test_diamond_chip.1.png */; };
 		4F4607E6C9E9BD2B94C7BB6A /* OrientationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA597C88CA5ABD913AC7597 /* OrientationTests.swift */; };
+		507164514BCB53796923143D /* TakeoverUIGranskning.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF913E502F02D7E2165F22B /* TakeoverUIGranskning.swift */; };
 		544D1031BCB9A98913A5DC1F /* V50PlacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DB770D9036DCE9E3A4CCAE /* V50PlacementTests.swift */; };
 		5502DC1063808D7E976CD568 /* CanvasViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00A564942F1596BCF995981 /* CanvasViewportState.swift */; };
 		56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */; };
@@ -266,6 +267,7 @@
 		B6692C15F26C62C2E81CC480 /* V71Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V71Tests.swift; sourceTree = "<group>"; };
 		B94D1AD9EBC06C41E7947C6F /* V65AutosparTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V65AutosparTests.swift; sourceTree = "<group>"; };
 		BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapseBadge.swift; sourceTree = "<group>"; };
+		BCF913E502F02D7E2165F22B /* TakeoverUIGranskning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TakeoverUIGranskning.swift; sourceTree = "<group>"; };
 		C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRulesSheet.swift; sourceTree = "<group>"; };
 		C15C2D1CD9CB0FFE5A6F1C69 /* test_diamond_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
 		C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeContextMenu.swift; sourceTree = "<group>"; };
@@ -594,6 +596,7 @@
 				EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */,
 				7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */,
 				18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */,
+				BCF913E502F02D7E2165F22B /* TakeoverUIGranskning.swift */,
 				12BE1B86655B722847CCF708 /* V27FeatureTests.swift */,
 				DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */,
 				712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */,
@@ -886,6 +889,7 @@
 				414054BE34E93776285A75C4 /* DragOutTests.swift in Sources */,
 				114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */,
 				155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */,
+				507164514BCB53796923143D /* TakeoverUIGranskning.swift in Sources */,
 				D4040B6552C65FDDCE78A77B /* V27FeatureTests.swift in Sources */,
 				07E3490A9963968FB98F7B44 /* V28VisualTests.swift in Sources */,
 				AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */,
