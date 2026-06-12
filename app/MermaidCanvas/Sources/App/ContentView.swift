@@ -566,11 +566,16 @@ struct ContentView: View {
             activeShapePacks: model.activeShapePacks,
             legend: model.legend)
         // v75: alltid "Spara som"-dialog — Kim väljer mappen, inget hamnar osynligt.
+        // v76: "skill-N-"-prefix så exporten aldrig krockar med (och skriver över)
+        // själva ritningsfilen, som ofta heter samma som containern.
         // Liten fördröjning: long-press-menyns popover måste hinna stängas först.
-        skillExportFileName = "\(CanvasFileManager.sanitizeFileName(name)).md"
+        let prefix = skillNumber.map { "skill-\($0)-" } ?? "skill-"
+        skillExportFileName = "\(prefix)\(CanvasFileManager.sanitizeFileName(name)).md"
         skillExportMode = true
         pendingDocument = CanvasDocument(content: content)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        // v76: 0,5 s räckte inte alltid (iOS 26) — popovern hann inte stängas
+        // och dialogen uteblev tyst. 0,9 s ger marginal.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
             showExporter = true
         }
     }

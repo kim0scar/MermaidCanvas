@@ -1,16 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v77
+# ARKITEKTUR-MERMAID — Version v76
 *Datum: 2026-06-12*
-
-> **v77 "krocksäkert exportnamn + stabil Spara-dialog":** Claude testade själva exporten
-> av demo-skill-3 i appen (UI-test genom riktiga Spara-dialogen) och hittade två fel:
-> (1) **Exportens default-filnamn var identiskt med ritningsfilen** (containerns namn) —
-> sparade Kim i samma mapp skrevs ritningen tyst över av exporten. Nu prefixas namnet:
-> `skill-<nr>-<namn>.md` (utan nummer: `skill-<namn>.md`) — kan aldrig krocka.
-> (2) **Spara-dialogen uteblev ibland tyst** — 0,5 s-fördröjningen efter long-press-
-> popovern räckte inte alltid (iOS 26); nu 0,9 s. Exporttestet
-> `TakeoverUIGranskning.testExporteraDemoSkill3_SparaSkillSomFil` kör hela Kims väg:
-> öppna via Filer → long-press rubriken → Spara skill som fil → dialog → verifierat
-> innehåll (kontrakt + legend + state-JSON + run-hygien, 14 maskinkontroller).
 
 > **v76 "cylinderfix + centrerad container-titel" (UI-granskning via iphone-takeover):**
 > Claude körde appen själv (XCUITest, sim + iPhone) och granskade demo-skill-3-ritningen

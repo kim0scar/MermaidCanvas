@@ -2,7 +2,14 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v76 — "cylinderfix + centrerad container-titel"
+## Aktuell version: v77 — "krocksäkert exportnamn + stabil Spara-dialog"
+
+*Tema:* exporttestet (Claude körde hela Kims export-väg i appen) avslöjade att
+exportens default-namn var samma som ritningsfilen — risk att skriva över ritningen
+tyst. Nu heter exporten alltid `skill-<nr>-<namn>.md`. Spara-dialogen fick också
+0,9 s presentation-marginal (uteblev ibland tyst på iOS 26).
+
+## v76 — "cylinderfix + centrerad container-titel"
 
 *Tema:* UI-granskning där Claude körde appen själv (iphone-takeover-metoden).
 CylinderShape fick ellips-botten (cirkelbågen fick breda cylindrar att se ut som
