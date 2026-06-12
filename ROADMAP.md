@@ -2,7 +2,16 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v75 — "Spara som-dialog för skill-export + demo-skill-2"
+## Aktuell version: v76 — "cylinderfix + centrerad container-titel"
+
+*Tema:* UI-granskning där Claude körde appen själv (iphone-takeover-metoden).
+CylinderShape fick ellips-botten (cirkelbågen fick breda cylindrar att se ut som
+koppar utanför ramen), container-titeln centrerades så den syns mitt i breda
+skill-containrar, och demo-skill-3-ritningen fick riktig containerstorlek +
+nodbredder. Nytt manuellt test TakeoverUIGranskning (öppnar fil via Filer-väljaren,
+fotograferar i tre zoomlägen).
+
+## v75 — "Spara som-dialog för skill-export + demo-skill-2"
 
 *Tema:* Kims test visade att exporten hamnade osynligt i appens egen mapp (sandlådan
 nekar skrivning bredvid filer öppnade via Filer). Nu öppnar "Spara skill som fil" en

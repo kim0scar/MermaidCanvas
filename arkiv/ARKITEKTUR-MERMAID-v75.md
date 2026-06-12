@@ -1,18 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v76
-*Datum: 2026-06-12*
-
-> **v76 "cylinderfix + centrerad container-titel" (UI-granskning via iphone-takeover):**
-> Claude körde appen själv (XCUITest, sim + iPhone) och granskade demo-skill-3-ritningen
-> grafiskt. Tre fel hittade och fixade: (1) **`CylinderShape`-bugg** — bottenbågen ritades
-> som CIRKEL med radie = halva bredden, så breda cylindrar svämmade långt utanför sin ram
-> och såg ut som djupa koppar; nu en botten-halvellips med samma höjd som locket (kubiska
-> kurvor, k=0,5523) som håller sig inom ramen. (2) **Container-titeln centrerad**
-> (fönster-stil) i header-bandet — tidigare vänsterställd och osynlig så fort man
-> panorerat in i en bred container. (3) **Ritningen saknade containerstorlek** — utan
-> width/height-meta fick skill-containern defaultmåtten 280×200 medan noderna spände
-> ~1960×400; nu `%% skill_demo3 width: 7.0` + `height: 2.4` + bredd-meta på cylindrar,
-> subagents och grinden ("Konsensus?" kapades). Nytt manuellt UI-test
-> `TakeoverUIGranskning` öppnar ritningen via Filer-väljaren och fotograferar.
+# ARKITEKTUR-MERMAID — Version v75
+*Datum: 2026-06-11*
 
 > **v75 "Spara som-dialog för skill-export + demo-skill-2":** Kims iPhone-test avslöjade
 > att exporten hamnade OSYNLIGT i appens egen mapp — sandlådan nekar skrivning bredvid en
