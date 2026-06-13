@@ -65,6 +65,7 @@ Kräver: Steg 12 ✅
 - 2026-06-10 · 💡#2 Ritad vy av planen i appen · BYGGD på Kims order
 - 2026-06-11 · 💡#3 "Kopiera som skill" (urklipp) får också kontraktet inbäddat · väntar
 - 2026-06-11 · 💡#4 Promptprotokoll v0.1 fullt ut (11 nodtypsmallar + mall-knapp i appen + MFP-omritning) · parkerad — gap-analysen klar, väntar efter steg 11
+- 2026-06-13 · 💡#5 Prompt-kompilator: appen GENERERAR nod-prompten från hög-nivå-val (du slipper skriva metodtexten själv) · väntar — kärnan av "n8n för Claude Code"-visionen
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
 - 2026-06-10 · Planen skapad · startläge för M1.
