@@ -1,7 +1,7 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ M2 — steg 10+11 väntar Kims bock (allt maskinarbete klart, inkl. steg 12+13)
-[█████████░░░] 6/8 — 75%   ·   💡 Idébanken: 4 fångade, 2 byggda
-SENAST KLART: Steg 9 ✅ (2026-06-11) — appen körd av Claude via UI-test: export gjord i appen, bevisad portabel
+NU: ⏳ M2 steg 10+11 väntar Kims iPhone-bock · M3 steg 14 ✅ (Skill Protocol-format definierat+testat) — väntar Kims OK att försegla M3
+[██████████░░] 7/9 — 78%   ·   💡 Idébanken: 5 fångade, 2 byggda
+SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
 ## Milstolpe M1 — exportkedjan bevisad ✅ 🎉 (2026-06-10, se 🎉-listan)
@@ -53,12 +53,16 @@ Python-validator kontrollerar varje run: manifest-fält, PASS/FAIL-regler, filli
 Klart när: validatorn ger PASS för båda runs + latest; arkivet markerat inaktivt; RUN_REPORT uppdaterad med att validatorn passerar.
 Kräver: Steg 12 ✅
 
-## Efter M2 (bara rubriker — detaljeras först när M2 är 🎉)
-- n8n-initiera (byggar-skillen: intervju → research → ritat utkast på canvasen)
-- Styrningsregler i kontraktet (nivå A–D, R0–R4, gap-frågelistan)
-- Skill 3 mfp-spec (Excel) + Skill 4 dashboard
-- Upphandlings-paketet i appen
-- Skill-builder/debugger-metaskillen (växer ur 2–3 verkliga körningar)
+## Milstolpe M3 — Skill Protocol Export v1 (definiera + testa formatet INNAN app-kod)
+Princip: form → node contract → Mermaid + Skill Protocol. Mermaid = visuell vy, YAML node/edge contracts = exekverbar spec, prompten bär inte all logik. Ingen app-kod/UI/datamodell; demo-skill-3 skrivs aldrig över — nya filer bredvid.
+
+### ✅ Steg 14 — Skill Protocol Export v1 (normativt schema + handskrivet referensprotokoll + test + audit)
+Klart när (Kims kriterier): (1) SKILL_PROTOCOL_SCHEMA.md finns + är normativt (MUST/SHOULD/MAY); (2) demo-skill-3-subagents.skill.md följer schemat + är självbärande; (3) filen ensam räcker för noder/edges/run-mapp/manifest/gate/output/validatorregler; (4) främmande Claude Code dry-runar utan lokala projektfiler; (5) demo-skill-3/skill_protocol_audit.md visar PASS/FAIL per kriterium + gap innan app-kod ändras.
+Kräver: M2-maskinarbetet ✅ (steg 10+11 = Kims bockar kvar; M3 är spec-only, rör inte appen).
+
+## Efter M3 (bara rubriker — M4 = app-export av Skill Protocol om auditen håller)
+- M4: appen lär sig lagra node contracts per figur + exportera .skill.md (byggs BARA om auditen visar att formatet håller)
+- Styrningsregler i kontraktet (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet i appen
 
 ## 💡 Idébanken — fångas direkt, byggs ALDRIG nu (väljs ur vid milstolpe-slut · max 15 rader)
 - 2026-06-10 · 💡#1 Metoden som portabelt paket för nya projekt · BYGGD på Kims order
@@ -76,9 +80,11 @@ Kräver: Steg 12 ✅
 - 2026-06-11 · M2 detaljerad på Kims order · export till främmande dator + skill-container (namn+nummer, ordning i kedjan) + Claude UI-testar appen själv och städar containrarnas utseende.
 - 2026-06-11 · Steg 12 tillagt på Kims order: demo-skill-3:s FAIL- och PASS-filer låg sida vid sida och motsade varandra → run_id + runs/<run_id>/ + run_manifest.md + latest/ · MFP och appbygge fortsatt stoppat.
 - 2026-06-11 · Steg 13 tillagt på Kims order: revisionshygienen ska vara maskinellt verifierbar (validate_run_hygiene.py) · demo-skill-3 godkänd som arkitekturmönster; MFP/dashboard/appbygge fortsatt stoppat tills validatorn är grön.
+- 2026-06-14 · M3 startad på Kims order: Skill Protocol Export v1 — definiera+testa formatet (schema + handskrivet .skill.md + test i ren kontext + audit) INNAN app-export · ingen app-kod/UI/datamodell, demo-skill-3 skrivs aldrig över (nya filer bredvid); M2 steg 10+11 kvar som Kims iPhone-bockar.
 - 2026-06-12 · Kims order "iphone-takeover: granska UI/UX + fixa grafiken" (del av steg 11-bocken) · fynd: ritningen saknade containerstorlek (orange minilåda) + CylinderShape-bugg (bottenbåge = cirkel med radie halva bredden → kopp-utseende) + gate-text kapad · fix: storlek/bredd-meta i ritningen + ellips-botten i CanvasShapes + deploy.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)
+- 2026-06-14 · Steg 14 ✅ M3 Skill Protocol Export v1: SKILL_PROTOCOL_SCHEMA.md (normativt) + handskrivet demo-skill-3-subagents.skill.md (13 noder/15 edges, konsistens-verifierad) + främmande Claude-kontext dry-runade ur ENBART filen (0 verktygsanrop) + skill_protocol_audit.md (PASS, G1–G6 gap listade för M4)
 - 2026-06-10 · Steg 0 ✅ visual-flow-test.md skapad, parser-stöd verifierat i kod (Kims iPhone-koll: slutlistan)
 - 2026-06-10 · Steg 1 ✅ pass-körning → resultat.md, fail-injektion → manual_review.md
 - 2026-06-10 · Steg 2 ✅ visual-flow-compiler byggd; visual-flow-test installerad som riktig skill + körd (kaffe)
