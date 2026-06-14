@@ -91,8 +91,28 @@ title: <text>                 # MUST
 description: <text>           # MUST — en mening om vad skillen gör
 input: <text>                 # MUST — vad användaren ger
 output: <text>                # MUST — vad körningen lämnar (oftast en fil + manifest)
-run_root: <relativ sökväg>    # MUST — basmapp för körningar, t.ex. demo-skill-3
+root_path: <abs | skill_dir>  # MUST — se 4.1 (var run_root bottnar)
+run_root: <mappnamn>          # MUST — basmappens NAMN under root_path, t.ex. demo-skill-3
 ```
+
+### 4.1 root_path- och run_root-upplösning (G5 — normativt)
+
+`run_root` är ett **mappnamn**, aldrig en sökväg med snedstreck. Var den bottnar
+avgörs av `root_path`, som MUST ha exakt ett av två värden:
+
+| `root_path` | Betyder | Upplöses till |
+|---|---|---|
+| `skill_dir` | Katalogen där `.skill.md`-filen ligger | `<dir för .skill.md>/<run_root>/` |
+| en absolut sökväg (börjar med `/` eller `~`) | Den katalogen | `<root_path>/<run_root>/` |
+
+Regler:
+- `root_path: skill_dir` är default-rekommendationen — då är paketet portabelt:
+  släpp filen var som helst och körningar hamnar bredvid den.
+- Alla sökvägar i node contracts och execution policy är **relativa till
+  `<root_path>/<run_root>/`**. Dvs `runs/<run_id>/s1_research.md` betyder fullt ut
+  `<root_path>/<run_root>/runs/<run_id>/s1_research.md`.
+- En läsare MUST lösa upp `root_path` EN gång vid körstart och därefter aldrig
+  skriva utanför den upplösta `<root_path>/<run_root>/`.
 
 ---
 
@@ -160,6 +180,30 @@ respektera `type`.
 Saknas ett MUST-fält är noden **ogiltig** och flödet MUST NOT köras (validatorn
 rapporterar; aldrig tyst ifyllt).
 
+### 5.4 Verktygs-kapabiliteter (capabilities) (G4 — normativt)
+
+Värdena i `allowed_tools`/`forbidden_tools` är **kapabiliteter**, inte konkreta
+produktnamn. En kapabilitet säger vad noden FÅR och INTE FÅR göra, vilken
+fallback som gäller, och vilket evidenskrav resultatet har. Konkreta verktyg
+(WebSearch, curl, Playwright …) är implementationer av en kapabilitet.
+
+| Capability | Tillåtna operationer | Förbjudna operationer | Fallback | Evidenskrav |
+|---|---|---|---|---|
+| `web_search` | Fråga en sökmotor/sök-API; öppna träffar för att läsa | Hitta på URL:er; läsa annan nods fil | Annan sökmotor | Varje fakta MUST ha käll-URL; raden `Sökfraser:` listar använda frågor |
+| `static_fetch` | Hämta rå text/HTML från en **namngiven, känd URL** via enkel HTTP GET (curl/wget) | Sökmotor (= `web_search`); JS-rendering/klick/interaktion (= `browser_nav`); hitta på URL:er | `browser_nav` mot samma URL om GET blockeras (t.ex. 403/bot-skydd) | Varje fakta MUST ha käll-URL som faktiskt hämtades; raden `Hämtade sidor:` listar URL:erna |
+| `browser_nav` | Rendera sida med JS, klicka, scrolla, läsa dynamiskt innehåll (headed/headless browser) | Hitta på innehåll; läsa annan nods fil | — (sista utväg) | Varje fakta MUST ha käll-URL + kort not om vilken interaktion som behövdes |
+| `read` | Läsa filer i `allowed_reads` | Läsa filer i `forbidden_reads`; surfa | — | — |
+| `bash` | Köra deterministiska skal-kommandon (date, mkdir, cp) | Nätåtkomst om inte också `web_search`/`static_fetch` finns | — | — |
+
+Regler:
+- En nod MUST NOT använda en operation som tillhör en kapabilitet den inte har.
+  Exempel: en `static_fetch`-nod MUST NOT falla tillbaka på en sökmotor — bara på
+  `browser_nav`.
+- Faller även fallbacken bort MUST noden agera enligt sin `fail_behavior` (oftast:
+  skriv rubriken FEL + orsaken i sin fil och fortsätt) — aldrig hitta på data.
+- Ett paket MAY definiera fler kapabiliteter i en egen `capabilities:`-sektion;
+  saknas en sådan gäller tabellen ovan.
+
 ---
 
 ## 6. YAML-schema: Edge contracts
@@ -190,7 +234,7 @@ En `gate`-nod MUST ha minst en `pass`-edge och minst en `fail`-edge utgående.
 
 ```yaml
 execution:
-  run_id_format: "<datum>_<tid>_<ämnes-slug>"   # MUST — unik per körning
+  run_id_format: "YYYY-MM-DD_HHMM_<slug>"        # MUST — se 7.1 (exakt + unik)
   run_dir: "<run_root>/runs/<run_id>/"           # MUST — ALLT skrivs här
   parallel_groups:                               # SHOULD — noder som körs parallellt
     - [subagent_s1, subagent_s2]
@@ -212,6 +256,26 @@ Regler:
 - Subagenter i samma `parallel_groups`-grupp MUST vara blinda för varandras filer
   (sätts via `forbidden_reads`).
 
+### 7.1 run_id: format, slug, unikhet (G1 — normativt)
+
+Ett `run_id` MUST byggas som `YYYY-MM-DD_HHMM_<slug>`:
+
+- **Datum/tid:** `YYYY-MM-DD` + `_` + `HHMM`, 24-timmars, nollutfyllt, i lokal tid
+  (tidszon `Europe/Stockholm`). Exempel: `2026-06-14_0930`.
+- **`<slug>`** härleds från inputtexten med exakt dessa steg, i ordning:
+  1. gör om till gemener;
+  2. translitterera: `å→a`, `ä→a`, `ö→o`, `é→e`, `ü→u` (övriga icke-ASCII tas bort);
+  3. ersätt blanksteg och `/` med `-`;
+  4. ta bort alla tecken utanför `[a-z0-9-]`;
+  5. slå ihop upprepade `-` till ett, och trimma `-` i början/slutet;
+  6. korta av till **max 40 tecken** (trimma avslutande `-` efteråt);
+  7. blir resultatet tomt → använd `amne`.
+- **Unikhet (MUST):** `run_id` MUST vara unikt. Skapandet av mappen
+  `runs/<run_id>/` ÄR unikhetskontrollen: om mappen redan finns MUST `_2`
+  (sedan `_3`, …) läggas till på `run_id` tills en oanvänd mapp kan skapas.
+  Två körningar samma minut med samma ämne ger alltså `…_0930_elcyklar` och
+  `…_0930_elcyklar_2`. En körning MUST NOT återanvända en befintlig run-mapp.
+
 ---
 
 ## 8. Validator spec
@@ -223,7 +287,10 @@ räknas som giltig.
 validator:
   manifest_required_fields: [run_id, input, status, "aktiv outputfil"]
   filelist_section: "Skapade filer"
+  statuses: [STARTAD, PASS, FAIL, ARKIV]     # PARTIAL finns INTE i v0.1 (se 8.4)
   outcomes:
+    STARTAD:                                 # övergående: satt av script tills grinden kört
+      active: PENDING
     PASS:
       active: resultat.md
       must_exist: [resultat.md]
@@ -232,13 +299,26 @@ validator:
       active: manual_review.md
       must_exist: [manual_review.md]
       must_not_exist: [resultat.md]
+    ARKIV:                                    # lifecycle-status, sätts för hand (se 8.4)
+      active: INGEN
   gate_from_file:                            # gateutfallet MUST följa av filinnehållet
     source_file: gap_analys.md
     count_column: Status
     pass_when: { min: { BEKRÄFTAT: 2 }, max: { KONFLIKT: 0 } }
+  research_preconditions:                     # G3 — kollas FÖRE konsensus räknas
+    required_files: [s1_research.md, s2_research.md]
+    on_missing_file: FAIL                     # filen finns inte
+    on_format_fail: FAIL                      # fel H1/saknar källrad-format/markerad FEL
+    on_source_count_fail: FAIL                # färre än required_source_rows källrader
+    required_source_rows: 3
+  manifest_lifecycle:                          # G6 — exakt ordning, samma för PASS/FAIL
+    - script: "skapa run_manifest.md, status: STARTAD, aktiv outputfil: PENDING"
+    - gate: "sätt status: PASS|FAIL + aktiv outputfil + gatevillkor + gateutfall"
+    - manual: "ENDAST vid FAIL: skriv manual_review.md"
+    - output: "slutför 'Skapade filer' + kopiera till latest/run_manifest.md"
   scope:
     write_must_be_under: "runs/<run_id>/"
-    each_memory_single_owner: true           # exakt en skrivare per memory-fil
+    each_memory_single_owner: true           # exakt en skrivare per memory-fil (undantag: role manifest)
   latest:
     must_copy_latest: true
 ```
@@ -270,6 +350,53 @@ validator:
   (`resultat.md` vid PASS, `manual_review.md` vid FAIL).
 - `latest/run_manifest.md` MUST vara en kopia av senaste runnens manifest.
 - En arkiverad run MUST ha `status: ARKIV` och `aktiv outputfil: INGEN`.
+
+### 8.4 Tillåtna statusar (G2 — normativt)
+
+`status` i ett manifest MUST vara exakt ett av: **STARTAD**, **PASS**, **FAIL**,
+**ARKIV**. Inga andra värden är giltiga i v0.1.
+
+- **STARTAD** — övergående. Sätts av script-noden vid start; `aktiv outputfil`
+  är då `PENDING`. En run MUST NOT lämnas i STARTAD efter att grinden kört.
+- **PASS / FAIL** — slutstatus från grinden, enligt `gate_from_file`.
+- **ARKIV** — *lifecycle-status, inte ett flödesutfall*. Sätts **för hand** när en
+  gammal run pensioneras (t.ex. `000-arkiv-…`). Flödet självt producerar ALDRIG
+  ARKIV. En ARKIV-run MUST ha `aktiv outputfil: INGEN`.
+- **PARTIAL** — **finns inte i v0.1.** Ett delvis lyckat steg leder ändå till en
+  binär grind: räcker bevisen ⇒ PASS, annars ⇒ FAIL → manual. Ordet PARTIAL MUST
+  NOT förekomma i ett v0.1-paket.
+
+### 8.5 Trasig research-fil (G3 — normativt)
+
+Innan grinden räknar konsensus MUST varje fil i
+`research_preconditions.required_files` valideras. Tre felmoder, alla ⇒ **FAIL**
+(routas till manual, med felmoden namngiven i `gap_analys.md` och i manifestet):
+
+| Felmod | Innebörd | Utfall |
+|---|---|---|
+| `missing_file` | Filen finns inte i run-mappen | FAIL — gaten räknar aldrig konsensus på ofullständig data |
+| `format_fail` | Filen finns men bryter sitt format (fel/saknad H1, saknar källrad-mönstret, eller är märkt `FEL` av subagenten) | FAIL — raderna från den filen är oanvändbara |
+| `source_count_fail` | Filen har färre än `required_source_rows` giltiga källrader | FAIL |
+
+Gap-agenten MUST notera felmoden per fil i `gap_analys.md`. Grinden MUST NOT
+fabricera, gissa eller "läka" saknade påståenden för att nå PASS.
+
+### 8.6 Manifest-livscykel och ordning (G6 — normativt)
+
+`run_manifest.md` MUST uppdateras i exakt denna ordning, **identisk för PASS och
+FAIL** (enda skillnaden är manual-steget):
+
+1. **script** skapar manifestet: `status: STARTAD`, `aktiv outputfil: PENDING`,
+   raderna `run_id` och `input`.
+2. **gate** sätter `status: PASS|FAIL`, `aktiv outputfil` (`resultat.md` vid PASS,
+   `manual_review.md` vid FAIL) samt `gatevillkor` och `gateutfall`. Detta sker
+   **före** grenvalet — manifestet är alltså sant även om FAIL-grenen tas.
+3. **manual** (ENDAST vid FAIL) skriver `manual_review.md`.
+4. **output** kompletterar `## Skapade filer` och kopierar manifestet till
+   `latest/run_manifest.md`.
+
+En run där grinden inte hunnit sätta steg 2 MUST behandlas som ofullständig
+(`STARTAD`), aldrig som PASS.
 
 ---
 

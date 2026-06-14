@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ M2 steg 10+11 väntar Kims iPhone-bock · M3 steg 14 ✅ (Skill Protocol-format definierat+testat) — väntar Kims OK att försegla M3
+NU: ⏳ M2 steg 10+11 väntar Kims iPhone-bock · M3 steg 14 ✅ + M3.1 ✅ (G1–G6 stängda, om-testat) — väntar Kims OK att försegla M3
 [██████████░░] 7/9 — 78%   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -61,8 +61,7 @@ Klart när (Kims kriterier): (1) SKILL_PROTOCOL_SCHEMA.md finns + är normativt 
 Kräver: M2-maskinarbetet ✅ (steg 10+11 = Kims bockar kvar; M3 är spec-only, rör inte appen).
 
 ## Efter M3 (bara rubriker — M4 = app-export av Skill Protocol om auditen håller)
-- M4: appen lär sig lagra node contracts per figur + exportera .skill.md (byggs BARA om auditen visar att formatet håller)
-- Styrningsregler i kontraktet (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet i appen
+- M4: appen lagrar node contracts per figur + exporterar .skill.md (bara om auditen håller) · Styrningsregler (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet
 
 ## 💡 Idébanken — fångas direkt, byggs ALDRIG nu (väljs ur vid milstolpe-slut · max 15 rader)
 - 2026-06-10 · 💡#1 Metoden som portabelt paket för nya projekt · BYGGD på Kims order
@@ -80,6 +79,7 @@ Kräver: M2-maskinarbetet ✅ (steg 10+11 = Kims bockar kvar; M3 är spec-only, 
 - 2026-06-11 · M2 detaljerad på Kims order · export till främmande dator + skill-container (namn+nummer, ordning i kedjan) + Claude UI-testar appen själv och städar containrarnas utseende.
 - 2026-06-11 · Steg 12 tillagt på Kims order: demo-skill-3:s FAIL- och PASS-filer låg sida vid sida och motsade varandra → run_id + runs/<run_id>/ + run_manifest.md + latest/ · MFP och appbygge fortsatt stoppat.
 - 2026-06-11 · Steg 13 tillagt på Kims order: revisionshygienen ska vara maskinellt verifierbar (validate_run_hygiene.py) · demo-skill-3 godkänd som arkitekturmönster; MFP/dashboard/appbygge fortsatt stoppat tills validatorn är grön.
+- 2026-06-14 · M3.1 på Kims order: stäng G1–G6 (run_id-format, PARTIAL/ARKIV, trasig research-fil, static_fetch-capability, root_path, manifest-ordning) i ENBART schema + .skill.md + audit · ny ren-kontext-dry-run: alla CLOSED, 0 öppna gap. Ingen app-kod. M3 ännu ej förseglad (väntar Kims OK).
 - 2026-06-14 · M3 startad på Kims order: Skill Protocol Export v1 — definiera+testa formatet (schema + handskrivet .skill.md + test i ren kontext + audit) INNAN app-export · ingen app-kod/UI/datamodell, demo-skill-3 skrivs aldrig över (nya filer bredvid); M2 steg 10+11 kvar som Kims iPhone-bockar.
 - 2026-06-12 · Kims order "iphone-takeover: granska UI/UX + fixa grafiken" (del av steg 11-bocken) · fynd: ritningen saknade containerstorlek (orange minilåda) + CylinderShape-bugg (bottenbåge = cirkel med radie halva bredden → kopp-utseende) + gate-text kapad · fix: storlek/bredd-meta i ritningen + ellips-botten i CanvasShapes + deploy.
 
