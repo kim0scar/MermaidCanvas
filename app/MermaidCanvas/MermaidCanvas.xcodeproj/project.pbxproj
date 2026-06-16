@@ -72,6 +72,7 @@
 		7BCCD9DB163AFD89CFA15B6E /* EdgeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */; };
 		7D95F212EDEA8077BE51BC5A /* test_diamond_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */; };
 		7EECEE3DC37DCC6AE815E975 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */; };
+		8264FE3E2A49DB752FEA28B1 /* DispatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606442556943C91C73230646 /* DispatchTest.swift */; };
 		8426638A65B4BA49FF8F7992 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7551766C6C334EDA0CFD664E /* EditShapeSheet.swift */; };
 		85283CC24837156EABB5A0F2 /* test_component_gallery_full.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF3CF9F456AC109F02223E3 /* test_component_gallery_full.1.png */; };
 		87D91925AB13DCBEE7F5A9EA /* MermaidAutoLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EE5157030AD0CE1127BF10 /* MermaidAutoLayout.swift */; };
@@ -218,6 +219,7 @@
 		5B969A68524F5A084A0839C4 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCanvasSheet.swift; sourceTree = "<group>"; };
 		5F6F52E499ADD995928FF171 /* SnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotTests.swift; sourceTree = "<group>"; };
+		606442556943C91C73230646 /* DispatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchTest.swift; sourceTree = "<group>"; };
 		63AB7BE4C160CC630F4E4CFA /* CanvasDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasDocument.swift; sourceTree = "<group>"; };
 		63EC33DCD9A1923246CA727F /* EdgeMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeMath.swift; sourceTree = "<group>"; };
 		652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeConnection.swift; sourceTree = "<group>"; };
@@ -593,6 +595,7 @@
 		E3D18F6332B423EFA76528CE /* UITests */ = {
 			isa = PBXGroup;
 			children = (
+				606442556943C91C73230646 /* DispatchTest.swift */,
 				EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */,
 				7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */,
 				18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */,
@@ -886,6 +889,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8264FE3E2A49DB752FEA28B1 /* DispatchTest.swift in Sources */,
 				414054BE34E93776285A75C4 /* DragOutTests.swift in Sources */,
 				114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */,
 				155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */,
