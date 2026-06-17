@@ -110,6 +110,7 @@
 		C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */; };
 		C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */; };
 		C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */; };
+		C6E0E0C391F11A389A54BDA4 /* CanvasModelMutationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456E439027A67BD73143EFFC /* CanvasModelMutationTests.swift */; };
 		C7D21B76F43B09290E13E630 /* V61KedjeFilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA0633D9D062EB58932AA78 /* V61KedjeFilTests.swift */; };
 		C854816CA241FED858ABD2AE /* V64RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C40B3396814B4ACFE3B46F4 /* V64RoundTripTests.swift */; };
 		CAA79A1EB7C4EBFAE9CE614B /* NoteMiniSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */; };
@@ -204,6 +205,7 @@
 		3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPack.swift; sourceTree = "<group>"; };
 		3EC011658EA5250E6227B5D1 /* CanvasShapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasShapes.swift; sourceTree = "<group>"; };
 		3F645AAD0567E912FC35F400 /* test_processarrow_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_processarrow_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
+		456E439027A67BD73143EFFC /* CanvasModelMutationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasModelMutationTests.swift; sourceTree = "<group>"; };
 		4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeResizeIcon.swift; sourceTree = "<group>"; };
 		48D49F47552871CE2D445E1F /* V34DropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V34DropTests.swift; sourceTree = "<group>"; };
 		4913E980F026A3D6E49070B7 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
@@ -532,6 +534,7 @@
 		AA5FAA7D12A4658BD9E607B8 /* UnitTests */ = {
 			isa = PBXGroup;
 			children = (
+				456E439027A67BD73143EFFC /* CanvasModelMutationTests.swift */,
 				9567D921738F1CCAFD8DD71A /* DemoSkill3Tests.swift */,
 				FAA597C88CA5ABD913AC7597 /* OrientationTests.swift */,
 				8A03E7FFE84FD2B29AB7642D /* RoundTripFidelityTests.swift */,
@@ -867,6 +870,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6E0E0C391F11A389A54BDA4 /* CanvasModelMutationTests.swift in Sources */,
 				A9C5321EBC4C55A88C9088A3 /* DemoSkill3Tests.swift in Sources */,
 				4F4607E6C9E9BD2B94C7BB6A /* OrientationTests.swift in Sources */,
 				6C96F0EB7DF96BB6FE6CA222 /* RoundTripFidelityTests.swift in Sources */,
