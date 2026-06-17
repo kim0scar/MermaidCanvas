@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ M2 steg 10+11 väntar Kims iPhone-bock · M3 steg 14 ✅ + M3.1 ✅ (G1–G6 stängda, om-testat) — väntar Kims OK att försegla M3
-[██████████░░] 7/9 — 78%   ·   💡 Idébanken: 5 fångade, 2 byggda
+NU: ⏳ MA steg 15 — Spår C "se-appen"-loop (Claude ser/styr sim själv). M2 steg 10+11 + M3-försegling = Kims iPhone-bockar, oberoende av MA.
+[████████░░░░] 7/12 — 58%   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -60,6 +60,24 @@ Princip: form → node contract → Mermaid + Skill Protocol. Mermaid = visuell 
 Klart när (Kims kriterier): (1) SKILL_PROTOCOL_SCHEMA.md finns + är normativt (MUST/SHOULD/MAY); (2) demo-skill-3-subagents.skill.md följer schemat + är självbärande; (3) filen ensam räcker för noder/edges/run-mapp/manifest/gate/output/validatorregler; (4) främmande Claude Code dry-runar utan lokala projektfiler; (5) demo-skill-3/skill_protocol_audit.md visar PASS/FAIL per kriterium + gap innan app-kod ändras.
 Kräver: M2-maskinarbetet ✅ (steg 10+11 = Kims bockar kvar; M3 är spec-only, rör inte appen).
 
+## Milstolpe MA — Omstrukturering & verktyg (arkitektur-spår, parallellt med produkt-M4)
+Behåll kärnan, bygg om STEGVIS. Tre spår: C (Claude ser appen i sim) → B (maskinellt tvingad arkitektur) → A (skyddsnät + bryt monoliterna < 300 rader). Granulära delsteg: ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md.
+
+### ⏳ Steg 15 — Spår C: "se-appen"-loop (simulator)
+Claude bygger/startar sim, tar egen skärmbild, läser UI + trycker/drar; state-dump (-uitest-dump-state) + a11y-id + skill se-appen.
+Klart när: Kim säger "titta på appen" → bild + beskrivning utan att fota; Claude utför tap/drag och visar före/efter.
+Kräver: —
+
+### ☐ Steg 16 — Spår B: maskinellt tvingad arkitektur
+ARKITEKTUR-REGLER.md + scripts/arch-check.py + baseline + pre-commit-hook + version-sync (vN → 1.N.0).
+Klart när: arch-check grön mot nuvarande kod; extrarad i en monolit blockerar commit; version synkad i byggd bundle.
+Kräver: —
+
+### ☐ Steg 17 — Spår A: skyddsnät + bryt monoliterna
+A0 Equatable + A1–A3 djup round-trip/symmetri/CanvasModel-tester, sedan flytta kod tills CanvasView/ToolbarView/ContentView/CanvasModel alla < 300 rader.
+Klart när: alla fyra filer < 300 rader, hela testsviten + arch-check grön, se-appen visar oförändrad canvas.
+Kräver: Steg 15 ✅ + Steg 16 ✅
+
 ## Efter M3 (bara rubriker — M4 = app-export av Skill Protocol om auditen håller)
 - M4: appen lagrar node contracts per figur + exporterar .skill.md (bara om auditen håller) · Styrningsregler (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet
 
@@ -71,6 +89,7 @@ Kräver: M2-maskinarbetet ✅ (steg 10+11 = Kims bockar kvar; M3 är spec-only, 
 - 2026-06-13 · 💡#5 Prompt-kompilator: appen GENERERAR nod-prompten från hög-nivå-val (du slipper skriva metodtexten själv) · väntar — kärnan av "n8n för Claude Code"-visionen
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-17 · MA startad på Kims order: granska + bygg om STEGVIS (behåll kärnan) · 3 spår C→B→A, maskinellt tvingade regler, Claude ser appen i sim · detaljplan i ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md · M2/M3 Kims-bockar oberoende, WIP=1 gäller arbetssteg.
 - 2026-06-10 · Planen skapad · startläge för M1.
 - 2026-06-10 · 💡#1+#2 byggda direkt (mall+ZIP+intervju, ritad vy) · Kim bad explicit; rör inga M1-steg.
 - 2026-06-10 · Kim beordrade "/goal bygg allt" · stegen körs i följd med maskinbevis; Kims iPhone-bockar samlas i slutkontroll.
