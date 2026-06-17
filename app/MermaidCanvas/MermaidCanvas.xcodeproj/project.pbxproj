@@ -27,6 +27,7 @@
 		155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */; };
 		17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */; };
 		1C55C6F6A42D303F5FF3E0EF /* ShapeBackgrounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */; };
+		20012584D80E7BD9DFECFD1C /* ShapeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */; };
 		2044E6C34377DE47106D01A7 /* V69Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */; };
 		26BA18040735A21CC95E37DC /* V34DropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D49F47552871CE2D445E1F /* V34DropTests.swift */; };
 		2801B7CB05578020FBB75138 /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */; };
@@ -310,6 +311,7 @@
 		EEE97DAAFD2C7BA329CC359D /* V65SkrapFlodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V65SkrapFlodeTests.swift; sourceTree = "<group>"; };
 		EF4ECFD80C82FFC6521E9E77 /* V66LRFlodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V66LRFlodeTests.swift; sourceTree = "<group>"; };
 		EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneFrameOverlay.swift; sourceTree = "<group>"; };
+		F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeRenderer.swift; sourceTree = "<group>"; };
 		F1B560714D67098D8A734035 /* V33VersionVisibleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33VersionVisibleTests.swift; sourceTree = "<group>"; };
 		F20768502212FE7A5150743C /* SkillExportContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillExportContract.swift; sourceTree = "<group>"; };
 		F3DFB75F9A8C3B90AE72B3C7 /* ComponentGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentGallery.swift; sourceTree = "<group>"; };
@@ -369,6 +371,7 @@
 				A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */,
 				5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */,
 				EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */,
+				F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -873,6 +876,7 @@
 				32C3CB3530C7BDD6E02B73E2 /* ShapeGeometry.swift in Sources */,
 				46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */,
 				12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */,
+				20012584D80E7BD9DFECFD1C /* ShapeRenderer.swift in Sources */,
 				11683425B6BDE05886354E63 /* SkillExportContract.swift in Sources */,
 				EF9D701D52814DBBB28AAA87 /* SkillFileComposer.swift in Sources */,
 				0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */,
