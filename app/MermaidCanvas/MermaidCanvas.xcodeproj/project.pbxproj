@@ -21,6 +21,7 @@
 		1050688564BCFA611AFA4B66 /* V33SensorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */; };
 		114AFC7D5751989280190FAC /* EndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5AF23ACCEDEA978D643C8D /* EndToEndTests.swift */; };
 		11683425B6BDE05886354E63 /* SkillExportContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20768502212FE7A5150743C /* SkillExportContract.swift */; };
+		117762749581D5567B0D7939 /* CanvasView+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */; };
 		11BE53EC33154017D1148891 /* CanvasDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AB7BE4C160CC630F4E4CFA /* CanvasDocument.swift */; };
 		12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */; };
 		150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
@@ -234,6 +235,7 @@
 		55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerOverlay.swift; sourceTree = "<group>"; };
 		568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidImportSheet.swift; sourceTree = "<group>"; };
 		56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadges.swift; sourceTree = "<group>"; };
+		56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasView+Helpers.swift"; sourceTree = "<group>"; };
 		58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V61DemoFileTests.swift; sourceTree = "<group>"; };
 		5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeLineView.swift; sourceTree = "<group>"; };
 		5B969A68524F5A084A0839C4 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 			isa = PBXGroup;
 			children = (
 				228F689846F0D1503749250D /* CanvasView.swift */,
+				56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */,
 				BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */,
 				6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */,
 				A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */,
@@ -835,6 +838,7 @@
 				0320F7EB8A111772BE23366A /* CanvasFileManager.swift in Sources */,
 				17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */,
 				31D4EC6627E7EC70A9128DE9 /* CanvasShapes.swift in Sources */,
+				117762749581D5567B0D7939 /* CanvasView+Helpers.swift in Sources */,
 				283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */,
 				5502DC1063808D7E976CD568 /* CanvasViewportState.swift in Sources */,
 				3CB3443CCE6C72AEF0804D20 /* CollapseBadge.swift in Sources */,
