@@ -39,6 +39,7 @@
 		37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC13BC52408F5BEC68F4C2 /* FlowRenderer.swift */; };
 		39C4BE0D9F1D7F0A3221BA24 /* MermaidCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */; };
 		3AA3A067DEBA4D2C8353DBCA /* MultiSelectResizeHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7052AEAD21FE4BBA576C49FE /* MultiSelectResizeHandle.swift */; };
+		3B770C604695FDA6D94F54F4 /* StateJSONSymmetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFDBDEAB608035D157C8B5C4 /* StateJSONSymmetryTests.swift */; };
 		3B9451B0A7EE6F905F567419 /* EdgeCollapseBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */; };
 		3CB3443CCE6C72AEF0804D20 /* CollapseBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */; };
 		3CDFC565E91B8D9F5E22E2CC /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DF6BC9457837FA79F79B7A /* NoteCard.swift */; };
@@ -310,6 +311,7 @@
 		FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapePack.swift; sourceTree = "<group>"; };
 		FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotePopupSheet.swift; sourceTree = "<group>"; };
 		FF04A29A100E836C9DE2317A /* FileChangeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileChangeObserver.swift; sourceTree = "<group>"; };
+		FFDBDEAB608035D157C8B5C4 /* StateJSONSymmetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateJSONSymmetryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -535,6 +537,7 @@
 				8A03E7FFE84FD2B29AB7642D /* RoundTripFidelityTests.swift */,
 				19DBECF727C64AC554A79FCC /* RoundTripTests.swift */,
 				5F6F52E499ADD995928FF171 /* SnapshotTests.swift */,
+				FFDBDEAB608035D157C8B5C4 /* StateJSONSymmetryTests.swift */,
 				D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */,
 				972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */,
 				58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */,
@@ -869,6 +872,7 @@
 				6C96F0EB7DF96BB6FE6CA222 /* RoundTripFidelityTests.swift in Sources */,
 				CAF3B1AA079DA30839223936 /* RoundTripTests.swift in Sources */,
 				684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */,
+				3B770C604695FDA6D94F54F4 /* StateJSONSymmetryTests.swift in Sources */,
 				AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */,
 				05D7C2B2DFD541EDEBB30893 /* V49ConnectionSelectionTest.swift in Sources */,
 				7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */,
