@@ -35,6 +35,7 @@
 		2F596CE0C3F0E7DF851D38C8 /* ComponentGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DFB75F9A8C3B90AE72B3C7 /* ComponentGallery.swift */; };
 		2FB60923F478B3E69A314A91 /* V34PanSymmetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */; };
 		31D4EC6627E7EC70A9128DE9 /* CanvasShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC011658EA5250E6227B5D1 /* CanvasShapes.swift */; };
+		32C3CB3530C7BDD6E02B73E2 /* ShapeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */; };
 		36044040C55FCA0697F0BC79 /* PreviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35F5529A9079DF8958E486C /* PreviewSheet.swift */; };
 		37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC13BC52408F5BEC68F4C2 /* FlowRenderer.swift */; };
 		39C4BE0D9F1D7F0A3221BA24 /* MermaidCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */; };
@@ -198,6 +199,7 @@
 		2D0E6420DE137F57D019A7EB /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
 		2E3CAD65F3CEBBD3CFE9B088 /* V68Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V68Tests.swift; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
+		31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeGeometry.swift; sourceTree = "<group>"; };
 		34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_shape.1.png; sourceTree = "<group>"; };
 		36C515D01227ECFFACAFCE12 /* V67Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V67Tests.swift; sourceTree = "<group>"; };
 		37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -348,6 +350,7 @@
 				3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */,
 				652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */,
 				E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */,
+				31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */,
 				2D0E6420DE137F57D019A7EB /* ShapeNode.swift */,
 				535348C28035BBC3C632F26A /* TextStyle.swift */,
 			);
@@ -847,6 +850,7 @@
 				A38386D414ADEA42388208A5 /* SelectionOutline.swift in Sources */,
 				150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */,
 				6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */,
+				32C3CB3530C7BDD6E02B73E2 /* ShapeGeometry.swift in Sources */,
 				46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */,
 				12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */,
 				11683425B6BDE05886354E63 /* SkillExportContract.swift in Sources */,
