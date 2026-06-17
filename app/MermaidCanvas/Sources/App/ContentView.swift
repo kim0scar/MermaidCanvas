@@ -2,6 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 import UIKit
 import os
+import Combine
 
 /// v34: dragLog behålls (för diagnostik) men ShapeDragController är rivet.
 let dragLog = Logger(subsystem: "com.kimlundqvist.mermaidcanvas", category: "drag")
@@ -55,6 +56,8 @@ struct ContentView: View {
     @State private var resetZoomTrigger: Int = 0
     /// v61: be canvasen centrera på en punkt (sätts vid fil-öppning + jump-links)
     @State private var centerOnPoint: CGPoint? = nil
+    /// MA-spår C: prenumeration som skriver state-dump vid varje ändring (bara i testläge).
+    @State private var dumpCancellable: AnyCancellable? = nil
     @State private var showNotePopup: Bool = false
     /// v37: Mermaid-import från AI
     @State private var showMermaidImport: Bool = false
@@ -201,6 +204,13 @@ struct ContentView: View {
             // v50.4: launch-arg → visa Component Gallery direkt
             if ProcessInfo.processInfo.arguments.contains("-uitest-component-gallery") {
                 showComponentGallery = true
+            }
+            // MA-spår C: skriv state-dump vid varje modelländring (bara med -uitest-dump-state).
+            if StateDump.isEnabled {
+                StateDump.writeIfEnabled(model, viewport: viewportState)
+                dumpCancellable = model.objectWillChange
+                    .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
+                    .sink { StateDump.writeIfEnabled(model, viewport: viewportState) }
             }
         }
         .sheet(isPresented: $showComponentGallery) {

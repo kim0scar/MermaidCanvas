@@ -30,6 +30,7 @@
 		26BA18040735A21CC95E37DC /* V34DropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D49F47552871CE2D445E1F /* V34DropTests.swift */; };
 		2801B7CB05578020FBB75138 /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */; };
 		283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228F689846F0D1503749250D /* CanvasView.swift */; };
+		2A5456AFF3DBC456A32F64AD /* StateDump.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4245994DEEDBEF106923E1E /* StateDump.swift */; };
 		2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D164BF747C4ACF00F0921D /* ToolbarView.swift */; };
 		2F596CE0C3F0E7DF851D38C8 /* ComponentGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DFB75F9A8C3B90AE72B3C7 /* ComponentGallery.swift */; };
 		2FB60923F478B3E69A314A91 /* V34PanSymmetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */; };
@@ -300,6 +301,7 @@
 		F20768502212FE7A5150743C /* SkillExportContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillExportContract.swift; sourceTree = "<group>"; };
 		F3DFB75F9A8C3B90AE72B3C7 /* ComponentGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentGallery.swift; sourceTree = "<group>"; };
 		F412CFF6EF86D30458B755F5 /* test_pill_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_pill_chip.1.png; sourceTree = "<group>"; };
+		F4245994DEEDBEF106923E1E /* StateDump.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateDump.swift; sourceTree = "<group>"; };
 		F4EC13BC52408F5BEC68F4C2 /* FlowRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowRenderer.swift; sourceTree = "<group>"; };
 		F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScreenRenderer.swift; sourceTree = "<group>"; };
 		FAA597C88CA5ABD913AC7597 /* OrientationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationTests.swift; sourceTree = "<group>"; };
@@ -565,6 +567,7 @@
 				8991BFDE5D87E4860241B535 /* main.swift */,
 				B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */,
 				ED590D33CB43237C2318CD20 /* Orientation.swift */,
+				F4245994DEEDBEF106923E1E /* StateDump.swift */,
 				88C546896307FCCDB4AC2C2F /* UITestScenarios.swift */,
 				2543505D94410149F6088F34 /* Canvas */,
 				16AF4C64695A84C9CD01AED1 /* Models */,
@@ -840,6 +843,7 @@
 				11683425B6BDE05886354E63 /* SkillExportContract.swift in Sources */,
 				EF9D701D52814DBBB28AAA87 /* SkillFileComposer.swift in Sources */,
 				0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */,
+				2A5456AFF3DBC456A32F64AD /* StateDump.swift in Sources */,
 				99D3AD3E87507BF6A37E2D1A /* TableEditorSheet.swift in Sources */,
 				EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */,
 				2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */,

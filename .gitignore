@@ -1,6 +1,9 @@
 # macOS
 .DS_Store
 
+# MA-spår C: scratch-skärmbilder från se-appen-loopen
+.see-app/
+
 # Xcode
 DerivedData/
 DerivedDataDevice/
