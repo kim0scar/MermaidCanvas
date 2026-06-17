@@ -2,7 +2,15 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v77 — "krocksäkert exportnamn + stabil Spara-dialog"
+## Aktuell version: v78 — "arkitektur-ombyggnad, checkpoint 1"
+
+*Tema:* milstolpe MA. Funktionellt identisk med v77, men stor strukturell omgång:
+lagerindelning + maskinell arch-grind (`scripts/arch-check.py`) + 36 nya skyddstester
+(djup round-trip) + `se-appen`-loopen (Claude ser/styr appen i sim själv). CanvasView
+bröts 1781 → 1070 rader i små verifierade steg. Återstående ombyggnad: se
+`ARKITEKTUR-OMBYGGNAD.md`. Versionen härleds nu från AppVersion (v78 → 1.78.0 / 78).
+
+## v77 — "krocksäkert exportnamn + stabil Spara-dialog"
 
 *Tema:* exporttestet (Claude körde hela Kims export-väg i appen) avslöjade att
 exportens default-namn var samma som ritningsfilen — risk att skriva över ritningen

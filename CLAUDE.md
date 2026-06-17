@@ -9,13 +9,14 @@ Detta är styrdokumentet för Claude Code i det här projektet. Kort med flit. N
 Detta är minimum för att fortsätta arbeta:
 
 1. **`CLAUDE.md`** (denna fil) — alla regler + var allt är
-2. **`PROJEKTPLAN.md`** — LAGEN: aktivt steg + klart-kriterium + idébank (regel 13)
-3. **`app/MermaidCanvas/Sources/App/AppVersion.swift`** — nuvarande version-nummer (single source of truth)
-4. **`arkiv/HANDOVER-vN.md`** (senaste, t.ex. v73) — beslutslogg: vägval + varför + nuläge
-5. **`ARKITEKTUR-MERMAID.md`** — exakt vad nuvarande version har för funktioner + filöversikt
-6. **`ROADMAP.md`** — version-historik
-7. **Memory:** `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/MEMORY.md` (laddas automatiskt)
-8. **Git-loggen:** `git log --oneline -10` för senaste 10 commits
+2. **`ARKITEKTUR-OMBYGGNAD.md`** — 🔨 AKTIVT UPPDRAG (MA): hela arkitektur-ombyggnaden — uppdrag, fynd, gjort, KVAR + per-steg-recept. Läs denna för att återuppta efter `/clear`. Gäller tills MA (steg 17) är klart.
+3. **`PROJEKTPLAN.md`** — LAGEN: aktivt steg + klart-kriterium + idébank (regel 13)
+4. **`app/MermaidCanvas/Sources/App/AppVersion.swift`** — nuvarande version-nummer (single source of truth)
+5. **`arkiv/HANDOVER-vN.md`** (senaste, t.ex. v73) — beslutslogg: vägval + varför + nuläge
+6. **`ARKITEKTUR-MERMAID.md`** — exakt vad nuvarande version har för funktioner + filöversikt
+7. **`ROADMAP.md`** — version-historik
+8. **Memory:** `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/MEMORY.md` (laddas automatiskt)
+9. **Git-loggen:** `git log --oneline -10` för senaste 10 commits
 
 Om något verkar saknas, fråga Kim: "Är allt sparat enligt CLAUDE.md sanningskälla?"
 
@@ -106,6 +107,7 @@ Användarens canvas-filer ligger i:
 |---|---|
 | `CLAUDE.md` | Den här filen — konstitutionen |
 | `PROJEKTPLAN.md` | **LAGEN** — vad som byggs, i vilken ordning, med klart-kriterier (regel 13) |
+| `ARKITEKTUR-OMBYGGNAD.md` | 🔨 **AKTIVT UPPDRAG (MA)** — arkitektur-ombyggnadens uppdrag, fynd, gjort + KVAR + per-steg-recept. Återupptagnings-dokument efter `/clear`. |
 | `PRODUKT.md` | VARFÖR och VAD: vision, scope, vad som hör/inte hör hemma |
 | `MERMAID-FAKTA.md` | Blueprint för Mermaid: syntax, fallgropar, rendering, parsing, best practices |
 | `METOD-VISUELL-DIALOG.md` | Protokoll för delat visuellt språk Kim ↔ Claude Code. Portabel — gäller alla projekt med visuell yta. |
