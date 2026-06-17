@@ -1,0 +1,13 @@
+#!/bin/sh
+# MA spår B: arkitektur-grind på varje commit. Statisk och snabb (<1 s).
+# Installeras med:  git config core.hooksPath scripts/hooks
+# Nödutgång (loggas inte): git commit --no-verify
+python3 "$(git rev-parse --show-toplevel)/scripts/arch-check.py"
+status=$?
+if [ "$status" -ne 0 ]; then
+  echo ""
+  echo "🔴 Arkitektur-grinden stoppade commiten. Se scripts/arch-report.md."
+  echo "   Nödläge (bara om du vet vad du gör): git commit --no-verify"
+  exit 1
+fi
+exit 0

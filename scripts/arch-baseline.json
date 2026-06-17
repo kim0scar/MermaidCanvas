@@ -1,0 +1,21 @@
+{
+  "_comment": "Ratchet-tak för arkitektur (MA spår B). Befintliga jättefiler är frysta som TAK — de får bara KRYMPA, aldrig växa. Nya filer: max new_file_limit rader. När en fil krympt påminner arch-check om att sänka taket här (kör: scripts/arch-check.py --lower-baseline). Taket får ALDRIG höjas för hand. Se ARKITEKTUR-REGLER.md.",
+  "new_file_limit": 300,
+  "file_line_limits": {
+    "app/MermaidCanvas/Sources/App/Views/CanvasView.swift": 1781,
+    "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 1069,
+    "app/MermaidCanvas/Sources/App/Models/CanvasModel.swift": 857,
+    "app/MermaidCanvas/Sources/App/ContentView.swift": 691,
+    "app/MermaidCanvas/Sources/Mermaid/MermaidParser.swift": 686,
+    "app/MermaidCanvas/Sources/Mermaid/MermaidGenerator.swift": 601,
+    "app/MermaidCanvas/Sources/ClaudeCode/ShapeCategory.swift": 384,
+    "app/MermaidCanvas/Sources/App/UITestScenarios.swift": 371,
+    "app/MermaidCanvas/Sources/App/Canvas/ZoomableCanvas.swift": 358,
+    "app/MermaidCanvas/Sources/App/Views/Shapes/CanvasShapes.swift": 342
+  },
+  "swiftui_import_allowed_in_models": [
+    "CanvasModel.swift",
+    "ColorPack.swift",
+    "TextStyle.swift"
+  ]
+}
