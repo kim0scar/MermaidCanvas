@@ -4,7 +4,7 @@
   "file_line_limits": {
     "app/MermaidCanvas/Sources/App/Views/CanvasView.swift": 297,
     "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 237,
-    "app/MermaidCanvas/Sources/App/Models/CanvasModel.swift": 857,
+    "app/MermaidCanvas/Sources/App/Models/CanvasModel.swift": 56,
     "app/MermaidCanvas/Sources/App/ContentView.swift": 225,
     "app/MermaidCanvas/Sources/Mermaid/MermaidParser.swift": 686,
     "app/MermaidCanvas/Sources/Mermaid/MermaidGenerator.swift": 601,
@@ -15,6 +15,13 @@
   },
   "swiftui_import_allowed_in_models": [
     "CanvasModel.swift",
+    "CanvasModel+Shapes.swift",
+    "CanvasModel+Selection.swift",
+    "CanvasModel+Containers.swift",
+    "CanvasModel+Collapse.swift",
+    "CanvasModel+Edges.swift",
+    "CanvasModel+Undo.swift",
+    "CanvasModel+Platform.swift",
     "ColorPack.swift",
     "TextStyle.swift"
   ]
