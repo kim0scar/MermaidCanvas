@@ -46,7 +46,7 @@ enum EdgeSide: String, Codable, CaseIterable {
     case left
 }
 
-struct EdgeConnection: Identifiable, Codable {
+struct EdgeConnection: Identifiable, Codable, Equatable {
     let id: UUID
     var from: UUID
     var to: UUID

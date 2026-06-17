@@ -44,7 +44,7 @@ extension ShapeType: Transferable {
     }
 }
 
-struct ShapeNode: Identifiable, Codable {
+struct ShapeNode: Identifiable, Codable, Equatable {
     let id: UUID
     var type: ShapeType
     var position: CGPoint
