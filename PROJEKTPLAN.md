@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ MA steg 15 — Spår C "se-appen"-loop (Claude ser/styr sim själv). M2 steg 10+11 + M3-försegling = Kims iPhone-bockar, oberoende av MA.
-[████████░░░░] 7/12 — 58%   ·   💡 Idébanken: 5 fångade, 2 byggda
+NU: ⏳ MA steg 17 — Spår A: skyddsnät klart (A0 Equatable + A1 djup round-trip ✅), dekomposition kvar. Steg 15 (se-appen) + 16 (arch-grind) ✅. M2/M3 = Kims iPhone-bockar, oberoende.
+[██████████░░] 9/12 — 75%   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -63,18 +63,14 @@ Kräver: M2-maskinarbetet ✅ (steg 10+11 = Kims bockar kvar; M3 är spec-only, 
 ## Milstolpe MA — Omstrukturering & verktyg (arkitektur-spår, parallellt med produkt-M4)
 Behåll kärnan, bygg om STEGVIS. Tre spår: C (Claude ser appen i sim) → B (maskinellt tvingad arkitektur) → A (skyddsnät + bryt monoliterna < 300 rader). Granulära delsteg: ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md.
 
-### ⏳ Steg 15 — Spår C: "se-appen"-loop (simulator)
-Claude bygger/startar sim, tar egen skärmbild, läser UI + trycker/drar; state-dump (-uitest-dump-state) + a11y-id + skill se-appen.
-Klart när: Kim säger "titta på appen" → bild + beskrivning utan att fota; Claude utför tap/drag och visar före/efter.
-Kräver: —
+### ✅ Steg 15 — Spår C: "se-appen"-loop (simulator)
+Claude bygger/startar sim, tar egen skärmbild, läser UI + trycker/drar; state-dump (-uitest-dump-state) + skill se-appen. Demonstrerat: scenario 08/17, tap diamant, läst dump. (Kims egen "titta på appen"-bock kvarstår som trevlig bekräftelse.)
 
-### ☐ Steg 16 — Spår B: maskinellt tvingad arkitektur
-ARKITEKTUR-REGLER.md + scripts/arch-check.py + baseline + pre-commit-hook + version-sync (vN → 1.N.0).
-Klart när: arch-check grön mot nuvarande kod; extrarad i en monolit blockerar commit; version synkad i byggd bundle.
-Kräver: —
+### ✅ Steg 16 — Spår B: maskinellt tvingad arkitektur
+ARKITEKTUR-REGLER.md + scripts/arch-check.py + baseline + pre-commit-hook + version-sync. Grön mot nuvarande kod; injektionstestat (grow-monolit/SwiftUI-i-Mermaid/View-i-Model blockeras alla); byggd bundle = 1.77.0/77.
 
-### ☐ Steg 17 — Spår A: skyddsnät + bryt monoliterna
-A0 Equatable + A1–A3 djup round-trip/symmetri/CanvasModel-tester, sedan flytta kod tills CanvasView/ToolbarView/ContentView/CanvasModel alla < 300 rader.
+### ⏳ Steg 17 — Spår A: skyddsnät + bryt monoliterna
+A0 Equatable ✅ + A1 djup round-trip ✅ (A2 symmetri + A3 CanvasModel-mutationer kvar), sedan flytta kod tills CanvasView/ToolbarView/ContentView/CanvasModel alla < 300 rader (13 view-steg + 5 model-steg, WIP=1).
 Klart när: alla fyra filer < 300 rader, hela testsviten + arch-check grön, se-appen visar oförändrad canvas.
 Kräver: Steg 15 ✅ + Steg 16 ✅
 
@@ -103,6 +99,8 @@ Kräver: Steg 15 ✅ + Steg 16 ✅
 - 2026-06-12 · Kims order "iphone-takeover: granska UI/UX + fixa grafiken" (del av steg 11-bocken) · fynd: ritningen saknade containerstorlek (orange minilåda) + CylinderShape-bugg (bottenbåge = cirkel med radie halva bredden → kopp-utseende) + gate-text kapad · fix: storlek/bredd-meta i ritningen + ellips-botten i CanvasShapes + deploy.
 
 ## 🎉 Klart — avbockade steg flyttas hit (datum + en rad)
+- 2026-06-17 · Steg 16 ✅ MA spår B: ARKITEKTUR-REGLER.md + arch-check.py (lager/filstorlek-ratchet/version-sync) + pre-commit-hook; injektionstestat; CLAUDE.md regel 14
+- 2026-06-17 · Steg 15 ✅ MA spår C: se-appen — Claude bygger/startar sim, tar egen skärmbild, läser UI + state-dump, trycker/drar; skill + scripts/see-app.sh
 - 2026-06-14 · Steg 14 ✅ M3 Skill Protocol Export v1: SKILL_PROTOCOL_SCHEMA.md (normativt) + handskrivet demo-skill-3-subagents.skill.md (13 noder/15 edges, konsistens-verifierad) + främmande Claude-kontext dry-runade ur ENBART filen (0 verktygsanrop) + skill_protocol_audit.md (PASS, G1–G6 gap listade för M4)
 - 2026-06-10 · Steg 0 ✅ visual-flow-test.md skapad, parser-stöd verifierat i kod (Kims iPhone-koll: slutlistan)
 - 2026-06-10 · Steg 1 ✅ pass-körning → resultat.md, fail-injektion → manual_review.md
