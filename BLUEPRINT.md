@@ -2,6 +2,7 @@
 
 > Levande dokument. Uppdateras vid varje version. Refereras i CLAUDE.md.
 > **Regel:** Innan du ändrar en fil — läs dess sektion här. Motivera avvikelse för Kim.
+> **Mätbara gränser + maskinell kontroll (filstorlek, lager, version): se `ARKITEKTUR-REGLER.md`** (blockerar brott via `scripts/arch-check.py`). Den här filen säger *var* saker bor; ARKITEKTUR-REGLER.md *mäter och stoppar*.
 
 ---
 

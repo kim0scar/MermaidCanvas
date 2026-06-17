@@ -98,6 +98,8 @@ Användarens canvas-filer ligger i:
     - **Tak:** planen ≤ 100 rader, 1 mening per steg. I vardagen är bara tre saker skrivbara: status, idérad, krympt steg.
     - **Ritad vy:** iCloud-Mermaid `projektplan.md` är en VY av planen (status i etiketterna) — regenerera den vid varje status-ändring. Textfilen är alltid lagen.
 
+14. **Arkitektur tvingas maskinellt — se `ARKITEKTUR-REGLER.md`.** `scripts/arch-check.py` måste vara grön innan commit (körs av `scripts/hooks/pre-commit`). Lagren pekar bara nedåt (View → Model → Mermaid/Persistence); Mermaid rör aldrig UI, Model ritar aldrig, jättefiler får bara krympa (ratchet i `scripts/arch-baseline.json`), version synkas AppVersion ↔ project.yml ↔ Info.plist. Round-trip-testerna är deploy-grind. Bryt aldrig en regel utan att först motivera för Kim.
+
 ## Filer du som Claude Code styrs av
 
 | Fil | Vad den säger |
@@ -112,6 +114,7 @@ Användarens canvas-filer ligger i:
 | `VERSIONSHANTERING.md` | Exakt checklista vid varje deploy / ny version |
 | `ARKITEKTUR-MERMAID.md` | Aktuell arkitektur: mermaid-diagram + fil-tabell |
 | `BLUEPRINT.md` | **Komplett fil-index** + modul-ansvar + skalbarhetsprinciper + v39 feature-kluster |
+| `ARKITEKTUR-REGLER.md` | **Maskinellt tvingade** arkitekturregler (lager, filstorlek, version) — `scripts/arch-check.py` blockerar brott (regel 14) |
 | `ARKITEKTUR-SWIFT.md` | Swift-modul-tabell (äldre, BLUEPRINT.md är nu primär) |
 | `ROADMAP.md` | Version-historik (framåtblick ligger i PROJEKTPLAN.md) |
 | `Start för ios appar Kim.md` | iPhone-deploy: signing, build, devicectl |

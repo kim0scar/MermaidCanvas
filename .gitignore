@@ -4,6 +4,9 @@
 # MA-spår C: scratch-skärmbilder från se-appen-loopen
 .see-app/
 
+# MA-spår B: arch-check genererar denna rapport vid varje körning
+scripts/arch-report.md
+
 # Xcode
 DerivedData/
 DerivedDataDevice/
