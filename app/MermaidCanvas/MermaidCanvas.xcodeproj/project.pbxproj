@@ -122,6 +122,7 @@
 		CAABE56FFDCCA79218FD0018 /* V66LRFlodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4ECFD80C82FFC6521E9E77 /* V66LRFlodeTests.swift */; };
 		CAF3B1AA079DA30839223936 /* RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DBECF727C64AC554A79FCC /* RoundTripTests.swift */; };
 		CB744EE5C101B0A30D75CC42 /* test_edge_stub_plus_badge.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 66600DB6D99224DEC8E1EF22 /* test_edge_stub_plus_badge.1.png */; };
+		CFDE6577C6EADBB706F9ADE7 /* ShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0426117CB94D90B95AD1BEF7 /* ShapeView.swift */; };
 		D05D53CCB773A8CDA53268A8 /* PlatformRulesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */; };
 		D2838AC593B1CDD08A3974F8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8991BFDE5D87E4860241B535 /* main.swift */; };
 		D289533B98FCCF66069A957F /* ColorPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */; };
@@ -175,6 +176,7 @@
 
 /* Begin PBXFileReference section */
 		024C106FB50C0683CF678899 /* PlatformRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRules.swift; sourceTree = "<group>"; };
+		0426117CB94D90B95AD1BEF7 /* ShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeView.swift; sourceTree = "<group>"; };
 		05DF6BC9457837FA79F79B7A /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
 		0B2B5D75E6C39BD72EC980C0 /* MermaidCanvasUnitTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotGridBackground.swift; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 				5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */,
 				EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */,
 				F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */,
+				0426117CB94D90B95AD1BEF7 /* ShapeView.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -877,6 +880,7 @@
 				46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */,
 				12EBA14EE04B3DA965A06DD9 /* ShapePack.swift in Sources */,
 				20012584D80E7BD9DFECFD1C /* ShapeRenderer.swift in Sources */,
+				CFDE6577C6EADBB706F9ADE7 /* ShapeView.swift in Sources */,
 				11683425B6BDE05886354E63 /* SkillExportContract.swift in Sources */,
 				EF9D701D52814DBBB28AAA87 /* SkillFileComposer.swift in Sources */,
 				0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */,

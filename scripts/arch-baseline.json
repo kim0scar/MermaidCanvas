@@ -2,7 +2,7 @@
   "_comment": "Ratchet-tak för arkitektur (MA spår B). Befintliga jättefiler är frysta som TAK — de får bara KRYMPA, aldrig växa. Nya filer: max new_file_limit rader. När en fil krympt påminner arch-check om att sänka taket här (kör: scripts/arch-check.py --lower-baseline). Taket får ALDRIG höjas för hand. Se ARKITEKTUR-REGLER.md.",
   "new_file_limit": 300,
   "file_line_limits": {
-    "app/MermaidCanvas/Sources/App/Views/CanvasView.swift": 1359,
+    "app/MermaidCanvas/Sources/App/Views/CanvasView.swift": 1070,
     "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 1069,
     "app/MermaidCanvas/Sources/App/Models/CanvasModel.swift": 857,
     "app/MermaidCanvas/Sources/App/ContentView.swift": 691,
