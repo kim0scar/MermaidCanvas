@@ -26,6 +26,7 @@
 		150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
 		155367B36928BCB1652CCF2C /* LayoutOverflowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E84CB14F43922D67A3B8A4 /* LayoutOverflowTests.swift */; };
 		17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */; };
+		1C55C6F6A42D303F5FF3E0EF /* ShapeBackgrounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */; };
 		2044E6C34377DE47106D01A7 /* V69Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */; };
 		26BA18040735A21CC95E37DC /* V34DropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D49F47552871CE2D445E1F /* V34DropTests.swift */; };
 		2801B7CB05578020FBB75138 /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */; };
@@ -58,6 +59,7 @@
 		59AA65D2448161A90BCE5383 /* test_square_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7AEE1B1C74B79EB4BCC084BF /* test_square_chip.1.png */; };
 		5A50365791B6A7E6EA5E5AE7 /* test_pill_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = F412CFF6EF86D30458B755F5 /* test_pill_chip.1.png */; };
 		5DF06D8483154EE8A4C834A5 /* test_edge_collapse_minus_badge.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 72FF022E5293D765B68F37FC /* test_edge_collapse_minus_badge.1.png */; };
+		6072D740B3E13C1BCDE9FB5A /* ConnectionOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */; };
 		62660A3A94EB89DD9F48A29A /* V74SkillExportUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B93FA11AE7F0B2432FF64A0 /* V74SkillExportUITest.swift */; };
 		62EF8D225C5132FB200E453E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4913E980F026A3D6E49070B7 /* AppVersion.swift */; };
 		63458D5E7CD7AFFAB7F49303 /* V74SkillNrTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A42EB21C4C1D82A6F3BB0DC /* V74SkillNrTests.swift */; };
@@ -80,6 +82,7 @@
 		8426638A65B4BA49FF8F7992 /* EditShapeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7551766C6C334EDA0CFD664E /* EditShapeSheet.swift */; };
 		85283CC24837156EABB5A0F2 /* test_component_gallery_full.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 0EF3CF9F456AC109F02223E3 /* test_component_gallery_full.1.png */; };
 		87D91925AB13DCBEE7F5A9EA /* MermaidAutoLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16EE5157030AD0CE1127BF10 /* MermaidAutoLayout.swift */; };
+		887A705D9D31EB88FF1AE3A7 /* FreeLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */; };
 		8908BB722493ADED37C336CF /* test_pill_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7DA70C2BF0320E293B5E247C /* test_pill_shape.1.png */; };
 		8ACA8B8CF558FE905EE46D08 /* NotePopupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */; };
 		8D9031C9F31FAB5CB55C58C0 /* V71Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6692C15F26C62C2E81CC480 /* V71Tests.swift */; };
@@ -223,6 +226,7 @@
 		568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidImportSheet.swift; sourceTree = "<group>"; };
 		56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadges.swift; sourceTree = "<group>"; };
 		58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V61DemoFileTests.swift; sourceTree = "<group>"; };
+		5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeLineView.swift; sourceTree = "<group>"; };
 		5B969A68524F5A084A0839C4 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCanvasSheet.swift; sourceTree = "<group>"; };
 		5F6F52E499ADD995928FF171 /* SnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotTests.swift; sourceTree = "<group>"; };
@@ -268,6 +272,7 @@
 		A29372DCECBC709B68A13662 /* test_diamond_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_chip.1.png; sourceTree = "<group>"; };
 		A41F5BB86AF1A189F4D59116 /* test_processarrow_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_processarrow_chip.1.png; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOverlay.swift; sourceTree = "<group>"; };
 		A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
 		AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V69Tests.swift; sourceTree = "<group>"; };
 		ADAFD7500719BA94561524F9 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
@@ -301,6 +306,7 @@
 		E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasModel.swift; sourceTree = "<group>"; };
 		EC4E59D9C01F2EAAAF7E31E7 /* DragOutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragOutTests.swift; sourceTree = "<group>"; };
 		ED590D33CB43237C2318CD20 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
+		EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeBackgrounds.swift; sourceTree = "<group>"; };
 		EEE97DAAFD2C7BA329CC359D /* V65SkrapFlodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V65SkrapFlodeTests.swift; sourceTree = "<group>"; };
 		EF4ECFD80C82FFC6521E9E77 /* V66LRFlodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V66LRFlodeTests.swift; sourceTree = "<group>"; };
 		EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneFrameOverlay.swift; sourceTree = "<group>"; };
@@ -357,6 +363,16 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		17D4240D2A5DE59F231DCA4E /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */,
+				5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */,
+				EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */,
+			);
+			path = Canvas;
+			sourceTree = "<group>";
+		};
 		2543505D94410149F6088F34 /* Canvas */ = {
 			isa = PBXGroup;
 			children = (
@@ -398,6 +414,7 @@
 				C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */,
 				2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */,
 				23D164BF747C4ACF00F0921D /* ToolbarView.swift */,
+				17D4240D2A5DE59F231DCA4E /* Canvas */,
 				3F2CBADEE919A0EC993D21F6 /* Debug */,
 				5B2E47D263E03FC15133D9E0 /* Handles */,
 				C3AE557F7872664DCFECA2B6 /* Shapes */,
@@ -807,6 +824,7 @@
 				FCDCD38C1EC1587E7BD78E79 /* ColorPackPopover.swift in Sources */,
 				C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */,
 				2F596CE0C3F0E7DF851D38C8 /* ComponentGallery.swift in Sources */,
+				6072D740B3E13C1BCDE9FB5A /* ConnectionOverlay.swift in Sources */,
 				999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */,
 				6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */,
 				6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */,
@@ -820,6 +838,7 @@
 				9552F0FFF809B97E39DFE7B2 /* FileChangeObserver.swift in Sources */,
 				E59147BD729B4A37CFCD70F5 /* FloatingChipPreview.swift in Sources */,
 				37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */,
+				887A705D9D31EB88FF1AE3A7 /* FreeLineView.swift in Sources */,
 				04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */,
 				9AB1323AC94DD3F120812641 /* GodotPreviewRenderer.swift in Sources */,
 				6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */,
@@ -848,6 +867,7 @@
 				F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */,
 				C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */,
 				A38386D414ADEA42388208A5 /* SelectionOutline.swift in Sources */,
+				1C55C6F6A42D303F5FF3E0EF /* ShapeBackgrounds.swift in Sources */,
 				150FDE51DC332647769E703D /* ShapeCategory.swift in Sources */,
 				6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */,
 				32C3CB3530C7BDD6E02B73E2 /* ShapeGeometry.swift in Sources */,
