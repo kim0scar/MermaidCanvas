@@ -28,8 +28,12 @@ CanvasView **1781 → 1070** (alla steg: 171 tester gröna + visuell se-appen-ko
 2–4. `Views/Canvas/`: ConnectionOverlay, FreeLineView, ShapeBackgrounds (private→internal).
 5. `ShapeRenderer.swift` (de tre stora form-switcharna) ut ur ShapeView; ShapeView → `Views/Canvas/ShapeView.swift` (279 rader).
 
-## Dekompositionen — KVAR (mål: CanvasView/ToolbarView/ContentView/CanvasModel alla <300)
-Ordning, WIP=1. Viktigt: stora vyer är SJÄLVA >300 → måste delas internt INNAN de flyttas (inte bara flyttas).
+## Dekompositionen — ✅ KLAR (2026-06-17). Alla fyra monoliter < 300:
+CanvasView 1781→**297** · ToolbarView 1069→**237** · ContentView 691→**225** · CanvasModel 857→**56**.
+171 tester gröna + arch-check grön efter varje steg; verifierat i sim (pil-rendering oförändrad, toolbar-rader, sheets, add-form + undo med rerender). Mönster för steg 7–18: dela typen över **extension-filer** (stored-props/@Published stannar i original-typen, metoder flyttas verbatim, `private`→`internal`) — kompilator-garanterad nollbeteendeändring. Detaljerna nedan = historik över vad som gjordes.
+
+### Historik (det som var KVAR, nu gjort)
+Ordning, WIP=1. Viktigt: stora vyer var SJÄLVA >300 → delades internt INNAN flytt (inte bara flyttades).
 
 - **Steg 6 — EdgesView** (~730 rader i CanvasView.swift, börjar ~rad 341). Dela i ~4 filer:
   - `EdgeMidpointHandle.swift` — `midpointHandle` + `midpointGesture` (~170 rader, interaktiv vy + kontextmeny).

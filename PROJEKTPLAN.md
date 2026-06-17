@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ MA steg 17 — Spår A: skyddsnät KLART (A0–A3, 36 tester). Dekomposition pågår: CanvasView 1781→1070 (ShapeGeometry→Model, små vyer, ShapeRenderer, ShapeView→egen fil). Nästa: dela EdgesView. Steg 15+16 ✅.
-[██████████░░] 9/12 — 75%   ·   💡 Idébanken: 5 fångade, 2 byggda
+NU: ✅ MA steg 17 KLAR — alla fyra monoliter < 300: CanvasView 1781→297, ToolbarView 1069→237, ContentView 691→225, CanvasModel 857→56. 171 tester gröna + arch-check grön + verifierat i sim (pil-rendering, toolbar, sheets, add/undo). MA-milstolpen klar.
+[███████████░] 10/12 — 83%   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -69,9 +69,9 @@ Claude bygger/startar sim, tar egen skärmbild, läser UI + trycker/drar; state-
 ### ✅ Steg 16 — Spår B: maskinellt tvingad arkitektur
 ARKITEKTUR-REGLER.md + scripts/arch-check.py + baseline + pre-commit-hook + version-sync. Grön mot nuvarande kod; injektionstestat (grow-monolit/SwiftUI-i-Mermaid/View-i-Model blockeras alla); byggd bundle = 1.77.0/77.
 
-### ⏳ Steg 17 — Spår A: skyddsnät + bryt monoliterna
-Skyddsnät KLART: A0 Equatable + A1 djup round-trip + A2 per-fält-symmetri + A3 CanvasModel-spec (36 tester). Dekomposition pågår: CanvasView 1781→1070 (ShapeGeometry→Model, ConnectionOverlay/FreeLine/ShapeBackgrounds, ShapeRenderer, ShapeView→egen fil). Kvar: dela EdgesView, slimma CanvasView-struct, ToolbarView-rader, ContentView-extensions, CanvasModel-services. WIP=1, varje steg verifierat (171 tester + se-appen).
-Klart när: alla fyra filer < 300 rader, hela testsviten + arch-check grön, se-appen visar oförändrad canvas.
+### ✅ Steg 17 — Spår A: skyddsnät + bryt monoliterna
+Skyddsnät: A0 Equatable + A1 djup round-trip + A2 per-fält-symmetri + A3 CanvasModel-spec (36 tester). Dekomposition KLAR — alla fyra monoliter < 300 rader: CanvasView 1781→297 (EdgeGeometry/EdgeDrawing/EdgeMidpointHandle/EdgesView + CanvasView+Helpers), ToolbarView 1069→237 (6 extension-rader), ContentView 691→225 (+Files/+Sheets), CanvasModel 857→56 (7 ansvars-extensions, @Published-fasad kvar). WIP=1, varje steg verifierat (171 tester + se-appen + arch-check ratchet).
+Klart: alla fyra filer < 300 ✅, hela testsviten grön ✅, arch-check grön ✅, sim visar oförändrad canvas + add/undo ✅.
 Kräver: Steg 15 ✅ + Steg 16 ✅
 
 ## Efter M3 (bara rubriker — M4 = app-export av Skill Protocol om auditen håller)

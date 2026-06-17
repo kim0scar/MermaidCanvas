@@ -2,7 +2,17 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v78 — "arkitektur-ombyggnad, checkpoint 1"
+## Aktuell version: v79 — "arkitektur-ombyggnad KLAR (milstolpe MA)"
+
+*Tema:* MA slutförd. Funktionellt identisk med v77/v78, men ALLA fyra monoliter är nu
+nedbrutna under 300 rader via extension-uppdelning (stored/@Published-fasaden kvar i
+original-typen → rerender oförändrad): CanvasView 1781→297, ToolbarView 1069→237,
+ContentView 691→225, CanvasModel 857→56. 171 unit-tester gröna + arch-check grön efter
+varje steg; verifierat i sim (pil-rendering, toolbar-rader, sheets, lägg-form + ångra).
+Lagerindelning + maskinell grind + 36 skyddstester + `se-appen`-loopen kvar från v78.
+Versionen härleds från AppVersion (v79 → 1.79.0 / 79).
+
+## v78 — "arkitektur-ombyggnad, checkpoint 1"
 
 *Tema:* milstolpe MA. Funktionellt identisk med v77, men stor strukturell omgång:
 lagerindelning + maskinell arch-grind (`scripts/arch-check.py`) + 36 nya skyddstester
