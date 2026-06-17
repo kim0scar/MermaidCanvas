@@ -5,7 +5,7 @@
     "app/MermaidCanvas/Sources/App/Views/CanvasView.swift": 297,
     "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 237,
     "app/MermaidCanvas/Sources/App/Models/CanvasModel.swift": 857,
-    "app/MermaidCanvas/Sources/App/ContentView.swift": 691,
+    "app/MermaidCanvas/Sources/App/ContentView.swift": 225,
     "app/MermaidCanvas/Sources/Mermaid/MermaidParser.swift": 686,
     "app/MermaidCanvas/Sources/Mermaid/MermaidGenerator.swift": 601,
     "app/MermaidCanvas/Sources/ClaudeCode/ShapeCategory.swift": 384,

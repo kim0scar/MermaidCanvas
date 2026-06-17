@@ -110,6 +110,7 @@
 		AC00E97749CE013D59F624CC /* V35MermaidValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */; };
 		AC1B5F41A850016565B83F0A /* ToolbarView+Chips.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */; };
 		ACAD3D1912FDDEC2BB523429 /* V35BugHuntTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE1EFE7C5FDD982C0043924 /* V35BugHuntTests.swift */; };
+		ADFCBA768BDD069F78656FC0 /* ContentView+Sheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98244FEC39238B6C0882BCC /* ContentView+Sheets.swift */; };
 		AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */; };
 		AF71D014F6A90DEEDB254840 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */; };
 		B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */; };
@@ -118,6 +119,7 @@
 		B65EA6DAC4E22F7AB58AD5D6 /* EdgeMidpointHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */; };
 		B98CB3E584346224B1671C65 /* EdgeRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C857637FAB48F6C5E7460F8 /* EdgeRouting.swift */; };
 		C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */; };
+		C39F21F7AA98F23421D45EDF /* ContentView+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E24759279021A6349EE8F6 /* ContentView+Files.swift */; };
 		C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */; };
 		C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */; };
 		C6E0E0C391F11A389A54BDA4 /* CanvasModelMutationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456E439027A67BD73143EFFC /* CanvasModelMutationTests.swift */; };
@@ -186,6 +188,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		01E24759279021A6349EE8F6 /* ContentView+Files.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView+Files.swift"; sourceTree = "<group>"; };
 		024C106FB50C0683CF678899 /* PlatformRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRules.swift; sourceTree = "<group>"; };
 		0426117CB94D90B95AD1BEF7 /* ShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeView.swift; sourceTree = "<group>"; };
 		05DF6BC9457837FA79F79B7A /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
@@ -317,6 +320,7 @@
 		D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GodotPreviewRenderer.swift; sourceTree = "<group>"; };
 		D5E68FA907427B666E769C7E /* V35MermaidValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V35MermaidValidationTests.swift; sourceTree = "<group>"; };
 		D821FB3C84390B33197E489D /* V61FallbackParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V61FallbackParserTests.swift; sourceTree = "<group>"; };
+		D98244FEC39238B6C0882BCC /* ContentView+Sheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView+Sheets.swift"; sourceTree = "<group>"; };
 		DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidMetaComments.swift; sourceTree = "<group>"; };
 		DD6C04EEC90346734FB9EA87 /* V61LiveReloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V61LiveReloadTests.swift; sourceTree = "<group>"; };
 		DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V49VisualVerificationTest.swift; sourceTree = "<group>"; };
@@ -639,6 +643,8 @@
 			children = (
 				4913E980F026A3D6E49070B7 /* AppVersion.swift */,
 				290C826C5E3BCE9774F09866 /* ContentView.swift */,
+				01E24759279021A6349EE8F6 /* ContentView+Files.swift */,
+				D98244FEC39238B6C0882BCC /* ContentView+Sheets.swift */,
 				9C35ACE4629BBC03F7002717 /* Info.plist */,
 				8991BFDE5D87E4860241B535 /* main.swift */,
 				B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */,
@@ -873,6 +879,8 @@
 				C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */,
 				2F596CE0C3F0E7DF851D38C8 /* ComponentGallery.swift in Sources */,
 				6072D740B3E13C1BCDE9FB5A /* ConnectionOverlay.swift in Sources */,
+				C39F21F7AA98F23421D45EDF /* ContentView+Files.swift in Sources */,
+				ADFCBA768BDD069F78656FC0 /* ContentView+Sheets.swift in Sources */,
 				999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */,
 				6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */,
 				6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */,
