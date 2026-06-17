@@ -111,6 +111,7 @@
 		B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */; };
 		B1B15A6CCA968FE3EA9E0D32 /* EdgeMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EC33DCD9A1923246CA727F /* EdgeMath.swift */; };
 		B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7282ECFED87095333BB0D4 /* LägenMenu.swift */; };
+		B65EA6DAC4E22F7AB58AD5D6 /* EdgeMidpointHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */; };
 		B98CB3E584346224B1671C65 /* EdgeRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C857637FAB48F6C5E7460F8 /* EdgeRouting.swift */; };
 		C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */; };
 		C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */; };
@@ -133,6 +134,7 @@
 		D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */; };
 		D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */; };
 		DC1C20A4916038F1C5BD8B72 /* V70Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3053879FB1F4B29B9558361 /* V70Tests.swift */; };
+		DF03D5699EDF81876A63DD9C /* EdgesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912DF1776D2535239953A20F /* EdgesView.swift */; };
 		E178F46DAD052D49A4D5F5DE /* UIScreenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */; };
 		E1C23B0DD30A0D05C656C957 /* ZoomableCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */; };
 		E27E117321CF7510879E7DC7 /* test_processarrow_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 5241E0B28FCA54237EFD6C8D /* test_processarrow_shape.1.png */; };
@@ -146,7 +148,9 @@
 		EF9D701D52814DBBB28AAA87 /* SkillFileComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF227819CFEFE7C421204419 /* SkillFileComposer.swift */; };
 		F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E6FAA7A14093A0397C1316 /* UIRenderer.swift */; };
 		F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */; };
+		F4BB4E91399DF33BC7E57204 /* EdgeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A818A1C45A21F8DA6485646C /* EdgeGeometry.swift */; };
 		F53B7FFA3D8FF13EF388CADB /* UITestScenarios.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C546896307FCCDB4AC2C2F /* UITestScenarios.swift */; };
+		F5F6A05E09F52FF250B76BDC /* EdgeDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C890F2470BD8C2F7D16D5 /* EdgeDrawing.swift */; };
 		F703FF17F99496CE16469821 /* test_diamond_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = C15C2D1CD9CB0FFE5A6F1C69 /* test_diamond_chip_vs_canvas_side_by_side.1.png */; };
 		F74E2839E386F7AEC63A00F6 /* LineEndpointHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */; };
 		F8FD936BEBCBD237D90BCD12 /* test_processarrow_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F645AAD0567E912FC35F400 /* test_processarrow_chip_vs_canvas_side_by_side.1.png */; };
@@ -213,6 +217,7 @@
 		3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPack.swift; sourceTree = "<group>"; };
 		3EC011658EA5250E6227B5D1 /* CanvasShapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasShapes.swift; sourceTree = "<group>"; };
 		3F645AAD0567E912FC35F400 /* test_processarrow_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_processarrow_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
+		431C890F2470BD8C2F7D16D5 /* EdgeDrawing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeDrawing.swift; sourceTree = "<group>"; };
 		456E439027A67BD73143EFFC /* CanvasModelMutationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasModelMutationTests.swift; sourceTree = "<group>"; };
 		4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeResizeIcon.swift; sourceTree = "<group>"; };
 		48D49F47552871CE2D445E1F /* V34DropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V34DropTests.swift; sourceTree = "<group>"; };
@@ -225,6 +230,7 @@
 		52F65576D84E01864C005B7D /* test_square_chip_vs_canvas_side_by_side.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_square_chip_vs_canvas_side_by_side.1.png; sourceTree = "<group>"; };
 		535348C28035BBC3C632F26A /* TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyle.swift; sourceTree = "<group>"; };
 		53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineEndpointHandle.swift; sourceTree = "<group>"; };
+		541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeMidpointHandle.swift; sourceTree = "<group>"; };
 		55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerOverlay.swift; sourceTree = "<group>"; };
 		568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidImportSheet.swift; sourceTree = "<group>"; };
 		56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadges.swift; sourceTree = "<group>"; };
@@ -267,6 +273,7 @@
 		8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchitectureRenderer.swift; sourceTree = "<group>"; };
 		8A32EF129D0C8F481A9D9DF8 /* V48VerificationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V48VerificationTest.swift; sourceTree = "<group>"; };
 		8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "claude-canvas-protocol.md"; sourceTree = "<group>"; };
+		912DF1776D2535239953A20F /* EdgesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgesView.swift; sourceTree = "<group>"; };
 		9567D921738F1CCAFD8DD71A /* DemoSkill3Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoSkill3Tests.swift; sourceTree = "<group>"; };
 		972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V49ConnectionSelectionTest.swift; sourceTree = "<group>"; };
 		9C35ACE4629BBC03F7002717 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -277,6 +284,7 @@
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOverlay.swift; sourceTree = "<group>"; };
 		A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
+		A818A1C45A21F8DA6485646C /* EdgeGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeGeometry.swift; sourceTree = "<group>"; };
 		AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V69Tests.swift; sourceTree = "<group>"; };
 		ADAFD7500719BA94561524F9 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
 		B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapRenderer.swift; sourceTree = "<group>"; };
@@ -371,6 +379,10 @@
 			isa = PBXGroup;
 			children = (
 				A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */,
+				431C890F2470BD8C2F7D16D5 /* EdgeDrawing.swift */,
+				A818A1C45A21F8DA6485646C /* EdgeGeometry.swift */,
+				541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */,
+				912DF1776D2535239953A20F /* EdgesView.swift */,
 				5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */,
 				EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */,
 				F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */,
@@ -836,9 +848,13 @@
 				6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */,
 				3B9451B0A7EE6F905F567419 /* EdgeCollapseBadges.swift in Sources */,
 				7BCCD9DB163AFD89CFA15B6E /* EdgeConnection.swift in Sources */,
+				F5F6A05E09F52FF250B76BDC /* EdgeDrawing.swift in Sources */,
+				F4BB4E91399DF33BC7E57204 /* EdgeGeometry.swift in Sources */,
 				E342D27716614E0B8631409F /* EdgeLabelSheet.swift in Sources */,
 				B1B15A6CCA968FE3EA9E0D32 /* EdgeMath.swift in Sources */,
+				B65EA6DAC4E22F7AB58AD5D6 /* EdgeMidpointHandle.swift in Sources */,
 				B98CB3E584346224B1671C65 /* EdgeRouting.swift in Sources */,
+				DF03D5699EDF81876A63DD9C /* EdgesView.swift in Sources */,
 				8426638A65B4BA49FF8F7992 /* EditShapeSheet.swift in Sources */,
 				FCAC9FAF1E4E5B985ABC8738 /* EmptyCanvasHint.swift in Sources */,
 				9552F0FFF809B97E39DFE7B2 /* FileChangeObserver.swift in Sources */,
