@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ MA steg 17 — Spår A: skyddsnät klart (A0 Equatable + A1 djup round-trip ✅), dekomposition kvar. Steg 15 (se-appen) + 16 (arch-grind) ✅. M2/M3 = Kims iPhone-bockar, oberoende.
+NU: ⏳ MA steg 17 — Spår A: skyddsnät KLART (A0–A3, 36 tester). Dekomposition pågår: CanvasView 1781→1070 (ShapeGeometry→Model, små vyer, ShapeRenderer, ShapeView→egen fil). Nästa: dela EdgesView. Steg 15+16 ✅.
 [██████████░░] 9/12 — 75%   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -70,7 +70,7 @@ Claude bygger/startar sim, tar egen skärmbild, läser UI + trycker/drar; state-
 ARKITEKTUR-REGLER.md + scripts/arch-check.py + baseline + pre-commit-hook + version-sync. Grön mot nuvarande kod; injektionstestat (grow-monolit/SwiftUI-i-Mermaid/View-i-Model blockeras alla); byggd bundle = 1.77.0/77.
 
 ### ⏳ Steg 17 — Spår A: skyddsnät + bryt monoliterna
-A0 Equatable ✅ + A1 djup round-trip ✅ (A2 symmetri + A3 CanvasModel-mutationer kvar), sedan flytta kod tills CanvasView/ToolbarView/ContentView/CanvasModel alla < 300 rader (13 view-steg + 5 model-steg, WIP=1).
+Skyddsnät KLART: A0 Equatable + A1 djup round-trip + A2 per-fält-symmetri + A3 CanvasModel-spec (36 tester). Dekomposition pågår: CanvasView 1781→1070 (ShapeGeometry→Model, ConnectionOverlay/FreeLine/ShapeBackgrounds, ShapeRenderer, ShapeView→egen fil). Kvar: dela EdgesView, slimma CanvasView-struct, ToolbarView-rader, ContentView-extensions, CanvasModel-services. WIP=1, varje steg verifierat (171 tester + se-appen).
 Klart när: alla fyra filer < 300 rader, hela testsviten + arch-check grön, se-appen visar oförändrad canvas.
 Kräver: Steg 15 ✅ + Steg 16 ✅
 
@@ -85,6 +85,7 @@ Kräver: Steg 15 ✅ + Steg 16 ✅
 - 2026-06-13 · 💡#5 Prompt-kompilator: appen GENERERAR nod-prompten från hög-nivå-val (du slipper skriva metodtexten själv) · väntar — kärnan av "n8n för Claude Code"-visionen
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-17 · Förbättring under dekomposition: ShapeGeometry flyttad till Models/ (inte Views/Canvas/ som planen sa) · CanvasModel använde den redan → den hörde hemma i Model-lagret, inte View. ShapeView/EdgesView är själva >300 → delas internt (ShapeRenderer m.fl.) innan de flyttas, inte bara flyttas.
 - 2026-06-17 · MA startad på Kims order: granska + bygg om STEGVIS (behåll kärnan) · 3 spår C→B→A, maskinellt tvingade regler, Claude ser appen i sim · detaljplan i ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md · M2/M3 Kims-bockar oberoende, WIP=1 gäller arbetssteg.
 - 2026-06-10 · Planen skapad · startläge för M1.
 - 2026-06-10 · 💡#1+#2 byggda direkt (mall+ZIP+intervju, ritad vy) · Kim bad explicit; rör inga M1-steg.
