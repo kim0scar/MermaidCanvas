@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ✅ MA steg 17 KLAR — alla fyra monoliter < 300: CanvasView 1781→297, ToolbarView 1069→237, ContentView 691→225, CanvasModel 857→56. 171 tester gröna + arch-check grön + verifierat i sim (pil-rendering, toolbar, sheets, add/undo). MA-milstolpen klar.
-[███████████░] 10/12 — 83%   ·   💡 Idébanken: 5 fångade, 2 byggda
+NU: ⏳ MB steg 0 — städa roten (arkivera v49/v60/v61-fynd m.fl.). MB = "grundappen sitter": om-verifiera v79 → fixa UX-111/112/113/114 → round-trip-härdning. n8n + M4 PAUSADE (Kims order). MA + M3 klara.
+[grundappen MB: ░░░░░░░] 0/7   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -74,8 +74,19 @@ Skyddsnät: A0 Equatable + A1 djup round-trip + A2 per-fält-symmetri + A3 Canva
 Klart: alla fyra filer < 300 ✅, hela testsviten grön ✅, arch-check grön ✅, sim visar oförändrad canvas + add/undo ✅.
 Kräver: Steg 15 ✅ + Steg 16 ✅
 
-## Efter M3 (bara rubriker — M4 = app-export av Skill Protocol om auditen håller)
-- M4: appen lagrar node contracts per figur + exporterar .skill.md (bara om auditen håller) · Styrningsregler (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet
+## Milstolpe MB — Grundappen sitter (basen solid INNAN vidare bygge · Kims order 2026-06-18)
+n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se-appen, Kims iPhone-bock för gester). WIP=1.
+- ☐ Steg 0 — Städa roten: version-stämplade fynd (HANDOVER v50.7, BUGSVEP-v60, GAP-ANALYS-v61, UI-PLACERINGS-FYND-v49, v47.xlsx) → arkiv/; lös dubbletter. Klart: inga lösa version-fynd i roten, bygg+arch-check oförändrat.
+- ☐ Steg 1 — Om-verifiera UX-111–122 mot v79 (se-appen + iPhone). Klart: färsk lever/dött-lista, döda bockas i auditen.
+- ☐ Steg 2 — UX-111 pan-stölden: större träffyta på pilhandtag + "hoppa till innehåll". Klart: Kim bekräftar på iPhone att drag nära handtag inte panorerar bort allt.
+- ☐ Steg 3 — UX-112: klampa handtag (resize/rotate/connection) till synlig yta. Klart: Kim når alla handtag på iPhone.
+- ☐ Steg 4 — UX-113: pålitlig dubbeltapp → Redigera + text-ledtråd i tomt-läge. Klart: Kim öppnar Redigera med dubbeltapp reproducerbart.
+- ☐ Steg 5 — UX-114: a11y-labels på allt interaktivt + textstil-knappar in i vy + Klar/Stäng/Kopiera nåbara. Klart: ux-driver ser alla knappar + de är tappbara.
+- ☐ Steg 6 — Round-trip-härdning: fallback-parsern läser waypoints/tabellceller/collapsed; stabila nod-ID:n. Klart: fallback-round-trip-test för dessa fält grönt.
+
+## Efter MB (pausat, Kims order) + Efter M3
+- MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
+- M4: appen lagrar node contracts per figur + exporterar .skill.md (om auditen håller) · Styrningsregler (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet
 
 ## 💡 Idébanken — fångas direkt, byggs ALDRIG nu (väljs ur vid milstolpe-slut · max 15 rader)
 - 2026-06-10 · 💡#1 Metoden som portabelt paket för nya projekt · BYGGD på Kims order
@@ -85,6 +96,7 @@ Kräver: Steg 15 ✅ + Steg 16 ✅
 - 2026-06-13 · 💡#5 Prompt-kompilator: appen GENERERAR nod-prompten från hög-nivå-val (du slipper skriva metodtexten själv) · väntar — kärnan av "n8n för Claude Code"-visionen
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-18 · Omprioritering på Kims order: ny milstolpe MB "Grundappen sitter" FÖRST (fixa UX-111–114 + round-trip-härdning); n8n (MC) + M4 pausade tills basen sitter. Grundas på 3-agents-granskning (kärnan funkar, 4 blocker-buggar kvar, auditen v72 ej om-verifierad mot v79).
 - 2026-06-17 · Förbättring under dekomposition: ShapeGeometry flyttad till Models/ (inte Views/Canvas/ som planen sa) · CanvasModel använde den redan → den hörde hemma i Model-lagret, inte View. ShapeView/EdgesView är själva >300 → delas internt (ShapeRenderer m.fl.) innan de flyttas, inte bara flyttas.
 - 2026-06-18 · På Kims order (M4 pausad): vän-distribution — skill `visuali2e-bjorn` lägger käll-ZIP i iCloud-mappen "Versioner till Björn" (per version), Kim skickar manuellt; + `scripts/friend-setup.sh` (ett-kommando-signering) + fräschad `INSTALL-FÖR-VÄNNEN.md`. Ingen app-kod (Filer-väljaren räcker för vännens iCloud). M4 återupptas på "ja".
 - 2026-06-18 · På Kims order: arkitektur-sättet destillerat till portabelt `ios-arkitektur-kit` (`~/.claude/templates/` + iCloud-ZIP) — config-driven arch-check + METOD + se-appen, för framtida iOS-appar. Utanför detta repo; MermaidCanvas egna scripts orörda (analogt med hur projektplan-metoden = 💡#1 hanterades).
