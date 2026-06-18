@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ MB steg 0 — städa roten (arkivera v49/v60/v61-fynd m.fl.). MB = "grundappen sitter": om-verifiera v79 → fixa UX-111/112/113/114 → round-trip-härdning. n8n + M4 PAUSADE (Kims order). MA + M3 klara.
-[grundappen MB: ░░░░░░░] 0/7   ·   💡 Idébanken: 5 fångade, 2 byggda
+NU: MB pågår. ✅ Steg 6 (tabell/länk/kollaps överlever ren mermaid — Kims figurer). KVAR: steg 0 (städa rot), 1 (om-verifiera v79), 2–5 (UX-111/112/113/114). n8n + M4 PAUSADE. MA + M3 klara.
+[grundappen MB: █░░░░░░] 1/7   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -82,7 +82,7 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - ☐ Steg 3 — UX-112: klampa handtag (resize/rotate/connection) till synlig yta. Klart: Kim når alla handtag på iPhone.
 - ☐ Steg 4 — UX-113: pålitlig dubbeltapp → Redigera + text-ledtråd i tomt-läge. Klart: Kim öppnar Redigera med dubbeltapp reproducerbart.
 - ☐ Steg 5 — UX-114: a11y-labels på allt interaktivt + textstil-knappar in i vy + Klar/Stäng/Kopiera nåbara. Klart: ux-driver ser alla knappar + de är tappbara.
-- ☐ Steg 6 — Round-trip-härdning: fallback-parsern läser waypoints/tabellceller/collapsed; stabila nod-ID:n. Klart: fallback-round-trip-test för dessa fält grönt.
+- ✅ Steg 6 — Round-trip-härdning (Kims tre figurer): tabell (typ+celler), jump-länk (typ) och kollaps överlever REN mermaid via osynliga `%%`-rader (shape-type + table-cells). 3 nya fallback-tester gröna (175 totalt). KVAR (mindre, senare): waypoints i fallback + stabila nod-ID:n.
 
 ## Efter MB (pausat, Kims order) + Efter M3
 - MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
