@@ -78,7 +78,18 @@ Användarens canvas-filer ligger i:
 
 1. **Var-allt-finns-sparat-tabellen ovan är sanningskällan.** När en ny sparplats tillkommer (ny mapp, nytt moln, nytt verktyg) — uppdatera tabellen i samma commit. Det är denna fil som svarar på "är allt sparat?".
 2. **Vid scope-tvivel — läs `PRODUKT.md` först.** Den definierar vad som hör/inte hör hemma i appen.
-3. **Vid Mermaid-tvivel — läs `MERMAID-FAKTA.md`.** Den är blueprinten för hur Mermaid faktiskt fungerar. Gissa aldrig syntax. **Bygg aldrig mermaid-genererande kod som inte är validerad mot RIKTIG mermaid:** `node scripts/mermaid-conformance.mjs` (officiella `mermaid.parse`) måste vara grön. Ändrar du hur former/kanter skrivs — regenerera fixtures med `./scripts/extract-mermaid-fixtures.sh` och se att grinden är grön. Så blir canvasen "exakt såsom Kim ser den". (Detalj: MERMAID-FAKTA.md sektion K.)
+3. **Vid Mermaid-tvivel — läs `MERMAID-FAKTA.md` (skrivskyddad facit-bibel).** Den är den enda sanningskällan för vad Mermaid KAN och INTE kan. Gissa aldrig syntax. Filen är `chmod 444` — lås bara upp den vid avsiktlig facit-revision (med nytt datum).
+
+   **Noll-avvikelse-garantin (icke förhandlingsbar — kärnan i hela appen):** det Kim ser på canvasen ska bli EXAKT det andra får ur hans mermaid, och Kim ska kunna *rita → kopiera mermaid → radera → klistra in → få exakt samma, noll avvikelse*. Gäller Kim OCH andra. Tre krav:
+   - **(a) Allt valideras mot RIKTIG mermaid INNAN det byggs vidare.** Bygg aldrig mermaid-genererande kod som inte är validerad: `node scripts/mermaid-conformance.mjs` (officiella `mermaid.parse`) måste vara grön. Ändrar du hur former/kanter skrivs — regenerera fixtures (`./scripts/extract-mermaid-fixtures.sh`) och se att grinden är grön.
+   - **(b) App-bara funktioner måste ändå exporteras och SYNAS i mermaid.** En funktion som bara lever i app-state (kollaps, länk-ikoner, waypoints, framtida lager/z) får aldrig försvinna tyst — den bärs av `%%`-metadata så den round-trippar och en läsare ser den. Bygg aldrig en ren app-funktion utan att först lösa hur den överlever export.
+   - **(c) Round-trip är maskinellt tvingad, inte en åsikt.** `RoundTripFidelityTests` (state-JSON = bokstavligt noll avvikelse; ren mermaid = identitet/semantik överlever) + round-trip-grind i pre-commit blockerar avvikelse. Mjuka aldrig upp ett round-trip-test.
+
+   **Två-lager-modellen (säg det rakt ut):** appen är *inte* ren Mermaid. Mermaid är TRANSPORTEN (portabel, AI-läsbar kropp); appen är RENDERAREN med ett eget tilläggslager (`%%`-metadata + state-JSON = "MermaidCanvas Extended"). Egna former (phoneFrame, tabell, oktagon…) renderas i ren mermaid som närmaste native-form — Mermaids gräns, inte en bugg; identiteten bärs av `%% shape-type`. (Detalj: MERMAID-FAKTA.md sektion K + L.)
+
+   **Bygg som Apple:** appen byggs lika robust och enhetlig som om Apple själva byggt den — inga lösa trådar, inga tysta degraderingar.
+
+   **Metodiskt genom alla former:** form-vokabulären gås igenom form-för-form (inte stickprov); varje form bevisas round-trippa innan nästa.
 4. **Versionshantering**: följ alltid `VERSIONSHANTERING.md`. Hoppa inte över steg.
 5. **Modulär kod**: små filer, en sak per fil. Hellre fler filer än en stor. Inga monolitfiler — även om det blir mer kod totalt.
    **Single source of truth för versionsnummer**: `app/MermaidCanvas/Sources/AppVersion.swift`. Bumpa endast där. Aldrig hårdkoda versionsnummer någon annanstans.

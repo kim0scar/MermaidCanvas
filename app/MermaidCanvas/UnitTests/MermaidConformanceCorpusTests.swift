@@ -97,4 +97,33 @@ final class MermaidConformanceCorpusTests: XCTestCase {
         XCTAssertFalse(mermaid.isEmpty)
         dump("ui-frame", mermaid)
     }
+
+    /// Fixtur 3 (steg 8 / F): Skill-flöde-vokabulären — skill-container med ALLA byggstenar
+    /// (input, subagent, tool, MCP, plugin, MD-fil, Excel-fil, output) + prompt + anteckning.
+    /// Bevisar att de nya kategorierna och container-metadatan parsar i RIKTIG mermaid.
+    func test_corpus_skillFlow() {
+        let skill = node(.container, "Skill 2", .skill, x: 400, y: 400,
+                         prompt: "Läs källa → sammanställ → spara", note: "skiss för bollande",
+                         skillNumber: 2)
+        let inp  = node(.pill,      "Input",    .input,        x: 200, y: 380, childOf: skill.id)
+        let sub  = node(.rectangle, "Subagent", .subagent,     x: 320, y: 380, childOf: skill.id)
+        let tool = node(.rectangle, "Tool",     .tool,         x: 440, y: 380, childOf: skill.id)
+        let mcp  = node(.rectangle, "MCP",      .mcp,          x: 320, y: 440, childOf: skill.id)
+        let plug = node(.rectangle, "Plugin",   .plugin,       x: 440, y: 440, childOf: skill.id)
+        let md   = node(.rectangle, "data.md",  .fileMarkdown, x: 200, y: 440, childOf: skill.id)
+        let xls  = node(.rectangle, "ark.xlsx", .fileExcel,    x: 560, y: 440, childOf: skill.id)
+        let out  = node(.pill,      "Output",   .output,       x: 560, y: 380, childOf: skill.id)
+        let shapes = [skill, inp, sub, tool, mcp, plug, md, xls, out]
+        let ids = shapes.map { $0.id }
+        let edges: [EdgeConnection] = [
+            EdgeConnection(from: ids[1], to: ids[2], direction: .forward, style: .solid),
+            EdgeConnection(from: ids[2], to: ids[3], direction: .forward, style: .solid),
+            EdgeConnection(from: ids[2], to: ids[8], direction: .forward, style: .solid),
+        ]
+        let mermaid = MermaidGenerator.generate(shapes: shapes, edges: edges,
+                                                canvasSize: .zero, specType: .general)
+        XCTAssertFalse(mermaid.isEmpty)
+        XCTAssertTrue(mermaid.contains("flowchart"))
+        dump("skill-flow", mermaid)
+    }
 }

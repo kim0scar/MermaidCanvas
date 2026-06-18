@@ -34,10 +34,16 @@ Statusen i appen visar denna sträng. Om den inte uppdateras vet inte Kim om han
 cd "/Users/kim/2e Mermaid Code"
 python3 scripts/arch-check.py                 # arkitektur (lager/filstorlek/version)
 node scripts/mermaid-conformance.mjs          # appens mermaid parsar i RIKTIG mermaid
+# Round-trip-grinden (STEG F) — BLOCKERANDE: noll avvikelse. Får aldrig hoppa över vid deploy.
+xcodebuild test -project app/MermaidCanvas/MermaidCanvas.xcodeproj -scheme MermaidCanvas \
+  -destination 'platform=iOS Simulator,id=<iPhone-sim-UDID>' \
+  -only-testing:MermaidCanvasUnitTests/RoundTripFidelityTests \
+  -only-testing:MermaidCanvasUnitTests/StateJSONSymmetryTests
 ```
 
 - Ändrat hur former/kanter skrivs i `MermaidGenerator`? Regenerera först: `./scripts/extract-mermaid-fixtures.sh` (kör korpus-testet + validerar).
-- Kör hela testsviten (round-trip-grinden) via Xcode/xcodebuild innan deploy.
+- Round-trip-grinden är BLOCKERANDE (Kims noll-avvikelse-garanti) + körs även av pre-commit när `Sources/Mermaid/` eller modellerna ändras. Mjuka aldrig upp ett round-trip-test.
+- Kör dessutom HELA testsviten via Xcode/xcodebuild innan deploy.
 - Saknas `node_modules`? Kör `npm install` en gång (committat `package.json` pinnar mermaid + jsdom).
 
 ### 2. Bygg och deploya till iPhone

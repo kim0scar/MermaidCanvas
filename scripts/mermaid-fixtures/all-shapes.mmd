@@ -13,12 +13,15 @@ flowchart TD
     %% input_N3 pos: 500,50
     %% input_N3 name: Pill
     ui_N4("Kvadrat"):::ui
+    %% ui_N4 shape-type: square
     %% ui_N4 pos: 50,150
     %% ui_N4 name: Kvadrat
     ui_N5["Process"]:::ui
+    %% ui_N5 shape-type: processArrow
     %% ui_N5 pos: 200,150
     %% ui_N5 name: Process
     manual_N6("Stopp"):::manual
+    %% manual_N6 shape-type: octagon
     %% manual_N6 pos: 350,150
     %% manual_N6 name: Stopp
     ui_N7["Triangel"]:::ui
@@ -44,9 +47,11 @@ flowchart TD
     %% ui_N11 pos: 500,250
     %% ui_N11 name: Tabell
     ui_N12["Linje"]:::ui
+    %% ui_N12 shape-type: line
     %% ui_N12 pos: 50,350
     %% ui_N12 name: Linje
     ui_N13["Pil"]:::ui
+    %% ui_N13 shape-type: arrow
     %% ui_N13 pos: 200,350
     %% ui_N13 name: Pil
     ui_N14("Tricky (a) #quot;b#quot; #c; åäö 🎯"):::ui
@@ -65,6 +70,7 @@ flowchart TD
     %% skill_N15 container-pos: 400,400
     %% skill_N15 skill-nr: 1
     %% skill_N15 prompt: Kör (research) → spara #fil; klar
+    %% skill_N15 note: min egen anteckning
     ui_N0 -->|"ja"| router_N2
     router_N2 -.->|"nej"| input_N3
     ui_N1 <-- ui_N0

@@ -82,13 +82,30 @@ enum MermaidGenerator {
                     lines.append("\(indent)%% \(id) table-cells: \(j)")
                 }
             }
-            // v67/v68 + MB steg 6: typer utan egen Mermaid-syntax bevaras explicit (annars: table→rektangel, link→cirkel → jump dör).
-            if [.phoneFrame, .triangle, .table, .link].contains(shape.type) {
+            // v67/v68 + MB steg 6 + F2: typer utan egen Mermaid-syntax bevaras explicit
+            // (annars degraderar de tyst → rektangel i ren mermaid: table→rektangel, link→cirkel,
+            // square/processArrow/octagon/line/arrow→rektangel). %% shape-type räddar identiteten.
+            if [.phoneFrame, .triangle, .table, .link,
+                .square, .processArrow, .octagon, .line, .arrow].contains(shape.type) {
                 lines.append("\(indent)%% \(id) shape-type: \(shape.type.rawValue)")
             }
             // v23: textstil + färg-paket
             if shape.textStyle != .body {
                 lines.append("\(indent)%% \(id) style: \(shape.textStyle.rawValue)")
+            }
+            // F2: textjustering + listor + indrag som %% → överlever ren mermaid
+            // (tidigare bara CSS/state-JSON → tappades tyst i ren-mermaid-fallbacken).
+            if shape.textAlignment != .center {
+                lines.append("\(indent)%% \(id) align: \(shape.textAlignment.rawValue)")
+            }
+            if shape.hasBullets {
+                lines.append("\(indent)%% \(id) bullets")
+            }
+            if shape.hasNumberedList {
+                lines.append("\(indent)%% \(id) numbered")
+            }
+            if shape.indentLevel > 0 {
+                lines.append("\(indent)%% \(id) indent: \(shape.indentLevel)")
             }
             if let packId = shape.colorPackId {
                 lines.append("\(indent)%% \(id) pack: \(packId)")
@@ -135,6 +152,11 @@ enum MermaidGenerator {
             // v60: namn (= subgraph-label ovan) + prompt för n8n.
             if !container.prompt.isEmpty {
                 lines.append("\(indent)%% \(cid) prompt: \(oneLine(container.prompt))")
+            }
+            // F2 (steg 8 2g): container-anteckning överlever ren mermaid (luckan: noderna
+            // skrev %% note, containrarna gjorde inte → skill-containerns anteckning tappades).
+            if !container.note.isEmpty {
+                lines.append("\(indent)%% \(cid) note: \(oneLine(container.note))")
             }
         }
 
@@ -290,152 +312,6 @@ enum MermaidGenerator {
         return lines.joined(separator: "\n")
     }
 
-    static func canvasStateJSON(shapes: [ShapeNode],
-                                edges: [EdgeConnection],
-                                canvasSize: CGSize,
-                                specType: SpecType = .ui,
-                                platform: Platform = .blank,
-                                activeShapePacks: Set<ShapePack> = [.basic],
-                                collapsedEdgeIds: Set<UUID> = [],
-                                legend: [String: String] = [:]) -> String {
-        let mermaidIds = makeMermaidIds(for: shapes)
-        let nodes: [[String: Any]] = shapes.map { shape in
-            var n: [String: Any] = [
-                "id": mermaidIds[shape.id]!,
-                "x": Int(shape.position.x.rounded()),
-                "y": Int(shape.position.y.rounded()),
-                "label": shape.label,
-                "type": shape.type.rawValue,
-                "category": shape.category.rawValue,
-                "showLabel": shape.showLabel,
-                "size": Double(shape.sizeMultiplier),
-                "rotation": Double(shape.rotation),
-                "note": shape.note
-            ]
-            if let color = shape.colorOverride { n["color"] = color }
-            if let stroke = shape.strokeColorOverride { n["strokeColor"] = stroke }  // v62
-            if let link = shape.linkNumber { n["linkNumber"] = link }
-            if let nr = shape.skillNumber { n["skillNumber"] = nr }  // v74
-            if shape.type == .table {
-                n["tableRows"] = shape.tableRows ?? 3
-                n["tableCols"] = shape.tableCols ?? 3
-                // v46: tabell-cellinnehåll round-trippas
-                if let cells = shape.tableCells, !cells.isEmpty {
-                    n["tableCells"] = cells
-                }
-            }
-            // v23: textstil + färg-paket
-            if shape.textStyle != .body {
-                n["textStyle"] = shape.textStyle.rawValue
-            }
-            if let packId = shape.colorPackId {
-                n["colorPackId"] = packId
-            }
-            // v35.1: separat bredd/höjd-skalning
-            if let w = shape.widthMultiplier  { n["widthMultiplier"]  = Double(w) }
-            if let h = shape.heightMultiplier { n["heightMultiplier"] = Double(h) }
-            // v35.1: endpoint för lösa linjer/pilar (relativ offset från position)
-            if let end = shape.lineEnd {
-                n["lineEnd"] = ["x": Double(end.x), "y": Double(end.y)]
-            }
-            // v37: textjustering + punktlista (sparas bara om ej default)
-            if shape.textAlignment != .center {
-                n["textAlignment"] = shape.textAlignment.rawValue
-            }
-            if shape.hasBullets {
-                n["hasBullets"] = true
-            }
-            // v46: numrerad lista + indrag round-trippas
-            if shape.hasNumberedList {
-                n["hasNumberedList"] = true
-            }
-            if shape.indentLevel > 0 {
-                n["indentLevel"] = shape.indentLevel
-            }
-            // v60: prompt-text (n8n) — round-trippas via state-JSON
-            if !shape.prompt.isEmpty {
-                n["prompt"] = shape.prompt
-            }
-            // v47: explicit container-förälder som mermaid-id (sträng)
-            if let parentUUID = shape.childOfContainerId,
-               let parentMid = mermaidIds[parentUUID] {
-                n["childOfContainerId"] = parentMid
-            }
-            return n
-        }
-        let edgeArr: [[String: Any]] = edges.compactMap { edge in
-            guard let f = mermaidIds[edge.from], let t = mermaidIds[edge.to] else { return nil }
-            var e: [String: Any] = [
-                "from": f,
-                "to": t,
-                "label": edge.label,
-                "direction": edge.direction.rawValue,
-                "style": edge.style.rawValue
-            ]
-            if !edge.waypoints.isEmpty {
-                e["waypoints"] = edge.waypoints.map { ["x": $0.x, "y": $0.y] }
-            }
-            // v62: etikett-placering round-trippas (bara icke-default)
-            if edge.labelPlacement != .below {
-                e["labelPlacement"] = edge.labelPlacement.rawValue
-            }
-            // v63: pilens färg
-            if let hex = edge.colorHex {
-                e["color"] = hex
-            }
-            // v64: vald utgångssida
-            if let side = edge.fromSide {
-                e["fromSide"] = side.rawValue
-            }
-            // v63: kollaps per gren — flagga PÅ kanten (ersätter "collapsed"-nod-arrayen)
-            if collapsedEdgeIds.contains(edge.id) {
-                e["collapsed"] = true
-            }
-            return e
-        }
-        // iPhone-frame inom canvasen — så Claude exakt kan översätta
-        // canvas-position till iPhone-screen-position.
-        let iphoneRect = iPhoneFrameMath.frame(in: canvasSize)
-        let iphone: [String: Any] = [
-            "x": Int(iphoneRect.origin.x.rounded()),
-            "y": Int(iphoneRect.origin.y.rounded()),
-            "width": Int(iphoneRect.width.rounded()),
-            "height": Int(iphoneRect.height.rounded()),
-            "designWidth": Int(iPhoneFrameMath.designSize.width),
-            "designHeight": Int(iPhoneFrameMath.designSize.height)
-        ]
-
-        let canvas: [String: Any] = [
-            "width": Int(canvasSize.width.rounded()),
-            "height": Int(canvasSize.height.rounded()),
-            "shapeBaseWidth": 120,
-            "shapeBaseHeight": 80,
-            "unit": "pt",
-            "iphoneFrame": iphone
-        ]
-        let packsArr = ShapePack.allCases
-            .filter { activeShapePacks.contains($0) }
-            .map { $0.rawValue }
-        var dict: [String: Any] = [
-            "canvas": canvas,
-            "specType": specType.rawValue,
-            "platform": platform.rawValue,
-            "shapePacks": packsArr,
-            "nodes": nodes,
-            "edges": edgeArr
-        ]
-        // v63: kollaps skrivs per kant ("collapsed": true på kant-dicten) —
-        // den gamla "collapsed"-nod-arrayen skrivs inte längre (parsern
-        // migrerar gamla filer vid läsning).
-        // v66: legend (kategori → Kims betydelse-text)
-        if !legend.isEmpty {
-            dict["legend"] = legend
-        }
-        guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
-              let str = String(data: data, encoding: .utf8) else { return "{}" }
-        return str
-    }
-
     /// v66: mermaid för EN skill — containern + dess barn (modellens EXPLICITA
     /// childOfContainerId-koppling, inte positions-gissning) + interna kanter +
     /// memory-noder som hänger i kanten (= skillens input-/output-filer enligt
@@ -542,7 +418,7 @@ enum MermaidGenerator {
         }
     }
 
-    private static func makeMermaidIds(for shapes: [ShapeNode]) -> [UUID: String] {
+    static func makeMermaidIds(for shapes: [ShapeNode]) -> [UUID: String] {
         var ids: [UUID: String] = [:]
         for (i, s) in shapes.enumerated() {
             ids[s.id] = "\(s.category.idPrefix)_N\(i)"

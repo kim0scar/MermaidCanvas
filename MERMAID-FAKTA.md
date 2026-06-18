@@ -345,6 +345,41 @@ på samma nod. Inget krav nu; noterat som uppgradering. (Källa: mermaid.js.org/
 
 ---
 
+## L. Två-lager-modellen + KAN-INTE-facit (STEG F, 2026-06-18)
+
+### L.1 MermaidCanvas är två lager — Mermaid är transporten, appen är renderaren
+Appen är **inte** ren Mermaid. Den är "MermaidCanvas Extended": ren mermaid som bärare + ett eget tilläggslager.
+
+- **Lager 1 — Portabel Mermaid (kroppen):** `flowchart`, noder, pilar, subgraphs, `classDef`/`:::`. Andra verktyg (mermaid.live) förstår detta. AI kan läsa/skriva det.
+- **Lager 2 — Extended-metadata:** `%% <id> nyckel: värde`-rader + `<!-- mermaidcanvas-state ... -->`-blocket. Bär allt mermaid inte kan uttrycka: exakt position, storlek, rotation, färg, prompt, anteckning, `shape-type`, kollaps, länk, waypoints, justering/listor/indrag, container-barn. Mermaid-renderaren **ignorerar** lager 2 (kommentar + HTML-kommentar) → kroppen renderar rent.
+
+**Två konsumenter, två nivåer av garanti:**
+1. **Re-import till appen (Kim ELLER någon med hela koden):** state-JSON → **bokstavligt noll avvikelse**. Detta är den heliga garantin.
+2. **Rendering i ren mermaid (andra i mermaid.live):** trogen STRUKTUR, men egna former visas som mermaids närmaste native-form. Identiteten överlever ändå via `%% shape-type` (så re-import är förlustfri även ur ren mermaid). Inget får försvinna **tyst**.
+
+### L.2 KAN INTE — det här stödjer Mermaid inte (så appen måste äga det själv)
+- **Egna design-former:** ingen `phoneFrame`/iPhone-skärm, ingen native triangel/oktagon/process-pil/tabell. → appen ritar dem; `%% shape-type` bär identiteten.
+- **Container som äger/klipper innehåll:** `subgraph` är en diagramgrupp, INTE en UI-skärm med barn-ägande, clipping, lager eller relativ layout. → phoneFrame-som-container är app-ansvar (steg 9 / 💡#6).
+- **Lager (z-index), relativ position-i-förälder, constraints/auto-layout:** finns inte. → app-state (💡#6).
+- **Exakta koordinater:** kan inte styras i mermaid-koden (auto-layout). → position lever i lager 2.
+- **Edge-routing/waypoints/ankare:** mermaid auto-routar; bågar går inte att styra i koden. → app-state (`%% waypoint`).
+- **Garanterad emoji/ikon-rendering:** emojis funkar oftast (Unicode i labels) men inte garanterat överallt; icon-packs är miljöberoende.
+
+### L.3 Appens former → ren mermaid (vad andra ser) + hur identiteten räddas
+| App-form | Ren-mermaid-body | Native? | Identitet räddas av |
+|---|---|---|---|
+| circle/rectangle/diamond/pill/cylinder | `(( ))`/`( )`/`{ }`/`([ ])`/`[( )]` | ja | bodyn själv |
+| square/processArrow/octagon/line/arrow | `( )` resp. `[ ]` | NEJ (ser ut som rektangel) | `%% shape-type` (F2) |
+| phoneFrame/triangle/table/link | `[ ]` resp. `(( ))` | NEJ | `%% shape-type` (+ `%% table-cells`, `%% link`) |
+| container | `subgraph … end` | grupp (ej UI-skärm) | subgraph + `%% container-pos`/`prompt`/`note` |
+
+`@{ shape: tri/hex/cyl/doc/... }` (v11.3+) kunde ge native former i framtiden (se K) — kräver renderare ≥ v11.3, blandas aldrig med klassiska delimiters. Inte i bruk nu.
+
+### L.4 Edge-ändar som saknas i C.2
+`A o--o B` (cirkel-ändar) och `A x--x B` (kryss-ändar) finns i mermaid men `o`/`x` direkt efter länken utan mellanslag tolkas fel (se K). Appen använder dem inte; noterat för fullständighet.
+
+---
+
 ## Snabbreferens — vad Claude Code ALLTID ska komma ihåg
 
 1. **Quote alla labels** — `A["..."]`

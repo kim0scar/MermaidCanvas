@@ -12,6 +12,7 @@
 		04C814C48585BE412F417E62 /* FreeResizeIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4871DFF5E0EF494F3407DC30 /* FreeResizeIcon.swift */; };
 		04F6EA93B52298C165CEB0DE /* MermaidImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */; };
 		05D7C2B2DFD541EDEBB30893 /* V49ConnectionSelectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972221C4027943A89D26EE32 /* V49ConnectionSelectionTest.swift */; };
+		06C293709EF34D782E637B62 /* MermaidParser+TextHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55FA8420E7FA6C2793AE03D3 /* MermaidParser+TextHelpers.swift */; };
 		072FB24BB80E361535FAC525 /* CanvasModel+Containers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5219BDA65C560A990E1E1 /* CanvasModel+Containers.swift */; };
 		075AEDBFD14F4F58E3C4D203 /* CanvasModel+Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65057645CBC97A8C00E2448 /* CanvasModel+Selection.swift */; };
 		07E3490A9963968FB98F7B44 /* V28VisualTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */; };
@@ -79,6 +80,7 @@
 		6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B25CF04C2CA057CD0366B64 /* LegendPanel.swift */; };
 		6EDEFC6D953FE921B9939E97 /* CanvasModel+Undo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF062E95A85446BD3B9B18C /* CanvasModel+Undo.swift */; };
 		6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969A68524F5A084A0839C4 /* DesignTokens.swift */; };
+		6FBD251F80549B80AD67C081 /* MermaidGenerator+StateJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */; };
 		7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */; };
 		7467706C41CF4EAC940B5B06 /* V67Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C515D01227ECFFACAFCE12 /* V67Tests.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
@@ -227,6 +229,7 @@
 		2A42EB21C4C1D82A6F3BB0DC /* V74SkillNrTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V74SkillNrTests.swift; sourceTree = "<group>"; };
 		2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableEditorSheet.swift; sourceTree = "<group>"; };
 		2D0E6420DE137F57D019A7EB /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
+		2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MermaidGenerator+StateJSON.swift"; sourceTree = "<group>"; };
 		2E3CAD65F3CEBBD3CFE9B088 /* V68Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V68Tests.swift; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
 		31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeGeometry.swift; sourceTree = "<group>"; };
@@ -254,6 +257,7 @@
 		53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineEndpointHandle.swift; sourceTree = "<group>"; };
 		541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeMidpointHandle.swift; sourceTree = "<group>"; };
 		55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerOverlay.swift; sourceTree = "<group>"; };
+		55FA8420E7FA6C2793AE03D3 /* MermaidParser+TextHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MermaidParser+TextHelpers.swift"; sourceTree = "<group>"; };
 		568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidImportSheet.swift; sourceTree = "<group>"; };
 		56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadges.swift; sourceTree = "<group>"; };
 		56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasView+Helpers.swift"; sourceTree = "<group>"; };
@@ -599,8 +603,10 @@
 			children = (
 				16EE5157030AD0CE1127BF10 /* MermaidAutoLayout.swift */,
 				773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */,
+				2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */,
 				DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */,
 				4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */,
+				55FA8420E7FA6C2793AE03D3 /* MermaidParser+TextHelpers.swift */,
 				6660E4DB431B5BBCAF625147 /* SpecType.swift */,
 			);
 			path = Mermaid;
@@ -943,9 +949,11 @@
 				87D91925AB13DCBEE7F5A9EA /* MermaidAutoLayout.swift in Sources */,
 				39C4BE0D9F1D7F0A3221BA24 /* MermaidCanvasApp.swift in Sources */,
 				084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */,
+				6FBD251F80549B80AD67C081 /* MermaidGenerator+StateJSON.swift in Sources */,
 				D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */,
 				04F6EA93B52298C165CEB0DE /* MermaidImportSheet.swift in Sources */,
 				59180BADCEB07539F7339DCA /* MermaidMetaComments.swift in Sources */,
+				06C293709EF34D782E637B62 /* MermaidParser+TextHelpers.swift in Sources */,
 				FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */,
 				3AA3A067DEBA4D2C8353DBCA /* MultiSelectResizeHandle.swift in Sources */,
 				56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */,

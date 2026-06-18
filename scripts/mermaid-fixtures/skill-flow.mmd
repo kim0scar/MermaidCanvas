@@ -1,0 +1,63 @@
+%%{init: {"flowchart": {"curve": "basis"}}}%%
+flowchart TD
+    input_N1(["Input"]):::input
+    %% input_N1 pos: 200,380
+    %% input_N1 name: Input
+    subagent_N2("Subagent"):::subagent
+    %% subagent_N2 pos: 320,380
+    %% subagent_N2 name: Subagent
+    tool_N3("Tool"):::tool
+    %% tool_N3 pos: 440,380
+    %% tool_N3 name: Tool
+    mcp_N4("MCP"):::mcp
+    %% mcp_N4 pos: 320,440
+    %% mcp_N4 name: MCP
+    plugin_N5("Plugin"):::plugin
+    %% plugin_N5 pos: 440,440
+    %% plugin_N5 name: Plugin
+    fileMarkdown_N6("data.md"):::fileMarkdown
+    %% fileMarkdown_N6 pos: 200,440
+    %% fileMarkdown_N6 name: data.md
+    fileExcel_N7("ark.xlsx"):::fileExcel
+    %% fileExcel_N7 pos: 560,440
+    %% fileExcel_N7 name: ark.xlsx
+    output_N8(["Output"]):::output
+    %% output_N8 pos: 560,380
+    %% output_N8 name: Output
+    subgraph skill_N0 ["Skill 2"]
+        input_N1
+        subagent_N2
+        tool_N3
+        mcp_N4
+        plugin_N5
+        fileMarkdown_N6
+        fileExcel_N7
+        output_N8
+    end
+    %% skill_N0 container-pos: 400,400
+    %% skill_N0 skill-nr: 2
+    %% skill_N0 prompt: Läs källa → sammanställ → spara
+    %% skill_N0 note: skiss för bollande
+    input_N1 --> subagent_N2
+    subagent_N2 --> tool_N3
+    subagent_N2 --> output_N8
+
+    %% legend input: Ingångspunkt för data eller event.
+    %% legend tool: Verktyg som agenten anropar.
+    %% legend output: Slutpunkt eller resultat.
+    %% legend subagent: Subagent — delegerad uppgift till annan Claude-instans.
+    %% legend skill: Skill — predefined kapacitet/protokoll.
+    %% legend mcp: MCP-server — extern verktygskälla (Model Context Protocol) som Claude Code kan anropa.
+    %% legend plugin: Plugin — paket av skills/kommandon/hooks för Claude Code.
+    %% legend fileMarkdown: Markdown-fil (.md) — text, anteckning eller överlämning mellan steg.
+    %% legend fileExcel: Excel/kalkylark — strukturerad data (tabell, rader).
+
+    classDef input fill:#ffffff,stroke:#15803d,color:#111827,font-weight:normal;
+    classDef tool fill:#ffffff,stroke:#c2410c,color:#111827,font-weight:normal;
+    classDef output fill:#ffffff,stroke:#b91c1c,color:#111827,font-weight:normal;
+    classDef subagent fill:#ffffff,stroke:#5b21b6,color:#111827,font-weight:normal;
+    classDef skill fill:#ffffff,stroke:#c2410c,color:#111827,font-weight:normal;
+    classDef mcp fill:#ffffff,stroke:#0f766e,color:#111827,font-weight:normal;
+    classDef plugin fill:#ffffff,stroke:#9d174d,color:#111827,font-weight:normal;
+    classDef fileMarkdown fill:#ffffff,stroke:#64748b,color:#111827,font-weight:normal;
+    classDef fileExcel fill:#ffffff,stroke:#15803d,color:#111827,font-weight:normal;

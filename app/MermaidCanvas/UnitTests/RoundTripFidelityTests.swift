@@ -242,4 +242,82 @@ final class RoundTripFidelityTests: XCTestCase {
         let md3 = generate(p2.shapes, p2.edges)
         XCTAssertEqual(md2, md3, "andra och tredje genereringen ska vara byte-identiska (stabil serialisering)")
     }
+
+    // MARK: - F1: icke-heltalsposition round-trippar EXAKT via state-JSON (Kims kopiera→klistra)
+
+    /// Före F1 avrundades position till heltal i state-JSON (321,7 → 322). Garantin
+    /// "rita → kopiera → radera → klistra → exakt samma, noll avvikelse" kräver full precision.
+    func test_nonIntegerPosition_exactRoundTrip() throws {
+        let s = ShapeNode(type: .rectangle, position: CGPoint(x: 321.7, y: 88.42), label: "Sub")
+        let parsed = roundTrip([s], [])
+        let p = parsed.shapes.first
+        XCTAssertEqual(p?.position.x ?? 0, 321.7, accuracy: 0.0001, "x ska round-trippa exakt (ingen Int-avrundning)")
+        XCTAssertEqual(p?.position.y ?? 0, 88.42, accuracy: 0.0001, "y ska round-trippa exakt")
+    }
+
+    // MARK: - F2: VARJE formtyp behåller sin IDENTITET i REN mermaid (utan state-JSON)
+
+    /// Lager 2 (andra som läser min mermaid): ingen formtyp får degradera tyst till rektangel
+    /// när bara mermaid-kroppen finns. Före F2 tappade square/processArrow/octagon/line/arrow
+    /// sin identitet här (saknade %% shape-type → blev rektanglar).
+    func test_fallback_everyShapeType_identitySurvives() throws {
+        for (i, t) in ShapeType.allCases.enumerated() {
+            var s = ShapeNode(type: t, position: CGPoint(x: 300 + i * 60, y: 300), label: "T\(i)")
+            if t == .table { s.tableRows = 2; s.tableCols = 2 }
+            if t == .line || t == .arrow { s.lineEnd = CGPoint(x: 60, y: 0) }
+            let mermaid = MermaidGenerator.generate(shapes: [s], edges: [], specType: .general)
+            let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")  // ingen state-JSON
+            let p = parsed.shapes.first { $0.label == "T\(i)" }
+            XCTAssertEqual(p?.type, t, "formtyp \(t) ska överleva ren mermaid (inte degradera till rektangel)")
+        }
+    }
+
+    // MARK: - F2: justering + listor + indrag överlever REN mermaid
+
+    /// Före F2 fanns dessa bara som CSS/state-JSON → tappades tyst i ren-mermaid-fallbacken.
+    func test_fallback_textFormattingSurvives() throws {
+        var s = ShapeNode(type: .rectangle, position: CGPoint(x: 400, y: 400), label: "Fmt")
+        s.textAlignment = .trailing
+        s.hasBullets = true
+        s.hasNumberedList = true
+        s.indentLevel = 2
+        let mermaid = MermaidGenerator.generate(shapes: [s], edges: [], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")
+        let p = parsed.shapes.first { $0.label == "Fmt" }
+        XCTAssertEqual(p?.textAlignment, .trailing, "justering ska överleva ren mermaid")
+        XCTAssertEqual(p?.hasBullets, true, "punktlista ska överleva ren mermaid")
+        XCTAssertEqual(p?.hasNumberedList, true, "numrerad lista ska överleva ren mermaid")
+        XCTAssertEqual(p?.indentLevel, 2, "indrag ska överleva ren mermaid")
+    }
+
+    // MARK: - F2 (steg 8 2g): container-anteckning + prompt överlever REN mermaid
+
+    /// Luckan: noderna skrev %% note, containrarna gjorde inte → skill-containerns
+    /// anteckning tappades i ren mermaid. Nu skriver + läser vi den.
+    func test_fallback_containerNoteSurvives() throws {
+        var box = ShapeNode(type: .container, position: CGPoint(x: 500, y: 500), label: "Skill")
+        box.note = "skissanteckning"
+        box.prompt = "container-prompt"
+        let child = ShapeNode(type: .rectangle, position: CGPoint(x: 480, y: 520),
+                              label: "Barn", childOfContainerId: box.id)
+        let mermaid = MermaidGenerator.generate(shapes: [box, child], edges: [], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")
+        let p = parsed.shapes.first { $0.label == "Skill" }
+        XCTAssertEqual(p?.note, "skissanteckning", "container-anteckning ska överleva ren mermaid")
+        XCTAssertEqual(p?.prompt, "container-prompt", "container-prompt ska överleva ren mermaid")
+    }
+
+    // MARK: - F2: edge-waypoints överlever REN mermaid (fallbacken kastade dem förr)
+
+    func test_fallback_edgeWaypointsSurvive() throws {
+        let a = ShapeNode(type: .rectangle, position: CGPoint(x: 200, y: 300), label: "A")
+        let b = ShapeNode(type: .rectangle, position: CGPoint(x: 700, y: 300), label: "B")
+        var e = EdgeConnection(from: a.id, to: b.id, label: "väg")
+        e.waypoints = [EdgeWaypoint(x: 400, y: 360), EdgeWaypoint(x: 550, y: 240)]
+        let mermaid = MermaidGenerator.generate(shapes: [a, b], edges: [e], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")
+        XCTAssertEqual(parsed.edges.first?.waypoints.count, 2, "waypoints ska överleva ren mermaid")
+        XCTAssertEqual(parsed.edges.first?.waypoints.first?.x ?? 0, 400, accuracy: 0.5)
+        XCTAssertEqual(parsed.edges.first?.waypoints.first?.y ?? 0, 360, accuracy: 0.5)
+    }
 }

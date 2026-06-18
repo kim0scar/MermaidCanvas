@@ -27,4 +27,30 @@ if command -v node >/dev/null 2>&1 && [ -d "$ROOT/node_modules/mermaid" ]; then
 else
   echo "⚠️  Mermaid-grinden hoppades över (kör 'npm install' i projektroten för att aktivera den)."
 fi
+
+# STEG F: round-trip-grind — round-trip MÅSTE vara förlustfri (Kims noll-avvikelse-garanti).
+# Tung (bygger + sim) → körs BARA när mermaid-/modell-lagret ändras (där round-trip kan brytas).
+CHANGED="$(git diff --cached --name-only)"
+if echo "$CHANGED" | grep -qE "Sources/Mermaid/|Sources/App/Models/(ShapeNode|EdgeConnection)"; then
+  UDID="$(xcrun simctl list devices booted | grep -m1 'iPhone' | grep -oE '[0-9A-Fa-f-]{36}' || true)"
+  [ -z "$UDID" ] && UDID="$(xcrun simctl list devices available | grep -m1 'iPhone' | grep -oE '[0-9A-Fa-f-]{36}' || true)"
+  if [ -n "$UDID" ]; then
+    echo "▶︎ Mermaid-/modell-lagret ändrat → kör round-trip-grinden (kan ta en stund)…"
+    xcodebuild test \
+      -project "$ROOT/app/MermaidCanvas/MermaidCanvas.xcodeproj" -scheme MermaidCanvas \
+      -destination "platform=iOS Simulator,id=$UDID" \
+      -only-testing:MermaidCanvasUnitTests/RoundTripFidelityTests \
+      -only-testing:MermaidCanvasUnitTests/StateJSONSymmetryTests \
+      > /tmp/precommit_roundtrip.log 2>&1
+    if [ "$?" -ne 0 ]; then
+      echo ""
+      echo "🔴 Round-trip-grinden stoppade commiten: en form/kant round-trippar INTE förlustfritt."
+      echo "   Logg: /tmp/precommit_roundtrip.log   Nödläge: git commit --no-verify"
+      exit 1
+    fi
+    echo "✓ Round-trip förlustfri."
+  else
+    echo "⚠️  Round-trip-grinden hoppades över (ingen iPhone-sim hittad)."
+  fi
+fi
 exit 0
