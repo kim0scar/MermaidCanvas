@@ -172,6 +172,47 @@ final class RoundTripFidelityTests: XCTestCase {
                        "STRAY ligger på containern men är inte barn — får inte stå i subgraph (UX-110)")
     }
 
+    // MARK: - A1.4c MB steg 6: tabell/länk överlever REN mermaid (utan state-JSON)
+
+    /// Tabellen ska behålla sin typ OCH sina celler även när bara mermaid-texten finns
+    /// (Claude→Kim-riktningen). Utan fixen blir den en rektangel och cellerna tappas.
+    func test_fallback_tablePreservesTypeAndCells() throws {
+        var t = ShapeNode(type: .table, position: CGPoint(x: 400, y: 400), label: "Tab",
+                          tableRows: 2, tableCols: 2)
+        t.tableCells = [["a", "b"], ["c", "d"]]
+        let mermaid = MermaidGenerator.generate(shapes: [t], edges: [], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")  // ren mermaid (fence, ingen state-JSON)
+        let p = parsed.shapes.first { $0.label == "Tab" }
+        XCTAssertEqual(p?.type, .table, "tabell-typ ska överleva ren mermaid")
+        XCTAssertEqual(p?.tableCells, [["a", "b"], ["c", "d"]], "tabellceller ska överleva ren mermaid")
+    }
+
+    /// Jump-länken ska behålla typen `.link` i ren mermaid — annars hittar `partnerLink`
+    /// inte partnern (kräver `.type == .link`) och förflyttningen dör.
+    func test_fallback_linkPreservesType() throws {
+        var l = ShapeNode(type: .link, position: CGPoint(x: 300, y: 300), label: "Hopp")
+        l.linkNumber = 1
+        let mermaid = MermaidGenerator.generate(shapes: [l], edges: [], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")  // ren mermaid (fence, ingen state-JSON)
+        let p = parsed.shapes.first { $0.label == "Hopp" }
+        XCTAssertEqual(p?.type, .link, "länk-typ ska överleva ren mermaid (annars dör jump)")
+        XCTAssertEqual(p?.linkNumber, 1, "länk-nummer ska överleva")
+    }
+
+    /// En kollapsad gren ska förbli kollapsad även i ren mermaid (Claude→Kim).
+    func test_fallback_collapsedBranchSurvives() throws {
+        let a = ShapeNode(type: .circle, position: CGPoint(x: 200, y: 300), label: "A")
+        let b = ShapeNode(type: .rectangle, position: CGPoint(x: 500, y: 300), label: "B")
+        let e = EdgeConnection(from: a.id, to: b.id)
+        let mermaid = MermaidGenerator.generate(shapes: [a, b], edges: [e],
+                                                specType: .general, collapsedEdgeIds: [e.id])
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")
+        XCTAssertEqual(parsed.collapsedEdgeIds.count, 1, "kollapsad gren ska överleva ren mermaid")
+        let collapsed = parsed.edges.first { parsed.collapsedEdgeIds.contains($0.id) }
+        XCTAssertEqual(parsed.shapes.first { $0.id == collapsed?.from }?.label, "A")
+        XCTAssertEqual(parsed.shapes.first { $0.id == collapsed?.to }?.label, "B")
+    }
+
     // MARK: - A1.5 tabell med celler
 
     func test_tableCells() throws {

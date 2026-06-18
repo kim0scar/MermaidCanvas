@@ -538,8 +538,7 @@ enum MermaidParser {
             // Dold etikett skrivs som " " i nod-syntaxen — återställ från %% name:
             let trimmedLabel = n.label.trimmingCharacters(in: .whitespaces)
             let label = trimmedLabel.isEmpty ? (m?.name ?? trimmedLabel) : n.label
-            // v67: explicit form-typ från %% shape-type vinner över mermaid-kroppen
-            // (phoneFrame saknar egen syntax → skrivs som rektangel).
+            // v67: explicit %% shape-type vinner över mermaid-kroppen (phoneFrame/table/link saknar egen syntax).
             let resolvedType = m?.shapeTypeRaw.flatMap { ShapeType(rawValue: $0) } ?? n.type
             let shape = ShapeNode(
                 type: resolvedType,
@@ -559,6 +558,7 @@ enum MermaidParser {
                 skillNumber: m?.skillNumber,  // v74
                 tableRows: m?.tableRows,
                 tableCols: m?.tableCols,
+                tableCells: m?.tableCells,   // MB steg 6: celler överlever ren mermaid
                 textStyle: m?.textStyleRaw.flatMap { TextStyle(rawValue: $0) } ?? .body,
                 colorPackId: m?.packId,
                 lineEnd: lineEnd

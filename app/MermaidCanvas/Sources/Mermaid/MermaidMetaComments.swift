@@ -26,6 +26,8 @@ enum MermaidMetaComments {
         var skillNumber: Int?
         var tableRows: Int?
         var tableCols: Int?
+        /// MB steg 6: tabellceller från `%% id table-cells: <JSON>` (överlever ren mermaid).
+        var tableCells: [[String]]?
         /// Label från `%% name:` — återställer text när mermaid-kroppen visar " "
         /// (dold etikett skrivs som blank i nod-syntaxen).
         var name: String?
@@ -61,6 +63,13 @@ enum MermaidMetaComments {
     static func multiLine(_ text: String) -> String {
         text.replacingOccurrences(of: " ⏎ ", with: "\n")
             .replacingOccurrences(of: "%-%", with: "%%")
+    }
+
+    /// MB steg 6: koda tabellceller som JSON på en rad (motpart till `table-cells`-parsningen).
+    static func encodeCells(_ cells: [[String]]?) -> String? {
+        guard let cells = cells,
+              let data = try? JSONSerialization.data(withJSONObject: cells) else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 
     // MARK: - Privat
@@ -112,6 +121,13 @@ enum MermaidMetaComments {
             if parts.count == 2, let r = Int(parts[0]), let c = Int(parts[1]) {
                 meta.tableRows = r
                 meta.tableCols = c
+            }
+        case "table-cells":
+            // MB steg 6: JSON `[["a","b"],...]` på en rad → tabellceller i ren mermaid.
+            if let data = value.data(using: .utf8),
+               let obj = try? JSONSerialization.jsonObject(with: data),
+               let cells = obj as? [[String]] {
+                meta.tableCells = cells
             }
         case "line-end":
             if let p = point(value) { meta.lineEndAbsolute = p }

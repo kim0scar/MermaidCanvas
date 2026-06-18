@@ -77,13 +77,13 @@ enum MermaidGenerator {
                 lines.append("\(indent)%% \(id) link: \(link)")
             }
             if shape.type == .table {
-                let r = shape.tableRows ?? 3
-                let c = shape.tableCols ?? 3
-                lines.append("\(indent)%% \(id) table: \(r)×\(c)")
+                lines.append("\(indent)%% \(id) table: \(shape.tableRows ?? 3)×\(shape.tableCols ?? 3)")
+                if let j = MermaidMetaComments.encodeCells(shape.tableCells) {
+                    lines.append("\(indent)%% \(id) table-cells: \(j)")
+                }
             }
-            // v67/v68: former utan egen Mermaid-syntax → bevara typen explicit så den
-            // självbärande fallback-parsern återskapar den (state-JSON ändå autoritativ).
-            if shape.type == .phoneFrame || shape.type == .triangle {
+            // v67/v68 + MB steg 6: typer utan egen Mermaid-syntax bevaras explicit (annars: table→rektangel, link→cirkel → jump dör).
+            if [.phoneFrame, .triangle, .table, .link].contains(shape.type) {
                 lines.append("\(indent)%% \(id) shape-type: \(shape.type.rawValue)")
             }
             // v23: textstil + färg-paket
