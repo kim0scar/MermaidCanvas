@@ -36,7 +36,14 @@ spara skill, kod-vy med auto-legend håller ihop. Tre saker stod mellan v72 och 
 
 ## KVARSTÅENDE — HÖG
 
-### UX-110 [BUGG] Container-medlemskap: mermaid och state-JSON säger OLIKA saker
+*(Tom — UX-110 löst 2026-06-18, se nedan.)*
+
+### ✅ UX-110 [FIXAD v73, LÅST 2026-06-18] Container-medlemskap: mermaid och state-JSON säger OLIKA saker
+- **LÖST:** roten (generatorn använde positionsbaserad `shapesInside()` i stället för explicit
+  `childOfContainerId`) fixades i v73 — `MermaidGenerator.containerChildrenIds` använder nu
+  `childOfContainerId`, samma sanning som state-JSON. Verifierat + permanent låst 2026-06-18 av
+  `RoundTripFidelityTests.test_ux110_mermaidMembershipFollowsChildOf`: en nod som bara LIGGER på
+  containern hamnar inte i subgraph-blocket. (Auditen markerades bara aldrig om förrän nu.)
 - **Sett av:** P3 (verifierat via kopierad kod), P4 ("containern slukar min nod"), Claude (trasiga pil-ankare)
 - **Vad:** En nod som bara råkar LIGGA på containern exporteras som subgraph-MEDLEM i
   mermaid-blocket trots att state-JSON saknar `childOfContainerId`. Protokollbrott mot

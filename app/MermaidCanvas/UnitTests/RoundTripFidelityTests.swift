@@ -134,6 +134,44 @@ final class RoundTripFidelityTests: XCTestCase {
         try assertShapesEqual(shapes, parsed.shapes, "container-barn-länk")
     }
 
+    // MARK: - A1.4b UX-110: mermaid-subgraph-medlemskap följer childOfContainerId (inte position)
+
+    /// UX-110 (rotfixad v73): en nod som bara LIGGER på containern, utan
+    /// childOfContainerId, får ALDRIG bli subgraph-medlem i det genererade mermaid-
+    /// blocket — annars säger mermaid och state-JSON olika saker (round-trip-
+    /// protokollbrott; Claude som läser mermaid:en ser en annan struktur än appen).
+    /// Vi inspekterar subgraph-blocket direkt: det ska innehålla EXAKT det explicita barnet.
+    func test_ux110_mermaidMembershipFollowsChildOf() throws {
+        var box = ShapeNode(type: .container, position: CGPoint(x: 500, y: 500), label: "Grupp")
+        box.widthMultiplier = 3.0; box.heightMultiplier = 2.0   // stora bounds → stray hamnar geometriskt "inuti"
+        let child = ShapeNode(type: .circle, position: CGPoint(x: 460, y: 500),
+                              label: "BARN", childOfContainerId: box.id)
+        let stray = ShapeNode(type: .circle, position: CGPoint(x: 540, y: 500), label: "STRAY")
+        let mermaid = MermaidGenerator.generate(shapes: [box, child, stray], edges: [], specType: .general)
+        let lines = mermaid.components(separatedBy: "\n")
+
+        // Hitta varje nods mermaid-id via dess etikett-rad (t.ex. `ui_N1(("BARN")):::ui`).
+        func nodeId(_ label: String) -> String? {
+            lines.first { $0.contains("\"\(label)\"") && $0.contains("((") }?
+                .trimmingCharacters(in: .whitespaces).components(separatedBy: "(").first
+        }
+        guard let barnId = nodeId("BARN"), let strayId = nodeId("STRAY") else {
+            return XCTFail("hittar inte nod-id i mermaid")
+        }
+        // Subgraph-blocket: medlemmarna står mellan `subgraph …` och `end`.
+        guard let sgIdx = lines.firstIndex(where: { $0.contains("subgraph") }),
+              let endRel = lines[(sgIdx + 1)...].firstIndex(where: {
+                  $0.trimmingCharacters(in: .whitespaces) == "end" }) else {
+            return XCTFail("hittar inget subgraph-block")
+        }
+        let members = lines[(sgIdx + 1)..<endRel]
+            .map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        XCTAssertEqual(members, [barnId],
+                       "subgraph ska ha EXAKT det explicita barnet som medlem (UX-110)")
+        XCTAssertFalse(members.contains(strayId),
+                       "STRAY ligger på containern men är inte barn — får inte stå i subgraph (UX-110)")
+    }
+
     // MARK: - A1.5 tabell med celler
 
     func test_tableCells() throws {
