@@ -13,6 +13,9 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
     /// v67: n8n-paket — flödesnoderna (Input/Agent/Verktyg/Router/Memory/Output)
     /// flyttade hit från Former-raden (Kims fynd: "ha n8n som paket-typ").
     case n8n
+    /// Steg 8: Skillflöde — ersätter n8n + Prompt-Process. Claude Code-byggstenar för att
+    /// SKISSA en skill visuellt (Subagent/Tool/MCP/Plugin/Skill-container/Input/Output/Fil).
+    case skillFlow
     /// v31: legacy (kvar för fil-bakåtkompat — migreras till .note vid öppning)
     case roadmap
     case architecture
@@ -21,7 +24,8 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     /// v31: pack:er som visas i form-pack-rad. .basic är alltid på, legacy är dolda.
-    static var userToggleable: [ShapePack] { [.ui, .promptProcess, .n8n] }
+    /// Steg 8: n8n + Prompt-Process ersatta av Skillflöde (cases kvar för fil-bakåtkompat).
+    static var userToggleable: [ShapePack] { [.ui, .skillFlow] }
 
     var displayName: String {
         switch self {
@@ -29,6 +33,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .ui: return "UI"
         case .promptProcess: return "Prompt-Process"
         case .n8n: return "n8n"
+        case .skillFlow: return "Skillflöde"
         case .roadmap: return "Roadmap (utfasad)"
         case .architecture: return "Arkitektur (utfasad)"
         case .flow: return "Flow (utfasad)"
@@ -41,6 +46,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .ui: return "iphone"
         case .promptProcess: return "brain.head.profile"
         case .n8n: return "arrow.triangle.branch"
+        case .skillFlow: return "point.3.filled.connected.trianglepath.dotted"
         case .roadmap: return "map"
         case .architecture: return "rectangle.3.group"
         case .flow: return "arrow.triangle.branch"
@@ -53,6 +59,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .ui: return "UI-element, zoner, overlays."
         case .promptProcess: return "Subagents, prompter, skills, tools, memory, output (Claude/agent-flow)."
         case .n8n: return "Hel skill-kedja: Input, Skill, Subagent, Agent, Verktyg, Router, Grind, Manual, Script, MD-fil, Bevis, Prompt, Output."
+        case .skillFlow: return "Skissa en skill: Input, Skill-container, Subagent, Tool, MCP, Plugin, MD-fil, Excel-fil, Output."
         case .roadmap, .architecture, .flow: return "Utfasad i v31 — formerna migreras till anteckning."
         }
     }
@@ -64,6 +71,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .ui: return [.ui, .zone, .overlay]
         case .promptProcess: return [.subagent, .prompt, .skill, .tool, .memory, .output]
         case .n8n: return [.input, .skill, .subagent, .agent, .tool, .router, .gate, .manual, .script, .memory, .evidence, .prompt, .output]
+        case .skillFlow: return [.input, .skill, .subagent, .tool, .mcp, .plugin, .fileMarkdown, .fileExcel, .output]
         case .roadmap, .architecture, .flow: return []  // v31: tomt
         }
     }
@@ -75,6 +83,7 @@ enum ShapePack: String, Codable, CaseIterable, Identifiable {
         case .ui: return .ui
         case .promptProcess: return .subagent
         case .n8n: return .input
+        case .skillFlow: return .input
         case .roadmap, .architecture, .flow: return nil
         }
     }

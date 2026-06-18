@@ -49,7 +49,7 @@ enum PlatformRules {
         switch pack {
         case .promptProcess:
             return loadResource(name: "prompt-process-rules", ext: "md")
-        case .basic, .ui, .n8n:
+        case .basic, .ui, .n8n, .skillFlow:
             return nil  // dessa har inga separata regler
         case .roadmap, .architecture, .flow:
             return nil  // utfasade

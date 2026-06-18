@@ -84,11 +84,13 @@ struct ShapeView: View {
     }
 
     /// v74: container-rubrik — skill-containrar visar kedjenumret ("Skill 2 · namn").
+    /// Steg 8: en skill-container inuti en annan container = "Subskill".
     private var containerHeaderTitle: String {
         let name = shape.label.isEmpty ? "Grupp" : formattedLabel
         guard shape.category == .skill else { return name }
-        if let nr = shape.skillNumber { return "Skill \(nr) · \(name)" }
-        return name
+        let kind = shape.childOfContainerId != nil ? "Subskill" : "Skill"
+        if let nr = shape.skillNumber { return "\(kind) \(nr) · \(name)" }
+        return kind == "Subskill" ? "Subskill · \(name)" : name
     }
 
     var body: some View {
@@ -136,7 +138,7 @@ struct ShapeView: View {
         }
         // v63: prompt-badge (indigo hjärna) i toppvänstra hörnet → snabbläsning.
         .overlay(alignment: .topLeading) {
-            if !shape.prompt.isEmpty && !markerMode {
+            if !shape.prompt.isEmpty && shape.carriesPrompt && !markerMode {
                 PromptBadge(canvasScale: canvasScale, onTap: onQuickRead)
                     .offset(x: 3, y: shape.type == .container ? 31 : 3)
                     .rotationEffect(.degrees(-shape.rotation))

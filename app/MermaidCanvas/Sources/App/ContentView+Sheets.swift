@@ -63,6 +63,7 @@ extension ContentView {
                         skillNumber: shape.skillNumber
                     ),
                     isSkillContainer: shape.type == .container && shape.category == .skill,
+                    showsPrompt: shape.carriesPrompt,
                     onSave: { edit in
                         model.updateShape(
                             id: id,

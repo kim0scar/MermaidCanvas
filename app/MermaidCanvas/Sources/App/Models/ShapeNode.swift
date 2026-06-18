@@ -157,6 +157,11 @@ struct ShapeNode: Identifiable, Codable, Equatable {
     var effectiveWidth: CGFloat { widthMultiplier ?? sizeMultiplier }
     /// v31: effective height-multiplier (fallback till sizeMultiplier).
     var effectiveHeight: CGFloat { heightMultiplier ?? sizeMultiplier }
+
+    /// Steg 8: bär formen en prompt? Bara skill-flöde-former (.flow-kategorier) +
+    /// containrar. Basformer (UI/zon/overlay) har inget prompt-fält. Styr både
+    /// redigerings-sektionen och prompt-badgen.
+    var carriesPrompt: Bool { type == .container || category.specType == .flow }
 }
 
 // MARK: - Bakåtkompatibel Decodable

@@ -43,6 +43,12 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
     case manual     // mänsklig kontroll krävs — stoppa automatiken
     case script     // deterministisk kod (curl/jq/python), ingen LLM-gissning
 
+    // Steg 8 — Skill-flöde-vokabulär (Claude Code-byggstenar för visuell skill-bygge)
+    case mcp           // MCP-server — extern verktygskälla (Model Context Protocol)
+    case plugin        // Plugin — paket av skills/kommandon för Claude Code
+    case fileMarkdown  // Markdown-fil (.md) — text/anteckning/överlämning
+    case fileExcel     // Excel/kalkylark — strukturerad data
+
     // Godot-läge — kategorier matchar Godot UI-noder
     case godot_scene       // .tscn scene-root (motsvarar "Screen")
     case godot_control     // generisk Control-nod
@@ -91,6 +97,10 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .evidence:        return "Bevis"
         case .manual:          return "Manual"
         case .script:          return "Script"
+        case .mcp:             return "MCP"
+        case .plugin:          return "Plugin"
+        case .fileMarkdown:    return "MD-fil"
+        case .fileExcel:       return "Excel-fil"
         }
     }
 
@@ -105,6 +115,7 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
              .godot_button, .godot_label, .godot_signal, .godot_script: return .godot
         case .subagent, .prompt, .skill: return .flow // v31: Prompt-Process delar SpecType.flow
         case .gate, .evidence, .manual, .script: return .flow // v69: process-kontroll hör till flow
+        case .mcp, .plugin, .fileMarkdown, .fileExcel: return .flow // steg 8: skill-flöde-vokabulär
         case .note: return .ui // note är gemensam men hör hem i UI som default
         }
     }
@@ -124,7 +135,8 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .architecture:
             core = [.folder, .file, .module, .service, .data]
         case .flow:
-            core = [.input, .agent, .tool, .router, .memory, .output]
+            core = [.input, .subagent, .tool, .mcp, .plugin, .skill,
+                    .fileMarkdown, .fileExcel, .agent, .router, .memory, .output]
         case .godot:
             core = [.godot_scene, .godot_control, .godot_container, .godot_panel,
                     .godot_button, .godot_label, .godot_signal, .godot_script]
@@ -179,6 +191,11 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .evidence:        return Color(hex: 0x64748b) // slate (sparat belägg)
         case .manual:          return Color(hex: 0xdc2626) // röd (stopp/manuell)
         case .script:          return Color(hex: 0x06b6d4) // cyan (deterministisk kod)
+        // steg 8 — skill-flöde
+        case .mcp:             return Color(hex: 0x0d9488) // teal (extern verktygskälla)
+        case .plugin:          return Color(hex: 0xdb2777) // rosa (paket)
+        case .fileMarkdown:    return Color(hex: 0xf8fafc) // ljus (dokument)
+        case .fileExcel:       return Color(hex: 0xf0fdf4) // ljusgrön (kalkyl)
         }
     }
 
@@ -220,6 +237,11 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .evidence:        return Color(hex: 0x334155) // slate-700
         case .manual:          return Color(hex: 0x7f1d1d) // röd-900
         case .script:          return Color(hex: 0x0e7490) // cyan-700
+        // steg 8 — skill-flöde
+        case .mcp:             return Color(hex: 0x0f766e) // teal-700
+        case .plugin:          return Color(hex: 0x9d174d) // rosa-900
+        case .fileMarkdown:    return Color(hex: 0x64748b) // slate (dokumentram)
+        case .fileExcel:       return Color(hex: 0x15803d) // grön (kalkylram)
         }
     }
 
@@ -231,11 +253,13 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
              .router, .memory, .output,
              .godot_scene, .godot_control, .godot_container,
              .subagent, .prompt, .skill,
-             .gate, .evidence, .manual, .script:
+             .gate, .evidence, .manual, .script,
+             .mcp, .plugin:
             return Color(hex: 0xf9fafb)
         // Ljusa fyllningar → mörk text
         case .zone, .folder, .file,
-             .godot_panel, .godot_label, .godot_signal:
+             .godot_panel, .godot_label, .godot_signal,
+             .fileMarkdown, .fileExcel:
             return Color(hex: 0x111827)
         case .godot_button:
             return Color(hex: 0x111827) // mörk text på orange
@@ -294,6 +318,10 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .evidence:        return "Bevis"
         case .manual:          return "Manual"
         case .script:          return "Script"
+        case .mcp:             return "MCP"
+        case .plugin:          return "Plugin"
+        case .fileMarkdown:    return "MD-fil"
+        case .fileExcel:       return "Excel-fil"
         }
     }
 
@@ -333,52 +361,10 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         case .evidence:        return "Bevis — sparade belägg (skärmdump, HTML, URL) för spårbarhet."
         case .manual:          return "Manual — mänsklig kontroll krävs, stoppa automatiken hellre än att gissa."
         case .script:          return "Script — deterministisk kod (curl/jq/python), ingen LLM-gissning."
+        case .mcp:             return "MCP-server — extern verktygskälla (Model Context Protocol) som Claude Code kan anropa."
+        case .plugin:          return "Plugin — paket av skills/kommandon/hooks för Claude Code."
+        case .fileMarkdown:    return "Markdown-fil (.md) — text, anteckning eller överlämning mellan steg."
+        case .fileExcel:       return "Excel/kalkylark — strukturerad data (tabell, rader)."
         }
-    }
-}
-
-// MARK: - Color hex helper
-
-extension Color {
-    init(hex: UInt32) {
-        let r = Double((hex >> 16) & 0xff) / 255.0
-        let g = Double((hex >> 8) & 0xff) / 255.0
-        let b = Double(hex & 0xff) / 255.0
-        self.init(red: r, green: g, blue: b)
-    }
-
-    /// v62: "#rrggbb"-sträng → Color. nil vid ogiltigt format.
-    init?(hexString: String) {
-        let raw = hexString.trimmingCharacters(in: .whitespaces)
-            .replacingOccurrences(of: "#", with: "")
-        guard raw.count == 6, let value = UInt32(raw, radix: 16) else { return nil }
-        self.init(hex: value)
-    }
-
-    /// v62: är hex-färgen mörk? (YIQ-luminans) — styr svart/vit text på egen fyllning.
-    static func isDarkHex(_ hexString: String) -> Bool {
-        let raw = hexString.trimmingCharacters(in: .whitespaces)
-            .replacingOccurrences(of: "#", with: "")
-        guard raw.count == 6, let value = UInt32(raw, radix: 16) else { return false }
-        let r = Double((value >> 16) & 0xff)
-        let g = Double((value >> 8) & 0xff)
-        let b = Double(value & 0xff)
-        return (r * 299 + g * 587 + b * 114) / 1000 < 128
-    }
-
-    /// Hex-string för Mermaid-classDef (i format "#rrggbb").
-    var hex: String {
-        // Bästa-möjliga: läs ut UIColor-komponenter.
-        #if canImport(UIKit)
-        let ui = UIColor(self)
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        ui.getRed(&r, green: &g, blue: &b, alpha: &a)
-        return String(format: "#%02x%02x%02x",
-                      Int((r * 255).rounded()),
-                      Int((g * 255).rounded()),
-                      Int((b * 255).rounded()))
-        #else
-        return "#000000"
-        #endif
     }
 }

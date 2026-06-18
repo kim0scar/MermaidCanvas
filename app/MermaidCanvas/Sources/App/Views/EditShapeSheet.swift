@@ -20,6 +20,8 @@ struct EditShapeSheet: View {
     let initial: ShapeEdit
     /// v74: visar skill-nummer-sektionen (bara skill-containrar).
     let isSkillContainer: Bool
+    /// Steg 8: visar prompt-sektionen (bara skill-flöde-former + containrar, inte basformer).
+    let showsPrompt: Bool
     var onSave: (ShapeEdit) -> Void
     var onCancel: () -> Void
     var onDelete: () -> Void
@@ -31,12 +33,14 @@ struct EditShapeSheet: View {
     init(shapeId: UUID,
          initial: ShapeEdit,
          isSkillContainer: Bool = false,
+         showsPrompt: Bool = true,
          onSave: @escaping (ShapeEdit) -> Void,
          onCancel: @escaping () -> Void,
          onDelete: @escaping () -> Void) {
         self.shapeId = shapeId
         self.initial = initial
         self.isSkillContainer = isSkillContainer
+        self.showsPrompt = showsPrompt
         self.onSave = onSave
         self.onCancel = onCancel
         self.onDelete = onDelete
@@ -94,10 +98,13 @@ struct EditShapeSheet: View {
 
                 // v60: prompt-fält. v73: flyttad ÖVER anteckningen + ny rubrik —
                 // prompten är skill-kedjornas kärna och ska synas utan scroll.
-                Section("Prompt (instruktionen till Claude — blir del av skillen)") {
-                    TextField("Input → uppgift → output. Subagenten ser bara detta.", text: $draft.prompt, axis: .vertical)
-                        .lineLimit(3...12)
-                        .accessibilityIdentifier("edit.prompt")
+                // Steg 8: bara skill-flöde-former + containrar (inte basformer).
+                if showsPrompt {
+                    Section("Prompt (instruktionen till Claude — blir del av skillen)") {
+                        TextField("Input → uppgift → output. Subagenten ser bara detta.", text: $draft.prompt, axis: .vertical)
+                            .lineLimit(3...12)
+                            .accessibilityIdentifier("edit.prompt")
+                    }
                 }
 
                 Section("Anteckning (din egen — ingår aldrig i skillen)") {

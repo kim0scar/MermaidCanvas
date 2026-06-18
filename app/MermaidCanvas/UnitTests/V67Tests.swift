@@ -54,14 +54,25 @@ final class V67Tests: XCTestCase {
                        "Utan state-JSON återskapas typen via %% shape-type")
     }
 
-    // MARK: - Fynd 1: n8n-paket
+    // MARK: - Steg 8: Skillflöde-paketet ersatte n8n + Prompt-Process
 
-    func testN8nPaket_FinnsOchHarRattKategorier() {
-        XCTAssertTrue(ShapePack.userToggleable.contains(.n8n), "n8n syns i paket-raden")
-        // v68: paletten utökad — verifiera att grund-flödesnoderna finns med.
-        for c in [ShapeCategory.input, .agent, .tool, .router, .memory, .output] {
-            XCTAssertTrue(ShapePack.n8n.categories.contains(c), "n8n saknar \(c.rawValue)")
+    func testSkillflodePaket_FinnsOchHarRattByggstenar() {
+        XCTAssertTrue(ShapePack.userToggleable.contains(.skillFlow), "Skillflöde syns i paket-raden")
+        XCTAssertFalse(ShapePack.userToggleable.contains(.n8n), "n8n ersatt av Skillflöde")
+        XCTAssertFalse(ShapePack.userToggleable.contains(.promptProcess), "Prompt-Process ersatt av Skillflöde")
+        // Claude Code-byggstenarna för att skissa en skill:
+        for c in [ShapeCategory.input, .skill, .subagent, .tool, .mcp, .plugin, .fileMarkdown, .fileExcel, .output] {
+            XCTAssertTrue(ShapePack.skillFlow.categories.contains(c), "Skillflöde saknar \(c.rawValue)")
         }
-        XCTAssertEqual(ShapePack.n8n.defaultCategory, .input)
+        XCTAssertEqual(ShapePack.skillFlow.defaultCategory, .input)
+    }
+
+    // Steg 8: prompt-fältet bara på skill-flöde-former + containrar (inte basformer).
+    func testCarriesPrompt_BaraSkillflodeFormer() {
+        XCTAssertFalse(ShapeNode(type: .circle, position: .zero, category: .ui).carriesPrompt, "basform har inget prompt-fält")
+        XCTAssertFalse(ShapeNode(type: .rectangle, position: .zero, category: .zone).carriesPrompt)
+        XCTAssertTrue(ShapeNode(type: .rectangle, position: .zero, category: .subagent).carriesPrompt, "skill-flöde-form bär prompt")
+        XCTAssertTrue(ShapeNode(type: .rectangle, position: .zero, category: .mcp).carriesPrompt)
+        XCTAssertTrue(ShapeNode(type: .container, position: .zero, category: .ui).carriesPrompt, "container bär alltid prompt")
     }
 }

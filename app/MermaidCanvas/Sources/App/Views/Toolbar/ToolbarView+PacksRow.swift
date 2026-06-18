@@ -29,31 +29,15 @@ extension ToolbarView {
                 }
                 mallarMenu
             }
-            if model.activeShapePacks.contains(.n8n) {
-                n8nFlowChips
-            }
-            // v73: UI- och Prompt-Process-paketen hade ALDRIG chips (P5-fynd:
-            // segmentet såg dött ut). Samma mönster som n8n.
-            if model.activeShapePacks.contains(.promptProcess) {
-                promptProcessChips
+            // Steg 8: Skillflöde-paketet visar byggsten-chipsen direkt under togglarna.
+            if model.activeShapePacks.contains(.skillFlow) {
+                skillFlowChips
             }
             if model.activeShapePacks.contains(.ui) {
                 uiPackChips
             }
         }
         .padding(.horizontal, 2)
-    }
-
-    /// v73: chips för Prompt-Process-paketet (kategorier ur ShapePack.categories).
-    var promptProcessChips: some View {
-        HStack(spacing: 6) {
-            flowChip(.rectangle, .subagent, "Subagent", accId: "chip.pp.subagent")
-            flowChip(.rectangle, .prompt, "Prompt", accId: "chip.pp.prompt")
-            flowChip(.container, .skill, "Skill", accId: "chip.pp.skill")
-            flowChip(.rectangle, .tool, "Verktyg", accId: "chip.pp.tool")
-            flowChip(.rectangle, .memory, "MD-fil", accId: "chip.pp.memory")
-            flowChip(.pill, .output, "Output", accId: "chip.pp.output")
-        }
     }
 
     /// v73: chips för UI-paketet.
