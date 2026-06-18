@@ -1,0 +1,90 @@
+%%{init: {"flowchart": {"curve": "basis"}}}%%
+flowchart TD
+    ui_N0(("Cirkel")):::ui
+    %% ui_N0 pos: 50,50
+    %% ui_N0 name: Cirkel
+    ui_N1("Rektangel"):::ui
+    %% ui_N1 pos: 200,50
+    %% ui_N1 name: Rektangel
+    router_N2{"Beslut?"}:::router
+    %% router_N2 pos: 350,50
+    %% router_N2 name: Beslut?
+    input_N3(["Pill"]):::input
+    %% input_N3 pos: 500,50
+    %% input_N3 name: Pill
+    ui_N4("Kvadrat"):::ui
+    %% ui_N4 pos: 50,150
+    %% ui_N4 name: Kvadrat
+    ui_N5["Process"]:::ui
+    %% ui_N5 pos: 200,150
+    %% ui_N5 name: Process
+    manual_N6("Stopp"):::manual
+    %% manual_N6 pos: 350,150
+    %% manual_N6 name: Stopp
+    ui_N7["Triangel"]:::ui
+    %% ui_N7 shape-type: triangle
+    %% ui_N7 pos: 500,150
+    %% ui_N7 name: Triangel
+    evidence_N8[("Databas")]:::evidence
+    %% evidence_N8 pos: 50,250
+    %% evidence_N8 name: Databas
+    ui_N9["iPhone 16 Pro"]:::ui
+    %% ui_N9 shape-type: phoneFrame
+    %% ui_N9 pos: 200,250
+    %% ui_N9 name: iPhone 16 Pro
+    ui_N10(("Hoppa")):::ui
+    %% ui_N10 link: 1
+    %% ui_N10 shape-type: link
+    %% ui_N10 pos: 350,250
+    %% ui_N10 name: Hoppa
+    ui_N11["Tabell"]:::ui
+    %% ui_N11 table: 2×2
+    %% ui_N11 table-cells: [["a","b"],["c","d"]]
+    %% ui_N11 shape-type: table
+    %% ui_N11 pos: 500,250
+    %% ui_N11 name: Tabell
+    ui_N12["Linje"]:::ui
+    %% ui_N12 pos: 50,350
+    %% ui_N12 name: Linje
+    ui_N13["Pil"]:::ui
+    %% ui_N13 pos: 200,350
+    %% ui_N13 name: Pil
+    ui_N14("Tricky (a) #quot;b#quot; #c; åäö 🎯"):::ui
+    %% ui_N14 pos: 350,350
+    %% ui_N14 name: Tricky (a) "b" #c; åäö 🎯
+    subagent_N16("Subagent"):::subagent
+    %% subagent_N16 pos: 360,380
+    %% subagent_N16 name: Subagent
+    output_N17(["Output"]):::output
+    %% output_N17 pos: 440,420
+    %% output_N17 name: Output
+    subgraph skill_N15 ["Skill 1"]
+        subagent_N16
+        output_N17
+    end
+    %% skill_N15 container-pos: 400,400
+    %% skill_N15 skill-nr: 1
+    %% skill_N15 prompt: Kör (research) → spara #fil; klar
+    ui_N0 -->|"ja"| router_N2
+    router_N2 -.->|"nej"| input_N3
+    ui_N1 <-- ui_N0
+    ui_N4 <--> ui_N5
+    manual_N6 --- ui_N7
+
+    %% legend ui: UI-element — text syns på skärmen.
+    %% legend input: Ingångspunkt för data eller event.
+    %% legend router: Villkorad routing eller beslutspunkt.
+    %% legend output: Slutpunkt eller resultat.
+    %% legend subagent: Subagent — delegerad uppgift till annan Claude-instans.
+    %% legend skill: Skill — predefined kapacitet/protokoll.
+    %% legend evidence: Bevis — sparade belägg (skärmdump, HTML, URL) för spårbarhet.
+    %% legend manual: Manual — mänsklig kontroll krävs, stoppa automatiken hellre än att gissa.
+
+    classDef ui fill:#ffffff,stroke:#1e293b,color:#111827,font-weight:normal;
+    classDef input fill:#ffffff,stroke:#15803d,color:#111827,font-weight:normal;
+    classDef router fill:#ffffff,stroke:#a16207,color:#111827,font-weight:normal;
+    classDef output fill:#ffffff,stroke:#b91c1c,color:#111827,font-weight:normal;
+    classDef subagent fill:#ffffff,stroke:#5b21b6,color:#111827,font-weight:normal;
+    classDef skill fill:#ffffff,stroke:#c2410c,color:#111827,font-weight:normal;
+    classDef evidence fill:#ffffff,stroke:#334155,color:#111827,font-weight:normal;
+    classDef manual fill:#ffffff,stroke:#7f1d1d,color:#111827,font-weight:normal;

@@ -1,8 +1,8 @@
 # MERMAID-FAKTA — blueprint för MermaidCanvas
 
-Detta är faktaunderlaget Claude Code använder när den genererar eller parsar Mermaid-kod i `canvas.md` eller andra `.md`-filer kopplade till MermaidCanvas. Verifierad mot officiell dokumentation 2026-05-14.
+Detta är faktaunderlaget Claude Code använder när den genererar eller parsar Mermaid-kod i `canvas.md` eller andra `.md`-filer kopplade till MermaidCanvas. Verifierad mot officiell dokumentation 2026-05-14; **om-verifierad + utökad 2026-06-18** (steg 7 — maskinell konformitetsgrind tillagd, se sektion **K**).
 
-**Aktuell Mermaid-version**: 11.x-serien (släppt 2024). Huvudkälla: [mermaid.js.org](https://mermaid.js.org/).
+**Aktuell Mermaid-version**: 11.x-serien (verifierat mot `mermaid@11.15.0`). Huvudkälla: [mermaid.js.org](https://mermaid.js.org/).
 
 ---
 
@@ -314,6 +314,34 @@ Fri text Kim eller Claude Code kan lägga till mellan diagrammen.
 └── arkiv/
     └── gamla-versioner.md
 ```
+
+---
+
+## K. Maskinell konformitetsgrind (steg 7 — "validera mot RIKTIG mermaid")
+
+De interna round-trip-testerna bevisar bara att appen kan läsa sin egen text. De säger INGET om
+huruvida riktig mermaid (renderaren på mermaid.live) accepterar samma text. Steg 7 täpper luckan:
+
+- **`scripts/mermaid-conformance.mjs`** — kör appens genererade mermaid genom **officiella `mermaid.parse()`** (samma grammatik som renderaren) ovanpå en jsdom-DOM. Exit 1 om något inte parsar.
+- **`scripts/mermaid-fixtures/*.mmd`** — appens FAKTISKA generator-output (hela form-vokabulären), regenereras av `scripts/extract-mermaid-fixtures.sh` (kör `MermaidConformanceCorpusTests`).
+- Kör: `npm install` (en gång) → `node scripts/mermaid-conformance.mjs`. Pre-commit-hooken kör den om `node_modules` finns.
+- **Verktygsval (spike 2026-06-18):** `@probelabs/maid` förkastades — gav FALSKA fel (avslutande `;` på classDef, citat i cylinder `[("...")]`) → inte troget riktig mermaid. `mmdc` kräver 1,7 GB Chrome. `mermaid.parse()` + jsdom = officiell grammatik, lätt, inga falska fel. (`@mermaid-js/parser` saknar flowchart-grammatik → oanvändbart här.)
+- **Regel:** appens mermaid får aldrig deployas utan att grinden är grön (CLAUDE.md regel 3 + 14).
+
+### Nya `@{ shape: ... }`-syntaxen (v11.3.0+) — FRAMTIDA möjlighet
+Mermaid 11.3 införde ~30 namngivna former via `id@{ shape: NAMN, label: "..." }` (t.ex. `tri`=triangel,
+`hex`=hexagon, `cyl`=cylinder, `doc`=dokument, `docs`=staplade dokument, `lean-r`/`lean-l`=parallellogram,
+`stadium`=pill, `diam`=diamant, `subproc`=subrutin). Appen använder idag KLASSISK syntax + `%% shape-type`
+för former mermaid saknar (telefon/triangel/oktagon). `@{ shape: tri }` m.fl. kunde ge native former för
+triangel/hexagon i framtiden — men kräver renderare ≥ v11.3 och får aldrig blandas med klassiska delimiters
+på samma nod. Inget krav nu; noterat som uppgradering. (Källa: mermaid.js.org/syntax/flowchart.html.)
+
+### Fallgropar grinden skyddar mot (bekräftade 2026-06-18)
+- **`end` som nod-id/label** kraschar subgraph-parsningen → quota eller versalisera (`End`).
+- **Citatlösa specialtecken** (`()[]{}` `#` `;` `|`) bryter parsern → quote alltid labeln (appen gör detta).
+- **`%%`-kommentarer** måste stå på egen rad (inte inline) — då ignoreras de helt (appens `%%`-metadata är säker).
+- **`o`/`x` direkt efter länk** (`A---oB`) tolkas som cirkel-/kryss-ände → mellanslag eller versal.
+- **`:::klass` på subgraph** är opålitligt mellan versioner → använd `class id klass` (appen använder classDef + `:::` på noder, vilket är giltigt).
 
 ---
 

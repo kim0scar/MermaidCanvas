@@ -1,0 +1,14 @@
+{
+  "name": "mermaidcanvas-mermaid-grind",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Maskinell konformitetsgrind: validerar appens genererade mermaid mot RIKTIG mermaid (officiella mermaid.parse + jsdom). Se scripts/mermaid-conformance.mjs.",
+  "scripts": {
+    "mermaid-check": "node scripts/mermaid-conformance.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "25.0.1",
+    "mermaid": "11.15.0"
+  }
+}

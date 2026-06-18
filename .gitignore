@@ -39,6 +39,10 @@ UI-PLACERINGS-FYND-v49/
 # Playwright MCP cache
 .playwright-mcp/
 
+# Steg 7: mermaid-konformitetsgrindens node-beroenden (package.json committas, modulerna regenereras med npm install)
+node_modules/
+package-lock.json
+
 # UX-persona testkörningar (screenshots + JSON, lokala)
 .ux-personas-test/
 

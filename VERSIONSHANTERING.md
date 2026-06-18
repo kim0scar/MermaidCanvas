@@ -28,6 +28,18 @@ Höj `AppVersion.current` till nästa `vN`. **Detta är enda stället versionsnu
 
 Statusen i appen visar denna sträng. Om den inte uppdateras vet inte Kim om han kör nya eller gamla bygget.
 
+### 1c. Kör grindarna (måste vara gröna)
+
+```bash
+cd "/Users/kim/2e Mermaid Code"
+python3 scripts/arch-check.py                 # arkitektur (lager/filstorlek/version)
+node scripts/mermaid-conformance.mjs          # appens mermaid parsar i RIKTIG mermaid
+```
+
+- Ändrat hur former/kanter skrivs i `MermaidGenerator`? Regenerera först: `./scripts/extract-mermaid-fixtures.sh` (kör korpus-testet + validerar).
+- Kör hela testsviten (round-trip-grinden) via Xcode/xcodebuild innan deploy.
+- Saknas `node_modules`? Kör `npm install` en gång (committat `package.json` pinnar mermaid + jsdom).
+
 ### 2. Bygg och deploya till iPhone
 
 Följ `Start för ios appar Kim.md` (Steg 1A → Steg 2 → Steg 3 för native Swift, eller motsvarande för Godot).

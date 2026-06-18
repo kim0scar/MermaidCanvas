@@ -78,7 +78,7 @@ Användarens canvas-filer ligger i:
 
 1. **Var-allt-finns-sparat-tabellen ovan är sanningskällan.** När en ny sparplats tillkommer (ny mapp, nytt moln, nytt verktyg) — uppdatera tabellen i samma commit. Det är denna fil som svarar på "är allt sparat?".
 2. **Vid scope-tvivel — läs `PRODUKT.md` först.** Den definierar vad som hör/inte hör hemma i appen.
-3. **Vid Mermaid-tvivel — läs `MERMAID-FAKTA.md`.** Den är blueprinten för hur Mermaid faktiskt fungerar. Gissa aldrig syntax.
+3. **Vid Mermaid-tvivel — läs `MERMAID-FAKTA.md`.** Den är blueprinten för hur Mermaid faktiskt fungerar. Gissa aldrig syntax. **Bygg aldrig mermaid-genererande kod som inte är validerad mot RIKTIG mermaid:** `node scripts/mermaid-conformance.mjs` (officiella `mermaid.parse`) måste vara grön. Ändrar du hur former/kanter skrivs — regenerera fixtures med `./scripts/extract-mermaid-fixtures.sh` och se att grinden är grön. Så blir canvasen "exakt såsom Kim ser den". (Detalj: MERMAID-FAKTA.md sektion K.)
 4. **Versionshantering**: följ alltid `VERSIONSHANTERING.md`. Hoppa inte över steg.
 5. **Modulär kod**: små filer, en sak per fil. Hellre fler filer än en stor. Inga monolitfiler — även om det blir mer kod totalt.
    **Single source of truth för versionsnummer**: `app/MermaidCanvas/Sources/AppVersion.swift`. Bumpa endast där. Aldrig hårdkoda versionsnummer någon annanstans.
@@ -100,7 +100,7 @@ Användarens canvas-filer ligger i:
     - **Tak:** planen ≤ 100 rader, 1 mening per steg. I vardagen är bara tre saker skrivbara: status, idérad, krympt steg.
     - **Ritad vy:** iCloud-Mermaid `projektplan.md` är en VY av planen (status i etiketterna) — regenerera den vid varje status-ändring. Textfilen är alltid lagen.
 
-14. **Arkitektur tvingas maskinellt — se `ARKITEKTUR-REGLER.md`.** `scripts/arch-check.py` måste vara grön innan commit (körs av `scripts/hooks/pre-commit`). Lagren pekar bara nedåt (View → Model → Mermaid/Persistence); Mermaid rör aldrig UI, Model ritar aldrig, jättefiler får bara krympa (ratchet i `scripts/arch-baseline.json`), version synkas AppVersion ↔ project.yml ↔ Info.plist. Round-trip-testerna är deploy-grind. Bryt aldrig en regel utan att först motivera för Kim.
+14. **Arkitektur tvingas maskinellt — se `ARKITEKTUR-REGLER.md`.** `scripts/arch-check.py` måste vara grön innan commit (körs av `scripts/hooks/pre-commit`). Lagren pekar bara nedåt (View → Model → Mermaid/Persistence); Mermaid rör aldrig UI, Model ritar aldrig, jättefiler får bara krympa (ratchet i `scripts/arch-baseline.json`), version synkas AppVersion ↔ project.yml ↔ Info.plist. Round-trip-testerna är deploy-grind. **Mermaid-konformitetsgrinden** (`scripts/mermaid-conformance.mjs`, officiella mermaid.parse) körs också av pre-commit och vid deploy — appens genererade mermaid måste parsa i riktig mermaid. Bryt aldrig en regel utan att först motivera för Kim.
 
 ## Filer du som Claude Code styrs av
 

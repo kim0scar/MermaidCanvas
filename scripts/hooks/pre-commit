@@ -2,12 +2,29 @@
 # MA spår B: arkitektur-grind på varje commit. Statisk och snabb (<1 s).
 # Installeras med:  git config core.hooksPath scripts/hooks
 # Nödutgång (loggas inte): git commit --no-verify
-python3 "$(git rev-parse --show-toplevel)/scripts/arch-check.py"
+ROOT="$(git rev-parse --show-toplevel)"
+
+python3 "$ROOT/scripts/arch-check.py"
 status=$?
 if [ "$status" -ne 0 ]; then
   echo ""
   echo "🔴 Arkitektur-grinden stoppade commiten. Se scripts/arch-report.md."
   echo "   Nödläge (bara om du vet vad du gör): git commit --no-verify"
   exit 1
+fi
+
+# Steg 7: mermaid-konformitetsgrind — appens genererade mermaid måste parsa i RIKTIG mermaid.
+# Körs bara om beroenden är installerade (annars varning, ingen blockering).
+if command -v node >/dev/null 2>&1 && [ -d "$ROOT/node_modules/mermaid" ]; then
+  node "$ROOT/scripts/mermaid-conformance.mjs"
+  if [ "$?" -ne 0 ]; then
+    echo ""
+    echo "🔴 Mermaid-grinden stoppade commiten: genererad mermaid parsar inte i riktig mermaid."
+    echo "   Regenerera fixtures vid generator-ändring: ./scripts/extract-mermaid-fixtures.sh"
+    echo "   Nödläge: git commit --no-verify"
+    exit 1
+  fi
+else
+  echo "⚠️  Mermaid-grinden hoppades över (kör 'npm install' i projektroten för att aktivera den)."
 fi
 exit 0

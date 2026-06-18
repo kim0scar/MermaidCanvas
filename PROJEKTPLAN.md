@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: MB pågår. ✅ Steg 6 (tabell/länk/kollaps överlever ren mermaid — Kims figurer). KVAR: steg 0 (städa rot), 1 (om-verifiera v79), 2–5 (UX-111/112/113/114). n8n + M4 PAUSADE. MA + M3 klara.
-[grundappen MB: █░░░░░░] 1/7   ·   💡 Idébanken: 5 fångade, 2 byggda
+NU: MB omformad (Kims order). ⏳ Steg 7 (mermaid-validering) PÅGÅR. KÖ: steg 8 (Skill-flöde-meny), 9 (UI-mall iPhone 15/16). EFTER: steg 0 (städa rot), 1–5 (om-verifiera + UX-111/112/113/114). ✅ Steg 6. n8n + M4 PAUSADE. MA + M3 klara.
+[grundappen MB: ██░░░░░░░░] 1/9 (steg 7 ⏳)   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -83,6 +83,9 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - ☐ Steg 4 — UX-113: pålitlig dubbeltapp → Redigera + text-ledtråd i tomt-läge. Klart: Kim öppnar Redigera med dubbeltapp reproducerbart.
 - ☐ Steg 5 — UX-114: a11y-labels på allt interaktivt + textstil-knappar in i vy + Klar/Stäng/Kopiera nåbara. Klart: ux-driver ser alla knappar + de är tappbara.
 - ✅ Steg 6 — Round-trip-härdning (Kims tre figurer): tabell (typ+celler), jump-länk (typ) och kollaps överlever REN mermaid via osynliga `%%`-rader (shape-type + table-cells). 3 nya fallback-tester gröna (175 totalt). KVAR (mindre, senare): waypoints i fallback + stabila nod-ID:n.
+- ⏳ Steg 7 — Mermaid-validering (FÖRST, Kims order "bygg allt nu"): fräscht facit (2 agenter) → MERMAID-FAKTA.md + maskinell konformitetsgrind som kör appens mermaid genom RIKTIG mermaid-parser (scripts/mermaid-conformance.mjs) + regel i CLAUDE.md. Klart: grinden grön mot generator-output, injicerat fel fångas (exit 1), facit daterat, arch-check + 175 tester gröna.
+- ☐ Steg 8 — Skill-flöde-meny: ersätt n8n + Prompt-Process med "Skillflöde" (Subagent/Tool/MCP/Plugin/Skill/Input/Output/Fil MD+Excel); prompt = fält bara på skill-flöde-former (bort från basformer); prompt+anteckning överlever i mermaid (fixa container-note-lucka). Klart: menyn ren, basformer utan prompt, allt round-trippar båda vägar, grind+tester gröna, se-appen.
+- ☐ Steg 9 — UI-mall: ta bort Mallar-menyn, iPhone 15 Pro + 16 Pro under UI, namn utanpå ramen, bara proportionell resize (handtag nere höger). Klart: device+namn round-trippar, grind+tester gröna, Kims iPhone-bock.
 
 ## Efter MB (pausat, Kims order) + Efter M3
 - MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
@@ -96,6 +99,7 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - 2026-06-13 · 💡#5 Prompt-kompilator: appen GENERERAR nod-prompten från hög-nivå-val (du slipper skriva metodtexten själv) · väntar — kärnan av "n8n för Claude Code"-visionen
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-18 · MB omformad på Kims order: tre nya steg FÖRST — 7 mermaid-validering (research-facit + maskinell grind mot riktig mermaid + regel), 8 Skill-flöde-meny (ersätt n8n/Prompt-Process; prompt bara på skill-former; MCP/Plugin/Fil), 9 UI-mall (iPhone 15/16 Pro under UI, namn utanpå, proportionell resize) · UX-111–114 + städa-rot flyttas EFTER. Varför: Kim vill kunna skissa skills visuellt + att inget byggs ovaliderat mot riktig mermaid; ordning Kims val (validering före bygge).
 - 2026-06-18 · Omprioritering på Kims order: ny milstolpe MB "Grundappen sitter" FÖRST (fixa UX-111–114 + round-trip-härdning); n8n (MC) + M4 pausade tills basen sitter. Grundas på 3-agents-granskning (kärnan funkar, 4 blocker-buggar kvar, auditen v72 ej om-verifierad mot v79).
 - 2026-06-17 · Förbättring under dekomposition: ShapeGeometry flyttad till Models/ (inte Views/Canvas/ som planen sa) · CanvasModel använde den redan → den hörde hemma i Model-lagret, inte View. ShapeView/EdgesView är själva >300 → delas internt (ShapeRenderer m.fl.) innan de flyttas, inte bara flyttas.
 - 2026-06-18 · På Kims order (M4 pausad): vän-distribution — skill `visuali2e-bjorn` lägger käll-ZIP i iCloud-mappen "Versioner till Björn" (per version), Kim skickar manuellt; + `scripts/friend-setup.sh` (ett-kommando-signering) + fräschad `INSTALL-FÖR-VÄNNEN.md`. Ingen app-kod (Filer-väljaren räcker för vännens iCloud). M4 återupptas på "ja".
