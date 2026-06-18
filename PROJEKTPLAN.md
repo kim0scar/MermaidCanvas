@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: MB omformad (Kims order). ⏳ Steg 7 (mermaid-validering) PÅGÅR. KÖ: steg 8 (Skill-flöde-meny), 9 (UI-mall iPhone 15/16). EFTER: steg 0 (städa rot), 1–5 (om-verifiera + UX-111/112/113/114). ✅ Steg 6. n8n + M4 PAUSADE. MA + M3 klara.
-[grundappen MB: ██░░░░░░░░] 1/9 (steg 7 ⏳)   ·   💡 Idébanken: 5 fångade, 2 byggda
+NU: MB omformad (Kims order). ⏳ Steg 8 (Skill-flöde-meny) PÅGÅR. ✅ Steg 7 (mermaid-validering). KÖ: steg 9 (UI-mall iPhone 15/16). EFTER: steg 0 (städa rot), 1–5 (om-verifiera + UX-111/112/113/114). ✅ Steg 6. n8n + M4 PAUSADE. MA + M3 klara.
+[grundappen MB: ███░░░░░░░] 2/9 (steg 8 ⏳)   ·   💡 Idébanken: 5 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -83,7 +83,7 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - ☐ Steg 4 — UX-113: pålitlig dubbeltapp → Redigera + text-ledtråd i tomt-läge. Klart: Kim öppnar Redigera med dubbeltapp reproducerbart.
 - ☐ Steg 5 — UX-114: a11y-labels på allt interaktivt + textstil-knappar in i vy + Klar/Stäng/Kopiera nåbara. Klart: ux-driver ser alla knappar + de är tappbara.
 - ✅ Steg 6 — Round-trip-härdning (Kims tre figurer): tabell (typ+celler), jump-länk (typ) och kollaps överlever REN mermaid via osynliga `%%`-rader (shape-type + table-cells). 3 nya fallback-tester gröna (175 totalt). KVAR (mindre, senare): waypoints i fallback + stabila nod-ID:n.
-- ⏳ Steg 7 — Mermaid-validering (FÖRST, Kims order "bygg allt nu"): fräscht facit (2 agenter) → MERMAID-FAKTA.md + maskinell konformitetsgrind som kör appens mermaid genom RIKTIG mermaid-parser (scripts/mermaid-conformance.mjs) + regel i CLAUDE.md. Klart: grinden grön mot generator-output, injicerat fel fångas (exit 1), facit daterat, arch-check + 175 tester gröna.
+- ✅ Steg 7 — Mermaid-validering (FÖRST, Kims order "bygg allt nu"): fräscht facit (2 agenter) → MERMAID-FAKTA.md sekt. K + maskinell grind som kör appens mermaid genom officiella mermaid.parse (scripts/mermaid-conformance.mjs + korpus-test + extract-skript) + pre-commit + regel 3/14. Bevis: 2/2 fixtures = flowchart-v2, injicerat fel → exit 1, 177 tester gröna, arch-check grön, pre-commit körde grinden live vid commit a171dfa.
 - ☐ Steg 8 — Skill-flöde-meny: ersätt n8n + Prompt-Process med "Skillflöde" (Subagent/Tool/MCP/Plugin/Skill/Input/Output/Fil MD+Excel); prompt = fält bara på skill-flöde-former (bort från basformer); prompt+anteckning överlever i mermaid (fixa container-note-lucka). Klart: menyn ren, basformer utan prompt, allt round-trippar båda vägar, grind+tester gröna, se-appen.
 - ☐ Steg 9 — UI-mall: ta bort Mallar-menyn, iPhone 15 Pro + 16 Pro under UI, namn utanpå ramen, bara proportionell resize (handtag nere höger). Klart: device+namn round-trippar, grind+tester gröna, Kims iPhone-bock.
 
