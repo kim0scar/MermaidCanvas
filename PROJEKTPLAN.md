@@ -86,7 +86,7 @@ Kräver: Steg 15 ✅ + Steg 16 ✅
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
 - 2026-06-17 · Förbättring under dekomposition: ShapeGeometry flyttad till Models/ (inte Views/Canvas/ som planen sa) · CanvasModel använde den redan → den hörde hemma i Model-lagret, inte View. ShapeView/EdgesView är själva >300 → delas internt (ShapeRenderer m.fl.) innan de flyttas, inte bara flyttas.
-- 2026-06-18 · På Kims order (M4 pausad): vän-distribution — skill `visuali2e-bjorn` (käll-ZIP + Gmail-utkast till Björn) + `scripts/friend-setup.sh` (ett-kommando-signering) + fräschad `INSTALL-FÖR-VÄNNEN.md`. Ingen app-kod (Filer-väljaren räcker för vännens iCloud). M4 återupptas på "ja".
+- 2026-06-18 · På Kims order (M4 pausad): vän-distribution — skill `visuali2e-bjorn` lägger käll-ZIP i iCloud-mappen "Versioner till Björn" (per version), Kim skickar manuellt; + `scripts/friend-setup.sh` (ett-kommando-signering) + fräschad `INSTALL-FÖR-VÄNNEN.md`. Ingen app-kod (Filer-väljaren räcker för vännens iCloud). M4 återupptas på "ja".
 - 2026-06-18 · På Kims order: arkitektur-sättet destillerat till portabelt `ios-arkitektur-kit` (`~/.claude/templates/` + iCloud-ZIP) — config-driven arch-check + METOD + se-appen, för framtida iOS-appar. Utanför detta repo; MermaidCanvas egna scripts orörda (analogt med hur projektplan-metoden = 💡#1 hanterades).
 - 2026-06-17 · MA startad på Kims order: granska + bygg om STEGVIS (behåll kärnan) · 3 spår C→B→A, maskinellt tvingade regler, Claude ser appen i sim · detaljplan i ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md · M2/M3 Kims-bockar oberoende, WIP=1 gäller arbetssteg.
 - 2026-06-10 · Planen skapad · startläge för M1.
