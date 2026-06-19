@@ -36,11 +36,11 @@ extension DesignTokens {
         // Hörn-radie som RATIO av referens-dimension (höjd; square = min-sida).
         // v50.8: ALLA rundade former uttrycks som ratio så chip (liten) och canvas
         // (stor) får proportionellt identisk rundning. Canvas default-look bevaras:
-        //   rektangel 80×0.175=14 · container 200×0.08=16 · diamant 80×0.075=6 · tabell 80×0.075=6
+        //   rektangel 80×0.10=8 · container 200×0.08=16 · diamant 80×0.10=8 · tabell 80×0.075=6
         static let diamondCornerRadiusRatio: CGFloat = 0.10   // v50.9: 0.075→0.10 (Kim: lite rundare)
-        static let squareCornerRadiusRatio: CGFloat = 0.125
+        static let squareCornerRadiusRatio: CGFloat = 0.06    // G2d: skarp, liksidig — tydligt skild från rektangeln
         static let processArrowCornerRadiusRatio: CGFloat = 0.30   // v50.9: 0.18→0.30 (Kim: pilen för kantig)
-        static let rectangleCornerRadiusRatio: CGFloat = 0.175
+        static let rectangleCornerRadiusRatio: CGFloat = 0.10     // G2d: svagt rundade hörn (var 0.175 → såg pill-lik ut)
         static let containerCornerRadiusRatio: CGFloat = 0.08
         static let tableCornerRadiusRatio: CGFloat = 0.075
         static let octagonCornerRadiusRatio: CGFloat = 0.08   // v51.1: rundning på oktagonens 8 hörn
