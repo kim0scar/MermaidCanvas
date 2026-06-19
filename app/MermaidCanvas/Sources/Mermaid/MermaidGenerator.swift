@@ -158,6 +158,42 @@ enum MermaidGenerator {
             if !container.note.isEmpty {
                 lines.append("\(indent)%% \(cid) note: \(oneLine(container.note))")
             }
+            // F7: container bär även sina style-fält i ren mermaid (förr tappades de tyst —
+            // nod-loopen hoppar över containrar, så de skrevs aldrig). Samma nycklar/villkor
+            // som nod-loopen; fallback-parsern läser redan tillbaka dem på containern.
+            if !container.showLabel {
+                lines.append("\(indent)%% \(cid) hidden-label")
+            }
+            if abs(container.sizeMultiplier - 1.0) > 0.01 {
+                lines.append("\(indent)%% \(cid) size: \(String(format: "%.1f", container.sizeMultiplier))")
+            }
+            if abs(container.rotation) > 0.5 {
+                lines.append("\(indent)%% \(cid) rot: \(Int(container.rotation.rounded()))°")
+            }
+            if let color = container.colorOverride {
+                lines.append("\(indent)%% \(cid) color: \(color)")
+            }
+            if let stroke = container.strokeColorOverride {
+                lines.append("\(indent)%% \(cid) stroke: \(stroke)")
+            }
+            if container.textStyle != .body {
+                lines.append("\(indent)%% \(cid) style: \(container.textStyle.rawValue)")
+            }
+            if container.textAlignment != .center {
+                lines.append("\(indent)%% \(cid) align: \(container.textAlignment.rawValue)")
+            }
+            if container.hasBullets {
+                lines.append("\(indent)%% \(cid) bullets")
+            }
+            if container.hasNumberedList {
+                lines.append("\(indent)%% \(cid) numbered")
+            }
+            if container.indentLevel > 0 {
+                lines.append("\(indent)%% \(cid) indent: \(container.indentLevel)")
+            }
+            if let packId = container.colorPackId {
+                lines.append("\(indent)%% \(cid) pack: \(packId)")
+            }
         }
 
         // v35.1: Layout-hints för ouppkopplade former — osynliga ~~~-länkar

@@ -177,12 +177,11 @@ enum MermaidParser {
             let textStyle = TextStyle(rawValue: textStyleRaw) ?? .body
             let colorPackId = node["colorPackId"] as? String
             // v35.1: separat bredd/höjd-skalning (optional för bakåtkompatibilitet)
+            // F (Kims beslut: filen ÄR sanningen) — ingen tyst kapning, bara golv mot 0/negativ.
             let widthMultiplierRaw = node["widthMultiplier"]
-            let widthMultiplier: CGFloat? = widthMultiplierRaw.map {
-                max(0.1, min(10.0, numberValue($0))) }
+            let widthMultiplier: CGFloat? = widthMultiplierRaw.map { max(0.01, numberValue($0)) }
             let heightMultiplierRaw = node["heightMultiplier"]
-            let heightMultiplier: CGFloat? = heightMultiplierRaw.map {
-                max(0.1, min(10.0, numberValue($0))) }
+            let heightMultiplier: CGFloat? = heightMultiplierRaw.map { max(0.01, numberValue($0)) }
             // v35.1: lineEnd för lösa linjer/pilar (relativ offset från position)
             var lineEnd: CGPoint? = nil
             if let leDict = node["lineEnd"] as? [String: Any],
@@ -202,13 +201,13 @@ enum MermaidParser {
                 position: CGPoint(x: x, y: y),
                 label: label,
                 showLabel: showLabel,
-                sizeMultiplier: max(0.3, min(3.0, size)),
+                sizeMultiplier: max(0.01, size),
                 widthMultiplier: widthMultiplier,
                 heightMultiplier: heightMultiplier,
                 note: note,
                 prompt: prompt,   // v60
                 category: category,
-                rotation: max(-360, min(360, rotation)),
+                rotation: rotation,
                 colorOverride: colorOverride,
                 strokeColorOverride: strokeColorOverride,
                 linkNumber: linkNumber,
@@ -222,7 +221,7 @@ enum MermaidParser {
                 textAlignment: textAlignment,
                 hasBullets: hasBullets,
                 hasNumberedList: hasNumberedList,
-                indentLevel: max(0, min(2, indentLevel))
+                indentLevel: max(0, indentLevel)
             )
             idMap[mid] = shape.id
             shapes.append(shape)
@@ -552,13 +551,13 @@ enum MermaidParser {
                 position: pos,
                 label: label,
                 showLabel: !(m?.hiddenLabel ?? false),
-                sizeMultiplier: max(0.3, min(3.0, m?.size ?? 1.0)),
-                widthMultiplier: m?.width.map { max(0.1, min(10.0, $0)) },
-                heightMultiplier: m?.height.map { max(0.1, min(10.0, $0)) },
+                sizeMultiplier: max(0.01, m?.size ?? 1.0),
+                widthMultiplier: m?.width.map { max(0.01, $0) },
+                heightMultiplier: m?.height.map { max(0.01, $0) },
                 note: m?.note ?? "",
                 prompt: m?.prompt ?? "",
                 category: n.category,
-                rotation: max(-360, min(360, m?.rotation ?? 0)),
+                rotation: m?.rotation ?? 0,
                 colorOverride: m?.color,
                 strokeColorOverride: m?.stroke,
                 linkNumber: m?.link,
@@ -573,7 +572,7 @@ enum MermaidParser {
                 textAlignment: m?.textAlignRaw.flatMap { TextAlignMode(rawValue: $0) } ?? .center,
                 hasBullets: m?.hasBullets ?? false,
                 hasNumberedList: m?.hasNumberedList ?? false,
-                indentLevel: max(0, min(2, m?.indentLevel ?? 0))
+                indentLevel: max(0, m?.indentLevel ?? 0)
             )
             if m?.collapsed == true { legacyCollapsedShapeIds.insert(shape.id) }
             idMap[n.mermaidId] = shape.id

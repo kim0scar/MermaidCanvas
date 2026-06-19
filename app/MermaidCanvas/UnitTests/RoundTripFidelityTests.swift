@@ -320,4 +320,56 @@ final class RoundTripFidelityTests: XCTestCase {
         XCTAssertEqual(parsed.edges.first?.waypoints.first?.x ?? 0, 400, accuracy: 0.5)
         XCTAssertEqual(parsed.edges.first?.waypoints.first?.y ?? 0, 360, accuracy: 0.5)
     }
+
+    // MARK: - F7: filen ÄR sanningen — parsern kapar inte tyst (Kims beslut)
+
+    /// Före F7 kapade parsern tyst: storlek→3×, bredd/höjd→10×, rotation→±360, indrag→2.
+    /// Appen tillåter större (grupp-resize, indrag-knappen) → tyst krympning vid round-trip.
+    /// Nu round-trippar extremvärden EXAKT via state-JSON.
+    func test_noSilentClamp_extremeValues_roundTrip() throws {
+        var s = ShapeNode(type: .rectangle, position: CGPoint(x: 400, y: 400), label: "Stor")
+        s.sizeMultiplier = 5.0
+        s.widthMultiplier = 12.0
+        s.heightMultiplier = 8.5
+        s.rotation = 400
+        s.indentLevel = 3
+        let parsed = roundTrip([s], [])
+        let p = parsed.shapes.first
+        XCTAssertEqual(p?.sizeMultiplier ?? 0, 5.0, accuracy: 0.0001, "storlek får inte kapas till 3×")
+        XCTAssertEqual(p?.widthMultiplier ?? 0, 12.0, accuracy: 0.0001, "bredd får inte kapas till 10×")
+        XCTAssertEqual(p?.heightMultiplier ?? 0, 8.5, accuracy: 0.0001)
+        XCTAssertEqual(p?.rotation ?? 0, 400, accuracy: 0.0001, "rotation får inte kapas till 360")
+        XCTAssertEqual(p?.indentLevel, 3, "indrag 3 får inte kapas till 2")
+    }
+
+    // MARK: - F7: container bär ALLA style-fält i ren mermaid (inte bara note/prompt)
+
+    /// Före F7 tappade en färgad/roterad/stor/stylad skill-container allt det i ren mermaid
+    /// (nod-loopen hoppar över containrar → de %%-raderna skrevs aldrig).
+    func test_fallback_containerStyleFieldsSurvive() throws {
+        var box = ShapeNode(type: .container, position: CGPoint(x: 500, y: 500), label: "Skill")
+        box.colorOverride = "#ff8800"
+        box.strokeColorOverride = "#003366"
+        box.colorPackId = "blue"
+        box.textStyle = .r1
+        box.textAlignment = .trailing
+        box.hasBullets = true
+        box.indentLevel = 1
+        box.rotation = 15
+        box.sizeMultiplier = 1.4
+        let child = ShapeNode(type: .rectangle, position: CGPoint(x: 480, y: 520),
+                              label: "Barn", childOfContainerId: box.id)
+        let mermaid = MermaidGenerator.generate(shapes: [box, child], edges: [], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")  // ren mermaid, ingen state-JSON
+        let p = parsed.shapes.first { $0.label == "Skill" }
+        XCTAssertEqual(p?.colorOverride, "#ff8800", "container-färg ska överleva ren mermaid")
+        XCTAssertEqual(p?.strokeColorOverride, "#003366")
+        XCTAssertEqual(p?.colorPackId, "blue")
+        XCTAssertEqual(p?.textStyle, .r1)
+        XCTAssertEqual(p?.textAlignment, .trailing)
+        XCTAssertEqual(p?.hasBullets, true)
+        XCTAssertEqual(p?.indentLevel, 1)
+        XCTAssertEqual(p?.rotation ?? 0, 15, accuracy: 0.5, "rot avrundas till heltal i %%")
+        XCTAssertEqual(p?.sizeMultiplier ?? 0, 1.4, accuracy: 0.05, "size skrivs med 1 decimal i %%")
+    }
 }

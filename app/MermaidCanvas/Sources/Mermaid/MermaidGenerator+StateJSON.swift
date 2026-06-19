@@ -38,7 +38,7 @@ extension MermaidGenerator {
             if let nr = shape.skillNumber { n["skillNumber"] = nr }  // v74
             // v46/F1: tabell-mått + celler round-trippas. Skrivs när FÄLTET är satt
             // (inte bara för .table-typ) så inget tappas om värden finns på annan form.
-            if shape.type == .table || shape.tableRows != nil || shape.tableCells != nil {
+            if shape.type == .table || shape.tableRows != nil || shape.tableCols != nil || shape.tableCells != nil {
                 n["tableRows"] = shape.tableRows ?? 3
                 n["tableCols"] = shape.tableCols ?? 3
                 if let cells = shape.tableCells, !cells.isEmpty {
