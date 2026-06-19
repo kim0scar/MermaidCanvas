@@ -350,13 +350,15 @@ final class RoundTripFidelityTests: XCTestCase {
         var box = ShapeNode(type: .container, position: CGPoint(x: 500, y: 500), label: "Skill")
         box.colorOverride = "#ff8800"
         box.strokeColorOverride = "#003366"
-        box.colorPackId = "blue"
+        box.colorPackId = "blå"
         box.textStyle = .r1
         box.textAlignment = .trailing
         box.hasBullets = true
+        box.hasNumberedList = true
         box.indentLevel = 1
         box.rotation = 15
         box.sizeMultiplier = 1.4
+        box.showLabel = false
         let child = ShapeNode(type: .rectangle, position: CGPoint(x: 480, y: 520),
                               label: "Barn", childOfContainerId: box.id)
         let mermaid = MermaidGenerator.generate(shapes: [box, child], edges: [], specType: .general)
@@ -364,10 +366,12 @@ final class RoundTripFidelityTests: XCTestCase {
         let p = parsed.shapes.first { $0.label == "Skill" }
         XCTAssertEqual(p?.colorOverride, "#ff8800", "container-färg ska överleva ren mermaid")
         XCTAssertEqual(p?.strokeColorOverride, "#003366")
-        XCTAssertEqual(p?.colorPackId, "blue")
+        XCTAssertEqual(p?.colorPackId, "blå")
         XCTAssertEqual(p?.textStyle, .r1)
         XCTAssertEqual(p?.textAlignment, .trailing)
         XCTAssertEqual(p?.hasBullets, true)
+        XCTAssertEqual(p?.hasNumberedList, true)
+        XCTAssertEqual(p?.showLabel, false, "hidden-label ska överleva ren mermaid")
         XCTAssertEqual(p?.indentLevel, 1)
         XCTAssertEqual(p?.rotation ?? 0, 15, accuracy: 0.5, "rot avrundas till heltal i %%")
         XCTAssertEqual(p?.sizeMultiplier ?? 0, 1.4, accuracy: 0.05, "size skrivs med 1 decimal i %%")
