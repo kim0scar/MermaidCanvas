@@ -55,16 +55,11 @@ enum UITestScenarios {
         "34-selected-diamond":          place34SelectedDiamond,
         // v64: ett connection-handtag + vald utgångssida + tydliga badges
         "35-fromside-and-badges":       place35FromSideAndBadges,
+        "36-all-base-shapes":           place36AllBaseShapes,
     ]
 
     // MARK: - Builders
-
-    private static func place01TightHorizontal(_ model: CanvasModel, _ c: CGPoint) {
-        let a = ShapeNode(type: .rectangle, position: CGPoint(x: c.x - 120, y: c.y))
-        let b = ShapeNode(type: .rectangle, position: CGPoint(x: c.x + 120, y: c.y))
-        model.shapes.append(contentsOf: [a, b])
-        model.addEdge(from: a.id, to: b.id)
-    }
+    // (place01TightHorizontal ligger i UITestScenarios+FormReview.swift — R5-ratchet)
 
     private static func place02TightVertical(_ model: CanvasModel, _ c: CGPoint) {
         let a = ShapeNode(type: .rectangle, position: CGPoint(x: c.x, y: c.y - 120))

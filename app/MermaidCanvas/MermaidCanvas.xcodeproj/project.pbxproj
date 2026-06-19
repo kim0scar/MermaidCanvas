@@ -99,6 +99,7 @@
 		9274716BC0D050B699A69D3A /* test_square_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 52F65576D84E01864C005B7D /* test_square_chip_vs_canvas_side_by_side.1.png */; };
 		9379533FF89331E9A87178EF /* V62RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ACA77336DB3E2436AB111E /* V62RoundTripTests.swift */; };
 		9552F0FFF809B97E39DFE7B2 /* FileChangeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF04A29A100E836C9DE2317A /* FileChangeObserver.swift */; };
+		95DC4D2C80428626FEC5C2D4 /* UITestScenarios+FormReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C0687C9906120C71388230 /* UITestScenarios+FormReview.swift */; };
 		96CF6AB9416EDCCDAD9F602F /* ToolbarView+PacksRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54CEB71D7B855EEB661A83C /* ToolbarView+PacksRow.swift */; };
 		96DD3B025BE13643B58A0113 /* V65SkrapFlodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE97DAAFD2C7BA329CC359D /* V65SkrapFlodeTests.swift */; };
 		999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290C826C5E3BCE9774F09866 /* ContentView.swift */; };
@@ -295,6 +296,7 @@
 		7CF062E95A85446BD3B9B18C /* CanvasModel+Undo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasModel+Undo.swift"; sourceTree = "<group>"; };
 		7DA70C2BF0320E293B5E247C /* test_pill_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_pill_shape.1.png; sourceTree = "<group>"; };
 		7DE1EFE7C5FDD982C0043924 /* V35BugHuntTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V35BugHuntTests.swift; sourceTree = "<group>"; };
+		82C0687C9906120C71388230 /* UITestScenarios+FormReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITestScenarios+FormReview.swift"; sourceTree = "<group>"; };
 		844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V34PanSymmetryTests.swift; sourceTree = "<group>"; };
 		88C546896307FCCDB4AC2C2F /* UITestScenarios.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestScenarios.swift; sourceTree = "<group>"; };
 		8991BFDE5D87E4860241B535 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -684,6 +686,7 @@
 				ED590D33CB43237C2318CD20 /* Orientation.swift */,
 				F4245994DEEDBEF106923E1E /* StateDump.swift */,
 				88C546896307FCCDB4AC2C2F /* UITestScenarios.swift */,
+				82C0687C9906120C71388230 /* UITestScenarios+FormReview.swift */,
 				2543505D94410149F6088F34 /* Canvas */,
 				16AF4C64695A84C9CD01AED1 /* Models */,
 				8B99BE49D2C975832F9634B8 /* Persistence */,
@@ -993,6 +996,7 @@
 				2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */,
 				F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */,
 				E178F46DAD052D49A4D5F5DE /* UIScreenRenderer.swift in Sources */,
+				95DC4D2C80428626FEC5C2D4 /* UITestScenarios+FormReview.swift in Sources */,
 				F53B7FFA3D8FF13EF388CADB /* UITestScenarios.swift in Sources */,
 				E1C23B0DD30A0D05C656C957 /* ZoomableCanvas.swift in Sources */,
 				7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */,
