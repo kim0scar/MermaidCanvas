@@ -276,22 +276,27 @@ enum MermaidGenerator {
         // Edges
         for (i, edge) in edges.enumerated() {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
-            // v37: linje-stil × riktning — 8 kombinationer
+            // v37: linje-stil × riktning. Steg H-fynd: riktig mermaid har INGEN giltig
+            // bakåtpil — `<--` kraschar renderaren (mermaid.live "Syntax error") och `<-.-`
+            // tappar pilspetsen tyst, fast mermaid.parse släpper igenom båda. En bakåtkant
+            // skrivs därför som en framåtpil med OMVÄNDA noder (to --> from): visuellt
+            // identiskt + renderar; exakt riktning bevaras ändå i state-JSON.
             let arrow: String
+            var src = from, dst = to
             switch (edge.direction, edge.style) {
             case (.forward,       .solid):  arrow = "-->"
             case (.forward,       .dashed): arrow = "-.->"
-            case (.backward,      .solid):  arrow = "<--"
-            case (.backward,      .dashed): arrow = "<-.-"
+            case (.backward,      .solid):  arrow = "-->";   src = to; dst = from
+            case (.backward,      .dashed): arrow = "-.->";  src = to; dst = from
             case (.bidirectional, .solid):  arrow = "<-->"
             case (.bidirectional, .dashed): arrow = "<-.->"
             case (.none,          .solid):  arrow = "---"
             case (.none,          .dashed): arrow = "-.-"
             }
             if edge.label.isEmpty {
-                lines.append("\(indent)\(from) \(arrow) \(to)")
+                lines.append("\(indent)\(src) \(arrow) \(dst)")
             } else {
-                lines.append("\(indent)\(from) \(arrow)|\"\(escape(edge.label))\"| \(to)")
+                lines.append("\(indent)\(src) \(arrow)|\"\(escape(edge.label))\"| \(dst)")
             }
             // Waypoints som synliga kommentarer
             for wp in edge.waypoints {
