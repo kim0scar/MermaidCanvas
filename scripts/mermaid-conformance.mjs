@@ -64,6 +64,16 @@ let failed = 0;
 for (const file of files) {
   const text = readFileSync(file, "utf8");
   const name = file.replace(repoRoot + "/", "");
+  // Steg H / 💡#8: targeted lint mot KÄNDA parse≠render-glapp. mermaid.parse släpper
+  // igenom bakåtpilarna `<--`/`<-.-`, men RIKTIG mermaid kraschar render ("Syntax
+  // error" i mermaid.live) resp. tappar pilspetsen. Full render-koll körs vid deploy
+  // (mermaid-render-check.mjs); här fångas den kända klassen snabbt i pre-commit.
+  const badArrow = text.match(/\s<--(?!>)|\s<-\.-(?!>)/);
+  if (badArrow) {
+    failed++;
+    console.error(`❌ ${name}\n   ogiltig bakåtpil "${badArrow[0].trim()}" — parsar men kraschar RIKTIG mermaid. Generatorn ska skriva bakåtkant som omvänd framåtpil (to --> from); generera om fixtures.`);
+    continue;
+  }
   try {
     const r = await mermaid.parse(text);
     console.log(`✅ ${name}  (${r?.diagramType ?? "ok"})`);

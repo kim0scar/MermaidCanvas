@@ -101,7 +101,7 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - 2026-06-11 · 💡#4 Promptprotokoll v0.1 fullt ut (11 nodtypsmallar + mall-knapp i appen + MFP-omritning) · parkerad — gap-analysen klar, väntar efter steg 11
 - 2026-06-13 · 💡#5 Prompt-kompilator: appen GENERERAR nod-prompten från hög-nivå-val (du slipper skriva metodtexten själv) · väntar — kärnan av "n8n för Claude Code"-visionen
 - 2026-06-18 · 💡#6 UI-prototyp-lagret (Figma-lite): localPos (relativ-i-skärm), zIndex (lager fram/bak), edge route-modes + ankare/sidport + label-pos · parkerat — phoneFrame-som-container (roten) byggs riktat i steg 9; resten byggs om/när UI-mockups blir kärn-fallet
-- 2026-06-19 · 💡#8 Render-trogen mermaid-grind: dagens grind kör mermaid.parse (lenient) → missade att `<--` kraschar riktig render. Lägg render-koll (headless Chrome renderar fixturerna + fångar "Syntax error") vid deploy + ev. targeted lint mot kända parse≠render-glapp i pre-commit · fångat i steg H · Kims vägval om omfattning
+- 2026-06-19 · 💡#8 Render-trogen mermaid-grind · BYGGD på Kims val ("render-koll vid deploy"): `scripts/mermaid-render-check.mjs` (headless Chrome renderar fixturerna → fångar allt riktig mermaid kraschar på) i VERSIONSHANTERING-deploy + snabb lint mot `<--`/`<-.-` i konformitetsgrinden (pre-commit). Bevisat: fångar gamla buggen (exit 1), 3/3 fixtures renderar nu
 - 2026-06-19 · 💡#7 Nästlad container (container-i-container) ska bära förälder-länk i REN mermaid (idag bara via state-JSON; `childOfContainerId` emitteras ej för containrar) · fångat i STEG F:s re-verifiering, pre-existerande Tier-2-lucka · byggs ihop med containment-arbetet (steg 9 / 💡#6)
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)

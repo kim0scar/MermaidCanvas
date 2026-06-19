@@ -33,7 +33,8 @@ Statusen i appen visar denna sträng. Om den inte uppdateras vet inte Kim om han
 ```bash
 cd "/Users/kim/2e Mermaid Code"
 python3 scripts/arch-check.py                 # arkitektur (lager/filstorlek/version)
-node scripts/mermaid-conformance.mjs          # appens mermaid parsar i RIKTIG mermaid
+node scripts/mermaid-conformance.mjs          # appens mermaid PARSAR i riktig mermaid + lint mot kända render-glapp
+node scripts/mermaid-render-check.mjs         # RENDER-grind (💡#8) — headless Chrome renderar fixturerna; parse räcker inte (`<--` parsar men kraschar render). BLOCKERANDE.
 # Round-trip-grinden (STEG F) — BLOCKERANDE: noll avvikelse. Får aldrig hoppa över vid deploy.
 xcodebuild test -project app/MermaidCanvas/MermaidCanvas.xcodeproj -scheme MermaidCanvas \
   -destination 'platform=iOS Simulator,id=<iPhone-sim-UDID>' \
@@ -43,6 +44,7 @@ xcodebuild test -project app/MermaidCanvas/MermaidCanvas.xcodeproj -scheme Merma
 
 - Ändrat hur former/kanter skrivs i `MermaidGenerator`? Regenerera först: `./scripts/extract-mermaid-fixtures.sh` (kör korpus-testet + validerar).
 - Round-trip-grinden är BLOCKERANDE (Kims noll-avvikelse-garanti) + körs även av pre-commit när `Sources/Mermaid/` eller modellerna ändras. Mjuka aldrig upp ett round-trip-test.
+- Render-grinden (`mermaid-render-check.mjs`) kräver Google Chrome (renderar fixturerna på riktigt). Parse-grinden + lint i pre-commit fångar den KÄNDA klassen (`<--`); render-grinden vid deploy fångar ALLT riktig mermaid kraschar på (💡#8, steg H-fyndet). Kraschar någon fixtur → generera om/fixa generatorn, deploya inte.
 - Kör dessutom HELA testsviten via Xcode/xcodebuild innan deploy.
 - Saknas `node_modules`? Kör `npm install` en gång (committat `package.json` pinnar mermaid + jsdom).
 
