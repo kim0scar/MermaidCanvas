@@ -85,7 +85,7 @@ Användarens canvas-filer ligger i:
    - **(b) App-bara funktioner måste ändå exporteras och SYNAS i mermaid.** En funktion som bara lever i app-state (kollaps, länk-ikoner, waypoints, framtida lager/z) får aldrig försvinna tyst — den bärs av `%%`-metadata så den round-trippar och en läsare ser den. Bygg aldrig en ren app-funktion utan att först lösa hur den överlever export.
    - **(c) Round-trip är maskinellt tvingad, inte en åsikt.** `RoundTripFidelityTests` (state-JSON = bokstavligt noll avvikelse; ren mermaid = identitet/semantik överlever) + round-trip-grind i pre-commit blockerar avvikelse. Mjuka aldrig upp ett round-trip-test.
 
-   **Två-lager-modellen (säg det rakt ut):** appen är *inte* ren Mermaid. Mermaid är TRANSPORTEN (portabel, AI-läsbar kropp); appen är RENDERAREN med ett eget tilläggslager (`%%`-metadata + state-JSON = "MermaidCanvas Extended"). Egna former (phoneFrame, tabell, oktagon…) renderas i ren mermaid som närmaste native-form — Mermaids gräns, inte en bugg; identiteten bärs av `%% shape-type`. (Detalj: MERMAID-FAKTA.md sektion K + L.)
+   **Två-lager-modellen (säg det rakt ut):** appen är *inte* ren Mermaid. Mermaid är TRANSPORTEN (portabel, AI-läsbar kropp); appen är RENDERAREN med ett eget tilläggslager (`%%`-metadata + state-JSON = "MermaidCanvas Extended"). Egna former (phoneFrame, tabell, oktagon…) renderas i ren mermaid som närmaste native-form — Mermaids gräns, inte en bugg; identiteten bärs av `%% shape-type`. (Detalj: MERMAID-FAKTA.md sektion K + L. **Komplett fält-spec — varje app-only-fält + dess bärare: `EXTENDED-FORMAT.md`.**)
 
    **Bygg som Apple:** appen byggs lika robust och enhetlig som om Apple själva byggt den — inga lösa trådar, inga tysta degraderingar.
 
@@ -122,6 +122,7 @@ Användarens canvas-filer ligger i:
 | `ARKITEKTUR-OMBYGGNAD.md` | 🔨 **AKTIVT UPPDRAG (MA)** — arkitektur-ombyggnadens uppdrag, fynd, gjort + KVAR + per-steg-recept. Återupptagnings-dokument efter `/clear`. |
 | `PRODUKT.md` | VARFÖR och VAD: vision, scope, vad som hör/inte hör hemma |
 | `MERMAID-FAKTA.md` | Blueprint för Mermaid: syntax, fallgropar, rendering, parsing, best practices |
+| `EXTENDED-FORMAT.md` | **Komplett spec för det app-egna lagret** ("MermaidCanvas Extended"): varje app-only-fält → `%%`-nyckel + state-JSON-nyckel + om det överlever ren mermaid + reserverade nycklar |
 | `METOD-VISUELL-DIALOG.md` | Protokoll för delat visuellt språk Kim ↔ Claude Code. Portabel — gäller alla projekt med visuell yta. |
 | `N8N-FLODE-KONTRAKT.md` | Hur ett ritat flöde (`spec_type: flow`) blir n8n-workflow — entydigt, utan gissningar |
 | `SKILL-KEDJA-KONTRAKT.md` | Hur ett ritat flöde blir en KEDJA av Claude Code-skills (container=skill, memory-nod=överlämnings-fil). Körs via skillen `flode`. |

@@ -21,6 +21,11 @@ enum MermaidGenerator {
             "flowchart TD"
         ]
         let mermaidIds = makeMermaidIds(for: shapes)
+        // G1: canvas-måtten bärs som en parsead %%-rad. Tidigare bars de bara av
+        // state-JSON (enda modell-fältet som tappades i REN mermaid utan state-blocket).
+        if canvasSize.width > 0 && canvasSize.height > 0 {
+            lines.append("    %% canvas-size: \(Int(canvasSize.width.rounded())),\(Int(canvasSize.height.rounded()))")
+        }
 
         // Per-mode "ram"-wrapper. UI-läge får iPhone-subgraph; övriga utan wrapper.
         let needsFrame = (specType == .ui)

@@ -321,6 +321,18 @@ final class RoundTripFidelityTests: XCTestCase {
         XCTAssertEqual(parsed.edges.first?.waypoints.first?.y ?? 0, 360, accuracy: 0.5)
     }
 
+    // MARK: - G1: canvas-måtten överlever REN mermaid (enda fältet som tappades förr)
+
+    func test_fallback_canvasSizeSurvives() throws {
+        let a = ShapeNode(type: .rectangle, position: CGPoint(x: 300, y: 300), label: "A")
+        let mermaid = MermaidGenerator.generate(shapes: [a], edges: [],
+                                                canvasSize: CGSize(width: 2200, height: 1700),
+                                                specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")
+        XCTAssertEqual(parsed.canvasSize?.width ?? 0, 2200, accuracy: 0.5, "canvas-bredd ska överleva ren mermaid")
+        XCTAssertEqual(parsed.canvasSize?.height ?? 0, 1700, accuracy: 0.5, "canvas-höjd ska överleva ren mermaid")
+    }
+
     // MARK: - F7: filen ÄR sanningen — parsern kapar inte tyst (Kims beslut)
 
     /// Före F7 kapade parsern tyst: storlek→3×, bredd/höjd→10×, rotation→±360, indrag→2.

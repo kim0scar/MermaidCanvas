@@ -623,7 +623,18 @@ enum MermaidParser {
         for e in edges where legacyCollapsedShapeIds.contains(e.from) {
             collapsedEdges.insert(e.id)
         }
-        return ParsedCanvas(shapes: shapes, edges: edges, collapsedEdgeIds: collapsedEdges)
+        // G1: canvas-måtten ur den parseade %%-raden (round-trippar i REN mermaid).
+        var parsedSize: CGSize? = nil
+        if let r = try? NSRegularExpression(pattern: #"%%\s*canvas-size:\s*([0-9.]+)\s*,\s*([0-9.]+)"#),
+           let m = r.firstMatch(in: block, range: NSRange(location: 0, length: ns.length)),
+           m.numberOfRanges >= 3,
+           let w = Double(ns.substring(with: m.range(at: 1))),
+           let h = Double(ns.substring(with: m.range(at: 2))) {
+            parsedSize = CGSize(width: w, height: h)
+        }
+        var result = ParsedCanvas(shapes: shapes, edges: edges, collapsedEdgeIds: collapsedEdges)
+        result.canvasSize = parsedSize
+        return result
     }
 
 }
