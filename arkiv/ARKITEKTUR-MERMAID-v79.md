@@ -1,26 +1,6 @@
-# ARKITEKTUR-MERMAID — Version v80
-*Datum: 2026-06-19*
+# ARKITEKTUR-MERMAID — Version v79
+*Datum: 2026-06-18*
 
-> **v80 "noll-avvikelse-garantin (STEG F)":** Round-trip är nu bevisat förlustfritt och
-> maskinellt tvingat. Det app-egna lagret ("Extended": `%%`-metadata + state-JSON) bär
-> ALLT mermaid saknar (position, färg, storlek, rotation, kollaps, länk, waypoints,
-> container-stil, form-typ) utan att skada ren mermaid → överlever om filen skickas till en
-> vän. Parsern kapar inte längre tyst ("filen är sanningen"). Verifierat: 186 unit-tester
-> gröna, 3/3 fixtures parsar i RIKTIG mermaid, round-trip-grind i pre-commit + deploy, två
-> agent-par bekräftade noll avvikelse. MERMAID-FAKTA.md är skrivskyddad facit-bibel (444).
-
-## Vad v80 innehåller (utöver v79)
-- **Noll-avvikelse round-trip:** exakt Double-position; 5 former + textjust/listor/waypoints +
-  container-stil överlever REN mermaid via `%%`; clamp borttaget (parsern bär exakt filens värden).
-- **Extended-lagret formaliserat:** två bärare — `%%`-rader (mermaid ignorerar) + `<!-- state -->`
-  (exakt kopia). CLAUDE.md regel 3 omskriven (a/b/c + Apple-robust + metodiskt-genom-former).
-- **Maskinell round-trip-grind** i `scripts/hooks/pre-commit` (körs när `Sources/Mermaid/` ändras) + deploy.
-- **Nya filer (R5-utbrytningar):** `MermaidGenerator+StateJSON.swift`, `MermaidParser+TextHelpers.swift`,
-  `UITestScenarios+FormReview.swift`, `Color+Hex.swift`. Skill-flöde-meny (steg 8 del 1): `.mcp/.plugin/
-  .fileMarkdown/.fileExcel` + `ShapePack.skillFlow`.
-- **Version-sync:** bundle härleds från `AppVersion.swift` (v80 → 1.80.0 / 80).
-
-## Vad v79 innehöll (milstolpe MA — föregående)
 > **v79 "arkitektur-ombyggnad KLAR (milstolpe MA)":** Funktionellt identisk med v77/v78 —
 > men nu är ALLA fyra monoliter nedbrutna under 300 rader, koden lagerindelad och
 > maskinellt grindad, och Claude kan se/styra appen i simulatorn. Verifierat: 171 unit-

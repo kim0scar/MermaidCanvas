@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: MB — ✅ Steg F (noll-avvikelse-garantin: tätad, bevisad, institutionaliserad, 2 agent-par bekräftade). NÄSTA: ⏳ Steg G (form-genomgång + Kims feedback — Kim startar) → steg 8 del 2 → steg 9 (UI-mall). ✅ Steg 7, steg 8 del 1. EFTER: steg 0 (städa rot), 1–5 (UX-111–114). ✅ Steg 6. n8n + M4 PAUSADE. MA + M3 klara.
+NU: MB — ⏳ Steg G PÅGÅR (G1 spika Extended-formatet + G2 basfigur-polish inkl look-alikes, Kims order). ✅ Steg F (noll-avvikelse-garantin), steg 7, steg 8 del 1. KÖ: steg 8 del 2 → steg 9 (UI-mall). EFTER: steg 0 (städa rot), 1–5 (UX-111–114). ✅ Steg 6. n8n + M4 PAUSADE. MA + M3 klara.
 [grundappen MB: ████░░░░░░] 2/9 + steg F ✅   ·   💡 Idébanken: 7 fångade, 2 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
