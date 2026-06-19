@@ -83,6 +83,24 @@ struct ShapeView: View {
         }
     }
 
+    /// G2a: extra sido-marginal för former som smalnar av — texten centreras i
+    /// bounding-boxen, så utan inset spiller den över triangelns/rombens sneda kanter.
+    private var textHorizontalInset: CGFloat {
+        switch shape.type {
+        case .triangle: return 18   // bara nedre mitten är bred nog
+        case .diamond:  return 22   // romben smalnar mot vänster/höger spets
+        default:        return 8
+        }
+    }
+
+    /// G2a: triangeln är bred bara nedtill → skjut texten nedåt mot basen.
+    private var textVerticalOffset: CGFloat {
+        switch shape.type {
+        case .triangle: return ShapeGeometry.height(for: shape) * 0.20
+        default:        return 0
+        }
+    }
+
     /// v74: container-rubrik — skill-containrar visar kedjenumret ("Skill 2 · namn").
     /// Steg 8: en skill-container inuti en annan container = "Subskill".
     private var containerHeaderTitle: String {
@@ -118,7 +136,8 @@ struct ShapeView: View {
                     .multilineTextAlignment(textAlignment)
                     .lineLimit(6)
                     .minimumScaleFactor(0.6)
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, textHorizontalInset)
+                    .offset(y: textVerticalOffset)
             }
         }
         .frame(width: ShapeGeometry.width(for: shape),

@@ -77,8 +77,8 @@ struct ShapeRenderer: View {
                                  fill: fill,
                                  stroke: stroke)
         case .link:
-            JumpLinkShapeBackground(number: shape.linkNumber ?? 0)
-                .opacity(0.55)   // v40: halvt transparent
+            // G2b: länk-bubblan bär kategori-färgen (fyllning + ram) som övriga former.
+            JumpLinkShapeBackground(number: shape.linkNumber ?? 0, fill: fill, stroke: stroke)
         case .square:
             SquareShape()
                 .fill(fill)

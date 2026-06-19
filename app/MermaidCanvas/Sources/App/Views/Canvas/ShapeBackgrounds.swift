@@ -25,7 +25,22 @@ struct TableShapeBackground: View {
                         RoundedRectangle(cornerRadius: 6, style: .continuous)
                             .stroke(stroke, lineWidth: 1.5)
                     )
-                // Cellinnehåll
+                // Gridlinjer (G2c: ritas FÖRE texten så cell-texten ligger ovanpå
+                // rutnätet — tidigare drogs gridet sist och skar genom siffrorna).
+                Path { p in
+                    for r in 1..<rows {
+                        let y = cellH * CGFloat(r)
+                        p.move(to: CGPoint(x: 0, y: y))
+                        p.addLine(to: CGPoint(x: geo.size.width, y: y))
+                    }
+                    for c in 1..<cols {
+                        let x = cellW * CGFloat(c)
+                        p.move(to: CGPoint(x: x, y: 0))
+                        p.addLine(to: CGPoint(x: x, y: geo.size.height))
+                    }
+                }
+                .stroke(stroke.opacity(0.5), lineWidth: 1)
+                // Cellinnehåll (ovanpå gridet)
                 ForEach(0..<rows, id: \.self) { row in
                     ForEach(0..<cols, id: \.self) { col in
                         let text = row < cells.count && col < cells[row].count ? cells[row][col] : ""
@@ -42,40 +57,30 @@ struct TableShapeBackground: View {
                         }
                     }
                 }
-                // Gridlinjer
-                Path { p in
-                    for r in 1..<rows {
-                        let y = cellH * CGFloat(r)
-                        p.move(to: CGPoint(x: 0, y: y))
-                        p.addLine(to: CGPoint(x: geo.size.width, y: y))
-                    }
-                    for c in 1..<cols {
-                        let x = cellW * CGFloat(c)
-                        p.move(to: CGPoint(x: x, y: 0))
-                        p.addLine(to: CGPoint(x: x, y: geo.size.height))
-                    }
-                }
-                .stroke(stroke.opacity(0.5), lineWidth: 1)
             }
         }
     }
 }
 
-/// v38: länk-bubbla — alltid accentfärg (tidigare vit-på-vit osynlig).
+/// v38: länk-bubbla. G2b: använder formens kategori-/pakettfärg (fyllning + ram)
+/// istället för hårdkodad blå — så länken sitter ihop med resten av paletten.
+/// Länk-glyfen + numret behålls i ram-färgen så formen ändå känns igen som länk.
 struct JumpLinkShapeBackground: View {
     var number: Int
+    var fill: Color
+    var stroke: Color
 
     var body: some View {
         ZStack {
-            Circle().fill(Color.accentColor)
-            Circle().stroke(Color.white.opacity(0.35), lineWidth: 1.5)
+            Circle().fill(fill)
+            Circle().stroke(stroke, lineWidth: 1.5)
             VStack(spacing: 1) {
                 Image(systemName: "link")
                     .font(.caption2.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(stroke)
                 Text("\(number)")
                     .font(.caption.weight(.heavy))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(stroke)
             }
         }
     }
