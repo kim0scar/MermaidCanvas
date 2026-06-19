@@ -156,6 +156,23 @@ extension ContentView {
         showCodeSheet = true
     }
 
+    /// Steg H: exportera RITADE ytan som PNG (samma render-väg som canvasen),
+    /// spara i appens Documents och öppna delningsmenyn. Tom canvas → fel-haptik.
+    func exportImage() {
+        guard let data = CanvasImageExporter.renderPNG(model: model) else {
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            return
+        }
+        let base = model.canvasTitle.trimmingCharacters(in: .whitespaces)
+        let name = base.isEmpty ? "ritning" : base
+        guard let url = fileManager.saveImage(data, named: name) else {
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            return
+        }
+        exportImageItem = ExportImageItem(url: url)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+
     /// v61: 1-tryck — hela dokumentet (frontmatter + mermaid + state-JSON)
     /// rakt till urklipp, redo att klistras in hos Claude Code.
     func copyMermaidCode() {

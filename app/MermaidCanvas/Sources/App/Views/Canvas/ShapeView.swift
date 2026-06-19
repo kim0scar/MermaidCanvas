@@ -33,6 +33,8 @@ struct ShapeView: View {
     var onCopySkill: ((UUID) -> Void)? = nil
     /// v70: spara container som egen skill-fil (bara containrar visar valet).
     var onSaveSkillFile: ((UUID) -> Void)? = nil
+    /// Steg H: exportläge — rendera bara form + text (ingen badge-chrome) för bild-export.
+    var exportMode: Bool = false
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
@@ -42,74 +44,7 @@ struct ShapeView: View {
     /// menyn visades.
     @State private var showContextMenu: Bool = false
 
-    private var pack: ColorPack { ColorPack.by(id: shape.colorPackId) }
-    // v62: egna färger (fyllning + ram separat) går före paket/kategori.
-    private var effectiveFill: Color {
-        if let hex = shape.colorOverride, let c = Color(hexString: hex) { return c }
-        return pack.fillColor
-    }
-    private var effectiveStroke: Color {
-        if let hex = shape.strokeColorOverride, let c = Color(hexString: hex) { return c }
-        return pack.id != "none" ? pack.strokeColor : shape.category.strokeColor
-    }
-    private var effectiveTextColor: Color {
-        // Egen fyllning → välj svart/vit på luminans så texten alltid syns.
-        if let hex = shape.colorOverride, Color(hexString: hex) != nil {
-            return Color.isDarkHex(hex) ? .white : Color(hex: 0x111827)
-        }
-        return pack.textColor
-    }
-
-    /// v39: formatterat label med bullets/numrering + indrag.
-    private var formattedLabel: String {
-        let indent = String(repeating: "  ", count: max(0, shape.indentLevel))
-        let lines = shape.label.split(separator: "\n", omittingEmptySubsequences: false)
-        if shape.hasNumberedList {
-            return lines.enumerated()
-                .map { "\(indent)\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
-        } else if shape.hasBullets {
-            return lines.map { "\(indent)• \($0)" }.joined(separator: "\n")
-        } else if shape.indentLevel > 0 {
-            return lines.map { "\(indent)\($0)" }.joined(separator: "\n")
-        }
-        return shape.label
-    }
-
-    private var textAlignment: TextAlignment {
-        switch shape.textAlignment {
-        case .leading:  return .leading
-        case .trailing: return .trailing
-        case .center:   return .center
-        }
-    }
-
-    /// G2a: extra sido-marginal för former som smalnar av — texten centreras i
-    /// bounding-boxen, så utan inset spiller den över triangelns/rombens sneda kanter.
-    private var textHorizontalInset: CGFloat {
-        switch shape.type {
-        case .triangle: return 18   // bara nedre mitten är bred nog
-        case .diamond:  return 22   // romben smalnar mot vänster/höger spets
-        default:        return 8
-        }
-    }
-
-    /// G2a: triangeln är bred bara nedtill → skjut texten nedåt mot basen.
-    private var textVerticalOffset: CGFloat {
-        switch shape.type {
-        case .triangle: return ShapeGeometry.height(for: shape) * 0.20
-        default:        return 0
-        }
-    }
-
-    /// v74: container-rubrik — skill-containrar visar kedjenumret ("Skill 2 · namn").
-    /// Steg 8: en skill-container inuti en annan container = "Subskill".
-    private var containerHeaderTitle: String {
-        let name = shape.label.isEmpty ? "Grupp" : formattedLabel
-        guard shape.category == .skill else { return name }
-        let kind = shape.childOfContainerId != nil ? "Subskill" : "Skill"
-        if let nr = shape.skillNumber { return "\(kind) \(nr) · \(name)" }
-        return kind == "Subskill" ? "Subskill · \(name)" : name
-    }
+    // Härledda färg-/text-/rubrik-värden → ShapeView+Style.swift (R5-ratchet, steg H).
 
     var body: some View {
         ZStack {
@@ -149,7 +84,7 @@ struct ShapeView: View {
         // v66: badges ligger PÅ formen (ingen utstickande offset — Kims fynd:
         // "i vägen"); på container UNDER den 28pt höga headern så namnet syns.
         .overlay(alignment: .topTrailing) {
-            if !shape.note.isEmpty && !markerMode {
+            if !shape.note.isEmpty && !markerMode && !exportMode {
                 NoteBadge(canvasScale: canvasScale, onTap: onQuickRead)
                     .offset(x: -3, y: shape.type == .container ? 31 : 3)
                     .rotationEffect(.degrees(-shape.rotation))
@@ -157,7 +92,7 @@ struct ShapeView: View {
         }
         // v63: prompt-badge (indigo hjärna) i toppvänstra hörnet → snabbläsning.
         .overlay(alignment: .topLeading) {
-            if !shape.prompt.isEmpty && shape.carriesPrompt && !markerMode {
+            if !shape.prompt.isEmpty && shape.carriesPrompt && !markerMode && !exportMode {
                 PromptBadge(canvasScale: canvasScale, onTap: onQuickRead)
                     .offset(x: 3, y: shape.type == .container ? 31 : 3)
                     .rotationEffect(.degrees(-shape.rotation))

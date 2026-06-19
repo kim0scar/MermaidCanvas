@@ -67,6 +67,8 @@ struct ContentView: View {
     @State var showComponentGallery: Bool = false
     /// v66: legend-panelen på canvasen
     @State var showLegend: Bool = false
+    /// Steg H: exporterad bild → delningsmeny.
+    @State var exportImageItem: ExportImageItem? = nil
 
     // v60: extraherade vyer för adaptiv layout (porträtt topp-bar / landskap vänster-sidebar).
     func toolbarView(vertical: Bool) -> some View {
@@ -84,6 +86,7 @@ struct ContentView: View {
             onUndo: { model.undo() },
             onShowCode: showMermaidCode,
             onCopyCode: copyMermaidCode,
+            onExportImage: exportImage,
             onShowRules: { showRulesSheet = true },
             onToggleMarker: { model.toggleMarkerMode() },
             onAddTable: { model.addTable(at: canvasCenter) },
@@ -101,57 +104,6 @@ struct ContentView: View {
             onAlignVertical: { model.alignSelectionVertically() },
             axis: vertical ? .vertical : .horizontal
         )
-    }
-
-    var canvasView: some View {
-        CanvasView(
-            model: model,
-            viewportState: viewportState,
-            onShapeEdgeTap: { id in _ = model.handleEdgeTap(on: id) },
-            onShapeEdit: { id in editingShapeId = id },
-            onShapeDelete: { id in model.deleteShape(id: id) },
-            onEdgeDelete: { id in model.deleteEdge(id: id) },
-            onShapeSelect: { id in model.selectShape(id) },
-            onShapeDuplicate: { id in model.duplicateShape(id: id) },
-            onShapeShowNote: { id in notingShapeId = id },
-            onShapeQuickRead: { id in
-                // v66: toggla lappen — flera kan vara öppna samtidigt
-                if openCards.contains(id) {
-                    openCards.removeAll { $0 == id }
-                } else {
-                    openCards.append(id)
-                }
-            },
-            onTableEdit: { id in tableEditingShapeId = id },
-            // v66: kopiera container + barn + memory-noder som skill-mermaid
-            onCopySkill: { id in
-                UIPasteboard.general.string = MermaidGenerator.generateForContainer(
-                    containerId: id,
-                    shapes: model.shapes,
-                    edges: model.edges,
-                    legend: model.legend)
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-            },
-            // v70: spara containern (= en skill) som EGEN canvas-fil i iCloud,
-            // bredvid pipeline-filen. Kim stannar kvar i helheten.
-            onSaveSkillFile: { id in
-                guard let container = model.shapes.first(where: { $0.id == id }) else { return }
-                // v73: utan riktigt namn → fråga Kim först (annars blir filen "skill.md")
-                let name = container.label.trimmingCharacters(in: .whitespaces)
-                if name.isEmpty || name == "Grupp" {
-                    skillNameInput = ""
-                    skillNameContainerId = id
-                } else {
-                    performSaveSkillFile(containerId: id, name: name)
-                }
-            },
-            openCards: $openCards,
-            zoomPercent: $zoomPercent,
-            resetZoomTrigger: resetZoomTrigger,
-            centerOnPoint: $centerOnPoint
-        )
-        // v67: läs-lappar ritas nu PÅ canvasen (canvas-space) inuti CanvasView —
-        // de panorerar med tavlan i stället för att sitta fast på skärmen (Kims fynd 2).
     }
 
     var body: some View {
@@ -208,6 +160,11 @@ struct ContentView: View {
             if ProcessInfo.processInfo.arguments.contains("-uitest-component-gallery") {
                 showComponentGallery = true
             }
+            // Steg H: launch-arg → exportera bild automatiskt (efter att scenariot
+            // hunnit appliceras) så "se-appen" kan hämta PNG:en för fidelity-koll.
+            if ProcessInfo.processInfo.arguments.contains("-uitest-export-image") {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { exportImage() }
+            }
             // MA-spår C: skriv state-dump vid varje modelländring (bara med -uitest-dump-state).
             if StateDump.isEnabled {
                 StateDump.writeIfEnabled(model, viewport: viewportState)
@@ -215,6 +172,10 @@ struct ContentView: View {
                     .debounce(for: .milliseconds(200), scheduler: RunLoop.main)
                     .sink { StateDump.writeIfEnabled(model, viewport: viewportState) }
             }
+        }
+        // Steg H: delningsmeny för exporterad bild.
+        .sheet(item: $exportImageItem) { item in
+            ActivityView(items: [item.url])
         }
         )
     }

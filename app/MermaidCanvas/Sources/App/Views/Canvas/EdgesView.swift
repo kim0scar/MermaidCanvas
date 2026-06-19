@@ -23,6 +23,8 @@ struct EdgesView: View {
     /// v48: toggle-callback för collapse-badges. Tar shape-ID.
     /// v63: kollapsa/expandera EN gren (kant-id).
     var onToggleCollapseEdge: (UUID) -> Void
+    /// Steg H: exportläge — rita bara linjer + pilspetsar + etiketter (ingen handtag/badge-chrome).
+    var exportMode: Bool = false
 
     // v44: kant-namngivning via EdgeLabelSheet (ersätter v38-alerten).
     @State private var renamingEdgeId: UUID? = nil
@@ -103,7 +105,8 @@ struct EdgesView: View {
                                        onEdgeSetStyle: onEdgeSetStyle,
                                        onEdgeSetColor: onEdgeSetColor,
                                        onEdgeSetFromSide: onEdgeSetFromSide,
-                                       onRequestRename: { renamingEdgeId = $0 })
+                                       onRequestRename: { renamingEdgeId = $0 },
+                                       exportMode: exportMode)
                 }
             }
 
@@ -118,7 +121,9 @@ struct EdgesView: View {
                    !hiddenShapeIds.contains(edge.from) {
                     let isCollapsed = collapsedEdgeIds.contains(edge.id)
                     let isFromSelected = (selectedShapeId == edge.from)
-                    if isCollapsed {
+                    // Steg H: i exportläge ritas inga +/–-badges (men stub-linjen i
+                    // Canvas-lagret ovan står kvar → kollapsad gren syns ändå).
+                    if isCollapsed, !exportMode {
                         let geo = stubGeometry(for: edge, fromShape: fromShape, toShape: toShape)
                         EdgeStubBadge(position: geo.end,
                                       canvasScale: canvasScale,

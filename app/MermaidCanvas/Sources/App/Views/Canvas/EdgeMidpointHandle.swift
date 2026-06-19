@@ -17,6 +17,8 @@ struct EdgeMidpointHandle: View {
     var onEdgeSetColor: (UUID, String?) -> Void
     var onEdgeSetFromSide: (UUID, EdgeSide?) -> Void
     var onRequestRename: (UUID) -> Void
+    /// Steg H: exportläge — visa BARA kant-etiketten (inget handtag/meny) för bild-export.
+    var exportMode: Bool = false
 
     var body: some View {
         let hasWaypoint = !edge.waypoints.isEmpty
@@ -54,7 +56,8 @@ struct EdgeMidpointHandle: View {
         }()
         let size: CGFloat = DesignTokens.screenPt(16, scale: canvasScale)
         let label = edge.label
-        // Handle
+        // Handle (Steg H: hoppas över i exportläge — bara etiketten ritas)
+        if !exportMode {
         ZStack {
             Circle()
                 .fill(hasWaypoint ? Color.accentColor : Color.white)
@@ -158,6 +161,7 @@ struct EdgeMidpointHandle: View {
                 Label("Ta bort pil", systemImage: "trash")
             }
         }
+        } // slut if !exportMode (handtaget)
         // v38: kant-etikett vid midpoint. v62: ovanför/under enligt labelPlacement.
         if !label.isEmpty {
             let labelOffset = size * 0.85 + 8 / canvasScale

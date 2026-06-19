@@ -37,6 +37,8 @@ struct ToolbarView: View {
     var onShowCode: () -> Void
     /// v61: kopiera hela dokumentet till urklipp utan sheet (1 tryck).
     var onCopyCode: () -> Void
+    /// Steg H: exportera ritade ytan som bild (PNG) → delningsmeny.
+    var onExportImage: () -> Void = {}
     var onShowRules: () -> Void
     var onToggleMarker: () -> Void
     var onAddTable: () -> Void
@@ -114,20 +116,7 @@ struct ToolbarView: View {
             if !vertical { Spacer(minLength: 0) }
             zoomBadge
             undoButton
-            LägenMenu(
-                model: model,
-                hasOpenFile: hasOpenFile,
-                onSave: onSave,
-                onSaveAs: onSaveAs,
-                onOpen: onOpen,
-                onNewCanvas: onNewCanvas,
-                onShowCode: onShowCode,
-                onCopyCode: onCopyCode,
-                onShowRules: onShowRules,
-                onToggleMarker: onToggleMarker,
-                onImportMermaid: onImportMermaid,
-                onToggleLegend: onToggleLegend
-            )
+            modesMenu   // LägenMenu → ToolbarView+Menu.swift (R5-ratchet, steg H)
         }
     }
 

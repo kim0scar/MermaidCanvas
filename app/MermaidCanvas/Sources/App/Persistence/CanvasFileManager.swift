@@ -116,6 +116,17 @@ final class CanvasFileManager: ObservableObject {
         return (try? content.write(to: inDocs, atomically: true, encoding: .utf8)) != nil ? inDocs : nil
     }
 
+    /// Steg H: spara en exporterad bild (PNG) i appens Documents under ett stabilt
+    /// namn (skriver över förra exporten av samma ritning → ingen filhög). Syns i
+    /// Filer-appen under Visuali2e och kan delas vidare. Returnerar URL eller nil.
+    func saveImage(_ data: Data, named rawName: String) -> URL? {
+        let name = Self.sanitizeFileName(rawName)
+        guard let docs = FileManager.default.urls(for: .documentDirectory,
+                                                  in: .userDomainMask).first else { return nil }
+        let target = docs.appendingPathComponent("\(name).png")
+        return (try? data.write(to: target)) != nil ? target : nil
+    }
+
     /// v70: `<dir>/<name>.md` om ledig, annars `<name> 2.md` osv.
     static func freeURL(in dir: URL, name: String, ext: String) -> URL {
         let first = dir.appendingPathComponent("\(name).\(ext)")
