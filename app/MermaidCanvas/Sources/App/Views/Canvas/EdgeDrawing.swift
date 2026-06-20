@@ -95,28 +95,24 @@ enum EdgeDrawing {
         var cp1 = cps.cp1
         var cp2 = cps.cp2
 
-        // v43: D5 — routa runt obstacles (andra former som ligger i vägen).
-        // Bara aktivt när användaren inte själv satt waypoint (waypoint = manuell routing).
-        // Behåller default normal-baserade Lucidchart-cps när ingen krock finns;
-        // bytar ut till sid-pushade cps endast vid faktisk obstacle.
-        if edge.waypoints.isEmpty {
+        // v1.0: linjeform avgör allt — en hand-dragen waypoint (böj) VINNER alltid och
+        // ritas mjukt; annars bestämmer edge.lineShape (rak/böjd/vinklad).
+        let hasWaypoint = edge.waypoints.first != nil
+        let lineShape: EdgeLineShape = hasWaypoint ? .curved : edge.lineShape
+
+        // v43: routa runt hinder — BARA böjd utan waypoint (rak = rak, vinklad = steg).
+        if !hasWaypoint && lineShape == .curved {
             let obstacleBboxes: [CGRect] = shapes.compactMap { obstacle in
-                // Hoppa över source och target själva
                 guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }
-                // Hoppa även dolda noder (de syns inte, ska inte routa runt)
                 guard !hiddenShapeIds.contains(obstacle.id) else { return nil }
-                // V79-svep (Kim): "Endast gå runt former och inte container, iPhone skärm."
-                // Containrar + telefon-ramar är aldrig hinder — pilar dras genom dem
-                // (ersätter v50:s smalare barn-undantag).
+                // V79-svep (Kim): containrar + telefon-ramar är aldrig hinder.
                 if obstacle.type.actsAsContainer { return nil }
                 let w = ShapeGeometry.width(for: obstacle)
                 let h = ShapeGeometry.height(for: obstacle)
-                // Lägg till lite margin runt obstacle för andningsutrymme
                 let margin: CGFloat = 12
                 return CGRect(x: obstacle.position.x - w/2 - margin,
                               y: obstacle.position.y - h/2 - margin,
-                              width: w + margin * 2,
-                              height: h + margin * 2)
+                              width: w + margin * 2, height: h + margin * 2)
             }
             if EdgeRouting.hasObstacle(from: start, to: end, obstacles: obstacleBboxes) {
                 let routed = EdgeRouting.controlPoints(from: start, to: end, obstacles: obstacleBboxes)
@@ -125,34 +121,41 @@ enum EdgeDrawing {
             }
         }
 
-        // Pilhuvud-vinklar.
-        // v62: spetsen följer den SYNLIGA linjens riktning vid änden — sampla kurvan
-        // nära spetsen (t=0.92/0.08) med de FAKTISKA kontrollpunkterna (inkl. routade).
-        // v60 låste vinkeln till sidans inåt-normal, vilket gjorde spetsen skev när
-        // linjen kom in diagonalt (Kims fynd i v61.2): linje och spets pekade åt olika
-        // håll. Near-endpoint-sampling är numeriskt stabil även för korta pilar
-        // (v50.2-resonemanget); normal-vinkeln behålls bara som fallback om samplet
-        // degenererar (sammanfallande punkter).
-        let nearEnd: CGPoint
-        let nearStart: CGPoint
-        if let wp = edge.waypoints.first {
-            nearEnd   = quadBezier(t: 0.92, p0: wp.point, p1: cp2, p2: end)
-            nearStart = quadBezier(t: 0.08, p0: start, p1: cp1, p2: wp.point)
-        } else {
-            nearEnd   = cubicBezier(t: 0.92, p0: start, p1: cp1, p2: cp2, p3: end)
-            nearStart = cubicBezier(t: 0.08, p0: start, p1: cp1, p2: cp2, p3: end)
-        }
-        let endVec   = CGPoint(x: end.x - nearEnd.x,     y: end.y - nearEnd.y)
-        let startVec = CGPoint(x: start.x - nearStart.x, y: start.y - nearStart.y)
-        let endAngle   = hypot(endVec.x, endVec.y) > 0.01
-            ? atan2(endVec.y, endVec.x)   : atan2(-n2.y, -n2.x)
-        let startAngle = hypot(startVec.x, startVec.y) > 0.01
-            ? atan2(startVec.y, startVec.x) : atan2(-n1.y, -n1.x)
+        // Vinklat L-hörn: gå längs den dominerande axeln först.
+        let orthoCorner: CGPoint = abs(end.x - start.x) >= abs(end.y - start.y)
+            ? CGPoint(x: end.x, y: start.y)
+            : CGPoint(x: start.x, y: end.y)
 
-        // v63: linjen slutar BAKOM spetsens bas (11pt från tip; basen ligger ~12.6pt
-        // från tip) — så varken .round-cap eller strecket syns genom spetsen.
-        // Allt ritas i SAMMA solida färg → ser ut som EN pil. (Ersätter v48:s
-        // halfLW-indrag som lät strecket lysa igenom den halvtransparenta spetsen.)
+        // Pilspets-vinklar vid ändarna — beror på linjeform.
+        let endAngle: CGFloat
+        let startAngle: CGFloat
+        switch lineShape {
+        case .straight:
+            endAngle   = atan2(end.y - start.y, end.x - start.x)
+            startAngle = atan2(start.y - end.y, start.x - end.x)
+        case .orthogonal:
+            endAngle   = atan2(end.y - orthoCorner.y, end.x - orthoCorner.x)
+            startAngle = atan2(start.y - orthoCorner.y, start.x - orthoCorner.x)
+        case .curved:
+            // v62: sampla kurvan nära ändarna (numeriskt stabilt även för korta pilar).
+            let nearEnd: CGPoint
+            let nearStart: CGPoint
+            if let wp = edge.waypoints.first {
+                nearEnd   = quadBezier(t: 0.92, p0: wp.point, p1: cp2, p2: end)
+                nearStart = quadBezier(t: 0.08, p0: start, p1: cp1, p2: wp.point)
+            } else {
+                nearEnd   = cubicBezier(t: 0.92, p0: start, p1: cp1, p2: cp2, p3: end)
+                nearStart = cubicBezier(t: 0.08, p0: start, p1: cp1, p2: cp2, p3: end)
+            }
+            let endVec   = CGPoint(x: end.x - nearEnd.x,     y: end.y - nearEnd.y)
+            let startVec = CGPoint(x: start.x - nearStart.x, y: start.y - nearStart.y)
+            endAngle   = hypot(endVec.x, endVec.y) > 0.01
+                ? atan2(endVec.y, endVec.x)   : atan2(-n2.y, -n2.x)
+            startAngle = hypot(startVec.x, startVec.y) > 0.01
+                ? atan2(startVec.y, startVec.x) : atan2(-n1.y, -n1.x)
+        }
+
+        // v63: linjen slutar BAKOM spetsens bas (11pt) så strecket inte syns genom spetsen.
         let headInset: CGFloat = 11
         let endHasHead   = (edge.direction == .forward  || edge.direction == .bidirectional)
         let startHasHead = (edge.direction == .backward || edge.direction == .bidirectional)
@@ -165,19 +168,24 @@ enum EdgeDrawing {
                       y: start.y - headInset * sin(startAngle))
             : start
 
-        // v63: pilens färg — egen hex eller standard. Solid (ingen opacity).
         let edgeColor: Color = edge.colorHex.flatMap { Color(hexString: $0) }
             ?? Color(hex: 0x3a3f47)
 
         var path = Path()
         path.move(to: lineStart)
-        if let wp = edge.waypoints.first {
-            // Mjuk böj via waypoint (quadratic → quadratic)
-            path.addQuadCurve(to: wp.point, control: cp1)
-            path.addQuadCurve(to: lineEnd,  control: cp2)
-        } else {
-            // Klassisk S-kurva (cubic bezier)
-            path.addCurve(to: lineEnd, control1: cp1, control2: cp2)
+        switch lineShape {
+        case .straight:
+            path.addLine(to: lineEnd)
+        case .orthogonal:
+            path.addLine(to: orthoCorner)
+            path.addLine(to: lineEnd)
+        case .curved:
+            if let wp = edge.waypoints.first {
+                path.addQuadCurve(to: wp.point, control: cp1)
+                path.addQuadCurve(to: lineEnd,  control: cp2)
+            } else {
+                path.addCurve(to: lineEnd, control1: cp1, control2: cp2)
+            }
         }
         context.stroke(path, with: .color(edgeColor), style: strokeStyle)
 

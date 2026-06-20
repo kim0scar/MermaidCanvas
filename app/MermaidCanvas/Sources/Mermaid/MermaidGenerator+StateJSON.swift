@@ -119,6 +119,10 @@ extension MermaidGenerator {
             if collapsedEdgeIds.contains(edge.id) {
                 e["collapsed"] = true
             }
+            // v1.0: form på linjen (bara när den avviker från default .curved)
+            if edge.lineShape != .curved {
+                e["lineShape"] = edge.lineShape.rawValue
+            }
             return e
         }
         // iPhone-frame inom canvasen — så Claude exakt kan översätta

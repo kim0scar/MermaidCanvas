@@ -46,6 +46,14 @@ enum EdgeSide: String, Codable, CaseIterable {
     case left
 }
 
+/// v1.0: form på linjen. curved = mjuk båge (default, som tidigare), straight = rak,
+/// orthogonal = vinklad 90°-steg (Lucidchart). Bärs nativt i mermaid via linkStyle interpolate.
+enum EdgeLineShape: String, Codable, CaseIterable {
+    case straight
+    case curved
+    case orthogonal
+}
+
 struct EdgeConnection: Identifiable, Codable, Equatable {
     let id: UUID
     var from: UUID
@@ -63,6 +71,8 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
     var colorHex: String?
     /// v64: utgångssida på from-formen. nil = automatisk.
     var fromSide: EdgeSide?
+    /// v1.0: form på linjen (rak/böjd/vinklad). Default = .curved (oförändrat utseende).
+    var lineShape: EdgeLineShape
 
     init(id: UUID = UUID(),
          from: UUID,
@@ -73,7 +83,8 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
          waypoints: [EdgeWaypoint] = [],
          labelPlacement: EdgeLabelPlacement = .below,
          colorHex: String? = nil,
-         fromSide: EdgeSide? = nil) {
+         fromSide: EdgeSide? = nil,
+         lineShape: EdgeLineShape = .curved) {
         self.id = id
         self.from = from
         self.to = to
@@ -84,6 +95,7 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
         self.labelPlacement = labelPlacement
         self.colorHex = colorHex
         self.fromSide = fromSide
+        self.lineShape = lineShape
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -91,6 +103,7 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
         case labelPlacement  // v62
         case colorHex        // v63
         case fromSide        // v64
+        case lineShape       // v1.0
     }
 
     /// Migration: läser direction (v37) med fallback till bidirectional: Bool (v36 och äldre).
@@ -113,6 +126,8 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
                                                     forKey: .labelPlacement) ?? .below
         self.colorHex = try c.decodeIfPresent(String.self, forKey: .colorHex)  // v63
         self.fromSide = try c.decodeIfPresent(EdgeSide.self, forKey: .fromSide)  // v64
+        // v1.0: bakåtkompatibel default — gamla filer saknar fältet → .curved (oförändrat)
+        self.lineShape = try c.decodeIfPresent(EdgeLineShape.self, forKey: .lineShape) ?? .curved
     }
 
     func encode(to encoder: Encoder) throws {
@@ -127,5 +142,6 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
         try c.encode(labelPlacement, forKey: .labelPlacement)
         try c.encodeIfPresent(colorHex, forKey: .colorHex)
         try c.encodeIfPresent(fromSide, forKey: .fromSide)
+        try c.encode(lineShape, forKey: .lineShape)
     }
 }

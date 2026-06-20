@@ -15,6 +15,8 @@ struct EdgesView: View {
     var onEdgeDelete: (UUID) -> Void
     var onEdgeSetDirection: (UUID, EdgeDirection) -> Void
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
+    /// v1.0: form på linjen (rak/böjd/vinklad)
+    var onEdgeSetLineShape: (UUID, EdgeLineShape) -> Void = { _, _ in }
     /// v63: färg på pilen (hex eller nil = standard)
     var onEdgeSetColor: (UUID, String?) -> Void
     /// v64: byt utgångssida på pilen (nil = automatisk)
@@ -103,6 +105,7 @@ struct EdgesView: View {
                                        onEdgeDelete: onEdgeDelete,
                                        onEdgeSetDirection: onEdgeSetDirection,
                                        onEdgeSetStyle: onEdgeSetStyle,
+                                       onEdgeSetLineShape: onEdgeSetLineShape,
                                        onEdgeSetColor: onEdgeSetColor,
                                        onEdgeSetFromSide: onEdgeSetFromSide,
                                        onRequestRename: { renamingEdgeId = $0 },

@@ -14,6 +14,7 @@ struct EdgeMidpointHandle: View {
     var onEdgeDelete: (UUID) -> Void
     var onEdgeSetDirection: (UUID, EdgeDirection) -> Void
     var onEdgeSetStyle: (UUID, EdgeStyle) -> Void
+    var onEdgeSetLineShape: (UUID, EdgeLineShape) -> Void = { _, _ in }
     var onEdgeSetColor: (UUID, String?) -> Void
     var onEdgeSetFromSide: (UUID, EdgeSide?) -> Void
     var onRequestRename: (UUID) -> Void
@@ -107,6 +108,14 @@ struct EdgeMidpointHandle: View {
             } label: {
                 Label("Stil", systemImage: "line.diagonal")
             }
+            // v1.0: form på linjen — rak / böjd / vinklad. Bock på aktiv.
+            Menu {
+                lineShapeButton(.straight, "Rak", "line.diagonal")
+                lineShapeButton(.curved, "Böjd", "point.topleft.down.curvedto.point.bottomright.up")
+                lineShapeButton(.orthogonal, "Vinklad", "arrow.turn.down.right")
+            } label: {
+                Label("Form på linjen", systemImage: "scribble.variable")
+            }
             Divider()
             // v63: färg på pilen — emoji syns i iOS-menyer (ikoner blir mallfärgade)
             Menu {
@@ -172,6 +181,14 @@ struct EdgeMidpointHandle: View {
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .allowsHitTesting(false)
                 .position(CGPoint(x: mid.x, y: labelY))
+        }
+    }
+
+    /// v1.0: knapp i "Form på linjen"-menyn — ✓-prefix på aktiv form.
+    @ViewBuilder
+    private func lineShapeButton(_ shape: EdgeLineShape, _ title: String, _ icon: String) -> some View {
+        Button { onEdgeSetLineShape(edge.id, shape) } label: {
+            Label(edge.lineShape == shape ? "✓ \(title)" : title, systemImage: icon)
         }
     }
 

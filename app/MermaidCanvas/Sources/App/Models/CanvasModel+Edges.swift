@@ -79,6 +79,15 @@ extension CanvasModel {
         edges[idx].fromSide = side
     }
 
+    /// v1.0: form på linjen (rak/böjd/vinklad). "Rak" rensar även waypoints så pilen
+    /// blir bokstavligt rak (knappen gör alltid något synligt).
+    func setEdgeLineShape(id: UUID, _ shape: EdgeLineShape) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        edges[idx].lineShape = shape
+        if shape == .straight { edges[idx].waypoints = [] }
+    }
+
     /// v62: egen fyllningsfärg på markerad form (nil = tillbaka till paket/kategori).
     func setFillColor(id: UUID, hex: String?) {
         guard let idx = shapes.firstIndex(where: { $0.id == id }) else { return }

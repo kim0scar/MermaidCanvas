@@ -92,9 +92,8 @@ struct CanvasView: View {
 
     private var canvasContent: some View {
         ZStack(alignment: .topLeading) {
-            // v34: vit pappersyta
-            // v66: explicit lågt zIndex — containrar (-1) ska ligga ÖVER
-            // papper/rutnät men UNDER pilarna (0) och noderna (1).
+            // v34: vit pappersyta. v66: lågt zIndex — containrar (-1) över papper/rutnät,
+            // men under pilarna (0) och noderna (1).
             Color.white
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
@@ -123,6 +122,7 @@ struct CanvasView: View {
                       onEdgeDelete: onEdgeDelete,
                       onEdgeSetDirection: { id, dir in model.setEdgeDirection(id: id, direction: dir) },
                       onEdgeSetStyle: { id, s in model.setEdgeStyle(id: id, s) },
+                      onEdgeSetLineShape: { id, ls in model.setEdgeLineShape(id: id, ls) },
                       onEdgeSetColor: { id, hex in model.setEdgeColor(id: id, hex: hex) },
                       onEdgeSetFromSide: { id, side in model.setEdgeFromSide(id: id, side: side) },
                       onEdgeRename: { id, label, placement in

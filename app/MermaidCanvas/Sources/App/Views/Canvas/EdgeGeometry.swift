@@ -179,7 +179,10 @@ enum EdgeGeometry {
         let cps = EdgeMath.controlPoints(start: start, end: end, n1: n1, n2: n2)
         var cp1 = cps.cp1
         var cp2 = cps.cp2
-        if edge.waypoints.isEmpty {
+        // v1.0: linjeform — waypoint vinner (curved); annars edge.lineShape.
+        let hasWaypoint = edge.waypoints.first != nil
+        let lineShape: EdgeLineShape = hasWaypoint ? .curved : edge.lineShape
+        if !hasWaypoint && lineShape == .curved {
             let obstacleBboxes: [CGRect] = shapes.compactMap { obstacle in
                 guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }
                 guard !hiddenShapeIds.contains(obstacle.id) else { return nil }
@@ -199,17 +202,30 @@ enum EdgeGeometry {
                 cp2 = routed.cp2
             }
         }
-        // bezier vid t=0.5
-        let u: CGFloat = 0.5
-        let v: CGFloat = 1 - u
-        let mid = CGPoint(
-            x: v*v*v*start.x + 3*v*v*u*cp1.x + 3*v*u*u*cp2.x + u*u*u*end.x,
-            y: v*v*v*start.y + 3*v*v*u*cp1.y + 3*v*u*u*cp2.y + u*u*u*end.y
-        )
-        // tangent (derivative) vid t=0.5 ger linjens lutning där
-        let tx = 3*v*v*(cp1.x - start.x) + 6*v*u*(cp2.x - cp1.x) + 3*u*u*(end.x - cp2.x)
-        let ty = 3*v*v*(cp1.y - start.y) + 6*v*u*(cp2.y - cp1.y) + 3*u*u*(end.y - cp2.y)
-        let midAngle = atan2(Double(ty), Double(tx))
+        // Mid + vinkel där midpoint-handtaget ska sitta — speglar drawEdge per linjeform.
+        let mid: CGPoint
+        let midAngle: Double
+        switch lineShape {
+        case .straight:
+            mid = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
+            midAngle = atan2(Double(end.y - start.y), Double(end.x - start.x))
+        case .orthogonal:
+            let corner = abs(end.x - start.x) >= abs(end.y - start.y)
+                ? CGPoint(x: end.x, y: start.y)
+                : CGPoint(x: start.x, y: end.y)
+            mid = corner   // handtaget sitter på böjen
+            midAngle = atan2(Double(end.y - corner.y), Double(end.x - corner.x))
+        case .curved:
+            let u: CGFloat = 0.5
+            let v: CGFloat = 1 - u
+            mid = CGPoint(
+                x: v*v*v*start.x + 3*v*v*u*cp1.x + 3*v*u*u*cp2.x + u*u*u*end.x,
+                y: v*v*v*start.y + 3*v*v*u*cp1.y + 3*v*u*u*cp2.y + u*u*u*end.y
+            )
+            let tx = 3*v*v*(cp1.x - start.x) + 6*v*u*(cp2.x - cp1.x) + 3*u*u*(end.x - cp2.x)
+            let ty = 3*v*v*(cp1.y - start.y) + 6*v*u*(cp2.y - cp1.y) + 3*u*u*(end.y - cp2.y)
+            midAngle = atan2(Double(ty), Double(tx))
+        }
         return EdgeAnchors(start: start, end: end,
                            cp1: cp1, cp2: cp2,
                            mid: mid, midAngle: midAngle)

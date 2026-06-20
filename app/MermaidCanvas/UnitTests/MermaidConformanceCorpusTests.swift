@@ -69,8 +69,8 @@ final class MermaidConformanceCorpusTests: XCTestCase {
 
         let ids = shapes.map { $0.id }
         let edges: [EdgeConnection] = [
-            EdgeConnection(from: ids[0], to: ids[2], label: "ja",  direction: .forward,       style: .solid),
-            EdgeConnection(from: ids[2], to: ids[3], label: "nej", direction: .forward,       style: .dashed),
+            EdgeConnection(from: ids[0], to: ids[2], label: "ja",  direction: .forward,       style: .solid, lineShape: .straight),
+            EdgeConnection(from: ids[2], to: ids[3], label: "nej", direction: .forward,       style: .dashed, lineShape: .orthogonal),
             EdgeConnection(from: ids[1], to: ids[0], label: "",    direction: .backward,      style: .solid),
             EdgeConnection(from: ids[4], to: ids[5], label: "",    direction: .bidirectional, style: .solid),
             EdgeConnection(from: ids[6], to: ids[7], label: "",    direction: .none,          style: .solid),

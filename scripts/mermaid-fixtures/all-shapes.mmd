@@ -72,7 +72,11 @@ flowchart TD
     %% skill_N15 prompt: Kör (research) → spara #fil; klar
     %% skill_N15 note: min egen anteckning
     ui_N0 -->|"ja"| router_N2
+    %% e0 lineShape: straight
+    linkStyle 0 interpolate linear
     router_N2 -.->|"nej"| input_N3
+    %% e1 lineShape: orthogonal
+    linkStyle 1 interpolate stepAfter
     ui_N0 --> ui_N1
     ui_N4 <--> ui_N5
     manual_N6 --- ui_N7

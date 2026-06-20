@@ -290,51 +290,16 @@ enum MermaidGenerator {
             lines.append("\(indent)style \(id) \(styleProps.joined(separator: ","))")
         }
 
-        // Edges
+        // Edges — rad-emissionen ligger i MermaidGenerator+Edges.swift (R5-utbrytning).
+        // `me` = mermaids egen kant-räknare (bara emitterade kanter) för linkStyle.
+        var me = 0
         for (i, edge) in edges.enumerated() {
             guard let from = mermaidIds[edge.from], let to = mermaidIds[edge.to] else { continue }
-            // v37: linje-stil × riktning. Steg H-fynd: riktig mermaid har INGEN giltig
-            // bakåtpil — `<--` kraschar renderaren (mermaid.live "Syntax error") och `<-.-`
-            // tappar pilspetsen tyst, fast mermaid.parse släpper igenom båda. En bakåtkant
-            // skrivs därför som en framåtpil med OMVÄNDA noder (to --> from): visuellt
-            // identiskt + renderar; exakt riktning bevaras ändå i state-JSON.
-            let arrow: String
-            var src = from, dst = to
-            switch (edge.direction, edge.style) {
-            case (.forward,       .solid):  arrow = "-->"
-            case (.forward,       .dashed): arrow = "-.->"
-            case (.backward,      .solid):  arrow = "-->";   src = to; dst = from
-            case (.backward,      .dashed): arrow = "-.->";  src = to; dst = from
-            case (.bidirectional, .solid):  arrow = "<-->"
-            case (.bidirectional, .dashed): arrow = "<-.->"
-            case (.none,          .solid):  arrow = "---"
-            case (.none,          .dashed): arrow = "-.-"
-            }
-            if edge.label.isEmpty {
-                lines.append("\(indent)\(src) \(arrow) \(dst)")
-            } else {
-                lines.append("\(indent)\(src) \(arrow)|\"\(escape(edge.label))\"| \(dst)")
-            }
-            // Waypoints som synliga kommentarer
-            for wp in edge.waypoints {
-                lines.append("\(indent)%% e\(i) waypoint: \(Int(wp.x.rounded())),\(Int(wp.y.rounded()))")
-            }
-            // v62: etikett-placering (bara när den avviker från default)
-            if edge.labelPlacement != .below {
-                lines.append("\(indent)%% e\(i) labelPlacement: \(edge.labelPlacement.rawValue)")
-            }
-            // v63: pilens färg
-            if let hex = edge.colorHex {
-                lines.append("\(indent)%% e\(i) color: \(hex)")
-            }
-            // v64: vald utgångssida
-            if let side = edge.fromSide {
-                lines.append("\(indent)%% e\(i) fromSide: \(side.rawValue)")
-            }
-            // v63: kollaps per GREN (ersätter %% <nod> collapsed)
-            if collapsedEdgeIds.contains(edge.id) {
-                lines.append("\(indent)%% e\(i) collapsed: true")
-            }
+            lines.append(contentsOf: edgeLines(edge: edge, appIndex: i, mermaidIndex: me,
+                                               from: from, to: to,
+                                               collapsed: collapsedEdgeIds.contains(edge.id),
+                                               indent: indent))
+            me += 1
         }
 
         if needsFrame {
@@ -507,7 +472,7 @@ enum MermaidGenerator {
         }
     }
 
-    private static func escape(_ text: String) -> String {
+    static func escape(_ text: String) -> String {   // internal: MermaidGenerator+Edges.swift använder den
         text
             .replacingOccurrences(of: "\"", with: "#quot;")
             .replacingOccurrences(of: "\n", with: "<br/>")

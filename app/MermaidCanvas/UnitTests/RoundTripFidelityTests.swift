@@ -105,13 +105,16 @@ final class RoundTripFidelityTests: XCTestCase {
         var edges: [EdgeConnection] = []
         for dir in EdgeDirection.allCases {
             for style in EdgeStyle.allCases {
-                var e = EdgeConnection(from: a.id, to: b.id, label: "\(dir)-\(style)",
-                                       direction: dir, style: style)
-                e.colorHex = "#abcdef"
-                e.fromSide = .bottom
-                e.labelPlacement = .above
-                e.waypoints = [EdgeWaypoint(x: 400, y: 260)]
-                edges.append(e)
+                for ls in EdgeLineShape.allCases {   // v1.0: form på linjen round-trippar
+                    var e = EdgeConnection(from: a.id, to: b.id, label: "\(dir)-\(style)-\(ls)",
+                                           direction: dir, style: style)
+                    e.colorHex = "#abcdef"
+                    e.fromSide = .bottom
+                    e.labelPlacement = .above
+                    e.waypoints = [EdgeWaypoint(x: 400, y: 260)]
+                    e.lineShape = ls
+                    edges.append(e)
+                }
             }
         }
         let parsed = roundTrip([a, b], edges)

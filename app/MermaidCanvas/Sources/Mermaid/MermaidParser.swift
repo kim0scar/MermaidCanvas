@@ -280,7 +280,9 @@ enum MermaidParser {
                                             labelPlacement: labelPlacement,
                                             colorHex: edge["color"] as? String,
                                             fromSide: (edge["fromSide"] as? String)
-                                                .flatMap(EdgeSide.init))
+                                                .flatMap(EdgeSide.init),
+                                            lineShape: (edge["lineShape"] as? String)
+                                                .flatMap(EdgeLineShape.init) ?? .curved)
             // v63: kollaps per gren — flagga på kant-dicten
             if (edge["collapsed"] as? Bool) == true {
                 collapsedEdgeSet.insert(connection.id)
@@ -465,38 +467,14 @@ enum MermaidParser {
             }
         }
 
-        // v62/v63: `%% e<index> nyckel: värde`-kommentarer (kant-index i emit-ordning)
-        var edgePlacements: [Int: EdgeLabelPlacement] = [:]
-        var edgeColors: [Int: String] = [:]
-        var edgeFromSides: [Int: EdgeSide] = [:]
-        var edgeWaypoints: [Int: [EdgeWaypoint]] = [:]   // F2: waypoints överlever ren mermaid
-        var collapsedEdgeIndices: Set<Int> = []
-        if let regex = try? NSRegularExpression(pattern: #"%%\s+e(\d+)\s+(\w+):\s+(\S+)"#) {
-            for m in regex.matches(in: block, range: NSRange(location: 0, length: ns.length))
-                where m.numberOfRanges >= 4 {
-                guard let idx = Int(ns.substring(with: m.range(at: 1))) else { continue }
-                let key = ns.substring(with: m.range(at: 2))
-                let value = ns.substring(with: m.range(at: 3))
-                switch key {
-                case "labelPlacement":
-                    if let p = EdgeLabelPlacement(rawValue: value) { edgePlacements[idx] = p }
-                case "color":
-                    edgeColors[idx] = value
-                case "fromSide":
-                    if let s = EdgeSide(rawValue: value) { edgeFromSides[idx] = s }
-                case "collapsed":
-                    if value == "true" { collapsedEdgeIndices.insert(idx) }
-                case "waypoint":
-                    // Flera "%% e<i> waypoint: x,y"-rader per kant — ackumuleras i ordning.
-                    let parts = value.split(separator: ",")
-                    if parts.count == 2, let wx = Double(parts[0]), let wy = Double(parts[1]) {
-                        edgeWaypoints[idx, default: []].append(EdgeWaypoint(x: wx, y: wy))
-                    }
-                default:
-                    break
-                }
-            }
-        }
+        // v62/v63/v1.0: `%% e<index> nyckel: värde`-kant-kommentarer → MermaidParser+EdgeMeta.swift
+        let edgeMeta = parseEdgeMeta(block: block, ns: ns)
+        let edgePlacements = edgeMeta.placements
+        let edgeColors = edgeMeta.colors
+        let edgeFromSides = edgeMeta.fromSides
+        let edgeWaypoints = edgeMeta.waypoints
+        let edgeLineShapes = edgeMeta.lineShapes
+        let collapsedEdgeIndices = edgeMeta.collapsedIndices
 
         // v61: Positioner. `%% pos:`-kommentar vinner; noder utan får lagrad
         // auto-layout som följer flowchart-riktningen (TD/LR/BT/RL) — inte cirkel.
@@ -617,7 +595,8 @@ enum MermaidParser {
                                             waypoints: edgeWaypoints[i] ?? [],   // F2
                                             labelPlacement: edgePlacements[i] ?? .below,
                                             colorHex: edgeColors[i],
-                                            fromSide: edgeFromSides[i])
+                                            fromSide: edgeFromSides[i],
+                                            lineShape: edgeLineShapes[i] ?? .curved)
             // v63: kollaps per gren (index = rå-kantens ordning, samma som i:t ovan)
             if collapsedEdgeIndices.contains(i) {
                 collapsedEdges.insert(connection.id)
