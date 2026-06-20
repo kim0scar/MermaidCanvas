@@ -2,7 +2,7 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v1.1 (build v91) — "Visio hoppa-in + UI-färgpalett"
+## Aktuell version: v1.1 (build v92) — "V79-listan komplett (multi-fil-import sista punkten)"
 
 *Tema:* Facit-täckningsgrind (bijektion generator↔facit) + ärlig regel 15. Facit-menyn
 redesignad (färg=överlevnad, riktiga glyfer, sök, sticky copy). JPG-export. Import-mallen

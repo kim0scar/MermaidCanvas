@@ -1,4 +1,4 @@
-# ARKITEKTUR-MERMAID — Milstolpe v1.1 (build v91)
+# ARKITEKTUR-MERMAID — Milstolpe v1.1 (build v92)
 *Datum: 2026-06-21*
 
 > **v1.1 "Visio hoppa-in (underflöden)":** Kims "galen idé" byggd — en form kan ÄGA ett helt
