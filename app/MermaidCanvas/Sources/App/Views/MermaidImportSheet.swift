@@ -14,39 +14,23 @@ struct MermaidImportSheet: View {
     @State private var pastedCode: String = ""
     @State private var showError: Bool = false
 
-    private static let templateText = """
-Jag ritar flödesscheman i en iPhone-app som läser Mermaid-syntax.
-Använd BARA dessa former:
-
-Cirkel:      A(("text"))
-Rektangel:   A["text"] eller A("text")
-Romb:        A{"text"}
-Oval/Pill:   A(["text"])
-
-Pilar:
-A --> B          pil åt höger
-A <-- B          pil åt vänster
-A <--> B         dubbelriktad
-A --- B          linje utan pil
-A -.-> B         streckad pil
-A --"text"--> B  pil med label
-
-Starta alltid med: flowchart TD
-
-Max 15 noder. Undvik subgraphs.
-"""
+    /// V79-svep: mallen som ges till en AI är nu AppCapabilities.frameworkText() —
+    /// ALLTID aktuell + korrekt (genererad ur koden). Den gamla hårdkodade mallen var
+    /// inaktuell och lärde t.o.m. ut `<--` som KRASCHAR riktig mermaid (Kims fynd).
+    private var templateText: String { AppCapabilities.frameworkText() }
 
     var body: some View {
         NavigationStack {
             Form {
                 if step == 1 {
-                    Section("1. Ge den här mallen till din AI") {
-                        Text(Self.templateText)
-                            .font(.system(.caption, design: .monospaced))
+                    Section("1. Ge den här mallen till din AI (alltid aktuell)") {
+                        Text(templateText)
+                            .font(.system(.caption2, design: .monospaced))
                             .foregroundStyle(.secondary)
                             .textSelection(.enabled)
                         Button {
-                            UIPasteboard.general.string = Self.templateText
+                            UIPasteboard.general.string = templateText
+                            UINotificationFeedbackGenerator().notificationOccurred(.success)
                         } label: {
                             Label("Kopiera mall", systemImage: "doc.on.doc")
                         }
