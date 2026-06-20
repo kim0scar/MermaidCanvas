@@ -183,11 +183,8 @@ enum EdgeGeometry {
             let obstacleBboxes: [CGRect] = shapes.compactMap { obstacle in
                 guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }
                 guard !hiddenShapeIds.contains(obstacle.id) else { return nil }
-                if obstacle.type == .container,
-                   fromShape.childOfContainerId == obstacle.id
-                   || toShape.childOfContainerId == obstacle.id {
-                    return nil
-                }
+                // V79-svep (Kim): gå runt former, men inte containrar/iPhone-ram.
+                if obstacle.type.actsAsContainer { return nil }
                 let w = ShapeGeometry.width(for: obstacle)
                 let h = ShapeGeometry.height(for: obstacle)
                 let margin: CGFloat = 12

@@ -105,14 +105,10 @@ enum EdgeDrawing {
                 guard obstacle.id != edge.from && obstacle.id != edge.to else { return nil }
                 // Hoppa även dolda noder (de syns inte, ska inte routa runt)
                 guard !hiddenShapeIds.contains(obstacle.id) else { return nil }
-                // v50: hoppa över container när pilen går mellan dess egna barn.
-                // Annars ser routing-algoritmen containern som obstakel och bezier-
-                // kontrollpunkterna dras långt utanför viewport (F-02 i bug-rapport).
-                if obstacle.type == .container,
-                   fromShape.childOfContainerId == obstacle.id
-                   || toShape.childOfContainerId == obstacle.id {
-                    return nil
-                }
+                // V79-svep (Kim): "Endast gå runt former och inte container, iPhone skärm."
+                // Containrar + telefon-ramar är aldrig hinder — pilar dras genom dem
+                // (ersätter v50:s smalare barn-undantag).
+                if obstacle.type.actsAsContainer { return nil }
                 let w = ShapeGeometry.width(for: obstacle)
                 let h = ShapeGeometry.height(for: obstacle)
                 // Lägg till lite margin runt obstacle för andningsutrymme
