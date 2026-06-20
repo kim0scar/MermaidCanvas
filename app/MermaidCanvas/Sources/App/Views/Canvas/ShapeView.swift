@@ -33,6 +33,11 @@ struct ShapeView: View {
     var onCopySkill: ((UUID) -> Void)? = nil
     /// v70: spara container som egen skill-fil (bara containrar visar valet).
     var onSaveSkillFile: ((UUID) -> Void)? = nil
+    /// V79-svep: spara formerna inom containern som ren mermaid-fil.
+    var onSaveContainerMermaid: ((UUID) -> Void)? = nil
+    /// V79-svep: lås/lås upp + sätt lager.
+    var onToggleLock: ((UUID) -> Void)? = nil
+    var onSetZLayer: ((UUID, Int) -> Void)? = nil
     /// Steg H: exportläge — rendera bara form + text (ingen badge-chrome) för bild-export.
     var exportMode: Bool = false
 
@@ -111,6 +116,19 @@ struct ShapeView: View {
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
+        // V79-svep: hänglås-ikon på låst form (nere till höger, app-only chrome).
+        .overlay(alignment: .bottomTrailing) {
+            if shape.locked && !markerMode && !exportMode {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.secondary)
+                    .padding(4)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .offset(x: -3, y: -3)
+                    .rotationEffect(.degrees(-shape.rotation))
+                    .allowsHitTesting(false)
+            }
+        }
         // v48 Fel #3+#4: CollapseBadge är flyttad från ShapeView till EdgesView
         // (renderas per utgående kant, vid kantens start). Se EdgeCollapseBadges.swift.
         .contentShape(Rectangle())
@@ -180,7 +198,14 @@ struct ShapeView: View {
                     : nil,
                 onSaveSkillFile: shape.type == .container && onSaveSkillFile != nil
                     ? { showContextMenu = false; onSaveSkillFile?(shape.id) }
-                    : nil
+                    : nil,
+                onSaveContainerMermaid: shape.type == .container && onSaveContainerMermaid != nil
+                    ? { showContextMenu = false; onSaveContainerMermaid?(shape.id) }
+                    : nil,
+                locked: shape.locked,
+                onToggleLock: { showContextMenu = false; onToggleLock?(shape.id) },
+                zLayer: shape.zLayer,
+                onSetZLayer: { z in onSetZLayer?(shape.id, z) }
             )
             .presentationCompactAdaptation(.popover)
         }
@@ -188,7 +213,8 @@ struct ShapeView: View {
 
     /// Sann när drag-gesten ska vara aktiv: normalt läge, eller markeringsläge med multiSelection.
     private var gestureActive: Bool {
-        !edgeMode && (!markerMode || isInMultiSelection)
+        // V79-svep: låst form kan inte dras.
+        !shape.locked && !edgeMode && (!markerMode || isInMultiSelection)
     }
 
     /// v40: Enhetlig drag-gest — hanterar normal drag, multi-select drag och inaktivt läge.

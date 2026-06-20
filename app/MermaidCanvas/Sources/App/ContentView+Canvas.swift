@@ -46,6 +46,14 @@ extension ContentView {
                     performSaveSkillFile(containerId: id, name: name)
                 }
             },
+            // V79-svep: spara container-innehåll som ren mermaid + lås + lager
+            onSaveContainerMermaid: { id in saveContainerMermaid(containerId: id) },
+            onShapeToggleLock: { id in
+                if let s = model.shapes.first(where: { $0.id == id }) {
+                    model.setLocked(id: id, !s.locked)
+                }
+            },
+            onShapeSetZLayer: { id, z in model.setZLayer(id: id, z) },
             openCards: $openCards,
             zoomPercent: $zoomPercent,
             resetZoomTrigger: resetZoomTrigger,

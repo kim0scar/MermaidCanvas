@@ -112,6 +112,12 @@ enum MermaidGenerator {
             if shape.indentLevel > 0 {
                 lines.append("\(indent)%% \(id) indent: \(shape.indentLevel)")
             }
+            if shape.locked {
+                lines.append("\(indent)%% \(id) locked")
+            }
+            if shape.zLayer != 0 {
+                lines.append("\(indent)%% \(id) z: \(shape.zLayer)")
+            }
             if let packId = shape.colorPackId {
                 lines.append("\(indent)%% \(id) pack: \(packId)")
             }
@@ -195,6 +201,12 @@ enum MermaidGenerator {
             }
             if container.indentLevel > 0 {
                 lines.append("\(indent)%% \(cid) indent: \(container.indentLevel)")
+            }
+            if container.locked {
+                lines.append("\(indent)%% \(cid) locked")
+            }
+            if container.zLayer != 0 {
+                lines.append("\(indent)%% \(cid) z: \(container.zLayer)")
             }
             if let packId = container.colorPackId {
                 lines.append("\(indent)%% \(cid) pack: \(packId)")

@@ -195,6 +195,8 @@ enum MermaidParser {
             // v46: numrerad lista, indrag, tabell-celler
             let hasNumberedList = (node["hasNumberedList"] as? Bool) ?? false
             let indentLevel = (node["indentLevel"] as? Int) ?? 0
+            let locked = (node["locked"] as? Bool) ?? false
+            let zLayer = (node["zLayer"] as? Int) ?? 0
             let tableCells = node["tableCells"] as? [[String]]
             let shape = ShapeNode(
                 type: type,
@@ -221,7 +223,9 @@ enum MermaidParser {
                 textAlignment: textAlignment,
                 hasBullets: hasBullets,
                 hasNumberedList: hasNumberedList,
-                indentLevel: max(0, indentLevel)
+                indentLevel: max(0, indentLevel),
+                locked: locked,
+                zLayer: zLayer
             )
             idMap[mid] = shape.id
             shapes.append(shape)
@@ -572,7 +576,9 @@ enum MermaidParser {
                 textAlignment: m?.textAlignRaw.flatMap { TextAlignMode(rawValue: $0) } ?? .center,
                 hasBullets: m?.hasBullets ?? false,
                 hasNumberedList: m?.hasNumberedList ?? false,
-                indentLevel: max(0, m?.indentLevel ?? 0)
+                indentLevel: max(0, m?.indentLevel ?? 0),
+                locked: m?.locked ?? false,
+                zLayer: m?.zLayer ?? 0
             )
             if m?.collapsed == true { legacyCollapsedShapeIds.insert(shape.id) }
             idMap[n.mermaidId] = shape.id

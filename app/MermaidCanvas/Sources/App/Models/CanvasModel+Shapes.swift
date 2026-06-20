@@ -166,10 +166,26 @@ extension CanvasModel {
             hasBullets: o.hasBullets,
             hasNumberedList: o.hasNumberedList,
             indentLevel: o.indentLevel,
-            childOfContainerId: o.childOfContainerId   // v47: kopiera container-koppling
+            childOfContainerId: o.childOfContainerId,  // v47: kopiera container-koppling
+            locked: o.locked,                          // V79-svep
+            zLayer: o.zLayer
         )
         shapes.append(copy)
         return copy.id
+    }
+
+    /// V79-svep: lås/lås upp en form (kan ej flyttas/storleksändras när låst).
+    func setLocked(id: UUID, _ locked: Bool) {
+        guard let idx = shapes.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        shapes[idx].locked = locked
+    }
+
+    /// V79-svep: lägg form i lager (-1 underst · 0 mellan · 1 överst).
+    func setZLayer(id: UUID, _ z: Int) {
+        guard let idx = shapes.firstIndex(where: { $0.id == id }) else { return }
+        snapshotForUndo()
+        shapes[idx].zLayer = max(-1, min(1, z))
     }
 
     func updatePosition(id: UUID, to position: CGPoint) {

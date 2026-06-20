@@ -333,6 +333,36 @@ final class RoundTripFidelityTests: XCTestCase {
         XCTAssertEqual(parsed.canvasSize?.height ?? 0, 1700, accuracy: 0.5, "canvas-höjd ska överleva ren mermaid")
     }
 
+    // MARK: - V79-svep: lås + lager överlever REN mermaid
+
+    func test_fallback_lockAndZLayerSurvive() throws {
+        var a = ShapeNode(type: .rectangle, position: CGPoint(x: 300, y: 300), label: "Låst")
+        a.locked = true
+        a.zLayer = 1
+        var b = ShapeNode(type: .circle, position: CGPoint(x: 600, y: 300), label: "Bak")
+        b.zLayer = -1
+        let mermaid = MermaidGenerator.generate(shapes: [a, b], edges: [], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")
+        let pa = parsed.shapes.first { $0.label == "Låst" }
+        let pb = parsed.shapes.first { $0.label == "Bak" }
+        XCTAssertEqual(pa?.locked, true, "lås ska överleva ren mermaid")
+        XCTAssertEqual(pa?.zLayer, 1, "lager (överst) ska överleva ren mermaid")
+        XCTAssertEqual(pb?.zLayer, -1, "lager (underst, negativt) ska överleva ren mermaid")
+    }
+
+    func test_fallback_containerLockAndZSurvive() throws {
+        var box = ShapeNode(type: .container, position: CGPoint(x: 500, y: 500), label: "Grupp1")
+        box.locked = true
+        box.zLayer = -1
+        let child = ShapeNode(type: .rectangle, position: CGPoint(x: 480, y: 520),
+                              label: "Barn", childOfContainerId: box.id)
+        let mermaid = MermaidGenerator.generate(shapes: [box, child], edges: [], specType: .general)
+        let parsed = MermaidParser.parse("```mermaid\n\(mermaid)\n```")
+        let p = parsed.shapes.first { $0.label == "Grupp1" }
+        XCTAssertEqual(p?.locked, true, "container-lås ska överleva ren mermaid")
+        XCTAssertEqual(p?.zLayer, -1, "container-lager ska överleva ren mermaid")
+    }
+
     // MARK: - F7: filen ÄR sanningen — parsern kapar inte tyst (Kims beslut)
 
     /// Före F7 kapade parsern tyst: storlek→3×, bredd/höjd→10×, rotation→±360, indrag→2.

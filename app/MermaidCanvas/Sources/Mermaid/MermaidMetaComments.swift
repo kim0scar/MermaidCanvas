@@ -44,6 +44,9 @@ enum MermaidMetaComments {
         var hasNumberedList: Bool = false
         /// F2: indragsnivå (`%% id indent: N`).
         var indentLevel: Int = 0
+        /// V79-svep: låst (`%% id locked`) + lager (`%% id z: N`).
+        var locked: Bool = false
+        var zLayer: Int = 0
     }
 
     /// Skannar ett mermaid-block rad för rad. Returnerar metadata per mermaid-id.
@@ -88,6 +91,7 @@ enum MermaidMetaComments {
         if rest == "collapsed"    { meta.collapsed = true; return }
         if rest == "bullets"      { meta.hasBullets = true; return }        // F2
         if rest == "numbered"     { meta.hasNumberedList = true; return }   // F2
+        if rest == "locked"       { meta.locked = true; return }            // V79-svep
 
         guard let colon = rest.firstIndex(of: ":") else { return }
         let key = String(rest[..<colon]).trimmingCharacters(in: .whitespaces)
@@ -147,6 +151,8 @@ enum MermaidMetaComments {
             meta.textAlignRaw = value
         case "indent":                                      // F2
             if let i = Int(value) { meta.indentLevel = i }
+        case "z":                                           // V79-svep: lager
+            if let i = Int(value) { meta.zLayer = i }
         default:
             break // okänd nyckel (t.ex. "name" — label kommer från nod-syntaxen) — ignorera
         }

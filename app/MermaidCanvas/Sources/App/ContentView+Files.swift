@@ -151,6 +151,31 @@ extension ContentView {
         }
     }
 
+    /// V79-svep: spara formerna inom en container som REN mermaid-fil (frontmatter +
+    /// mermaid + state) — inte skill-kontraktet. Återanvänder subset + samma exporter-
+    /// dialog som skill-exporten (rör aldrig den öppna pipeline-filen).
+    func saveContainerMermaid(containerId: UUID) {
+        let subset = MermaidGenerator.containerSubset(
+            containerId: containerId, shapes: model.shapes, edges: model.edges)
+        let raw = (model.shapes.first { $0.id == containerId }?.label ?? "")
+            .trimmingCharacters(in: .whitespaces)
+        let baseName = (raw.isEmpty || raw == "Grupp") ? "container" : raw
+        let doc = CanvasDocument(
+            title: baseName,
+            shapes: subset.shapes,
+            edges: subset.edges,
+            canvasSize: model.canvasSize,
+            specType: model.specType,
+            platform: model.platform,
+            activeShapePacks: model.activeShapePacks,
+            collapsedEdgeIds: model.collapsedEdgeIds,
+            legend: model.legend)
+        skillExportFileName = "\(CanvasFileManager.sanitizeFileName(baseName)).md"
+        skillExportMode = true
+        pendingDocument = doc
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { showExporter = true }
+    }
+
     func showMermaidCode() {
         // v32: kod genereras live i sheet via @ObservedObject model
         showCodeSheet = true

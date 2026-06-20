@@ -30,7 +30,8 @@ extension CanvasModel {
             }
         }
         for i in shapes.indices {
-            if idsToMove.contains(shapes[i].id) {
+            // V79-svep: låst form står still även i grupp-flytt.
+            if idsToMove.contains(shapes[i].id) && !shapes[i].locked {
                 shapes[i].position.x += delta.width
                 shapes[i].position.y += delta.height
             }

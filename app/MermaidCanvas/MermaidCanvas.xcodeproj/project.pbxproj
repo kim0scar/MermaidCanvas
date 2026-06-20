@@ -72,6 +72,7 @@
 		62660A3A94EB89DD9F48A29A /* V74SkillExportUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B93FA11AE7F0B2432FF64A0 /* V74SkillExportUITest.swift */; };
 		62EF8D225C5132FB200E453E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4913E980F026A3D6E49070B7 /* AppVersion.swift */; };
 		63458D5E7CD7AFFAB7F49303 /* V74SkillNrTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A42EB21C4C1D82A6F3BB0DC /* V74SkillNrTests.swift */; };
+		63DD63C9557BC2FBD2A93302 /* CanvasView+Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12CB64D782A2EB21CFEB3C9 /* CanvasView+Selection.swift */; };
 		66E7C0CA771E5C607A4F1B41 /* V49VisualVerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */; };
 		67C5E692431A416DA4802220 /* test_pill_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FCD095D020EF17998E82F01 /* test_pill_chip_vs_canvas_side_by_side.1.png */; };
 		684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6F52E499ADD995928FF171 /* SnapshotTests.swift */; };
@@ -363,6 +364,7 @@
 		DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMiniSheet.swift; sourceTree = "<group>"; };
 		E00A564942F1596BCF995981 /* CanvasViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewportState.swift; sourceTree = "<group>"; };
 		E0DB770D9036DCE9E3A4CCAE /* V50PlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V50PlacementTests.swift; sourceTree = "<group>"; };
+		E12CB64D782A2EB21CFEB3C9 /* CanvasView+Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasView+Selection.swift"; sourceTree = "<group>"; };
 		E3053879FB1F4B29B9558361 /* V70Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V70Tests.swift; sourceTree = "<group>"; };
 		E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPhoneFrameMath.swift; sourceTree = "<group>"; };
 		E53BA874CBF374FCDD769CDC /* CanvasModel+Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasModel+Shapes.swift"; sourceTree = "<group>"; };
@@ -478,6 +480,7 @@
 			children = (
 				228F689846F0D1503749250D /* CanvasView.swift */,
 				56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */,
+				E12CB64D782A2EB21CFEB3C9 /* CanvasView+Selection.swift */,
 				BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */,
 				6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */,
 				A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */,
@@ -942,6 +945,7 @@
 				17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */,
 				31D4EC6627E7EC70A9128DE9 /* CanvasShapes.swift in Sources */,
 				117762749581D5567B0D7939 /* CanvasView+Helpers.swift in Sources */,
+				63DD63C9557BC2FBD2A93302 /* CanvasView+Selection.swift in Sources */,
 				283770815BB34BD0261BB8AB /* CanvasView.swift in Sources */,
 				5502DC1063808D7E976CD568 /* CanvasViewportState.swift in Sources */,
 				3CB3443CCE6C72AEF0804D20 /* CollapseBadge.swift in Sources */,

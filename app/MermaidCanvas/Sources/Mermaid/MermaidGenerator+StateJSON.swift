@@ -73,6 +73,13 @@ extension MermaidGenerator {
             if shape.indentLevel > 0 {
                 n["indentLevel"] = shape.indentLevel
             }
+            // V79-svep: lås + lager
+            if shape.locked {
+                n["locked"] = true
+            }
+            if shape.zLayer != 0 {
+                n["zLayer"] = shape.zLayer
+            }
             // v60: prompt-text (n8n) — round-trippas via state-JSON
             if !shape.prompt.isEmpty {
                 n["prompt"] = shape.prompt

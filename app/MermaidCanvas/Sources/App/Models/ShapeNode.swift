@@ -105,6 +105,10 @@ struct ShapeNode: Identifiable, Codable, Equatable {
     /// Sätts automatiskt vid drag-slut och vid drag-ut. Position-baserad detektering
     /// behålls som fallback för bakåtkompatibilitet.
     var childOfContainerId: UUID?
+    /// V79-svep: låst form — kan inte flyttas/storleksändras (hänglås). Default false.
+    var locked: Bool = false
+    /// V79-svep: lager-ordning (-1 underst · 0 mellan · 1 överst) för UI-bygge. Default 0.
+    var zLayer: Int = 0
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -132,7 +136,9 @@ struct ShapeNode: Identifiable, Codable, Equatable {
          hasBullets: Bool = false,
          hasNumberedList: Bool = false,
          indentLevel: Int = 0,
-         childOfContainerId: UUID? = nil) {
+         childOfContainerId: UUID? = nil,
+         locked: Bool = false,
+         zLayer: Int = 0) {
         self.id = id
         self.type = type
         self.position = position
@@ -160,6 +166,8 @@ struct ShapeNode: Identifiable, Codable, Equatable {
         self.hasNumberedList = hasNumberedList
         self.indentLevel = indentLevel
         self.childOfContainerId = childOfContainerId
+        self.locked = locked
+        self.zLayer = zLayer
     }
 
     /// v31: effective width-multiplier (fallback till sizeMultiplier).
@@ -184,6 +192,7 @@ extension ShapeNode {
         case colorPackId, lineEnd, textAlignment, hasBullets
         case hasNumberedList, indentLevel
         case childOfContainerId  // v47
+        case locked, zLayer  // V79-svep
     }
 
     init(from decoder: Decoder) throws {
@@ -224,5 +233,7 @@ extension ShapeNode {
         hasNumberedList = try c.decodeIfPresent(Bool.self, forKey: .hasNumberedList) ?? false
         indentLevel     = try c.decodeIfPresent(Int.self, forKey: .indentLevel) ?? 0
         childOfContainerId = try c.decodeIfPresent(UUID.self, forKey: .childOfContainerId)
+        locked          = try c.decodeIfPresent(Bool.self, forKey: .locked) ?? false
+        zLayer          = try c.decodeIfPresent(Int.self, forKey: .zLayer) ?? 0
     }
 }
