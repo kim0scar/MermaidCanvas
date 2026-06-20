@@ -35,6 +35,28 @@ final class CanvasModelMutationTests: XCTestCase {
                        "container adopterar formen inom sina gränser")
     }
 
+    /// Steg 9: phoneFrame äger sitt innehåll — en form på skärmen blir dess barn
+    /// och förälder-länken överlever round-trip (state-JSON).
+    func test_phoneFrame_actsAsContainer_claimsChildAndRoundTrips() {
+        let m = CanvasModel()
+        m.addShape(.circle, at: c)
+        m.addShape(.phoneFrame, at: c, label: "iPhone 16 Pro")
+        let phone = m.shapes.first { $0.type == .phoneFrame }
+        let circle = m.shapes.first { $0.type == .circle }
+        XCTAssertEqual(phone?.position, c, "phoneFrame kaskadas inte")
+        XCTAssertEqual(circle?.childOfContainerId, phone?.id,
+                       "phoneFrame adopterar formen på skärmen (steg 9)")
+        // Round-trip via state-JSON: förälder-länken (childOfContainerId) överlever.
+        let doc = CanvasDocument(title: "T", shapes: m.shapes, edges: [],
+                                 canvasSize: CGSize(width: 2000, height: 2000),
+                                 specType: .ui).content
+        let parsed = MermaidParser.parse(doc)
+        let pPhone = parsed.shapes.first { $0.type == .phoneFrame }
+        let pCircle = parsed.shapes.first { $0.type == .circle }
+        XCTAssertEqual(pCircle?.childOfContainerId, pPhone?.id,
+                       "förälder-länken till phoneFrame överlever round-trip")
+    }
+
     // MARK: - moveSelection
 
     func test_moveSelection_movesAllSelected() {

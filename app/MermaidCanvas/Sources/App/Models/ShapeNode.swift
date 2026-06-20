@@ -38,6 +38,15 @@ enum ShapeType: String, Codable, CaseIterable {
     case cylinder
 }
 
+extension ShapeType {
+    /// Steg 9: former som ÄGER sitt innehåll — barn får `childOfContainerId`, följer
+    /// med vid flytt och claim/assign-logiken gäller. container = Mermaid subgraph;
+    /// phoneFrame = UI-skärm som logiskt äger sina element.
+    var actsAsContainer: Bool {
+        self == .container || self == .phoneFrame
+    }
+}
+
 extension ShapeType: Transferable {
     static var transferRepresentation: some TransferRepresentation {
         ProxyRepresentation { $0.rawValue }

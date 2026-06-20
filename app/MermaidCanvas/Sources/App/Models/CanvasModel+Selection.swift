@@ -24,7 +24,7 @@ extension CanvasModel {
         guard !multiSelection.isEmpty else { return }
         // Beräkna alla shape-ids som ska flyttas: markeringen + barn till markerade containrar
         var idsToMove: Set<UUID> = multiSelection
-        for shape in shapes where shape.type == .container && multiSelection.contains(shape.id) {
+        for shape in shapes where shape.type.actsAsContainer && multiSelection.contains(shape.id) {
             for child in shapesInside(container: shape) {
                 idsToMove.insert(child.id)
             }

@@ -213,8 +213,8 @@ struct ShapeView: View {
                         width: v.location.x - v.startLocation.x,
                         height: v.location.y - v.startLocation.y
                     )
-                    // v44: container — flytta inneliggande former live med samma delta
-                    if shape.type == .container {
+                    // v44: container/phoneFrame — flytta inneliggande former live (steg 9)
+                    if shape.type.actsAsContainer {
                         let delta = CGSize(
                             width: dragOffset.width - lastContainerDragTranslation.width,
                             height: dragOffset.height - lastContainerDragTranslation.height

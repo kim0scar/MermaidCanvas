@@ -161,15 +161,15 @@ struct CanvasView: View {
                         },
                         isInMultiSelection: model.multiSelection.contains(shape.id),
                         onContainerMove: { delta in
-                            // v44: när en container dras flyttas alla former inuti med
-                            if shape.type == .container {
+                            // v44/steg 9: container + phoneFrame drar inneliggande former
+                            if shape.type.actsAsContainer {
                                 model.moveContainerChildren(containerId: shape.id, by: delta)
                             }
                         },
                         onDragEnded: { id in
-                            // v47/v60: efter drag — en container "adopterar" former inom sig,
-                            // en vanlig form tilldelas sin container.
-                            if shape.type == .container {
+                            // v47/v60: efter drag — en container/phoneFrame "adopterar" former
+                            // inom sig, en vanlig form tilldelas sin ägare.
+                            if shape.type.actsAsContainer {
                                 model.claimChildren(forContainer: id)
                             } else {
                                 model.assignContainerForShape(id)

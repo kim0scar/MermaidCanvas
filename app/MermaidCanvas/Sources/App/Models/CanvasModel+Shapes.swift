@@ -25,14 +25,14 @@ extension CanvasModel {
     func addShape(_ type: ShapeType, at position: CGPoint) {
         snapshotForUndo()
         // v73: containrar kaskadas inte — de ska landa i mitten och adoptera.
-        let position = type == .container ? position : cascadedPosition(near: position)
+        let position = type.actsAsContainer ? position : cascadedPosition(near: position)
         let cat = specType.defaultCategory
         // v23: tom label från start — Kim vill skriva själv
         // v44: container får default-label "Grupp" (Kim vet då vad formen är)
         let defaultLabel = type == .container ? "Grupp" : ""
         let node = ShapeNode(type: type, position: position, label: defaultLabel, category: cat)
         shapes.append(node)
-        if type != .container { assignContainerForShape(node.id) }   // v60: in i container vid skapande
+        if !type.actsAsContainer { assignContainerForShape(node.id) }   // v60: in i container vid skapande
         else { claimChildren(forContainer: node.id) }                 // v73: adoptera direkt — inget inkonsekvent mellanläge
         expandCanvasIfNeeded(near: position)
     }
@@ -41,10 +41,10 @@ extension CanvasModel {
     func addShape(_ type: ShapeType, at position: CGPoint, category: ShapeCategory) {
         snapshotForUndo()
         // v73: containrar kaskadas inte (Skill-chipet ska wrappa mitten, inte fly fältet).
-        let position = type == .container ? position : cascadedPosition(near: position)
+        let position = type.actsAsContainer ? position : cascadedPosition(near: position)
         let node = ShapeNode(type: type, position: position, label: "", category: category)
         shapes.append(node)
-        if type != .container { assignContainerForShape(node.id) }   // v60
+        if !type.actsAsContainer { assignContainerForShape(node.id) }   // v60
         else { claimChildren(forContainer: node.id) }                 // v73
         expandCanvasIfNeeded(near: position)
     }
@@ -53,12 +53,11 @@ extension CanvasModel {
     func addShape(_ type: ShapeType, at position: CGPoint, label: String) {
         snapshotForUndo()
         // v73: containrar/ramar kaskadas inte.
-        let position = type == .container || type == .phoneFrame
-            ? position : cascadedPosition(near: position)
+        let position = type.actsAsContainer ? position : cascadedPosition(near: position)
         let cat = specType.defaultCategory
         let node = ShapeNode(type: type, position: position, label: label, category: cat)
         shapes.append(node)
-        if type != .container { assignContainerForShape(node.id) }
+        if !type.actsAsContainer { assignContainerForShape(node.id) }
         else { claimChildren(forContainer: node.id) }                 // v73
         expandCanvasIfNeeded(near: position)
     }
