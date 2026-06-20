@@ -71,6 +71,7 @@ extension DesignTokens {
             case .cylinder:            return height * 0.10   // v69 (mest för exhaustivitet — egen path)
             case .pill, .circle:       return height / 2
             case .line, .arrow, .link: return 0
+            case .emoji:               return height * 0.16   // v1.0: naken glyf
             }
         }
     }
@@ -89,7 +90,7 @@ extension DesignTokens {
             switch shapeType {
             case .pill, .circle:
                 return min(width, height) / 2
-            case .diamond, .processArrow, .octagon, .phoneFrame, .triangle, .cylinder, .line, .arrow, .link:
+            case .diamond, .processArrow, .octagon, .phoneFrame, .triangle, .cylinder, .line, .arrow, .link, .emoji:
                 // egna geometrier — SelectionOutline ritar formen, ingen rect-radie
                 return 0
             case .rectangle, .container, .table, .square:

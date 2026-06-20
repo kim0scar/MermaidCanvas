@@ -248,6 +248,7 @@ extension ContentView {
         case .phoneFrame:   return "iphone"
         case .triangle:     return "triangle"
         case .cylinder:     return "cylinder"
+        case .emoji:        return "face.smiling"
         }
     }
 

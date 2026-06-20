@@ -42,6 +42,7 @@ enum AppCapabilities {
         case .link:         return ShapeCap(displayName: "Hopplänk",     mermaidForm: "cirkel + %% link: N", appOnly: true)
         case .line:         return ShapeCap(displayName: "Lös linje",    mermaidForm: "nod + %% shape-type: line", appOnly: true)
         case .arrow:        return ShapeCap(displayName: "Lös pil",      mermaidForm: "nod + %% shape-type: arrow", appOnly: true)
+        case .emoji:        return ShapeCap(displayName: "Emoji",        mermaidForm: "text-nod + %% shape-type: emoji", appOnly: true)
         }
     }
 

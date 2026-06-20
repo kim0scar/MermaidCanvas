@@ -78,7 +78,7 @@ enum EdgeGeometry {
             localPoint = CGPoint(x: center.x + r * dx / length, y: center.y + r * dy / length)
         case .diamond:
             localPoint = diamondSideCenter(center: center, dx: dx, dy: dy, shape: shape)
-        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon, .phoneFrame, .triangle, .cylinder:
+        case .rectangle, .table, .pill, .square, .processArrow, .container, .octagon, .phoneFrame, .triangle, .cylinder, .emoji:
             localPoint = rectSideCenter(center: center, dx: dx, dy: dy, shape: shape)
         case .line, .arrow:
             return center

@@ -36,6 +36,8 @@ enum ShapeType: String, Codable, CaseIterable {
     case triangle
     /// v69: cylinder (databas/bevis) — native mermaid `[(...)]`.
     case cylinder
+    /// v1.0: naken emoji — bara glyfen (ingen ruta). Label = emoji-tecknet; byts fritt.
+    case emoji
 }
 
 extension ShapeType {

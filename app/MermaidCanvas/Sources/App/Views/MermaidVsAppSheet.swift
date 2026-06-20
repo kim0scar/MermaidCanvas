@@ -137,6 +137,7 @@ struct ShapeGlyph: View {
         case .link:         Image(systemName: "link").font(.title3).foregroundStyle(s)
         case .line:         Image(systemName: "minus").font(.title3).foregroundStyle(s)
         case .arrow:        Image(systemName: "arrow.right").font(.title3).foregroundStyle(s)
+        case .emoji:        Text("🙂").font(.title3)
         }
     }
 }

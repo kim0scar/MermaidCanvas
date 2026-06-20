@@ -53,6 +53,9 @@ struct SelectionOutline: View {
             case .line, .arrow, .link:
                 RoundedRectangle(cornerRadius: 0)
                     .stroke(Color.accentColor, style: dashStyle)
+            case .emoji:
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(Color.accentColor, style: dashStyle)
             }
         }
         .frame(width: width, height: height)

@@ -38,7 +38,9 @@ final class V35MermaidValidationTests: XCTestCase {
             // v68 — liksidig trekant (Mermaid-fallback = rektangel; typ bevaras via %% shape-type)
             ShapeNode(type: .triangle,     position: CGPoint(x: 1500, y: 100), label: "Trekant"),
             // v69 — cylinder (native mermaid [(...)] — round-trippar UTAN %% shape-type)
-            ShapeNode(type: .cylinder,     position: CGPoint(x: 1600, y: 100), label: "Cylinder")
+            ShapeNode(type: .cylinder,     position: CGPoint(x: 1600, y: 100), label: "Cylinder"),
+            // v1.0 — naken emoji (text-nod + %% shape-type: emoji)
+            ShapeNode(type: .emoji,        position: CGPoint(x: 1700, y: 100), label: "😀")
         ]
         XCTAssertEqual(shapes.count, ShapeType.allCases.count, "Testet ska täcka alla ShapeType-fall")
         // Sanity check: alla ShapeType-fall ska finnas representerade

@@ -91,7 +91,7 @@ enum MermaidGenerator {
             // (annars degraderar de tyst → rektangel i ren mermaid: table→rektangel, link→cirkel,
             // square/processArrow/octagon/line/arrow→rektangel). %% shape-type räddar identiteten.
             if [.phoneFrame, .triangle, .table, .link,
-                .square, .processArrow, .octagon, .line, .arrow].contains(shape.type) {
+                .square, .processArrow, .octagon, .line, .arrow, .emoji].contains(shape.type) {
                 lines.append("\(indent)%% \(id) shape-type: \(shape.type.rawValue)")
             }
             // v23: textstil + färg-paket
@@ -469,6 +469,7 @@ enum MermaidGenerator {
         case .phoneFrame:   return "[\"\(label)\"]"    // v67: Mermaid saknar telefon-form; rektangel-fallback (typ bevaras via %% shape-type + state-JSON)
         case .triangle:     return "[\"\(label)\"]"    // v68: rektangel-fallback (alltid giltig mermaid); typ bevaras via %% shape-type + state-JSON
         case .cylinder:     return "[(\"\(label)\")]"  // v69: native mermaid-cylinder (databas/bevis) — round-trippar utan %% shape-type
+        case .emoji:        return "[\"\(label)\"]"    // v1.0: emoji = text-nod; identitet via %% shape-type: emoji
         }
     }
 

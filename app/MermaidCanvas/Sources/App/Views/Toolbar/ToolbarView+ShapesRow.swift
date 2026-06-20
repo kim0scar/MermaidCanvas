@@ -62,6 +62,13 @@ extension ToolbarView {
                     .accessibilityLabel(a11yLabel(for: "chip.notepopup"))
                     chipLabel("Notis")
                 }
+                // v1.0: naken emoji — placeras fritt, byts genom att skriva valfri emoji.
+                VStack(spacing: 2) {
+                    shapeChip(.emoji, "face.smiling", accId: "chip.emoji") {
+                        model.addShape(.emoji, at: canvasCenter, label: "😀")
+                    }
+                    chipLabel("Emoji")
+                }
             }
             // v67: flödesnoderna (f.d. Rad C) flyttade till n8n-paketet (packs-raden).
         }

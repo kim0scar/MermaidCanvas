@@ -20,6 +20,7 @@ enum ShapeGeometry {
         case .phoneFrame:   return 180   // v67: iPhone 16 Pro-proportion (~0.46 b/h)
         case .triangle:     return 88    // v68: liksidig trekant (bredd ≈ höjd-ram)
         case .cylinder:     return 100   // v69: databas/bevis-cylinder
+        case .emoji:        return 64    // v1.0: naken emoji-glyf
         default:            return baseWidth
         }
     }
@@ -32,6 +33,7 @@ enum ShapeGeometry {
         case .phoneFrame: return 391   // v67/v68: exakt iPhone 16 Pro-proportion (180×391 = 0.460)
         case .triangle:   return 80    // v68: liksidig trekant
         case .cylinder:   return 90    // v69: databas/bevis-cylinder
+        case .emoji:      return 64    // v1.0: naken emoji-glyf
         default:          return baseHeight
         }
     }

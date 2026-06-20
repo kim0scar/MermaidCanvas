@@ -119,7 +119,7 @@ struct ShapeRenderer: View {
             CylinderShape()
                 .fill(fill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
-        case .line, .arrow:
+        case .line, .arrow, .emoji:   // v1.0: emoji = naken glyf (ingen ruta)
             EmptyView()
         }
     }
@@ -151,7 +151,7 @@ struct ShapeRenderer: View {
         case .phoneFrame:
             // v67: bezeln ÄR ramen (ritad i background)
             EmptyView()
-        case .table, .link, .line, .arrow:
+        case .table, .link, .line, .arrow, .emoji:
             EmptyView()
         }
     }
@@ -184,6 +184,8 @@ struct ShapeRenderer: View {
                 RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .link:
                 Circle().stroke(Color.accentColor, lineWidth: 3.5)
+            case .emoji:
+                RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.accentColor, lineWidth: 3.5)
             case .line, .arrow:
                 EmptyView()
             }

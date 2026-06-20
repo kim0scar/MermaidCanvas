@@ -62,7 +62,13 @@ struct ShapeView: View {
             // v50.3 R3: Containers label hanteras via separat .overlay nedan
             // (Lucidchart-stil ovanför ramen). Andra former behåller centrerad
             // text inuti ZStack:en.
-            if shape.showLabel && shape.type != .container && shape.type != .phoneFrame {
+            if shape.type == .emoji {
+                // v1.0: naken emoji — bara glyfen, stor, fyller formen (ingen ruta bakom).
+                Text(shape.label.isEmpty ? "🙂" : shape.label)
+                    .font(.system(size: ShapeGeometry.height(for: shape) * 0.78))
+                    .minimumScaleFactor(0.2)
+                    .lineLimit(1)
+            } else if shape.showLabel && shape.type != .container && shape.type != .phoneFrame {
                 // v73: tom nod visar sin typ som svag platshållare (P4: "bara form+färg
                 // skiljer Script från Bevis") — försvinner så fort Kim skriver eget namn.
                 // Bara visning; exporten påverkas inte.
