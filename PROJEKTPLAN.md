@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: MB — ✅ G, H, steg 8, ✅ steg 9 (UI-mall: iPhone-chips + namn utanpå + proportionell resize + phoneFrame-som-container). v81 deployad. NÄST: deploy v82 (allt sen v81) → KVAR bara steg 0 (städa rot, trivialt) + steg 1–5 (UX-111–114, kräver Kims iPhone). ✅ Steg F, 6, 7. n8n + M4 PAUSADE. MA + M3 klara.
-[grundappen MB: █████████░] G+H+8+9 klara · 💡 Idébanken: 8 fångade, 3 byggda
+NU: MB — ✅ G, H, 8, 9, ✅ steg 0 (städa rot). v82 deployad + pill-fix + fundament-verifiering (app==mermaid, alla former, bevisat). KVAR: bara steg 1–5 (UX-111–114) som KRÄVER Kims iPhone-audit (touch/gest-buggar, sim ljuger). ✅ Steg F, 6, 7. n8n + M4 PAUSADE. MA + M3 klara.
+[grundappen MB: █████████░] allt byggbart klart · 💡 Idébanken: 8 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -76,7 +76,7 @@ Kräver: Steg 15 ✅ + Steg 16 ✅
 
 ## Milstolpe MB — Grundappen sitter (basen solid INNAN vidare bygge · Kims order 2026-06-18)
 n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se-appen, Kims iPhone-bock för gester). WIP=1.
-- ☐ Steg 0 — Städa roten: version-stämplade fynd (HANDOVER v50.7, BUGSVEP-v60, GAP-ANALYS-v61, UI-PLACERINGS-FYND-v49, v47.xlsx) → arkiv/; lös dubbletter. Klart: inga lösa version-fynd i roten, bygg+arch-check oförändrat.
+- ✅ Steg 0 — Städa roten: HANDOVER v50.7, BUGSVEP-v60, GAP-ANALYS-v61, UI-PLACERINGS-FYND-v49, v47.xlsx → arkiv/ (git mv, historik bevarad). Inga lösa version-fynd i roten; bygg+arch-check oförändrat.
 - ☐ Steg 1 — Om-verifiera UX-111–122 mot v79 (se-appen + iPhone). Klart: färsk lever/dött-lista, döda bockas i auditen.
 - ☐ Steg 2 — UX-111 pan-stölden: större träffyta på pilhandtag + "hoppa till innehåll". Klart: Kim bekräftar på iPhone att drag nära handtag inte panorerar bort allt.
 - ☐ Steg 3 — UX-112: klampa handtag (resize/rotate/connection) till synlig yta. Klart: Kim når alla handtag på iPhone.
