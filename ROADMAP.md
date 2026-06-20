@@ -2,7 +2,7 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v1.0 (build v89) — "Pil-linjeformer + naken emoji + namn helt på canvasen"
+## Aktuell version: v1.1 (build v90) — "Visio hoppa-in (underflöden)"
 
 *Tema:* Facit-täckningsgrind (bijektion generator↔facit) + ärlig regel 15. Facit-menyn
 redesignad (färg=överlevnad, riktiga glyfer, sök, sticky copy). JPG-export. Import-mallen
