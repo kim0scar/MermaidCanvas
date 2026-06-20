@@ -56,6 +56,7 @@ enum UITestScenarios {
         // v64: ett connection-handtag + vald utgångssida + tydliga badges
         "35-fromside-and-badges":       place35FromSideAndBadges,
         "36-all-base-shapes":           place36AllBaseShapes,
+        "37-skill-flow-files":          place37SkillFlowFiles,
     ]
 
     // MARK: - Builders

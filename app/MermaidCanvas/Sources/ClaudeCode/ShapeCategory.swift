@@ -199,6 +199,16 @@ enum ShapeCategory: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// Steg 8 (2d): dokument-glyf för fil-kategorier — MD/Excel ritas som rektangel
+    /// men får en igenkännings-ikon i hörnet. nil = ingen glyf.
+    var fileGlyphSymbol: String? {
+        switch self {
+        case .fileMarkdown: return "doc.text"
+        case .fileExcel:    return "tablecells"
+        default:            return nil
+        }
+    }
+
     var strokeColor: Color {
         switch self {
         case .ui:       return Color(hex: 0x1e293b)

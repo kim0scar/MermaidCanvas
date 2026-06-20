@@ -15,7 +15,22 @@ struct ShapeRenderer: View {
         ZStack {
             background
             strokeLayer
+            fileGlyph
             highlight
+        }
+    }
+
+    /// Steg 8 (2d): fil-kategorier (MD/Excel) ritas som rektangel men får en
+    /// igenkännings-glyf i övre vänstra hörnet så Kim ser vad de är.
+    @ViewBuilder
+    private var fileGlyph: some View {
+        if let symbol = shape.category.fileGlyphSymbol {
+            Image(systemName: symbol)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(stroke.opacity(0.7))
+                .padding(7)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .allowsHitTesting(false)
         }
     }
 

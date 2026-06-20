@@ -41,4 +41,17 @@ extension UITestScenarios {
         shapes.append(line)
         model.shapes.append(contentsOf: shapes)
     }
+
+    /// Steg 8 (2d): fil-former med dokument-glyf — MD + Excel + subagent.
+    static func place37SkillFlowFiles(_ model: CanvasModel, _ c: CGPoint) {
+        let sub = ShapeNode(type: .rectangle, position: CGPoint(x: c.x, y: c.y - 90),
+                            label: "Subagent", category: .subagent)
+        let md  = ShapeNode(type: .rectangle, position: CGPoint(x: c.x - 110, y: c.y + 70),
+                            label: "data.md", category: .fileMarkdown)
+        let xls = ShapeNode(type: .rectangle, position: CGPoint(x: c.x + 110, y: c.y + 70),
+                            label: "ark.xlsx", category: .fileExcel)
+        model.shapes.append(contentsOf: [sub, md, xls])
+        model.addEdge(from: sub.id, to: md.id)
+        model.addEdge(from: sub.id, to: xls.id)
+    }
 }
