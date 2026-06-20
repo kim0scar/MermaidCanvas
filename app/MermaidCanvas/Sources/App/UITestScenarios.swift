@@ -58,6 +58,7 @@ enum UITestScenarios {
         "36-all-base-shapes":           place36AllBaseShapes,
         "37-skill-flow-files":          place37SkillFlowFiles,
         "38-iphone-frame":              place38PhoneFrame,
+        "39-verify-all":                place39VerifyAll,
     ]
 
     // MARK: - Builders

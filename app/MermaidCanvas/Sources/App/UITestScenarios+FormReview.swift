@@ -62,4 +62,34 @@ extension UITestScenarios {
         model.shapes.append(phone)
         model.selectedShapeId = phone.id
     }
+
+    /// Fundament-verifiering: alla basfigurer MED text + distinkta kategori-färger.
+    /// Används för att jämföra app-rendering mot mermaid-rendering (app == mermaid).
+    static func place39VerifyAll(_ model: CanvasModel, _ c: CGPoint) {
+        let cols: [CGFloat] = [-135, 0, 135]
+        let rows: [CGFloat] = [-235, -78, 78, 235]
+        func pos(_ col: Int, _ row: Int) -> CGPoint { CGPoint(x: c.x + cols[col], y: c.y + rows[row]) }
+        var shapes: [ShapeNode] = [
+            ShapeNode(type: .circle,       position: pos(0, 0), label: "Start",   category: .input),
+            ShapeNode(type: .pill,         position: pos(1, 0), label: "Pill",    category: .ui),
+            ShapeNode(type: .rectangle,    position: pos(2, 0), label: "Ruta",    category: .feat),
+            ShapeNode(type: .square,       position: pos(0, 1), label: "Kvadrat", category: .zone),
+            ShapeNode(type: .diamond,      position: pos(1, 1), label: "Beslut?", category: .router),
+            ShapeNode(type: .processArrow, position: pos(2, 1), label: "Steg",    category: .script),
+            ShapeNode(type: .octagon,      position: pos(0, 2), label: "Stopp",   category: .manual),
+            ShapeNode(type: .triangle,     position: pos(1, 2), label: "Tri",     category: .gate),
+            ShapeNode(type: .cylinder,     position: pos(2, 2), label: "DB",      category: .evidence),
+        ]
+        var table = ShapeNode(type: .table, position: pos(0, 3), label: "Tabell", category: .ui)
+        table.tableRows = 2; table.tableCols = 2; table.tableCells = [["a", "b"], ["c", "d"]]
+        shapes.append(table)
+        var link = ShapeNode(type: .link, position: pos(1, 3), label: "Hopp", category: .ui)
+        link.linkNumber = 1
+        shapes.append(link)
+        var line = ShapeNode(type: .line, position: pos(2, 3), label: "", category: .overlay)
+        line.lineEnd = CGPoint(x: 70, y: 0)
+        shapes.append(line)
+        model.shapes.append(contentsOf: shapes)
+        model.addEdge(from: shapes[0].id, to: shapes[4].id)
+    }
 }

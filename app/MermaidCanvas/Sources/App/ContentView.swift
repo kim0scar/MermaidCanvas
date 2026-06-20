@@ -165,6 +165,15 @@ struct ContentView: View {
             if ProcessInfo.processInfo.arguments.contains("-uitest-export-image") {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { exportImage() }
             }
+            // Fundament-koll: dumpa hela dokumentet (mermaid + state) så "se-appen"
+            // kan rendera den exakta mermaiden och jämföra mot app-bilden.
+            if ProcessInfo.processInfo.arguments.contains("-uitest-dump-doc"),
+               let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                    try? makeDocument().content.write(
+                        to: docs.appendingPathComponent("uitest-doc.md"), atomically: true, encoding: .utf8)
+                }
+            }
             // MA-spår C: skriv state-dump vid varje modelländring (bara med -uitest-dump-state).
             if StateDump.isEnabled {
                 StateDump.writeIfEnabled(model, viewport: viewportState)
