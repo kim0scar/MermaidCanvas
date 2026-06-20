@@ -2,7 +2,7 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v0.9 (build v87) — "OSX-app + 4 handtag + inline-redigering"
+## Aktuell version: v0.9 (build v88) — "V79-svep komplett (allt byggbart)"
 
 *Tema:* Facit-täckningsgrind (bijektion generator↔facit) + ärlig regel 15. Facit-menyn
 redesignad (färg=överlevnad, riktiga glyfer, sök, sticky copy). JPG-export. Import-mallen

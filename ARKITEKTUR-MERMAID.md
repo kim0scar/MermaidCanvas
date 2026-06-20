@@ -1,4 +1,4 @@
-# ARKITEKTUR-MERMAID — Milstolpe v0.9 (build v87)
+# ARKITEKTUR-MERMAID — Milstolpe v0.9 (build v88)
 *Datum: 2026-06-20*
 
 > **v87 (v0.9-forts.):** **OSX-app via Mac Catalyst** (Kims "lätt?" → ja; bygger+kör på Mac,
