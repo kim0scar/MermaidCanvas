@@ -14,7 +14,7 @@ struct NoteCardsLayer: View {
         ZStack(alignment: .topLeading) {
             ForEach(openCards, id: \.self) { id in
                 if let shape = model.shapes.first(where: { $0.id == id }) {
-                    NoteCard(shape: shape,
+                    NoteCard(model: model, shapeId: id,
                              onClose: { openCards.removeAll { $0 == id } },
                              onEdit: { onEdit(id) })
                         .position(cardPosition(for: shape))
@@ -35,20 +35,34 @@ struct NoteCardsLayer: View {
 }
 
 /// En lapp: formens namn + Prompt (blir skill) + Anteckning (bara för dig).
+/// V79-svep: namn + anteckning är REDIGERBARA direkt här på canvasen (Kims "skriv
+/// direkt på canvas"). Prompt visas read-only; pennan öppnar full redigering.
 struct NoteCard: View {
-    let shape: ShapeNode
+    @ObservedObject var model: CanvasModel
+    let shapeId: UUID
     var onClose: () -> Void
     var onEdit: () -> Void
+
+    @State private var label = ""
+    @State private var note = ""
+    @State private var loaded = false
+    @State private var snapped = false
+
+    private var shape: ShapeNode? { model.shapes.first { $0.id == shapeId } }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 8) {
-                Text(shape.label.isEmpty ? "Form" : shape.label)
+                // V79-svep: namnet skrivs direkt i lappen ("ny ikon T → skriv namn").
+                TextField("Namn", text: $label)
                     .font(.subheadline.weight(.semibold))
-                    .lineLimit(1)
+                    .textFieldStyle(.plain)
+                    .submitLabel(.done)
+                    .onChange(of: label) { _, v in commit(label: v) }
+                    .accessibilityIdentifier("notecard.name")
                 Spacer(minLength: 4)
                 Button(action: onEdit) {
-                    Image(systemName: "pencil")
+                    Image(systemName: "slider.horizontal.3")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
@@ -67,18 +81,23 @@ struct NoteCard: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
-                    if !shape.prompt.isEmpty {
+                    if let p = shape?.prompt, !p.isEmpty {
                         section(icon: "brain", color: Color(hex: 0x4338ca),
-                                heading: "Prompt (blir skill)", text: shape.prompt)
+                                heading: "Prompt (blir skill)", text: p)
                     }
-                    if !shape.note.isEmpty {
-                        section(icon: "text.alignleft", color: Color(hex: 0xB28A00),
-                                heading: "Anteckning (bara för dig)", text: shape.note)
-                    }
-                    if shape.prompt.isEmpty && shape.note.isEmpty {
-                        Text("Ingen prompt eller anteckning.")
+                    // V79-svep: anteckningen REDIGERAS direkt på canvasen.
+                    VStack(alignment: .leading, spacing: 5) {
+                        Label("Anteckning (bara för dig)", systemImage: "text.alignleft")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color(hex: 0xB28A00))
+                        TextEditor(text: $note)
                             .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .frame(minHeight: 56, maxHeight: 130)
+                            .scrollContentBackground(.hidden)
+                            .background(Color(.secondarySystemBackground),
+                                        in: RoundedRectangle(cornerRadius: 8))
+                            .onChange(of: note) { _, v in commit(note: v) }
+                            .accessibilityIdentifier("notecard.note")
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -93,6 +112,21 @@ struct NoteCard: View {
             .stroke(Color(.separator), lineWidth: 0.8))
         .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
         .accessibilityIdentifier("notecard")
+        .onAppear {
+            guard !loaded else { return }
+            label = shape?.label ?? ""
+            note = shape?.note ?? ""
+            loaded = true
+        }
+    }
+
+    /// Skriver live till modellen; tar EN undo-snapshot per redigeringssession.
+    /// No-op om värdet inte ändrats (skyddar mot ladd-triggad onChange).
+    private func commit(label: String? = nil, note: String? = nil) {
+        if let label, label == shape?.label { return }
+        if let note, note == shape?.note { return }
+        if !snapped { model.snapshotForUndo(); snapped = true }
+        model.setShapeText(id: shapeId, label: label, note: note)
     }
 
     @ViewBuilder

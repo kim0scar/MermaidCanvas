@@ -219,6 +219,14 @@ extension CanvasModel {
         }
     }
 
+    /// V79-svep: inline-redigering direkt i lappen på canvasen (live skrivning).
+    /// Snapshot tas EN gång per redigeringssession av anroparen (NoteCard), inte här.
+    func setShapeText(id: UUID, label: String? = nil, note: String? = nil) {
+        guard let i = shapes.firstIndex(where: { $0.id == id }) else { return }
+        if let label { shapes[i].label = label }
+        if let note { shapes[i].note = note }
+    }
+
     /// v73: byt bara namn (skill-spara-namnfrågan döper containern).
     func renameShape(id: UUID, label: String) {
         guard let i = shapes.firstIndex(where: { $0.id == id }) else { return }
