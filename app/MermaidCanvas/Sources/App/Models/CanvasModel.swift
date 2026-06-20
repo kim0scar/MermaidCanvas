@@ -40,8 +40,7 @@ final class CanvasModel: ObservableObject {
     /// v63: kollaps är PER GREN (kant-id), inte per nod — Kims fynd: minus-badgen
     /// på en pil kollapsade alla beroendepilar från samma symbol.
     @Published var collapsedEdgeIds: Set<UUID> = []
-    /// v66: legend — kategori-rawValue → Kims betydelse-text. Round-trippar
-    /// via state-JSON + %% legend-rader.
+    /// v66: legend — kategori-rawValue → Kims betydelse-text. Round-trippar via state-JSON + %% legend.
     @Published var legend: [String: String] = [:]
 
     // v34: canvas är fast 4000×4000 — kvadratisk vit yta. UIScrollView hanterar
@@ -50,6 +49,7 @@ final class CanvasModel: ObservableObject {
     @Published var contentSize: CGSize = CGSize(width: 4000, height: 4000)
 
     var undoStack: [CanvasSnapshot] = []; var redoStack: [CanvasSnapshot] = []   // V79: ångra båda håll
+    @Published var drillStack: [DrillFrame] = []   // v1.0+ Visio: aktiva "hoppa in"-nivåer
     let undoLimit = 30
 
     var isEdgeMode: Bool { edgeCreationMode != .off }

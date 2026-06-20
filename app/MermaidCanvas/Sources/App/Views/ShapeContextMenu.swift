@@ -24,6 +24,9 @@ struct ShapeContextMenu: View {
     var onToggleLock: () -> Void = {}
     var zLayer: Int = 0
     var onSetZLayer: (Int) -> Void = { _ in }
+    /// v1.0+ Visio "hoppa in": forma äger ett underflöde / skapa ett.
+    var hasSubCanvas: Bool = false
+    var onEnterSubprocess: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -39,6 +42,10 @@ struct ShapeContextMenu: View {
             menuItem(label: locked ? "Lås upp" : "Lås fast",
                      systemImage: locked ? "lock.open" : "lock.fill",
                      action: onToggleLock)
+            // v1.0+ Visio "hoppa in": en nivå djupare (eget underflöde i formen).
+            menuItem(label: hasSubCanvas ? "Hoppa in →" : "Skapa underflöde",
+                     systemImage: hasSubCanvas ? "arrow.down.right.circle.fill" : "rectangle.on.rectangle.angled",
+                     action: onEnterSubprocess)
             if let copySkill = onCopySkill {
                 menuItem(label: "Kopiera som skill",
                          systemImage: "square.and.arrow.up.on.square",

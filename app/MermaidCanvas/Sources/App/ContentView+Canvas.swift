@@ -54,6 +54,7 @@ extension ContentView {
                 }
             },
             onShapeSetZLayer: { id, z in model.setZLayer(id: id, z) },
+            onShapeEnterSubprocess: { id in model.enterSubprocess(id) },   // v1.0+ Visio
             openCards: $openCards,
             zoomPercent: $zoomPercent,
             resetZoomTrigger: resetZoomTrigger,
@@ -76,6 +77,16 @@ extension ContentView {
                 .accessibilityIdentifier("canvas.recenter")
                 .accessibilityLabel("Centrera på innehållet")
             }
+        }
+        // v1.0+ Visio: brödsmule-bar överst när man är nere i ett underflöde.
+        .overlay(alignment: .top) {
+            if model.isDrilledIn { DrillBreadcrumbBar(model: model) }
+        }
+        // Vid varje nivåbyte (hoppa in/ut): centrera vyn på den nya nivåns innehåll.
+        .onChange(of: model.drillStack.count) { _, _ in
+            centerOnPoint = model.shapes.isEmpty
+                ? CGPoint(x: model.canvasSize.width / 2, y: model.canvasSize.height / 2)
+                : contentCenter(of: model.shapes)
         }
     }
 }

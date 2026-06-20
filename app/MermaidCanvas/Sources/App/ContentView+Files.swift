@@ -107,10 +107,13 @@ extension ContentView {
     }
 
     func makeDocument() -> CanvasDocument {
-        CanvasDocument(
+        // v1.0+ Visio: spara ALLTID rotdokumentet (viker ev. drill-stack non-destruktivt)
+        // så autosave aldrig skriver ett underflöde som rot.
+        let root = model.rootForSave()
+        return CanvasDocument(
             title: model.canvasTitle,
-            shapes: model.shapes,
-            edges: model.edges,
+            shapes: root.shapes,
+            edges: root.edges,
             canvasSize: model.canvasSize,
             specType: model.specType,
             platform: model.platform,

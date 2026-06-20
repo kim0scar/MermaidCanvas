@@ -31,6 +31,7 @@ struct CanvasView: View {
     var onSaveContainerMermaid: (UUID) -> Void = { _ in }
     var onShapeToggleLock: (UUID) -> Void = { _ in }
     var onShapeSetZLayer: (UUID, Int) -> Void = { _, _ in }
+    var onShapeEnterSubprocess: (UUID) -> Void = { _ in }   // v1.0+ Visio
     /// v67: öppna läs-lappar — ligger PÅ canvasen (canvas-space), panorerar med tavlan.
     @Binding var openCards: [UUID]
 
@@ -76,10 +77,8 @@ struct CanvasView: View {
                         .allowsHitTesting(false)
                 )
                 .coordinateSpace(name: "canvas")
-                // v51.0: canvasen är ett FAST vitt ritbräde (ColorPack-färger + Mermaid-
-                // export är ljusa). Tvinga light color scheme på hela canvas-subträdet så
-                // kanter/pilar/etiketter (.primary) blir mörka och syns i iPhone dark mode.
-                // Toolbar/menyer ligger utanför detta subträd → förblir adaptiva.
+                // v51.0: FAST vitt ritbräde → tvinga light scheme på canvas-subträdet så
+                // .primary (kanter/pilar/text) syns mörkt i dark mode. Toolbar utanför = adaptiv.
                 .environment(\.colorScheme, .light)
         }
         .ignoresSafeArea()
@@ -184,7 +183,8 @@ struct CanvasView: View {
                         onSaveSkillFile: { id in onSaveSkillFile(id) },
                         onSaveContainerMermaid: { id in onSaveContainerMermaid(id) },
                         onToggleLock: { id in onShapeToggleLock(id) },
-                        onSetZLayer: { id, z in onShapeSetZLayer(id, z) }
+                        onSetZLayer: { id, z in onShapeSetZLayer(id, z) },
+                        onEnterSubprocess: { id in onShapeEnterSubprocess(id) }
                     )
                     // v60 D: containrar ritas UNDER övriga former (barn fångar då inte
                     // containerns tap → namnbyte funkar; barn ligger visuellt ovanpå).

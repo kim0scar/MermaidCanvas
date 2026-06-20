@@ -38,6 +38,7 @@ struct ShapeView: View {
     /// V79-svep: lås/lås upp + sätt lager.
     var onToggleLock: ((UUID) -> Void)? = nil
     var onSetZLayer: ((UUID, Int) -> Void)? = nil
+    var onEnterSubprocess: ((UUID) -> Void)? = nil   // v1.0+ Visio
     /// Steg H: exportläge — rendera bara form + text (ingen badge-chrome) för bild-export.
     var exportMode: Bool = false
 
@@ -88,6 +89,14 @@ struct ShapeView: View {
         }
         .frame(width: ShapeGeometry.width(for: shape),
                height: ShapeGeometry.height(for: shape))
+        // v1.0+ Visio: dubbel inre ram = "den här formen har ett underflöde" (Visio-konvention).
+        .overlay {
+            if shape.subCanvas != nil && !exportMode {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(Color.accentColor.opacity(0.55), lineWidth: 1.5)
+                    .padding(5)
+            }
+        }
         .rotationEffect(.degrees(shape.rotation))
         .opacity(markerMode && !edgeMode ? 0.6 : 1.0)
         // v60: container-titeln bor nu i header-raden (se background) — ingen flytande tab.
@@ -215,7 +224,9 @@ struct ShapeView: View {
                 locked: shape.locked,
                 onToggleLock: { showContextMenu = false; onToggleLock?(shape.id) },
                 zLayer: shape.zLayer,
-                onSetZLayer: { z in onSetZLayer?(shape.id, z) }
+                onSetZLayer: { z in onSetZLayer?(shape.id, z) },
+                hasSubCanvas: shape.subCanvas != nil,
+                onEnterSubprocess: { showContextMenu = false; onEnterSubprocess?(shape.id) }
             )
             .presentationCompactAdaptation(.popover)
         }

@@ -90,9 +90,11 @@
 		6FBD251F80549B80AD67C081 /* MermaidGenerator+StateJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */; };
 		7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */; };
 		7467706C41CF4EAC940B5B06 /* V67Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C515D01227ECFFACAFCE12 /* V67Tests.swift */; };
+		79C0A2DB97B4908F3871A450 /* DrillBreadcrumbBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB8DCE62B98DDD6EEF8D7EF /* DrillBreadcrumbBar.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
 		7BCCD9DB163AFD89CFA15B6E /* EdgeConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */; };
 		7D95F212EDEA8077BE51BC5A /* test_diamond_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */; };
+		7DBA255061BBA23A2B51E139 /* CanvasModel+Drill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104ED8A34A8B67E6EDC4E802 /* CanvasModel+Drill.swift */; };
 		7EECEE3DC37DCC6AE815E975 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */; };
 		8239C5EFC5133E538D8EB8FA /* MermaidParser+EdgeMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1182F83F7A919C040242F048 /* MermaidParser+EdgeMeta.swift */; };
 		8264FE3E2A49DB752FEA28B1 /* DispatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606442556943C91C73230646 /* DispatchTest.swift */; };
@@ -226,6 +228,7 @@
 		0DF183504C9423B6FDC2B195 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0E42EE69DC47FA92EA10BD2F /* prompt-process-rules.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "prompt-process-rules.md"; sourceTree = "<group>"; };
 		0EF3CF9F456AC109F02223E3 /* test_component_gallery_full.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_component_gallery_full.1.png; sourceTree = "<group>"; };
+		104ED8A34A8B67E6EDC4E802 /* CanvasModel+Drill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasModel+Drill.swift"; sourceTree = "<group>"; };
 		1182F83F7A919C040242F048 /* MermaidParser+EdgeMeta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MermaidParser+EdgeMeta.swift"; sourceTree = "<group>"; };
 		12BE1B86655B722847CCF708 /* V27FeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V27FeatureTests.swift; sourceTree = "<group>"; };
 		162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "METOD-VISUELL-DIALOG.md"; sourceTree = "<group>"; };
@@ -404,6 +407,7 @@
 		F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScreenRenderer.swift; sourceTree = "<group>"; };
 		FAA597C88CA5ABD913AC7597 /* OrientationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationTests.swift; sourceTree = "<group>"; };
 		FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapePack.swift; sourceTree = "<group>"; };
+		FCB8DCE62B98DDD6EEF8D7EF /* DrillBreadcrumbBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrillBreadcrumbBar.swift; sourceTree = "<group>"; };
 		FCCEAC8164A105EF50AFB43C /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotePopupSheet.swift; sourceTree = "<group>"; };
 		FF04A29A100E836C9DE2317A /* FileChangeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileChangeObserver.swift; sourceTree = "<group>"; };
@@ -442,6 +446,7 @@
 				E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */,
 				8BB3515CEC6B12426998B32B /* CanvasModel+Collapse.swift */,
 				4CB5219BDA65C560A990E1E1 /* CanvasModel+Containers.swift */,
+				104ED8A34A8B67E6EDC4E802 /* CanvasModel+Drill.swift */,
 				D35CB0F4383A187355DF8E0C /* CanvasModel+Edges.swift */,
 				8D149A2089DDEF1F2F2D2CB3 /* CanvasModel+Platform.swift */,
 				D65057645CBC97A8C00E2448 /* CanvasModel+Selection.swift */,
@@ -506,6 +511,7 @@
 				6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */,
 				A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */,
 				0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */,
+				FCB8DCE62B98DDD6EEF8D7EF /* DrillBreadcrumbBar.swift */,
 				56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */,
 				CB0A0E15AFE7F04DC3EFE060 /* EdgeLabelSheet.swift */,
 				63EC33DCD9A1923246CA727F /* EdgeMath.swift */,
@@ -965,6 +971,7 @@
 				F1768FADFA994A9D12D1B2E0 /* CanvasImageExporter.swift in Sources */,
 				DDEDEF4495EFF35BC377F3C7 /* CanvasModel+Collapse.swift in Sources */,
 				072FB24BB80E361535FAC525 /* CanvasModel+Containers.swift in Sources */,
+				7DBA255061BBA23A2B51E139 /* CanvasModel+Drill.swift in Sources */,
 				D1EEE44B79F8C270978DDB38 /* CanvasModel+Edges.swift in Sources */,
 				0F165CD39C55F08866A2E55F /* CanvasModel+Platform.swift in Sources */,
 				075AEDBFD14F4F58E3C4D203 /* CanvasModel+Selection.swift in Sources */,
@@ -990,6 +997,7 @@
 				999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */,
 				6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */,
 				6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */,
+				79C0A2DB97B4908F3871A450 /* DrillBreadcrumbBar.swift in Sources */,
 				3B9451B0A7EE6F905F567419 /* EdgeCollapseBadges.swift in Sources */,
 				7BCCD9DB163AFD89CFA15B6E /* EdgeConnection.swift in Sources */,
 				F5F6A05E09F52FF250B76BDC /* EdgeDrawing.swift in Sources */,

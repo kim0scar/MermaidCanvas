@@ -108,6 +108,22 @@ final class CanvasModelMutationTests: XCTestCase {
         XCTAssertTrue(m.canUndo, "mallen är en undo-bar handling")
     }
 
+    /// v1.0+ Visio: hoppa in → rita → hoppa ut bevarar underflödet på föräldern.
+    func test_visioDrill_enterExitPreservesContent() {
+        let m = CanvasModel()
+        m.addShape(.rectangle, at: c)
+        let parentId = m.shapes[0].id
+        m.enterSubprocess(parentId)
+        XCTAssertTrue(m.isDrilledIn)
+        XCTAssertTrue(m.shapes.isEmpty, "nytt underflöde börjar tomt")
+        m.addShape(.circle, at: c)
+        m.exitSubprocess()
+        XCTAssertFalse(m.isDrilledIn)
+        XCTAssertEqual(m.shapes.count, 1, "tillbaka till roten")
+        XCTAssertEqual(m.shapes.first?.subCanvas?.shapes.count, 1,
+                       "underflödets innehåll bevarat på föräldern")
+    }
+
     /// V79-svep: redo (ångra åt båda håll).
     func test_redo_reappliesAndIsClearedByNewEdit() {
         let m = CanvasModel()
