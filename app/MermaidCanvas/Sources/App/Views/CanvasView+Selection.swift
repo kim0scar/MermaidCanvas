@@ -59,8 +59,8 @@ extension CanvasView {
                 // grannforms bbox äta handtags-gesten.
                 .zIndex(3)
             }
-            // v44: ConnectionHandle är ALLTID synlig på vald form — ett enskilt
-            // handtag i högerkanten. Drag från det skapar en pil.
+            // V79-svep: FYRA connection-handtag (ett per sida). Drag från en sida skapar
+            // en pil som GÅR UT från just den sidan (ej automatiskt närmaste).
             ConnectionHandles(
                 shape: s,
                 canvasScale: zoomScale,
@@ -68,14 +68,13 @@ extension CanvasView {
                     connectionDrag = ConnectionDrag(fromShapeId: s.id,
                                                    currentCanvasLocation: canvasPoint)
                 },
-                onDragEnded: { canvasPoint in
+                onDragEnded: { side, canvasPoint in
                     if let target = ShapeGeometry.hitTest(canvasPoint,
                                                           shapes: model.shapes,
-                                                          excludingId: s.id) {
-                        model.addEdge(from: s.id, to: target.id)
-                        // v49 Fel #3 (Agent B 2/3-konsensus): säkerställ
-                        // att from-shape är markerad efter pil skapats —
-                        // annars syns inte minus-badgen vid kantens start.
+                                                          excludingId: s.id),
+                       let edgeId = model.addEdge(from: s.id, to: target.id) {
+                        model.setEdgeFromSide(id: edgeId, side: side)
+                        // v49 Fel #3: from-shape markerad efter pil skapats.
                         model.selectedShapeId = s.id
                     }
                     connectionDrag = nil

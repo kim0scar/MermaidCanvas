@@ -25,35 +25,38 @@ struct ConnectionRubberBand: View {
 
 // MARK: - ConnectionHandles
 
-/// v64 (Kims önskemål): ETT connection-handtag i stället för fyra — mindre röra
-/// runt formen. Sitter i högerkanten; pilen får automatiskt närmaste utgångssida,
-/// och sidan kan ändras i efterhand via pilens kontextmeny ("Går ut från").
+/// V79-svep (Kims "Fyra prickarna igen"): FYRA connection-handtag — ett per sida.
+/// Pilen går ut från SIDAN man drog ifrån (ej automatiskt närmaste). Sidan kan ändras
+/// i efterhand via pilens kontextmeny ("Går ut från").
 struct ConnectionHandles: View {
     let shape: ShapeNode
     let canvasScale: CGFloat
     let onDragChanged: (CGPoint) -> Void
-    let onDragEnded: (CGPoint) -> Void
+    let onDragEnded: (EdgeSide, CGPoint) -> Void
 
     var body: some View {
         let w = ShapeGeometry.width(for: shape)
         let h = ShapeGeometry.height(for: shape)
         // v66: skärm-konstant storlek (DesignTokens.screenPt) som övriga handtag.
-        let size: CGFloat = DesignTokens.screenPt(26, scale: canvasScale)
-        let gap: CGFloat = size / 2 + 10 / canvasScale
-        handle(offset: CGPoint(x: w/2 + gap, y: 0), icon: "arrow.right",
-               accId: "connection.handle.right", size: size)
+        let size: CGFloat = DesignTokens.screenPt(24, scale: canvasScale)
+        let gap: CGFloat = size / 2 + 8 / canvasScale
+        ZStack {
+            handle(side: .top,    offset: CGPoint(x: 0, y: -h/2 - gap), size: size)
+            handle(side: .right,  offset: CGPoint(x: w/2 + gap, y: 0), size: size)
+            handle(side: .bottom, offset: CGPoint(x: 0, y: h/2 + gap), size: size)
+            handle(side: .left,   offset: CGPoint(x: -w/2 - gap, y: 0), size: size)
+        }
         .frame(width: w, height: h)
         .position(shape.position)
         .rotationEffect(.degrees(shape.rotation))
     }
 
     @ViewBuilder
-    private func handle(offset: CGPoint, icon: String, accId: String, size: CGFloat) -> some View {
+    private func handle(side: EdgeSide, offset: CGPoint, size: CGFloat) -> some View {
         ZStack {
-            // v66: GRÖN + egen ikon — skiljer sig tydligt från de blå
-            // resize-handtagen (Kims/UX-fynd: två blå cirklar intill varandra).
+            // v66: GRÖN + egen ikon — skiljer sig tydligt från de blå resize-handtagen.
             Circle().fill(Color(hex: 0x15803d))
-            Image(systemName: "arrow.up.right")
+            Image(systemName: "plus")
                 .font(.system(size: size * 0.50, weight: .bold))
                 .foregroundStyle(Color.white)
         }
@@ -64,12 +67,11 @@ struct ConnectionHandles: View {
         .gesture(
             DragGesture(coordinateSpace: .named("canvas"))
                 .onChanged { v in onDragChanged(v.location) }
-                .onEnded { v in onDragEnded(v.location) }
+                .onEnded { v in onDragEnded(side, v.location) }
         )
-        // v73: svensk label i stället för rått symbolnamn ("arrow.up.right")
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Skapa pil — dra till en annan form")
+        .accessibilityLabel("Skapa pil från \(side.rawValue) — dra till en annan form")
         .accessibilityAddTraits(.isButton)
-        .accessibilityIdentifier(accId)
+        .accessibilityIdentifier("connection.handle.\(side.rawValue)")
     }
 }

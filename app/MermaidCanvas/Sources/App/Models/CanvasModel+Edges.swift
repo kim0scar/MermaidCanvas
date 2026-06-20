@@ -43,12 +43,17 @@ extension CanvasModel {
     }
 
     /// v25: lägg pil direkt från drag-handtag (ej via tap-flow).
-    func addEdge(from: UUID, to: UUID, direction: EdgeDirection = .forward) {
-        guard from != to else { return }
+    /// V79-svep: returnerar nya kantens id (eller nil om avvisad) så anroparen kan
+    /// sätta utgångssida på just den kanten ("Fyra prickarna — ej närmast").
+    @discardableResult
+    func addEdge(from: UUID, to: UUID, direction: EdgeDirection = .forward) -> UUID? {
+        guard from != to else { return nil }
         // Förhindra dubbletter åt samma håll
-        if edges.contains(where: { $0.from == from && $0.to == to }) { return }
+        if edges.contains(where: { $0.from == from && $0.to == to }) { return nil }
         snapshotForUndo()
-        edges.append(EdgeConnection(from: from, to: to, direction: direction))
+        let edge = EdgeConnection(from: from, to: to, direction: direction)
+        edges.append(edge)
+        return edge.id
     }
 
     /// v37: sätt pilriktning (ersätter reverseEdge + setEdgeBidirectional).
