@@ -183,14 +183,14 @@ extension ContentView {
 
     /// Steg H: exportera RITADE ytan som PNG (samma render-väg som canvasen),
     /// spara i appens Documents och öppna delningsmenyn. Tom canvas → fel-haptik.
-    func exportImage() {
-        guard let data = CanvasImageExporter.renderPNG(model: model) else {
+    func exportImage(jpeg: Bool = false) {
+        guard let img = CanvasImageExporter.renderImage(model: model, jpeg: jpeg) else {
             UINotificationFeedbackGenerator().notificationOccurred(.error)
             return
         }
         let base = model.canvasTitle.trimmingCharacters(in: .whitespaces)
         let name = base.isEmpty ? "ritning" : base
-        guard let url = fileManager.saveImage(data, named: name) else {
+        guard let url = fileManager.saveImage(img.data, named: name, ext: img.ext) else {
             UINotificationFeedbackGenerator().notificationOccurred(.error)
             return
         }

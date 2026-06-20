@@ -10,8 +10,13 @@ enum CanvasImageExporter {
     /// Marginal (canvas-punkter) runt ritningen i bilden.
     static let padding: CGFloat = 56
 
-    /// PNG-data för den ritade ytan, eller nil om inget är ritat.
+    /// PNG-data för den ritade ytan (bakåtkomp-alias).
     static func renderPNG(model: CanvasModel, scale: CGFloat = 3) -> Data? {
+        renderImage(model: model, jpeg: false, scale: scale)?.data
+    }
+
+    /// Bild-data + filändelse för den ritade ytan. jpeg=true → JPG (Kims val), annars PNG.
+    static func renderImage(model: CanvasModel, jpeg: Bool, scale: CGFloat = 3) -> (data: Data, ext: String)? {
         let visible = model.shapes.filter { !model.hiddenShapeIds.contains($0.id) }
         guard !visible.isEmpty else { return nil }
         let box = boundingBox(shapes: visible, edges: model.edges)
@@ -32,7 +37,13 @@ enum CanvasImageExporter {
         let renderer = ImageRenderer(content: content)
         renderer.scale = scale
         renderer.isOpaque = true
-        return renderer.uiImage?.pngData()
+        guard let img = renderer.uiImage else { return nil }
+        if jpeg {
+            guard let d = img.jpegData(compressionQuality: 0.9) else { return nil }
+            return (d, "jpg")
+        }
+        guard let d = img.pngData() else { return nil }
+        return (d, "png")
     }
 
     /// Bounding-box runt former (+ ev. waypoints) i canvas-koordinater, med marginal.

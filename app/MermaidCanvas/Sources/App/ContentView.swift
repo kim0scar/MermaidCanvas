@@ -89,7 +89,7 @@ struct ContentView: View {
             onRedo: { model.redo() },
             onShowCode: showMermaidCode,
             onCopyCode: copyMermaidCode,
-            onExportImage: exportImage,
+            onExportImage: { jpeg in exportImage(jpeg: jpeg) },
             onShowCapabilities: { showCapabilities = true },
             onShowRules: { showRulesSheet = true },
             onToggleMarker: { model.toggleMarkerMode() },

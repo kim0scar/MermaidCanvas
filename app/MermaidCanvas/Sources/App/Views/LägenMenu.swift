@@ -13,8 +13,8 @@ struct LägenMenu: View {
     var onShowCode: () -> Void
     /// v61: kopiera hela dokumentet till urklipp direkt (1 tryck, ingen sheet).
     var onCopyCode: () -> Void
-    /// Steg H: exportera ritade ytan som bild (PNG) → delningsmeny.
-    var onExportImage: () -> Void = {}
+    /// Steg H: exportera ritade ytan som bild → delningsmeny. Bool = JPG (annars PNG).
+    var onExportImage: (Bool) -> Void = { _ in }
     /// V79-svep: visa "Mermaid vs app-funktioner"-vyn.
     var onShowCapabilities: () -> Void = {}
     var onShowRules: () -> Void
@@ -67,8 +67,11 @@ struct LägenMenu: View {
                 Label("Kopiera Mermaid-kod", systemImage: "doc.on.doc")
             }
             .accessibilityIdentifier("menu.copyCode")
-            // Steg H: bild av ritade ytan (PNG) → delningsmeny
-            Button { onExportImage() } label: {
+            // Steg H + V79-svep: bild av ritade ytan → PNG (skarp) eller JPG (mindre fil)
+            Menu {
+                Button { onExportImage(false) } label: { Label("PNG (skarp)", systemImage: "photo") }
+                Button { onExportImage(true) } label: { Label("JPG (mindre fil)", systemImage: "photo.fill") }
+            } label: {
                 Label("Exportera som bild…", systemImage: "photo")
             }
             .accessibilityIdentifier("menu.exportImage")

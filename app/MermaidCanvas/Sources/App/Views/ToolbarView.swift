@@ -38,8 +38,8 @@ struct ToolbarView: View {
     var onShowCode: () -> Void
     /// v61: kopiera hela dokumentet till urklipp utan sheet (1 tryck).
     var onCopyCode: () -> Void
-    /// Steg H: exportera ritade ytan som bild (PNG) → delningsmeny.
-    var onExportImage: () -> Void = {}
+    /// Steg H: exportera ritade ytan som bild → delningsmeny. Bool = JPG (annars PNG).
+    var onExportImage: (Bool) -> Void = { _ in }
     /// V79-svep: visa "Mermaid vs app-funktioner".
     var onShowCapabilities: () -> Void = {}
     var onShowRules: () -> Void
