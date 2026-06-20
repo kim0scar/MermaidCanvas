@@ -152,7 +152,10 @@ extension MermaidGenerator {
         if !legend.isEmpty {
             dict["legend"] = legend
         }
-        guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted]),
+        // .sortedKeys: deterministisk nyckel-ordning → byte-identisk serialisering
+        // (annars varierar dict-ordningen per process/instans → flaky idempotens-test
+        // + onödig diff i filen vid varje spar). Stärker Kims "byte-identisk"-krav.
+        guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.prettyPrinted, .sortedKeys]),
               let str = String(data: data, encoding: .utf8) else { return "{}" }
         return str
     }
