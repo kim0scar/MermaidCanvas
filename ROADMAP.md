@@ -2,7 +2,14 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v0.9 (build v85) — "AI-ramverk + Mermaid-vs-app-vy"
+## Aktuell version: v0.9 (build v86) — "V79-svep slutfört (byggbara delar)"
+
+*Tema:* Facit-täckningsgrind (bijektion generator↔facit) + ärlig regel 15. Facit-menyn
+redesignad (färg=överlevnad, riktiga glyfer, sök, sticky copy). JPG-export. Import-mallen
+fixad (lärde ut den kraschande `<--`). Snabb-mallar (AI-Skill/UI/Arkitektur). Snabb-navknapp.
+KVAR: Fas 2 export-legend (gated) + mega-projekt (OSX/Visio-drill/multi-fil). 197 tester.
+
+## v0.9 (build v85) — "AI-ramverk + Mermaid-vs-app-vy"
 
 *Tema:* Milstolpe **v0.9**. `AppCapabilities.swift` = single source of truth för "vad appen kan
 visa → vad en AI får använda i mermaid". Driver in-app-vyn "Mermaid vs app-funktioner" (Kim ser

@@ -4,7 +4,7 @@ import Foundation
 /// Bumpas till nästa nummer vid varje deploy enligt VERSIONSHANTERING.md.
 enum AppVersion {
     /// Bygg-räknare (driver bundle-version + arch-check version-sync). Bumpas vid varje deploy.
-    static let current: String = "v85"
+    static let current: String = "v86"
     /// Milstolpe-etikett (det Kim känner igen). Bumpas vid milstolpar, inte varje bygge.
     static let milestone: String = "v0.9"
 }

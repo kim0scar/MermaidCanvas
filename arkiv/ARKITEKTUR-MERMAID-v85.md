@@ -1,16 +1,5 @@
-# ARKITEKTUR-MERMAID — Milstolpe v0.9 (build v86)
+# ARKITEKTUR-MERMAID — Milstolpe v0.9 (build v85)
 *Datum: 2026-06-20*
-
-> **v86 (v0.9-forts.) "V79-svep slutfört (byggbara delar)":** Facit-täckningsgrind
-> (`AppCapabilitiesCoverageTests` — bijektion generator↔facit) + ärlig regel 15 (pekade
-> förr på ett test som inte fanns). Facit-menyn "Hur funkar appen" redesignad (färg=
-> överlevnad, riktiga glyfer, sök, sticky copy). **JPG-export** (PNG/JPG-val). **Import-
-> mallen fixad** (lärde ut `<--` som kraschar mermaid → nu `frameworkText()`, alltid aktuell).
-> **Snabb-mallar** (AI-Skill/UI/Arkitektur). **Snabb-navigeringsknapp** (centrera på innehåll).
-> KVAR (kräver Kims input/scoping): Fas 2 export-legend (gated), edge-routing-ombyggnad,
-> inline-canvas-text, + mega-projekt (OSX, Visio-drill, multi-fil-import). 197 tester gröna.
-
-## Vad v0.9/v85 innehöll (föregående)
 
 > **v0.9 "AI-ramverk som aldrig blir inaktuellt + Mermaid-vs-app-vy":** `AppCapabilities.swift`
 > = SINGLE SOURCE OF TRUTH för "vad appen kan visa → vad en AI får använda i mermaid".
