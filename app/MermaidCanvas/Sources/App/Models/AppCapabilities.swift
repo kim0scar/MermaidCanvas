@@ -9,8 +9,10 @@ import Foundation
 ///  2. **In-app-menyn** (MermaidVsAppSheet) läser samma data → Kim ser mermaid vs app-only.
 ///
 /// **Currency tvingas:** `shape(_:)` är en UTTÖMMANDE switch över ShapeType → en ny form
-/// kompilerar inte utan en rad här. `AppCapabilitiesCoverageTests` kollar dessutom att
-/// menyn täcker alla ShapeType.allCases. Se CLAUDE.md regel 15.
+/// kompilerar inte utan en rad här. `AppCapabilitiesCoverageTests` kräver dessutom en
+/// BIJEKTION mellan generatorns faktiska `%%`-nycklar och `allCarrierKeys` (ingen
+/// odokumenterad nyckel, ingen fantom-nyckel) + att menyn/ramverket täcker varje form.
+/// Se CLAUDE.md regel 15.
 enum AppCapabilities {
 
     /// Hur en form bärs i mermaid.
@@ -97,5 +99,31 @@ enum AppCapabilities {
         }
         s += "\n> Lägger du till en form/funktion utan att uppdatera detta + round-trippa = brott mot CLAUDE.md regel 15.\n"
         return s
+    }
+
+    // MARK: - Maskinell currency (regel 15)
+
+    /// ALLA `%%`-nyckel-tokens som generatorn KAN emittera. `AppCapabilitiesCoverageTests`
+    /// kollar att generatorns FAKTISKA output bara använder nycklar härifrån (ingen
+    /// odokumenterad nyckel kan smyga in). Lägger någon en ny `%%`-nyckel i MermaidGenerator
+    /// utan att lägga den här → testet blir rött (regel 15).
+    static let allCarrierKeys: Set<String> = [
+        // nod + container
+        "pos", "name", "size", "width", "height", "rot", "hidden-label",
+        "color", "stroke", "link", "skill-nr", "table", "table-cells",
+        "shape-type", "style", "align", "bullets", "numbered", "indent",
+        "locked", "z", "pack", "line-end", "prompt", "note", "container-pos",
+        // canvas-nivå + kant
+        "canvas-size", "legend", "waypoint", "labelPlacement", "fromSide", "collapsed",
+    ]
+
+    /// Överlevnads-nivå för facit-menyns färgkodning (🟢/🟡/🟠).
+    enum SurvivalLevel { case nativeMermaid, appCarried, appOnlyState }
+
+    static func level(forShape t: ShapeType) -> SurvivalLevel {
+        shape(t).appOnly ? .appCarried : .nativeMermaid
+    }
+    static func level(forFeature f: FeatureCap) -> SurvivalLevel {
+        f.survivesPureMermaid ? .appCarried : .appOnlyState
     }
 }
