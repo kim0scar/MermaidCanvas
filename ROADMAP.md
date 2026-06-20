@@ -2,7 +2,14 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v82 — "Fil-glyfer + UI-mall (steg 8 del 2 + steg 9)"
+## Aktuell version: v83 — "Pill-fix + fundament-verifiering"
+
+*Tema:* Pill-formen rättad (138×74 — var för platt). **Fundamentet bevisat:** alla basformer
+ritade med text + kategori-färger, exakt mermaid dumpad + renderad i RIKTIG mermaid (headless
+Chrome) + jämförd mot app → native-former identiska, egna former visas som närmaste native men
+text+färg+identitet matchar (re-import exakt). Roten städad. 188 tester, render-grind 3/3.
+
+## v82 — "Fil-glyfer + UI-mall (steg 8 del 2 + steg 9)"
 
 *Tema:* Fil-former (MD/Excel) får igenkännings-glyf på canvasen. **UI-mall:** Mallar-menyn
 borta → iPhone 15/16 Pro som chips under UI; modellnamnet UTANPÅ ramen (skärmytan fri);

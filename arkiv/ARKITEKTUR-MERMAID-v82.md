@@ -1,15 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v83
+# ARKITEKTUR-MERMAID — Version v82
 *Datum: 2026-06-20*
-
-> **v83 "pill-fix + fundament-verifiering":** Pill-formen rättad (140×60 var för platt →
-> 138×74 proportionerlig kapsel; Kims fynd: ful oval-ikon). Fundamentet BEVISAT: scenario 39
-> ritar alla basformer med text + kategori-färger, dumpar exakt mermaid (`-uitest-dump-doc`),
-> renderar i RIKTIG mermaid (headless Chrome) och jämför mot app — native-former
-> (cirkel/pill/rektangel/romb/cylinder) IDENTISKA (typ+text+färg); egna former visas som
-> närmaste native men text+färg matchar exakt + identitet via `%%` → re-import exakt. Roten
-> städad (stale fynd → arkiv/). 188 tester, render-grind 3/3, round-trip stabil.
-
-## Vad v82 innehöll (föregående — fil-glyfer + UI-mall)
 
 > **v82 "fil-glyfer + UI-mall (steg 8 del 2 + steg 9)":** Fil-former (MD/Excel) får
 > igenkännings-glyf på canvasen (`ShapeCategory.fileGlyphSymbol` → `doc.text`/`tablecells`
