@@ -31,8 +31,17 @@ struct ColorPack: Identifiable, Hashable {
     static let lila    = ColorPack(id: "lila",    displayName: "Lila",
                                    fill: 0xECDFFF, stroke: 0xB89CE0, text: 0x4A2D7A)
 
+    // v1.1 "Färger UI bygg": kraftiga UI-färger (knappar/ytor) för UI-mockups — iOS-system-
+    // färger med vit/mörk text för kontrast. Round-trippar via colorPackId som pastellerna.
+    static let uiBlå  = ColorPack(id: "ui-blå",  displayName: "UI Blå (knapp)",   fill: 0x0A84FF, stroke: 0x0A6CD8, text: 0xFFFFFF)
+    static let uiGrön = ColorPack(id: "ui-grön", displayName: "UI Grön",          fill: 0x34C759, stroke: 0x28A745, text: 0xFFFFFF)
+    static let uiRöd  = ColorPack(id: "ui-röd",  displayName: "UI Röd",           fill: 0xFF3B30, stroke: 0xD70015, text: 0xFFFFFF)
+    static let uiGrå  = ColorPack(id: "ui-grå",  displayName: "UI Grå (yta)",     fill: 0xF2F2F7, stroke: 0xC7C7CC, text: 0x1C1C1E)
+    static let uiMörk = ColorPack(id: "ui-mörk", displayName: "UI Mörk (navbar)", fill: 0x1C1C1E, stroke: 0x3A3A3C, text: 0xFFFFFF)
+
     /// Alla paket i ordningen som visas i picker.
-    static let all: [ColorPack] = [.none, .persika, .rosa, .blå, .grön, .gul, .lila]
+    static let all: [ColorPack] = [.none, .persika, .rosa, .blå, .grön, .gul, .lila,
+                                   .uiBlå, .uiGrön, .uiRöd, .uiGrå, .uiMörk]
 
     static func by(id: String?) -> ColorPack {
         guard let id = id else { return .none }
