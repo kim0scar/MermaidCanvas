@@ -1,18 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v84
+# ARKITEKTUR-MERMAID — Version v83
 *Datum: 2026-06-20*
-
-> **v84 "V79-feedback-svep (7 features)":** På Kims /goal byggdes 7 klara features ur
-> V79-feedbacken (3 scoping-agenter kartlade först): **🔒 lås form** (hänglås — kan ej
-> dras/storleksändras, round-trippar `%% locked`), **3 lager** (underst/mellan/överst —
-> `ShapeNode.zLayer`, zIndex ±0,3, round-trippar `%% z`), **↪️ redo** (ångra åt båda håll),
-> **"Spara Mermaid inom container"** (subset → ren mermaid-fil), **beroendepil-meny i
-> kategorier** (Riktning/Stil-undermenyer), **container fri-resize nere höger**, **markera-
-> flera ut ur huvudmenyn** (→ Lägen-menyn). Lås+lager round-trippar även på container (4 nya
-> tester). Resten av V79-listan = idébank 💡#9–11 (OSX-app, Visio-drill, edge-routing, m.m.).
-> Nya filer: `CanvasView+Selection.swift`, `Toolbar/ToolbarView+History.swift` (R5-utbrytningar).
-> Verifierat: 191 unit-tester, arch-check, konformitet + render-grind 3/3, round-trip stabil.
-
-## Vad v83 innehöll (föregående — pill-fix + fundament-verifiering)
 
 > **v83 "pill-fix + fundament-verifiering":** Pill-formen rättad (140×60 var för platt →
 > 138×74 proportionerlig kapsel; Kims fynd: ful oval-ikon). Fundamentet BEVISAT: scenario 39

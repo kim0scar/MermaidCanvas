@@ -2,7 +2,15 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v83 — "Pill-fix + fundament-verifiering"
+## Aktuell version: v84 — "V79-feedback-svep (7 features)"
+
+*Tema:* På Kims /goal — 3 scoping-agenter + 7 byggda features ur V79-feedbacken: 🔒 lås form
+(hänglås), 3 lager (underst/mellan/överst, round-trippar i mermaid), ↪️ redo (ångra båda håll),
+"Spara Mermaid inom container", beroendepil-meny i kategorier, container fri-resize nere höger,
+markera-flera ut ur huvudmenyn. Lås+lager round-trippar även på container. Resten av listan =
+idébank 💡#9–11 (OSX-app, Visio-drill, edge-routing m.m.). 191 tester, render-grind 3/3.
+
+## v83 — "Pill-fix + fundament-verifiering"
 
 *Tema:* Pill-formen rättad (138×74 — var för platt). **Fundamentet bevisat:** alla basformer
 ritade med text + kategori-färger, exakt mermaid dumpad + renderad i RIKTIG mermaid (headless
