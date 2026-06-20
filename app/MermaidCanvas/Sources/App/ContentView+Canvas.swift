@@ -61,5 +61,21 @@ extension ContentView {
         )
         // v67: läs-lappar ritas nu PÅ canvasen (canvas-space) inuti CanvasView —
         // de panorerar med tavlan i stället för att sitta fast på skärmen (Kims fynd 2).
+        // V79-svep: alltid-synlig snabbknapp (nere höger) som centrerar vyn på innehållet —
+        // Kims "snabb knapp vid sidan för navigering" på den stora canvasen.
+        .overlay(alignment: .bottomTrailing) {
+            if !model.shapes.isEmpty {
+                Button { centerOnPoint = contentCenter(of: model.shapes) } label: {
+                    Image(systemName: "scope")
+                        .font(.title3).foregroundStyle(Color.primary)
+                        .frame(width: 44, height: 44)
+                        .background(Circle().fill(.ultraThinMaterial))
+                        .overlay(Circle().stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
+                }
+                .padding(.trailing, 16).padding(.bottom, 30)
+                .accessibilityIdentifier("canvas.recenter")
+                .accessibilityLabel("Centrera på innehållet")
+            }
+        }
     }
 }
