@@ -14,6 +14,7 @@ extension ToolbarView {
             onCopyCode: onCopyCode,
             onExportImage: onExportImage,
             onShowCapabilities: onShowCapabilities,
+            onInsertTemplate: onInsertTemplate,
             onShowRules: onShowRules,
             onToggleMarker: onToggleMarker,
             onImportMermaid: onImportMermaid,

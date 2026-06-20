@@ -96,6 +96,18 @@ final class CanvasModelMutationTests: XCTestCase {
         XCTAssertEqual(m.shapes.count, 0)
     }
 
+    /// V79-svep: snabb-mall AI-Skill bygger container + barn + kanter (en undo).
+    func test_insertTemplate_aiSkill_buildsContainerWithChildrenAndEdges() {
+        let m = CanvasModel()
+        m.insertTemplate(.aiSkill, at: c)
+        let container = m.shapes.first { $0.type == .container }
+        XCTAssertEqual(container?.skillNumber, 1)
+        let children = m.shapes.filter { $0.childOfContainerId == container?.id }
+        XCTAssertEqual(children.count, 3, "input + subagent + output")
+        XCTAssertEqual(m.edges.count, 2, "input→subagent→output")
+        XCTAssertTrue(m.canUndo, "mallen är en undo-bar handling")
+    }
+
     /// V79-svep: redo (ångra åt båda håll).
     func test_redo_reappliesAndIsClearedByNewEdit() {
         let m = CanvasModel()

@@ -17,6 +17,8 @@ struct LägenMenu: View {
     var onExportImage: (Bool) -> Void = { _ in }
     /// V79-svep: visa "Mermaid vs app-funktioner"-vyn.
     var onShowCapabilities: () -> Void = {}
+    /// V79-svep: lägg en snabb-mall (AI-Skill / UI / Arkitektur).
+    var onInsertTemplate: (CanvasModel.TemplateKind) -> Void = { _ in }
     var onShowRules: () -> Void
     /// v39: fortfarande kvar som parameter för bakåtkompatibilitet — används ej i menyn längre.
     var onToggleMarker: () -> Void
@@ -34,6 +36,17 @@ struct LägenMenu: View {
             Button { onNewCanvas() } label: {
                 Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
             }
+            // V79-svep: snabb-mallar
+            Menu {
+                ForEach(CanvasModel.TemplateKind.allCases, id: \.self) { kind in
+                    Button { onInsertTemplate(kind) } label: {
+                        Label(kind.title, systemImage: kind.systemImage)
+                    }
+                }
+            } label: {
+                Label("Mallar", systemImage: "square.grid.2x2")
+            }
+            .accessibilityIdentifier("menu.templates")
             Button(action: {}) {
                 Label("Aktuell plattform: \(model.platform.displayName)",
                       systemImage: model.platform.badgeSystemImage)

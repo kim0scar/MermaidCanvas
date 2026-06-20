@@ -40,8 +40,8 @@ struct ToolbarView: View {
     var onCopyCode: () -> Void
     /// Steg H: exportera ritade ytan som bild → delningsmeny. Bool = JPG (annars PNG).
     var onExportImage: (Bool) -> Void = { _ in }
-    /// V79-svep: visa "Mermaid vs app-funktioner".
-    var onShowCapabilities: () -> Void = {}
+    var onShowCapabilities: () -> Void = {}   // V79-svep: facit-vyn
+    var onInsertTemplate: (CanvasModel.TemplateKind) -> Void = { _ in }   // V79-svep: snabb-mall
     var onShowRules: () -> Void
     var onToggleMarker: () -> Void
     var onAddTable: () -> Void

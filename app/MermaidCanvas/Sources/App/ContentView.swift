@@ -69,8 +69,7 @@ struct ContentView: View {
     @State var showLegend: Bool = false
     /// Steg H: exporterad bild → delningsmeny.
     @State var exportImageItem: ExportImageItem? = nil
-    /// V79-svep: "Mermaid vs app-funktioner"-vyn.
-    @State var showCapabilities: Bool = false
+    @State var showCapabilities: Bool = false   // V79-svep: facit-vyn
 
     // v60: extraherade vyer för adaptiv layout (porträtt topp-bar / landskap vänster-sidebar).
     func toolbarView(vertical: Bool) -> some View {
@@ -91,6 +90,7 @@ struct ContentView: View {
             onCopyCode: copyMermaidCode,
             onExportImage: { jpeg in exportImage(jpeg: jpeg) },
             onShowCapabilities: { showCapabilities = true },
+            onInsertTemplate: { kind in model.insertTemplate(kind, at: canvasCenter) },
             onShowRules: { showRulesSheet = true },
             onToggleMarker: { model.toggleMarkerMode() },
             onAddTable: { model.addTable(at: canvasCenter) },
