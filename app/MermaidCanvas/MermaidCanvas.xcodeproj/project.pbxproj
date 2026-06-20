@@ -76,6 +76,7 @@
 		62EF8D225C5132FB200E453E /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4913E980F026A3D6E49070B7 /* AppVersion.swift */; };
 		63458D5E7CD7AFFAB7F49303 /* V74SkillNrTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A42EB21C4C1D82A6F3BB0DC /* V74SkillNrTests.swift */; };
 		63DD63C9557BC2FBD2A93302 /* CanvasView+Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12CB64D782A2EB21CFEB3C9 /* CanvasView+Selection.swift */; };
+		64F47783B40406531C770D11 /* SubCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5626978242C3DC4E235F049E /* SubCanvas.swift */; };
 		66E7C0CA771E5C607A4F1B41 /* V49VisualVerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */; };
 		67C5E692431A416DA4802220 /* test_pill_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FCD095D020EF17998E82F01 /* test_pill_chip_vs_canvas_side_by_side.1.png */; };
 		684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6F52E499ADD995928FF171 /* SnapshotTests.swift */; };
@@ -282,6 +283,7 @@
 		541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeMidpointHandle.swift; sourceTree = "<group>"; };
 		55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerOverlay.swift; sourceTree = "<group>"; };
 		55FA8420E7FA6C2793AE03D3 /* MermaidParser+TextHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MermaidParser+TextHelpers.swift"; sourceTree = "<group>"; };
+		5626978242C3DC4E235F049E /* SubCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubCanvas.swift; sourceTree = "<group>"; };
 		568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidImportSheet.swift; sourceTree = "<group>"; };
 		56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadges.swift; sourceTree = "<group>"; };
 		56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasView+Helpers.swift"; sourceTree = "<group>"; };
@@ -451,6 +453,7 @@
 				E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */,
 				31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */,
 				2D0E6420DE137F57D019A7EB /* ShapeNode.swift */,
+				5626978242C3DC4E235F049E /* SubCanvas.swift */,
 				535348C28035BBC3C632F26A /* TextStyle.swift */,
 			);
 			path = Models;
@@ -1049,6 +1052,7 @@
 				EF9D701D52814DBBB28AAA87 /* SkillFileComposer.swift in Sources */,
 				0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */,
 				2A5456AFF3DBC456A32F64AD /* StateDump.swift in Sources */,
+				64F47783B40406531C770D11 /* SubCanvas.swift in Sources */,
 				99D3AD3E87507BF6A37E2D1A /* TableEditorSheet.swift in Sources */,
 				EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */,
 				AC1B5F41A850016565B83F0A /* ToolbarView+Chips.swift in Sources */,

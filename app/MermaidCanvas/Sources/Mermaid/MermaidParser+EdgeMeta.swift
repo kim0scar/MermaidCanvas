@@ -1,6 +1,14 @@
 import Foundation
 
 extension MermaidParser {
+    /// v1.0+ Visio: dekoda ägt underflöde ur en state-JSON-nod (ShapeNodes egen Codable, byte-exakt).
+    static func subCanvas(from node: [String: Any]) -> SubCanvas? {
+        guard let subObj = node["subCanvas"],
+              let data = try? JSONSerialization.data(withJSONObject: subObj),
+              let decoded = try? JSONDecoder().decode(SubCanvas.self, from: data) else { return nil }
+        return decoded
+    }
+
     /// Parsade `%% e<index> …`-kant-metadata (per kant-index i emit-ordning).
     struct EdgeMeta {
         var placements: [Int: EdgeLabelPlacement] = [:]

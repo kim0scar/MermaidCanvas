@@ -125,6 +125,23 @@ final class RoundTripFidelityTests: XCTestCase {
         }
     }
 
+    // MARK: - v1.0+ Visio "hoppa in" — ägt underflöde round-trippar byte-exakt
+
+    func test_subCanvas_visioDrillRoundTrips() throws {
+        let childA = ShapeNode(type: .rectangle, position: CGPoint(x: 300, y: 300), label: "Steg 1")
+        let childB = ShapeNode(type: .circle, position: CGPoint(x: 500, y: 300), label: "Steg 2")
+        let innerEdge = EdgeConnection(from: childA.id, to: childB.id, label: "→", lineShape: .orthogonal)
+        let sub = SubCanvas(shapes: [childA, childB], edges: [innerEdge],
+                            canvasWidth: 3000, canvasHeight: 2000)
+        var parent = ShapeNode(type: .rectangle, position: CGPoint(x: 400, y: 400), label: "Betala")
+        parent.subCanvas = sub
+        let parsed = roundTrip([parent], [])
+        let pParent = parsed.shapes.first { $0.label == "Betala" }
+        XCTAssertNotNil(pParent?.subCanvas, "underflödet överlever round-trip")
+        // Codable bevarar ALLT (inkl. nästlade UUID:n) → underflödet är BOKSTAVLIGT identiskt.
+        XCTAssertEqual(pParent?.subCanvas, sub, "underflödet round-trippar byte-exakt")
+    }
+
     // MARK: - A1.4 container + barn-länk
 
     func test_containerChildLinkage() throws {

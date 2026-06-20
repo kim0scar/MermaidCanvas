@@ -89,6 +89,13 @@ extension MermaidGenerator {
                let parentMid = mermaidIds[parentUUID] {
                 n["childOfContainerId"] = parentMid
             }
+            // v1.0+ Visio "hoppa in": ägt underflöde serialiseras via ShapeNodes egen Codable
+            // (bevarar ALLT byte-exakt, inkl. nästlade UUID:n) som ett nästlat objekt.
+            if let sub = shape.subCanvas,
+               let data = try? JSONEncoder().encode(sub),
+               let obj = try? JSONSerialization.jsonObject(with: data) {
+                n["subCanvas"] = obj
+            }
             return n
         }
         let edgeArr: [[String: Any]] = edges.compactMap { edge in

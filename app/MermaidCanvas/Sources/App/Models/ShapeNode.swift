@@ -111,6 +111,8 @@ struct ShapeNode: Identifiable, Codable, Equatable {
     var locked: Bool = false
     /// V79-svep: lager-ordning (-1 underst · 0 mellan · 1 överst) för UI-bygge. Default 0.
     var zLayer: Int = 0
+    /// v1.0+ Visio "hoppa in": ägt underflöde (nästlad canvas). nil = vanlig form.
+    var subCanvas: SubCanvas? = nil
 
     init(id: UUID = UUID(),
          type: ShapeType,
@@ -140,7 +142,8 @@ struct ShapeNode: Identifiable, Codable, Equatable {
          indentLevel: Int = 0,
          childOfContainerId: UUID? = nil,
          locked: Bool = false,
-         zLayer: Int = 0) {
+         zLayer: Int = 0,
+         subCanvas: SubCanvas? = nil) {
         self.id = id
         self.type = type
         self.position = position
@@ -170,6 +173,7 @@ struct ShapeNode: Identifiable, Codable, Equatable {
         self.childOfContainerId = childOfContainerId
         self.locked = locked
         self.zLayer = zLayer
+        self.subCanvas = subCanvas
     }
 
     /// v31: effective width-multiplier (fallback till sizeMultiplier).
@@ -195,6 +199,7 @@ extension ShapeNode {
         case hasNumberedList, indentLevel
         case childOfContainerId  // v47
         case locked, zLayer  // V79-svep
+        case subCanvas  // v1.0+ Visio
     }
 
     init(from decoder: Decoder) throws {
@@ -237,5 +242,6 @@ extension ShapeNode {
         childOfContainerId = try c.decodeIfPresent(UUID.self, forKey: .childOfContainerId)
         locked          = try c.decodeIfPresent(Bool.self, forKey: .locked) ?? false
         zLayer          = try c.decodeIfPresent(Int.self, forKey: .zLayer) ?? 0
+        subCanvas       = try c.decodeIfPresent(SubCanvas.self, forKey: .subCanvas)  // v1.0+ Visio
     }
 }

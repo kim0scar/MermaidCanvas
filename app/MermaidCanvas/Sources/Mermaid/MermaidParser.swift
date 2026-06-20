@@ -51,9 +51,7 @@ enum MermaidParser {
                 }
             }
         }
-        // v66-migrering: linjer/pilar äger nu sin längd via lineEnd DIREKT
-        // (ändpunkts-handtag). Gamla filer skalade lineEnd med multipliers vid
-        // rendering — baka in dem så strecket ser likadant ut som förut.
+        // v66-migrering: linjer/pilar äger längd via lineEnd; gamla filer skalade med multipliers (bakas in).
         for i in result.shapes.indices {
             let s = result.shapes[i]
             guard s.type == .line || s.type == .arrow, let e = s.lineEnd,
@@ -198,6 +196,7 @@ enum MermaidParser {
             let locked = (node["locked"] as? Bool) ?? false
             let zLayer = (node["zLayer"] as? Int) ?? 0
             let tableCells = node["tableCells"] as? [[String]]
+            let subCanvas = Self.subCanvas(from: node)   // v1.0+ Visio → MermaidParser+EdgeMeta.swift
             let shape = ShapeNode(
                 type: type,
                 position: CGPoint(x: x, y: y),
@@ -225,7 +224,8 @@ enum MermaidParser {
                 hasNumberedList: hasNumberedList,
                 indentLevel: max(0, indentLevel),
                 locked: locked,
-                zLayer: zLayer
+                zLayer: zLayer,
+                subCanvas: subCanvas
             )
             idMap[mid] = shape.id
             shapes.append(shape)
