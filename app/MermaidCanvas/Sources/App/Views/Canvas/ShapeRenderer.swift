@@ -107,9 +107,10 @@ struct ShapeRenderer: View {
                 .fill(fill)
                 .shadow(color: .black.opacity(0.06), radius: 3, y: 1)
         case .phoneFrame:
-            // v67/v68: mörk bezel + ljus skärm + dynamic island + diskret modell-caption.
-            PhoneFrameBackground(bezel: stroke, screen: fill,
-                                 caption: shape.showLabel ? shape.label : "")
+            // v67/v68: mörk bezel + ljus skärm + dynamic island.
+            // Steg 9: modellnamnet ritas UTANPÅ ramen (ShapeView), inte som caption
+            // inuti — skärmytan hålls helt fri för UI-bygge.
+            PhoneFrameBackground(bezel: stroke, screen: fill, caption: "")
         case .triangle:
             TriangleShape()
                 .fill(fill)

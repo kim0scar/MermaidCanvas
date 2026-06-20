@@ -57,6 +57,7 @@ enum UITestScenarios {
         "35-fromside-and-badges":       place35FromSideAndBadges,
         "36-all-base-shapes":           place36AllBaseShapes,
         "37-skill-flow-files":          place37SkillFlowFiles,
+        "38-iphone-frame":              place38PhoneFrame,
     ]
 
     // MARK: - Builders

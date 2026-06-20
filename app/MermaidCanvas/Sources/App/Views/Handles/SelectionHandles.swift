@@ -41,8 +41,12 @@ struct SelectionHandles: View {
                 proportionalHandle(size: handleSize, w: w, h: h)
             }
 
-            // Bottom-left: fri resize med diagonal ikon
-            freeResizeHandle(size: handleSize, w: w, h: h)
+            // Bottom-left: fri resize med diagonal ikon.
+            // Steg 9: INTE för phoneFrame — en telefon-mall ska behålla sin
+            // proportion (fri resize skulle töja skärmen ur device-format).
+            if shape.type != .phoneFrame {
+                freeResizeHandle(size: handleSize, w: w, h: h)
+            }
 
             // Top-left: rotation med transparent bakgrund
             rotationHandle(size: handleSize, offset: rotationOffset, w: w, h: h)

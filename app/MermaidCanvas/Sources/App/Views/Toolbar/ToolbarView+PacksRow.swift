@@ -27,7 +27,6 @@ extension ToolbarView {
                 ForEach(ShapePack.userToggleable, id: \.self) { pack in
                     packToggle(pack)
                 }
-                mallarMenu
             }
             // Steg 8: Skillflöde-paketet visar byggsten-chipsen direkt under togglarna.
             if model.activeShapePacks.contains(.skillFlow) {
@@ -40,38 +39,41 @@ extension ToolbarView {
         .padding(.horizontal, 2)
     }
 
-    /// v73: chips för UI-paketet.
+    /// v73: chips för UI-paketet. Steg 9: iPhone-mallarna bor här (ersätter Mallar-menyn).
     var uiPackChips: some View {
         HStack(spacing: 6) {
             flowChip(.rectangle, .ui, "UI", accId: "chip.uipack.ui")
             flowChip(.rectangle, .zone, "Zon", accId: "chip.uipack.zone")
             flowChip(.rectangle, .overlay, "Overlay", accId: "chip.uipack.overlay")
+            deviceChip("iPhone 15 Pro", "15 Pro", accId: "chip.uipack.iphone15")
+            deviceChip("iPhone 16 Pro", "16 Pro", accId: "chip.uipack.iphone16")
         }
     }
 
-    /// v68: Mallar-meny — fördefinierade former att bygga UI på (iPhone-modeller).
-    /// Förberedd för fler modeller; en post nu (Kims val: bara 16 Pro).
+    /// Steg 9: device-chip — lägger en phoneFrame med modellnamnet som etikett
+    /// (namnet visas UTANPÅ ramen, se ShapeView). Ersätter v68:s Mallar-meny.
     @ViewBuilder
-    var mallarMenu: some View {
-        Menu {
-            Button {
-                model.addShape(.phoneFrame, at: canvasCenter, label: "iPhone 16 Pro")
-            } label: {
-                Label("iPhone 16 Pro", systemImage: "iphone")
-            }
+    func deviceChip(_ name: String, _ short: String, accId: String) -> some View {
+        Button {
+            model.addShape(.phoneFrame, at: canvasCenter, label: name)
         } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "iphone").font(.subheadline)
-                Text("Mallar").font(.subheadline.weight(.medium))
+            VStack(spacing: 2) {
+                Image(systemName: "iphone")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color.primary)
+                    .frame(width: 36, height: 24)
+                    .background(Circle().fill(.ultraThinMaterial).frame(width: 34, height: 34))
+                Text(short)
+                    .font(.system(size: 8.5, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
-            .foregroundStyle(Color.primary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Capsule().fill(Color(.systemBackground)))
-            .overlay(Capsule().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
+            .frame(width: 52)
+            .contentShape(Rectangle())
         }
-        .accessibilityIdentifier("toolbar.mallar")
-        .accessibilityLabel("Mallar")
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(accId)
+        .accessibilityLabel("Lägg till \(name)")
     }
 
     @ViewBuilder

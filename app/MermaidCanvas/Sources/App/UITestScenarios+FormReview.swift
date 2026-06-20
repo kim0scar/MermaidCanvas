@@ -54,4 +54,12 @@ extension UITestScenarios {
         model.addEdge(from: sub.id, to: md.id)
         model.addEdge(from: sub.id, to: xls.id)
     }
+
+    /// Steg 9: phoneFrame med modellnamn (visas utanpå) + markerad (visar handtagen:
+    /// bara proportionell resize + rotation, ingen fri resize).
+    static func place38PhoneFrame(_ model: CanvasModel, _ c: CGPoint) {
+        let phone = ShapeNode(type: .phoneFrame, position: c, label: "iPhone 16 Pro")
+        model.shapes.append(phone)
+        model.selectedShapeId = phone.id
+    }
 }

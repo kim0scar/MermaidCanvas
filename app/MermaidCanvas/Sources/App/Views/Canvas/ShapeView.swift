@@ -98,6 +98,19 @@ struct ShapeView: View {
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
+        // Steg 9: phoneFrame visar modellnamnet UTANPÅ ramen (ovanför) — skärmytan
+        // hålls fri. Syns även i bild-export (device-identitet, inte chrome).
+        .overlay(alignment: .top) {
+            if shape.type == .phoneFrame && shape.showLabel && !shape.label.isEmpty {
+                Text(shape.label)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .fixedSize()
+                    .offset(y: -20)
+                    .rotationEffect(.degrees(-shape.rotation))
+            }
+        }
         // v48 Fel #3+#4: CollapseBadge är flyttad från ShapeView till EdgesView
         // (renderas per utgående kant, vid kantens start). Se EdgeCollapseBadges.swift.
         .contentShape(Rectangle())
