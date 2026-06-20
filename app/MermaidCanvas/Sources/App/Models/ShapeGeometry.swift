@@ -12,7 +12,7 @@ enum ShapeGeometry {
     /// v35.1/v36: typ-specifika basbredder/-höjder.
     static func typeBaseWidth(for type: ShapeType) -> CGFloat {
         switch type {
-        case .pill:         return 140   // G2d: bredare än rektangeln (120) → läses som egen form
+        case .pill:         return 138   // G2d: bredare än rektangeln (120) → läses som egen form
         case .square:       return 80    // liksidig kvadrat
         case .processArrow: return 110   // kompakt pil (spets 40% av bredden)
         case .container:    return 280   // v44: grupperande container ska rymma flera former
@@ -25,7 +25,7 @@ enum ShapeGeometry {
     }
     static func typeBaseHeight(for type: ShapeType) -> CGFloat {
         switch type {
-        case .pill:       return 60    // G2d: plattare → tydlig bred kapsel (140×60), inte "rundad rektangel"
+        case .pill:       return 74    // fix: 60 var för platt (ful oval-ikon) → 138×74 = proportionerlig kapsel
         case .square:     return 80    // liksidig kvadrat
         case .container:  return 200   // v44: container — högre default-höjd
         case .octagon:    return 80    // v51.1: symmetrisk åttahörning
