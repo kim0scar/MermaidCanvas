@@ -16,8 +16,8 @@ settings:
     CODE_SIGN_STYLE: Automatic
     SWIFT_VERSION: "5.0"
     # Version härleds från AppVersion.swift (vN → 1.N.0 / N). Hålls synkad av scripts/arch-check.py.
-    MARKETING_VERSION: "1.88.0"
-    CURRENT_PROJECT_VERSION: "88"
+    MARKETING_VERSION: "1.89.0"
+    CURRENT_PROJECT_VERSION: "89"
 
 targets:
   MermaidCanvas:
