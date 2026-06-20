@@ -2,7 +2,15 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v84 — "V79-feedback-svep (7 features)"
+## Aktuell version: v0.9 (build v85) — "AI-ramverk + Mermaid-vs-app-vy"
+
+*Tema:* Milstolpe **v0.9**. `AppCapabilities.swift` = single source of truth för "vad appen kan
+visa → vad en AI får använda i mermaid". Driver in-app-vyn "Mermaid vs app-funktioner" (Kim ser
+native vs app-egna + bärare) + copy-paste-bar AI-ramvers-text (alltid genererad ur kod → aldrig
+stale). CLAUDE.md regel 15: varje ändring håller export↔import + AppCapabilities aktuell (tvingat
+av uttömmande switch + test). 193 tester, render-grind 3/3.
+
+## v84 — "V79-feedback-svep (7 features)"
 
 *Tema:* På Kims /goal — 3 scoping-agenter + 7 byggda features ur V79-feedbacken: 🔒 lås form
 (hänglås), 3 lager (underst/mellan/överst, round-trippar i mermaid), ↪️ redo (ångra båda håll),

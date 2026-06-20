@@ -1,17 +1,5 @@
-# ARKITEKTUR-MERMAID — Milstolpe v0.9 (build v85)
+# ARKITEKTUR-MERMAID — Version v84
 *Datum: 2026-06-20*
-
-> **v0.9 "AI-ramverk som aldrig blir inaktuellt + Mermaid-vs-app-vy":** `AppCapabilities.swift`
-> = SINGLE SOURCE OF TRUTH för "vad appen kan visa → vad en AI får använda i mermaid".
-> Uttömmande `shape(_:)`-switch (ny ShapeType kompilerar inte utan rad) + `features`-lista
-> driver BÅDE in-app-vyn **"Mermaid vs app-funktioner"** (LägenMenu, Kim ser native vs app-egna
-> + bärare) OCH en copy-paste-bar **AI-ramvers-text** (`frameworkText()`, alltid genererad ur
-> koden → kan aldrig bli stale). **CLAUDE.md regel 15** (icke förhandlingsbar): varje ändring
-> måste hålla export↔import-round-trip + AppCapabilities aktuell; `AppCapabilitiesTests` +
-> uttömmande switch tvingar currency. Milstolpe-etikett **v0.9** (bygg v85) visas i menyn.
-> Verifierat: 193 unit-tester, arch-check, render-grind 3/3, round-trip stabil.
-
-## Vad v84 innehöll (föregående — V79-feedback-svep, 7 features)
 
 > **v84 "V79-feedback-svep (7 features)":** På Kims /goal byggdes 7 klara features ur
 > V79-feedbacken (3 scoping-agenter kartlade först): **🔒 lås form** (hänglås — kan ej
