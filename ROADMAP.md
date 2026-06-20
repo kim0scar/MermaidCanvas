@@ -2,7 +2,23 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v79 — "arkitektur-ombyggnad KLAR (milstolpe MA)"
+## Aktuell version: v81 — "Exportera som bild + render-trogen grind (steg G+H)"
+
+*Tema:* Ny funktion **"Exportera som bild"** — PNG av enbart den ritade ytan via samma vyer
+som canvasen (kan aldrig avvika). Export+render-jämförelsen avslöjade + tätade en noll-
+avvikelse-bugg: bakåtpil `<--` kraschade RIKTIG mermaid (mermaid.live) fast `mermaid.parse`
+släppte igenom → skrivs nu som omvänd framåtpil. Grinden blev **render-trogen**
+(`mermaid-render-check.mjs`, headless Chrome, vid deploy). G2: basfigur-polish + look-alikes.
+G1: `EXTENDED-FORMAT.md` (app-only-spec) + `%% canvas-size` round-trippar i ren mermaid.
+187 unit-tester gröna, render-grind 3/3.
+
+## v80 — "noll-avvikelse-garantin (STEG F)"
+
+*Tema:* Round-trip bevisat förlustfritt + maskinellt tvingat (pre-commit + deploy). Extended-
+lagret (`%%` + state-JSON) bär ALLT mermaid saknar. Clamp borttaget ("filen är sanningen").
+Facit chmod 444. 186 tester, 3/3 fixtures, två agent-par bekräftade noll avvikelse.
+
+## v79 — "arkitektur-ombyggnad KLAR (milstolpe MA)"
 
 *Tema:* MA slutförd. Funktionellt identisk med v77/v78, men ALLA fyra monoliter är nu
 nedbrutna under 300 rader via extension-uppdelning (stored/@Published-fasaden kvar i

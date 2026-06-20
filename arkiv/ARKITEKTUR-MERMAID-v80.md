@@ -1,21 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v81
-*Datum: 2026-06-20*
-
-> **v81 "Exportera som bild + render-trogen grind (steg G+H)":** Ny app-funktion
-> **"Exportera som bild"** — PNG av enbart den ritade ytan (bbox, ej hela canvasen) via
-> SAMMA vyer som canvasen (ShapeView/EdgesView i exportläge, ingen chrome) → kan aldrig
-> avvika; sparas i Documents + delningsmeny. Export+render-jämförelsen avslöjade + tätade
-> en **noll-avvikelse-bugg**: bakåtpil `<--` kraschade RIKTIG mermaid (mermaid.live) fast
-> `mermaid.parse` släppte igenom — nu skrivs bakåtkant som omvänd framåtpil. Grinden är nu
-> **render-trogen**: `mermaid-render-check.mjs` (headless Chrome) renderar fixturerna vid
-> deploy + lint mot kända glapp i pre-commit. **G2**: basfigur-polish (triangel/romb-text,
-> länk-färg, tabell-lager, Pill/Rektangel/Kvadrat åtskilda). **G1**: `EXTENDED-FORMAT.md`
-> spikar app-only-lagret + `%% canvas-size` round-trippar nu i ren mermaid (sista tappade
-> fältet). Verifierat: 187 unit-tester, arch-check, konformitet + render-grind 3/3, round-trip.
-> Nya filer: `Views/Export/{ExportCanvasView,CanvasImageExporter,ActivityView}`,
-> `ContentView+Canvas`, `ShapeView+Style`, `Toolbar/ToolbarView+Menu` (R5-utbrytningar).
-
-## Vad v80 innehöll (föregående — STEG F)
+# ARKITEKTUR-MERMAID — Version v80
+*Datum: 2026-06-19*
 
 > **v80 "noll-avvikelse-garantin (STEG F)":** Round-trip är nu bevisat förlustfritt och
 > maskinellt tvingat. Det app-egna lagret ("Extended": `%%`-metadata + state-JSON) bär
