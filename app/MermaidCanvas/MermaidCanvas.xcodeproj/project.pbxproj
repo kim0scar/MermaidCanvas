@@ -34,6 +34,7 @@
 		1C55C6F6A42D303F5FF3E0EF /* ShapeBackgrounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */; };
 		20012584D80E7BD9DFECFD1C /* ShapeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */; };
 		2044E6C34377DE47106D01A7 /* V69Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */; };
+		23B128F65DF0AF6A6987F9B0 /* ToolbarView+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */; };
 		24C2CF3CA4F695EA68682F22 /* ToolbarView+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B8E3177EAFE7D93F9063ED /* ToolbarView+Menu.swift */; };
 		26BA18040735A21CC95E37DC /* V34DropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48D49F47552871CE2D445E1F /* V34DropTests.swift */; };
 		2801B7CB05578020FBB75138 /* ArchitectureRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A17DC5C49C9A8AC3CEAD1A9 /* ArchitectureRenderer.swift */; };
@@ -333,6 +334,7 @@
 		A9C7E3DC4CA7364213643DD3 /* CanvasImageExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasImageExporter.swift; sourceTree = "<group>"; };
 		AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V69Tests.swift; sourceTree = "<group>"; };
 		ADAFD7500719BA94561524F9 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
+		AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+History.swift"; sourceTree = "<group>"; };
 		B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+Chips.swift"; sourceTree = "<group>"; };
 		B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+ColorsRow.swift"; sourceTree = "<group>"; };
 		B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapRenderer.swift; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 			children = (
 				B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */,
 				B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */,
+				AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */,
 				42B8E3177EAFE7D93F9063ED /* ToolbarView+Menu.swift */,
 				B552BB06C1E0B1CC66FBE56A /* ToolbarView+MultiSelectRow.swift */,
 				E54CEB71D7B855EEB661A83C /* ToolbarView+PacksRow.swift */,
@@ -1024,6 +1027,7 @@
 				EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */,
 				AC1B5F41A850016565B83F0A /* ToolbarView+Chips.swift in Sources */,
 				4C507D44A97F37F90F408C31 /* ToolbarView+ColorsRow.swift in Sources */,
+				23B128F65DF0AF6A6987F9B0 /* ToolbarView+History.swift in Sources */,
 				24C2CF3CA4F695EA68682F22 /* ToolbarView+Menu.swift in Sources */,
 				CDC4460AF08146EA18AF0A69 /* ToolbarView+MultiSelectRow.swift in Sources */,
 				96CF6AB9416EDCCDAD9F602F /* ToolbarView+PacksRow.swift in Sources */,

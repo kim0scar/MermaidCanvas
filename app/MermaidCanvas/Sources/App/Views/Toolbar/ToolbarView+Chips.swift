@@ -258,6 +258,7 @@ extension ToolbarView {
         case "toolbar.textStyles": return "Textstil"
         case "toolbar.marker": return "Markera flera"
         case "toolbar.undo": return "Ångra"
+        case "toolbar.redo": return "Gör om"
         case "toolbar.zoom": return "Zooma till 100 procent"
         case "chip.circle": return "Cirkel"
         case "chip.rectangle": return "Rektangel"

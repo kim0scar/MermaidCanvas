@@ -80,38 +80,32 @@ struct EdgeMidpointHandle: View {
                 Label("Redigera text", systemImage: "textformat")
             }
             Divider()
-            // v37: 4 riktningsval
-            Button {
-                onEdgeSetDirection(edge.id, .forward)
+            // V79-svep: riktning + stil grupperade under egna kategori-menyer.
+            Menu {
+                Button { onEdgeSetDirection(edge.id, .forward) } label: {
+                    Label("→ Pil åt höger", systemImage: "arrow.right")
+                }
+                Button { onEdgeSetDirection(edge.id, .backward) } label: {
+                    Label("← Pil åt vänster", systemImage: "arrow.left")
+                }
+                Button { onEdgeSetDirection(edge.id, .bidirectional) } label: {
+                    Label("↔ Båda hållen", systemImage: "arrow.left.arrow.right")
+                }
+                Button { onEdgeSetDirection(edge.id, .none) } label: {
+                    Label("— Ingen pil", systemImage: "minus")
+                }
             } label: {
-                Label("→ Pil åt höger", systemImage: "arrow.right")
+                Label("Riktning", systemImage: "arrow.left.arrow.right")
             }
-            Button {
-                onEdgeSetDirection(edge.id, .backward)
+            Menu {
+                Button { onEdgeSetStyle(edge.id, .solid) } label: {
+                    Label("Hel linje", systemImage: "minus")
+                }
+                Button { onEdgeSetStyle(edge.id, .dashed) } label: {
+                    Label("Streckad linje", systemImage: "ellipsis")
+                }
             } label: {
-                Label("← Pil åt vänster", systemImage: "arrow.left")
-            }
-            Button {
-                onEdgeSetDirection(edge.id, .bidirectional)
-            } label: {
-                Label("↔ Båda hållen", systemImage: "arrow.left.arrow.right")
-            }
-            Button {
-                onEdgeSetDirection(edge.id, .none)
-            } label: {
-                Label("— Ingen pil", systemImage: "minus")
-            }
-            Divider()
-            // v27: linje-stil
-            Button {
-                onEdgeSetStyle(edge.id, .solid)
-            } label: {
-                Label("Hel linje", systemImage: "minus")
-            }
-            Button {
-                onEdgeSetStyle(edge.id, .dashed)
-            } label: {
-                Label("Streckad linje", systemImage: "ellipsis")
+                Label("Stil", systemImage: "line.diagonal")
             }
             Divider()
             // v63: färg på pilen — emoji syns i iOS-menyer (ikoner blir mallfärgade)

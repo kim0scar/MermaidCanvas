@@ -90,6 +90,7 @@ extension CanvasModel {
         self.multiSelection.removeAll()
         self.markerMode = false
         self.undoStack.removeAll()
+        self.redoStack.removeAll()   // V79-svep: ny canvas → ingen stale redo
     }
 
     /// v27: nollställ till en specifik plattform (vid Ny canvas).

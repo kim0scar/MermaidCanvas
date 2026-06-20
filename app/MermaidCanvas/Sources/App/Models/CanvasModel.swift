@@ -49,7 +49,7 @@ final class CanvasModel: ObservableObject {
     static let contentSize = CGSize(width: 4000, height: 4000)
     @Published var contentSize: CGSize = CGSize(width: 4000, height: 4000)
 
-    var undoStack: [CanvasSnapshot] = []
+    var undoStack: [CanvasSnapshot] = []; var redoStack: [CanvasSnapshot] = []   // V79: ångra båda håll
     let undoLimit = 30
 
     var isEdgeMode: Bool { edgeCreationMode != .off }

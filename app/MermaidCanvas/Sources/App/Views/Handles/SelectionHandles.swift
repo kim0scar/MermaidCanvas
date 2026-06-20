@@ -86,7 +86,10 @@ struct SelectionHandles: View {
     private func freeResizeHandle(size: CGFloat, w: CGFloat, h: CGFloat) -> some View {
         // v63: utanför hörnet
         let m = handleMargin
-        let pos = cornerPosition(dx: -w / 2 - m, dy: h / 2 + m)
+        // V79-svep: container saknar proportionell-handtag → lägg dess FRIA resize
+        // nere till HÖGER (Kims önskemål). Andra former: kvar nere vänster (br upptaget).
+        let freeRight = (shape.type == .container)
+        let pos = cornerPosition(dx: freeRight ? (w / 2 + m) : (-w / 2 - m), dy: h / 2 + m)
         ZStack {
             Circle()
                 .fill(Color.white)

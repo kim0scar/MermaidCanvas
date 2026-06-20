@@ -84,6 +84,7 @@ struct ContentView: View {
             onSave: save,
             onSaveAs: saveAs,
             onUndo: { model.undo() },
+            onRedo: { model.redo() },
             onShowCode: showMermaidCode,
             onCopyCode: copyMermaidCode,
             onExportImage: exportImage,

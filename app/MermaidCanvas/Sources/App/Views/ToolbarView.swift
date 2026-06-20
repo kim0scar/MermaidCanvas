@@ -34,6 +34,7 @@ struct ToolbarView: View {
     var onSave: () -> Void
     var onSaveAs: () -> Void
     var onUndo: () -> Void
+    var onRedo: () -> Void = {}   // V79-svep
     var onShowCode: () -> Void
     /// v61: kopiera hela dokumentet till urklipp utan sheet (1 tryck).
     var onCopyCode: () -> Void
@@ -116,6 +117,7 @@ struct ToolbarView: View {
             if !vertical { Spacer(minLength: 0) }
             zoomBadge
             undoButton
+            redoButton   // V79-svep: ångra åt båda håll
             modesMenu   // LägenMenu → ToolbarView+Menu.swift (R5-ratchet, steg H)
         }
     }
@@ -160,18 +162,7 @@ struct ToolbarView: View {
         .accessibilityLabel(a11yLabel(for: "toolbar.marker"))
     }
 
-    @ViewBuilder
-    var undoButton: some View {
-        Button(action: onUndo) {
-            ToolbarIconButton(systemImage: "arrow.uturn.backward",
-                              isActive: false,
-                              foregroundColor: model.canUndo ? .primary : .secondary.opacity(0.4))
-        }
-        .buttonStyle(.plain)
-        .disabled(!model.canUndo)
-        .accessibilityIdentifier("toolbar.undo")
-        .accessibilityLabel(a11yLabel(for: "toolbar.undo"))
-    }
+    // undoButton + redoButton → ToolbarView+History.swift (R5-ratchet, V79-svep)
 
     @ViewBuilder
     var zoomBadge: some View {

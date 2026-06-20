@@ -96,6 +96,20 @@ final class CanvasModelMutationTests: XCTestCase {
         XCTAssertEqual(m.shapes.count, 0)
     }
 
+    /// V79-svep: redo (ångra åt båda håll).
+    func test_redo_reappliesAndIsClearedByNewEdit() {
+        let m = CanvasModel()
+        m.addShape(.rectangle, at: c)
+        m.undo()
+        XCTAssertEqual(m.shapes.count, 0)
+        XCTAssertTrue(m.canRedo, "efter undo går det att göra om")
+        m.redo()
+        XCTAssertEqual(m.shapes.count, 1, "redo återskapar formen")
+        m.undo()
+        m.addShape(.circle, at: c)   // ny redigering
+        XCTAssertFalse(m.canRedo, "ny redigering ogiltigförklarar redo-historiken")
+    }
+
     func test_undo_cappedAt30() {
         let m = CanvasModel()
         for i in 0..<35 {
