@@ -24,6 +24,7 @@ struct LägenMenu: View {
     var onToggleMarker: () -> Void
     /// v37: importera Mermaid-kod från AI.
     var onImportMermaid: () -> Void
+    var onImportMultiple: () -> Void = {}   // v1.1: flera filer som containrar
     /// v66: visa/dölj legend-panelen på canvasen.
     var onToggleLegend: () -> Void = {}
 
@@ -69,6 +70,10 @@ struct LägenMenu: View {
             }
             Button { onImportMermaid() } label: {
                 Label("Importera Mermaid…", systemImage: "arrow.down.doc")
+            }
+            // v1.1: importera flera filer — var och en i en container (jämför varianter).
+            Button { onImportMultiple() } label: {
+                Label("Importera flera filer (jämför)…", systemImage: "square.grid.2x2")
             }
             Divider()
             // v32: Preview-knapp borttagen — kommer tillbaka när Godot-flödet är moget.

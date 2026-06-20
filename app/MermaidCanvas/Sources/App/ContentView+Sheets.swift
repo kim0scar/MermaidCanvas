@@ -157,6 +157,14 @@ extension ContentView {
             case .failure: break
             }
         }
+        // v1.1: importera FLERA filer — var och en i en container (jämför varianter).
+        .fileImporter(
+            isPresented: $showMultiImporter,
+            allowedContentTypes: [.plainText, .text],
+            allowsMultipleSelection: true
+        ) { result in
+            if case .success(let urls) = result { importFilesAsContainers(urls) }
+        }
         // v70: bekräftelse efter "Spara skill som fil"
         .alert("Skill sparad", isPresented: Binding(
             get: { skillSavedMessage != nil },

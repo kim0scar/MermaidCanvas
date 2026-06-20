@@ -18,6 +18,7 @@ extension ToolbarView {
             onShowRules: onShowRules,
             onToggleMarker: onToggleMarker,
             onImportMermaid: onImportMermaid,
+            onImportMultiple: onImportMultiple,
             onToggleLegend: onToggleLegend
         )
     }

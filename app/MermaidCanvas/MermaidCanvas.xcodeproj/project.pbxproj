@@ -87,6 +87,7 @@
 		6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B25CF04C2CA057CD0366B64 /* LegendPanel.swift */; };
 		6EDEFC6D953FE921B9939E97 /* CanvasModel+Undo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF062E95A85446BD3B9B18C /* CanvasModel+Undo.swift */; };
 		6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969A68524F5A084A0839C4 /* DesignTokens.swift */; };
+		6F5A25FED2E40CAEDC24574C /* ContentView+MultiImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B0B2C2F7D2B4A21B6A0B70F /* ContentView+MultiImport.swift */; };
 		6FBD251F80549B80AD67C081 /* MermaidGenerator+StateJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */; };
 		7087808445C8EAC8CAA7E5B1 /* V61DemoFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D573B86492349DDA7F0428 /* V61DemoFileTests.swift */; };
 		7467706C41CF4EAC940B5B06 /* V67Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C515D01227ECFFACAFCE12 /* V67Tests.swift */; };
@@ -276,6 +277,7 @@
 		4913E980F026A3D6E49070B7 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
 		4ABF8F505A711743DBEECEB3 /* V66EdgeMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V66EdgeMathTests.swift; sourceTree = "<group>"; };
+		4B0B2C2F7D2B4A21B6A0B70F /* ContentView+MultiImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView+MultiImport.swift"; sourceTree = "<group>"; };
 		4B93FA11AE7F0B2432FF64A0 /* V74SkillExportUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V74SkillExportUITest.swift; sourceTree = "<group>"; };
 		4CB5219BDA65C560A990E1E1 /* CanvasModel+Containers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasModel+Containers.swift"; sourceTree = "<group>"; };
 		4F05E5949388DD0DA7C68672 /* godot-lexicon.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "godot-lexicon.md"; sourceTree = "<group>"; };
@@ -741,6 +743,7 @@
 				290C826C5E3BCE9774F09866 /* ContentView.swift */,
 				03993D0F724864F2603EC96D /* ContentView+Canvas.swift */,
 				01E24759279021A6349EE8F6 /* ContentView+Files.swift */,
+				4B0B2C2F7D2B4A21B6A0B70F /* ContentView+MultiImport.swift */,
 				D98244FEC39238B6C0882BCC /* ContentView+Sheets.swift */,
 				9C35ACE4629BBC03F7002717 /* Info.plist */,
 				8991BFDE5D87E4860241B535 /* main.swift */,
@@ -993,6 +996,7 @@
 				6072D740B3E13C1BCDE9FB5A /* ConnectionOverlay.swift in Sources */,
 				D78FDD336CE79EF5EAEB5704 /* ContentView+Canvas.swift in Sources */,
 				C39F21F7AA98F23421D45EDF /* ContentView+Files.swift in Sources */,
+				6F5A25FED2E40CAEDC24574C /* ContentView+MultiImport.swift in Sources */,
 				ADFCBA768BDD069F78656FC0 /* ContentView+Sheets.swift in Sources */,
 				999F92B22B0AD29CD9618710 /* ContentView.swift in Sources */,
 				6EFFB3D3FBC5C5FFFD9CA469 /* DesignTokens.swift in Sources */,

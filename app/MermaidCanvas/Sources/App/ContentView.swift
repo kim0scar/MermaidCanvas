@@ -15,11 +15,9 @@ struct ContentView: View {
     /// v60: landskap (compact höjd på iPhone) → vänster vertikal sidebar i stället för topp-bar.
     @Environment(\.verticalSizeClass) var vSizeClass
     /// v34: synkroniserad spegel av UIScrollView's pan/zoom-state.
-    /// Speglat live i ZoomableCanvas delegate-callbacks (utan async). Manuell
-    /// chip-drop läser detta synkront vid drag-end → ingen race-condition.
+    /// Speglat live i ZoomableCanvas-callbacks; chip-drop läser synkront vid drag-end (ingen race).
     @StateObject var viewportState = CanvasViewportState()
-    /// v34: aktivt chip-drag (ersätter Apple's .draggable/.dropDestination
-    /// som inte fungerar pålitligt inuti UIViewRepresentable runt UIScrollView).
+    /// v34: aktivt chip-drag (Apple's .draggable/.dropDestination opålitligt i UIScrollView).
     @StateObject var chipDragState = ChipDragState()
 
     /// v35: canvasCenter är nu DYNAMISK — räknas från viewportState's
@@ -27,7 +25,8 @@ struct ContentView: View {
     /// en chip, läggs formen DÄR HAN TITTAR — inte vid statisk (2000,2000)
     /// som kan vara utanför skärm.
     var canvasCenter: CGPoint { viewportState.visibleCenterInCanvas }
-    @State var showImporter: Bool = false
+    @State var showImporter = false
+    @State var showMultiImporter = false   // v1.1: flera filer som containrar
     @State var showExporter: Bool = false
     @State var pendingDocument: CanvasDocument?
     /// v65: dokument-innehållet som det såg ut när filen öppnades — baslinje för
@@ -101,6 +100,7 @@ struct ContentView: View {
             onResetZoom: { resetZoomTrigger &+= 1 },
             onShowNotePopup: { showNotePopup = true },
             onImportMermaid: { showMermaidImport = true },
+            onImportMultiple: { showMultiImporter = true },
             onToggleLegend: { showLegend.toggle() },
             onDuplicateSelection: { model.duplicateSelection() },
             onDeleteSelection: { model.deleteSelection() },

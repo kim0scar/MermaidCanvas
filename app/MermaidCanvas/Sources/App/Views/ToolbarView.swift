@@ -50,8 +50,8 @@ struct ToolbarView: View {
     var onResetZoom: () -> Void
     /// v31: visa anteckning-popup-sheet med all canvas-text.
     var onShowNotePopup: () -> Void
-    /// v37: importera Mermaid från AI.
-    var onImportMermaid: () -> Void
+    var onImportMermaid: () -> Void   // v37: importera Mermaid från AI
+    var onImportMultiple: () -> Void = {}   // v1.1: flera filer som containrar
     /// v66: visa/dölj legend-panelen
     var onToggleLegend: () -> Void = {}
     /// v39: multi-select-operationer
