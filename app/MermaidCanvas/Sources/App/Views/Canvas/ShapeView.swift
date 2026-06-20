@@ -153,11 +153,15 @@ struct ShapeView: View {
         // v46: enkel- och dubbeltap i exakt-ordning. SwiftUI fördröjer count:1 om
         // count:2 ligger SENARE i kedjan, så dubbelklick måste ligga FÖRE och
         // enkeltap kvar — annars triggas både select OCH edit vid dubbelklick.
+        // v1.0: dubbeltryck öppnar redigerings-kortet PÅ canvasen (namn + anteckning
+        // skrivs direkt där, även för ny/tom form) — inte sheeten. Sheeten nås via kortets
+        // reglage-knapp för avancerat (textstil/listor/ta bort). Tabeller har egen redigerare.
         .onTapGesture(count: 2) {
             if shape.type == .table {
                 onTableEdit?(shape.id)
             } else {
-                onEdit()
+                onSelect()
+                onQuickRead()
             }
         }
         .onTapGesture(count: 1) {
