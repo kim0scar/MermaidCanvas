@@ -24,9 +24,9 @@ final class LayoutOverflowTests: XCTestCase {
             "toolbar.packs",
             "toolbar.colors",
             "toolbar.textStyles",
-            "toolbar.marker",
             "toolbar.zoom",
             "toolbar.undo",
+            "toolbar.redo",
             "toolbar.modes"
         ]
         for id in elementsToCheck {

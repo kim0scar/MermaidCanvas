@@ -112,8 +112,7 @@ struct ToolbarView: View {
             toggleButton("swatchpalette", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
-            // v39: multi-select direkt i toolbar
-            markerButton
+            // V79-svep: "Markera flera" flyttad till Lägen-menyn (ej huvudmeny-knapp).
             if !vertical { Spacer(minLength: 0) }
             zoomBadge
             undoButton
@@ -151,16 +150,7 @@ struct ToolbarView: View {
         .accessibilityLabel(a11yLabel(for: accId))
     }
 
-    @ViewBuilder
-    var markerButton: some View {
-        Button(action: onToggleMarker) {
-            ToolbarIconButton(systemImage: "rectangle.dashed",
-                              isActive: model.markerMode)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("toolbar.marker")
-        .accessibilityLabel(a11yLabel(for: "toolbar.marker"))
-    }
+    // markerButton borttagen (V79-svep) — "Markera flera" bor nu i Lägen-menyn.
 
     // undoButton + redoButton → ToolbarView+History.swift (R5-ratchet, V79-svep)
 

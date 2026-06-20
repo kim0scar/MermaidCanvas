@@ -75,6 +75,11 @@ struct LägenMenu: View {
                 Label("Legend", systemImage: "list.bullet.rectangle")
             }
             .accessibilityIdentifier("menu.legend")
+            // V79-svep: "Markera flera" flyttad hit ur huvudmenyn.
+            Button { onToggleMarker() } label: {
+                Label("Markera flera", systemImage: model.markerMode ? "checkmark" : "rectangle.dashed")
+            }
+            .accessibilityIdentifier("menu.marker")
             Divider()
             // v51.2: skärmläge porträtt/landskap (äkta orientering)
             Menu {
