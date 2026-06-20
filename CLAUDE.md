@@ -113,6 +113,8 @@ Användarens canvas-filer ligger i:
 
 14. **Arkitektur tvingas maskinellt — se `ARKITEKTUR-REGLER.md`.** `scripts/arch-check.py` måste vara grön innan commit (körs av `scripts/hooks/pre-commit`). Lagren pekar bara nedåt (View → Model → Mermaid/Persistence); Mermaid rör aldrig UI, Model ritar aldrig, jättefiler får bara krympa (ratchet i `scripts/arch-baseline.json`), version synkas AppVersion ↔ project.yml ↔ Info.plist. Round-trip-testerna är deploy-grind. **Mermaid-konformitetsgrinden** (`scripts/mermaid-conformance.mjs`, officiella mermaid.parse) körs också av pre-commit och vid deploy — appens genererade mermaid måste parsa i riktig mermaid. Bryt aldrig en regel utan att först motivera för Kim.
 
+15. **Export↔import + AI-ramverket hålls ALLTID aktuellt (icke förhandlingsbart).** Vid VARJE förändring — ny form, ny funktion, fix — måste du säkerställa att (a) **exporten OCH importen av mermaid** fortfarande round-trippar (kör round-trip-grinden; den är redan maskinell), OCH (b) **`AppCapabilities.swift`** (single source of truth för "vad appen kan visa → vad en AI får använda i mermaid") är uppdaterad: ny form kompilerar inte utan en rad i den uttömmande `shape(_:)`-switchen; ny app-egen funktion läggs till i `features` med sin bärare. Detta driver BÅDE in-app-vyn "Mermaid vs app" OCH den copy-paste-bara AI-ramverks-texten (`frameworkText()`) som Kim ger till andra AI:er — så den **aldrig** blir inaktuell igen. `AppCapabilitiesTests` + den uttömmande switchen tvingar currency. En form/funktion får aldrig committas utan att dess mermaid-bärare finns i `AppCapabilities` + EXTENDED-FORMAT.md.
+
 ## Filer du som Claude Code styrs av
 
 | Fil | Vad den säger |

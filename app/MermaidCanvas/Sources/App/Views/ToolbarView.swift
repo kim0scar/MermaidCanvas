@@ -40,6 +40,8 @@ struct ToolbarView: View {
     var onCopyCode: () -> Void
     /// Steg H: exportera ritade ytan som bild (PNG) → delningsmeny.
     var onExportImage: () -> Void = {}
+    /// V79-svep: visa "Mermaid vs app-funktioner".
+    var onShowCapabilities: () -> Void = {}
     var onShowRules: () -> Void
     var onToggleMarker: () -> Void
     var onAddTable: () -> Void

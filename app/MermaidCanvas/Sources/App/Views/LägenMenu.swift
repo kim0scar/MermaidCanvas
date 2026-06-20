@@ -15,6 +15,8 @@ struct LägenMenu: View {
     var onCopyCode: () -> Void
     /// Steg H: exportera ritade ytan som bild (PNG) → delningsmeny.
     var onExportImage: () -> Void = {}
+    /// V79-svep: visa "Mermaid vs app-funktioner"-vyn.
+    var onShowCapabilities: () -> Void = {}
     var onShowRules: () -> Void
     /// v39: fortfarande kvar som parameter för bakåtkompatibilitet — används ej i menyn längre.
     var onToggleMarker: () -> Void
@@ -70,6 +72,11 @@ struct LägenMenu: View {
                 Label("Exportera som bild…", systemImage: "photo")
             }
             .accessibilityIdentifier("menu.exportImage")
+            // V79-svep: vad blir mermaid + app-egna funktioner + AI-ramverk
+            Button { onShowCapabilities() } label: {
+                Label("Mermaid vs app-funktioner", systemImage: "rectangle.split.2x1")
+            }
+            .accessibilityIdentifier("menu.capabilities")
             // v66: legend — skriv vad varje form/kategori betyder (följer med i koden)
             Button { onToggleLegend() } label: {
                 Label("Legend", systemImage: "list.bullet.rectangle")
@@ -95,7 +102,7 @@ struct LägenMenu: View {
             .accessibilityIdentifier("menu.orientation")
             Divider()
             Button(action: {}) {
-                Label(AppVersion.current, systemImage: "info.circle")
+                Label("\(AppVersion.milestone) · \(AppVersion.current)", systemImage: "info.circle")
             }
             .disabled(true)
         } label: {

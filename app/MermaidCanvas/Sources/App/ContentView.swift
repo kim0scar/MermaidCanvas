@@ -69,6 +69,8 @@ struct ContentView: View {
     @State var showLegend: Bool = false
     /// Steg H: exporterad bild → delningsmeny.
     @State var exportImageItem: ExportImageItem? = nil
+    /// V79-svep: "Mermaid vs app-funktioner"-vyn.
+    @State var showCapabilities: Bool = false
 
     // v60: extraherade vyer för adaptiv layout (porträtt topp-bar / landskap vänster-sidebar).
     func toolbarView(vertical: Bool) -> some View {
@@ -88,6 +90,7 @@ struct ContentView: View {
             onShowCode: showMermaidCode,
             onCopyCode: copyMermaidCode,
             onExportImage: exportImage,
+            onShowCapabilities: { showCapabilities = true },
             onShowRules: { showRulesSheet = true },
             onToggleMarker: { model.toggleMarkerMode() },
             onAddTable: { model.addTable(at: canvasCenter) },
@@ -161,6 +164,10 @@ struct ContentView: View {
             if ProcessInfo.processInfo.arguments.contains("-uitest-component-gallery") {
                 showComponentGallery = true
             }
+            // V79-svep: launch-arg → öppna "Mermaid vs app"-vyn för se-appen.
+            if ProcessInfo.processInfo.arguments.contains("-uitest-capabilities") {
+                showCapabilities = true
+            }
             // Steg H: launch-arg → exportera bild automatiskt (efter att scenariot
             // hunnit appliceras) så "se-appen" kan hämta PNG:en för fidelity-koll.
             if ProcessInfo.processInfo.arguments.contains("-uitest-export-image") {
@@ -186,6 +193,10 @@ struct ContentView: View {
         // Steg H: delningsmeny för exporterad bild.
         .sheet(item: $exportImageItem) { item in
             ActivityView(items: [item.url])
+        }
+        // V79-svep: Mermaid vs app-funktioner.
+        .sheet(isPresented: $showCapabilities) {
+            MermaidVsAppSheet()
         }
         )
     }
