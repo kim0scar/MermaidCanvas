@@ -1,17 +1,5 @@
-# ARKITEKTUR-MERMAID — Version v82
+# ARKITEKTUR-MERMAID — Version v81
 *Datum: 2026-06-20*
-
-> **v82 "fil-glyfer + UI-mall (steg 8 del 2 + steg 9)":** Fil-former (MD/Excel) får
-> igenkännings-glyf på canvasen (`ShapeCategory.fileGlyphSymbol` → `doc.text`/`tablecells`
-> i ShapeRenderer). **UI-mall:** Mallar-menyn borttagen → iPhone 15/16 Pro som chips under
-> UI-paketet; modellnamnet ritas UTANPÅ ramen (skärmytan fri); phoneFrame får bara
-> proportionell resize. **phoneFrame-som-container:** ny `ShapeType.actsAsContainer`
-> (container || phoneFrame) → former på skärmen blir barn (childOfContainerId), följer med
-> vid flytt, round-trippar via state-JSON. **Byte-stabilitet:** state-JSON serialiseras med
-> `.sortedKeys` (deterministisk ordning — tog bort flaky idempotens-test + onödig fil-diff).
-> Verifierat: 188 unit-tester, arch-check, konformitet + render-grind 3/3, round-trip 3/3 stabil.
-
-## Vad v81 innehöll (föregående — export-bild + render-grind)
 
 > **v81 "Exportera som bild + render-trogen grind (steg G+H)":** Ny app-funktion
 > **"Exportera som bild"** — PNG av enbart den ritade ytan (bbox, ej hela canvasen) via

@@ -2,7 +2,15 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v81 — "Exportera som bild + render-trogen grind (steg G+H)"
+## Aktuell version: v82 — "Fil-glyfer + UI-mall (steg 8 del 2 + steg 9)"
+
+*Tema:* Fil-former (MD/Excel) får igenkännings-glyf på canvasen. **UI-mall:** Mallar-menyn
+borta → iPhone 15/16 Pro som chips under UI; modellnamnet UTANPÅ ramen (skärmytan fri);
+phoneFrame bara proportionell resize. **phoneFrame-som-container** (`actsAsContainer`):
+former på skärmen blir barn, följer med vid flytt, round-trippar via state-JSON. State-JSON
+nu byte-stabil (`.sortedKeys`). 188 tester, render-grind 3/3, round-trip 3/3 stabil.
+
+## v81 — "Exportera som bild + render-trogen grind (steg G+H)"
 
 *Tema:* Ny funktion **"Exportera som bild"** — PNG av enbart den ritade ytan via samma vyer
 som canvasen (kan aldrig avvika). Export+render-jämförelsen avslöjade + tätade en noll-
