@@ -1,6 +1,6 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
 NU: MB — ✅ G,H,8,9,0 + V79-FEEDBACK-SVEP (lås+lager, redo, container-export, edge-meny-kategorier, fri-resize-höger, marker-ut-ur-huvudmeny — 7 features, 3 cluster-commits). v83 deployad. KVAR: steg 1–5 (UX-111–114, kräver Kims iPhone). ✅ Steg F, 6, 7. n8n + M4 PAUSADE. MA + M3 klara.
-[grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 11 fångade, 3 byggda
+[grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
 
@@ -106,6 +106,7 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - 2026-06-20 · 💡#11 Edge-routing-ombyggnad (4 prickar, gå runt former ej container/iPhone, böj, 3 prickar under pil) + inline T-text-redigering på canvas + UI-färgbygg + save-state-snabbknapp · UX-polering (L), efter att kärnan satt sig
 - 2026-06-19 · 💡#8 Render-trogen mermaid-grind · BYGGD på Kims val ("render-koll vid deploy"): `scripts/mermaid-render-check.mjs` (headless Chrome renderar fixturerna → fångar allt riktig mermaid kraschar på) i VERSIONSHANTERING-deploy + snabb lint mot `<--`/`<-.-` i konformitetsgrinden (pre-commit). Bevisat: fångar gamla buggen (exit 1), 3/3 fixtures renderar nu
 - 2026-06-19 · 💡#7 Nästlad container (container-i-container) ska bära förälder-länk i REN mermaid (idag bara via state-JSON; `childOfContainerId` emitteras ej för containrar) · fångat i STEG F:s re-verifiering, pre-existerande Tier-2-lucka · byggs ihop med containment-arbetet (steg 9 / 💡#6)
+- 2026-06-21 · 💡#12 Markdown-läsare i appen (read-only): öppna en .md (t.ex. FUNKTIONSKarta) och läsa den formaterad — rubriker + tabeller · kräver markdown-render-lib (SwiftUI-inbyggd renderar ej tabeller) = eget litet bygge + nytt beroende + scope-fråga (PRODUKT.md: appen är ritverktyg, ej dok-läsare) · väntar
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
 - 2026-06-20 · V79-FEEDBACK-SVEP på Kims /goal ("bygg klart, var innovativ, använd sub agents"): 3 scoping-agenter kartlade → byggde 7 klara features (lås+3 lager med mermaid-round-trip, redo, "Spara Mermaid inom container", beroendepil-meny i kategorier, container-fri-resize-höger, marker-flera ut ur huvudmenyn). Resten av V79-listan triagead: redan byggt (v80–83) eller idébank 💡#9–#11 (OSX-app, Visio-drill, multi-fil-import, edge-routing-ombyggnad, inline-text, UI-färgbygg — exploratoriskt/stort). Varför idébank: en-användar-linsen + risk; kärnan + lås/lager först.
