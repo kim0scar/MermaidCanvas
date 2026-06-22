@@ -1,11 +1,5 @@
-# ARKITEKTUR-MERMAID — Milstolpe v1.1 (build v93)
-*Datum: 2026-06-22*
-
-> **build v93 — kontroll-genomgång (MB Steg 1):** 16-ytors UI-audit (138 funktioner, sub-agents +
-> adversariell verifiering). 21 fynd härdade inom befintliga filer (ingen ny modul, inga lager-ändringar):
-> undo-snapshot på text-/färg-/pil-handtag, legend följer med vid import, låst barn står still i container,
-> a11y-labels, döda kodbitar bort, dubbeltryck konsekvent i markeringsläge. 203 tester · conformance 3/3 ·
-> render 3/3. Fynd-logg: `KONTROLL-FYND.md`. Funktionskarta: `FUNKTIONSKarta.md`.
+# ARKITEKTUR-MERMAID — Milstolpe v1.1 (build v92)
+*Datum: 2026-06-21*
 
 > **v1.1 "Visio hoppa-in (underflöden)":** Kims "galen idé" byggd — en form kan ÄGA ett helt
 > underflöde en nivå djupare (drill-down, skiljt från kollaps/container). Kontextmeny "Skapa
