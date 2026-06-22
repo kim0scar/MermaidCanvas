@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: MB — ✅ G,H,8,9,0 + V79-FEEDBACK-SVEP (lås+lager, redo, container-export, edge-meny-kategorier, fri-resize-höger, marker-ut-ur-huvudmeny — 7 features, 3 cluster-commits). v83 deployad. KVAR: steg 1–5 (UX-111–114, kräver Kims iPhone). ✅ Steg F, 6, 7. n8n + M4 PAUSADE. MA + M3 klara.
+NU: ⏳ Milstolpe 1.0 — skarp release (version→"1.0", ny ikon, färgmeny-fix + markeringsverktyg, snyggare paketfärger, två-lager-BEVIS+embed). MB Steg 1 (kontroll-genomgång) maskindel ✅ v93. KVAR i MB: steg 2–5 (UX-111–114, Kims iPhone). n8n + M4 PAUSADE. MA + M3 klara.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -90,6 +90,11 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - ✅ Steg 8 — Skill-flöde-meny: DEL 1 ✅ (commit 17d4144). DEL 2 ✅ — container-note round-trippar (Gen:164), skill-korpus i konformitetstest (test_corpus_skillFlow), fil-glyf på canvas (2d: MD=doc.text, Excel=tablecells i ShapeRenderer, scenario 37). Allt round-trippar, 187 tester + render-grind gröna.
 - ✅ Steg 9 — UI-mall: Mallar-menyn borta; iPhone 15/16 Pro som chips under UI; namn UTANPÅ ramen (skärmytan fri); bara proportionell resize (phoneFrame); device-namn round-trippar som label. **phoneFrame-som-container** ✅: `ShapeType.actsAsContainer` → former på skärmen blir barn (childOfContainerId), följer med vid flytt, round-trippar via state-JSON (test). Pure-mermaid parent-lucka = 💡#7 (visuellt bevarat). 188 tester gröna. KVAR: Kims iPhone-bock (gester) vid v82.
 
+## Milstolpe 1.0 — skarp release (Kims order 2026-06-22)
+Städa version (dubbel→ren "1.0"), klassisk Apple-ikon, fixa färgmeny-avklippning + markeringsverktyg tillbaka + snyggare paketfärger, och BEVISA två-lager-fundamentet (AI-ramverket bäddas in i export så det alltid följer med).
+- ⏳ Steg 1.0 — release-svepet. Klart när: app visar "1.0"; swatchar klipps ej; markeringsknapp synlig+aktiv i toppen; ny ikon på iPhone (Kims bock); exportfil bär alla fyra lager + embed-test grönt + BEVIS-TVÅLAGER.md klar; alla grindar gröna; deployad v94 + tagg + ZIP.
+  Kräver: MB Steg 1 (maskindelen) ✅
+
 ## Efter MB (pausat, Kims order) + Efter M3
 - MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
 - M4: appen lagrar node contracts per figur + exporterar .skill.md (om auditen håller) · Styrningsregler (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet
@@ -109,6 +114,7 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - 2026-06-21 · 💡#12 Markdown-läsare i appen (read-only): öppna en .md (t.ex. FUNKTIONSKarta) och läsa den formaterad — rubriker + tabeller · kräver markdown-render-lib (SwiftUI-inbyggd renderar ej tabeller) = eget litet bygge + nytt beroende + scope-fråga (PRODUKT.md: appen är ritverktyg, ej dok-läsare) · väntar
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-22 · Milstolpe 1.0 på Kims order: version dubbel→ren "1.0" (bygg-räknaren vN lever kvar internt), klassisk Apple-ikon, färgmeny-avklippning lagas + markeringsverktyg åter i toppen + snyggare paketfärger (behåll färg-knapp separat per Kims val), OCH AI-ramverket (frameworkText) bäddas in i VARJE exportfil + maskinellt embed-test + BEVIS-TVÅLAGER.md. Varför: Kim vill ha en skarp 1.0 OCH tekniskt bevis att export/import alltid bär "vad är mermaid / vad är app-lagret" — appens fundament (gapet: spec:en låg bara bakom in-app-knappar, följde ej med filen).
 - 2026-06-22 · MB Steg 1 breddat + startat på Kims /goal: kontroll-genomgång av HELA UI-ytan (ej bara UX-111–122) enligt Metoder/KONTROLL-GENOMGANG.md — sub-agents per yta, 4 dim (Me/UI/Ber/Plats), adversariell verifiering, fixa fynd i WIP=1, fråga vid vägval. Output: ifylld FUNKTIONSKarta + KONTROLL-FYND.md. Varför: Kim vill ha bevisad kontroll på att allt sitter rätt/ser rätt ut/funkar/behövs innan vidare bygge.
 - 2026-06-20 · V79-FEEDBACK-SVEP på Kims /goal ("bygg klart, var innovativ, använd sub agents"): 3 scoping-agenter kartlade → byggde 7 klara features (lås+3 lager med mermaid-round-trip, redo, "Spara Mermaid inom container", beroendepil-meny i kategorier, container-fri-resize-höger, marker-flera ut ur huvudmenyn). Resten av V79-listan triagead: redan byggt (v80–83) eller idébank 💡#9–#11 (OSX-app, Visio-drill, multi-fil-import, edge-routing-ombyggnad, inline-text, UI-färgbygg — exploratoriskt/stort). Varför idébank: en-användar-linsen + risk; kärnan + lås/lager först.
 - 2026-06-19 · Steg H-FYND (export+render-jämförelse i praktiken): appens bakåtpil `<--` gav "Syntax error" i RIKTIG mermaid (mermaid.live) och `<-.-` tappade pilspetsen tyst — men konformitetsgrinden (mermaid.parse) släppte igenom båda (parse ≠ render). Fixat (commit 5dc4d16): bakåtkant skrivs som omvänd framåtpil. KVAR (Kims vägval, 💡#8): grinden bör bli render-trogen så denna klass fångas maskinellt — annars kan nästa parse-men-ej-render-glapp smyga in. Detta är bokstavligen "fundamentet" Kim bad om.
