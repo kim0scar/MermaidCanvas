@@ -80,7 +80,8 @@ extension CanvasModel {
         guard let container = shapes.first(where: { $0.id == containerId }) else { return }
         let inside = shapesInside(container: container)
         for child in inside {
-            if let i = shapes.firstIndex(where: { $0.id == child.id }) {
+            // Låst barn står still även när containern dras (paritet med moveSelection).
+            if let i = shapes.firstIndex(where: { $0.id == child.id }), !shapes[i].locked {
                 shapes[i].position.x += delta.width
                 shapes[i].position.y += delta.height
             }

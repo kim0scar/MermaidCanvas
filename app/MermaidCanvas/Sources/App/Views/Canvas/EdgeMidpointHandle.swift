@@ -17,9 +17,13 @@ struct EdgeMidpointHandle: View {
     var onEdgeSetLineShape: (UUID, EdgeLineShape) -> Void = { _, _ in }
     var onEdgeSetColor: (UUID, String?) -> Void
     var onEdgeSetFromSide: (UUID, EdgeSide?) -> Void
+    /// Tar undo-snapshot före en böj/räta-ut (waypoint skrivs via @Binding → saknar annars snapshot).
+    var onEdgeSnapshot: (UUID) -> Void = { _ in }
     var onRequestRename: (UUID) -> Void
     /// Steg H: exportläge — visa BARA kant-etiketten (inget handtag/meny) för bild-export.
     var exportMode: Bool = false
+    /// Säkrar EN undo-snapshot per waypoint-drag (vid drag-start), inte per frame.
+    @State private var didSnapshotWaypoint = false
 
     var body: some View {
         let hasWaypoint = !edge.waypoints.isEmpty
@@ -153,6 +157,7 @@ struct EdgeMidpointHandle: View {
             Divider()
             if hasWaypoint {
                 Button {
+                    onEdgeSnapshot(edge.id)
                     edge.waypoints = []
                 } label: {
                     Label("Räta ut pil", systemImage: "minus")
@@ -195,6 +200,7 @@ struct EdgeMidpointHandle: View {
     private func midpointGesture() -> some Gesture {
         DragGesture(coordinateSpace: .named("canvas"))
             .onChanged { v in
+                if !didSnapshotWaypoint { onEdgeSnapshot(edge.id); didSnapshotWaypoint = true }
                 let newPoint = v.location
                 if edge.waypoints.isEmpty {
                     edge.waypoints = [EdgeWaypoint(newPoint)]
@@ -202,5 +208,6 @@ struct EdgeMidpointHandle: View {
                     edge.waypoints[0] = EdgeWaypoint(newPoint)
                 }
             }
+            .onEnded { _ in didSnapshotWaypoint = false }
     }
 }

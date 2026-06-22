@@ -12,6 +12,7 @@ En tabell per yta (rubriken = **var den nås**). Rad = en funktion. Du fyller i 
 138 funktioner auditerade — 16 ytor × 4 dim, 51 sub-agenter, varje fynd adversariellt verifierat.
 - **Me (Mermaid) bevisat:** 199 enhetstester · conformance 3/3 · render 3/3 · arch-check — alla gröna.
 - **23 fynd bekräftade** (🔴 1 hög · 🟠 8 medel · 🟡 14 låg) → se **`KONTROLL-FYND.md`**. 12 falska larm motbevisades.
+- **Åtgärdat: ✅ 21 fixade · ⏭️ 1 skjuten (kosmetisk) · ⏸️ 1 behållen med flit (PreviewSheet, parkerad för Godot).** Grindar gröna efter fix.
 - Maskin-dimensionerna (Me/Ber/Plats) gröna **utom** de 23 fynden. **UI-känsla på riktig enhet = din iPhone-bock** (⬜ kvar med flit).
 
 ---

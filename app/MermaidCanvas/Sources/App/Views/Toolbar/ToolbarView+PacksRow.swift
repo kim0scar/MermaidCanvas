@@ -3,21 +3,6 @@
 import SwiftUI
 
 extension ToolbarView {
-    /// v29: pack-chip — tap lägger rektangel med pack:s default-kategori.
-    /// Stödjer inte drag-ut (drag är för basformer); pack-chips är ett snabbsätt
-    /// att lägga form med rätt kategori vid canvas-mitten.
-    @ViewBuilder
-    func packChip(pack: ShapePack, category: ShapeCategory) -> some View {
-        Button {
-            model.addShape(.rectangle, at: canvasCenter, category: category)
-        } label: {
-            ChipFace(systemImage: pack.systemImage)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("chip.pack.\(pack.rawValue)")
-        .accessibilityLabel(a11yLabel(for: "chip.pack.\(pack.rawValue)"))
-    }
-
     /// v31: Form-paket-rad — togglar för UI, Prompt-Process och n8n.
     /// v67: när n8n-paketet är aktivt visas flödesnoderna direkt under togglarna.
     @ViewBuilder

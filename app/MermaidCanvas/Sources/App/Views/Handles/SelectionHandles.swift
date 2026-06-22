@@ -130,23 +130,6 @@ struct SelectionHandles: View {
         .accessibilityAddTraits(.isButton)
     }
 
-    // MARK: - Selection-ram cornerRadius
-
-    /// v50.2 F-6: cornerRadius per formtyp så streckad markeringsram följer
-    /// formens egen geometri. Värdena ska matcha hur formerna ritas
-    /// (rektangel: 10, square: 14, pill: full kapsel). Diamond + processArrow
-    /// + circle har egna geometrier som inte är RoundedRectangle — där
-    /// faller vi tillbaka på 0 (rät bbox, känns OK för dessa).
-    private func selectionCornerRadius(for shape: ShapeNode) -> CGFloat {
-        // v50.4: delegerar till DesignTokens — så selection-ramen automatiskt
-        // matchar formens cornerRadius om den ändras centralt.
-        DesignTokens.Selection.cornerRadius(
-            for: shape.type,
-            width: ShapeGeometry.width(for: shape),
-            height: ShapeGeometry.height(for: shape)
-        )
-    }
-
     // MARK: - Positioner
 
     /// Beräknar en hörn-position relativt formens center, med rotation.

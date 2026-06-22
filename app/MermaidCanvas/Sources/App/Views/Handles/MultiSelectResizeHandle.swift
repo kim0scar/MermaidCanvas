@@ -51,6 +51,7 @@ struct MultiSelectResizeHandle: View {
                     }
             )
             .accessibilityIdentifier("multiselect.resize")
+            .accessibilityLabel("Skala markeringen")
         }
     }
 }

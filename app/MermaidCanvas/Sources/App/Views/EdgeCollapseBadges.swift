@@ -2,7 +2,7 @@ import SwiftUI
 
 /// v48 Fel #4: Plus-badge vid stub-änden för en kollapsad kant.
 /// Visas ALLTID (även när omarkerad) så användaren ser att något är dolt.
-/// Tryck → expandera (onTap → toggleCollapse på from-shape).
+/// Tryck → expandera (onTap → toggleCollapseEdge på denna gren — v63 per-gren-modell).
 struct EdgeStubBadge: View {
     let position: CGPoint
     let canvasScale: CGFloat

@@ -272,6 +272,7 @@ extension ToolbarView {
         case "chip.line": return "Linje"
         case "chip.octagon": return "Åttahörning"
         case "chip.triangle": return "Triangel"
+        case "chip.emoji": return "Emoji"
         case "chip.phoneFrame": return "iPhone-ram"
         case "chip.notepopup": return "Visa anteckningar"
         default:

@@ -129,37 +129,6 @@ final class V29CoverageTests: XCTestCase {
                       "Edit-sheet ska öppnas efter dubbeltap (textField/textView synlig)")
     }
 
-    // MARK: - T21: Aktivera Arkitektur-pack → chip dyker upp i Former-raden
-
-    @MainActor
-    func testT21_ArchitecturePackTogglesAddsChipInShapesRow() throws {
-        // v31: Arkitektur-pack utfasad. Testet bytt till Prompt-Process.
-        // Timing-issue i XCUITest med dubbel-toggle (packs-row → shapes-row) — funktionen är
-        // kod-verifierad (model.activeShapePacks + ForEach i shapesSecondary).
-        throw XCTSkip("v31 timing-bugg — kod-verifierad manuellt")
-        let app = launchApp()
-
-        // Öppna form-paket-raden via toolbar.packs (nytt i v31)
-        let packsBtn = app.buttons["toolbar.packs"]
-        XCTAssertTrue(packsBtn.waitForExistence(timeout: 4),
-                      "toolbar.packs-knappen ska finnas i primary-rad")
-        packsBtn.tap()
-        sleep(1)
-
-        let ppToggle = app.buttons["toggle.pack.promptProcess"]
-        XCTAssertTrue(ppToggle.waitForExistence(timeout: 3),
-                      "toggle.pack.promptProcess ska finnas i pack-raden")
-        ppToggle.tap()
-        sleep(1)
-
-        // Öppna Former-raden och leta efter Prompt-Process pack-chip
-        openShapesRow(app)
-
-        let packChip = app.buttons["chip.pack.promptProcess"]
-        XCTAssertTrue(packChip.waitForExistence(timeout: 4),
-                      "När Prompt-Process-pack är aktivt ska chip.pack.promptProcess finnas i Former-raden")
-    }
-
     // MARK: - T22: "Visa Mermaid-kod"-menypost finns
 
     @MainActor

@@ -82,6 +82,59 @@ final class CanvasModelMutationTests: XCTestCase {
         XCTAssertEqual(m.shapes[1].position.x, 520, "barnet följer med containern")
     }
 
+    /// Kontroll-genomgång K9: låst barn står still även när containern dras.
+    func test_moveContainerChildren_skipsLockedChild() {
+        let m = CanvasModel()
+        let box = ShapeNode(type: .container, position: CGPoint(x: 500, y: 500))
+        var lockedChild = ShapeNode(type: .circle, position: CGPoint(x: 480, y: 500),
+                                    childOfContainerId: box.id)
+        lockedChild.locked = true
+        let freeChild = ShapeNode(type: .circle, position: CGPoint(x: 490, y: 500),
+                                  childOfContainerId: box.id)
+        m.shapes = [box, lockedChild, freeChild]
+        m.moveContainerChildren(containerId: box.id, by: CGSize(width: 40, height: 0))
+        XCTAssertEqual(m.shapes[1].position.x, 480, "låst barn står still vid container-drag")
+        XCTAssertEqual(m.shapes[2].position.x, 530, "olåst barn följer med containern")
+    }
+
+    // MARK: - align (Centrera H/V)
+
+    func test_alignSelectionHorizontally_snapsToMedianY() {
+        let m = CanvasModel()
+        let a = ShapeNode(type: .circle, position: CGPoint(x: 100, y: 100))
+        let b = ShapeNode(type: .circle, position: CGPoint(x: 200, y: 200))
+        let c3 = ShapeNode(type: .circle, position: CGPoint(x: 300, y: 300))
+        m.shapes = [a, b, c3]
+        m.multiSelection = [a.id, b.id, c3.id]
+        m.alignSelectionHorizontally()
+        XCTAssertEqual(m.shapes.map { $0.position.y }, [200, 200, 200],
+                       "alla snäpper till median-Y (200)")
+        XCTAssertEqual(m.shapes.map { $0.position.x }, [100, 200, 300], "X orörd")
+    }
+
+    func test_alignSelectionVertically_snapsToMedianX() {
+        let m = CanvasModel()
+        let a = ShapeNode(type: .circle, position: CGPoint(x: 100, y: 100))
+        let b = ShapeNode(type: .circle, position: CGPoint(x: 200, y: 200))
+        let c3 = ShapeNode(type: .circle, position: CGPoint(x: 300, y: 300))
+        m.shapes = [a, b, c3]
+        m.multiSelection = [a.id, b.id, c3.id]
+        m.alignSelectionVertically()
+        XCTAssertEqual(m.shapes.map { $0.position.x }, [200, 200, 200],
+                       "alla snäpper till median-X (200)")
+    }
+
+    func test_alignSelection_noOpBelowTwo() {
+        let m = CanvasModel()
+        let a = ShapeNode(type: .circle, position: CGPoint(x: 100, y: 100))
+        m.shapes = [a]
+        m.multiSelection = [a.id]
+        m.alignSelectionHorizontally()
+        m.alignSelectionVertically()
+        XCTAssertEqual(m.shapes[0].position, CGPoint(x: 100, y: 100),
+                       "färre än 2 markerade → ingen ändring")
+    }
+
     // MARK: - undo
 
     func test_undo_restoresPreviousState_andEmptyIsNoop() {

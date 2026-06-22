@@ -20,7 +20,7 @@ struct LägenMenu: View {
     /// V79-svep: lägg en snabb-mall (AI-Skill / UI / Arkitektur).
     var onInsertTemplate: (CanvasModel.TemplateKind) -> Void = { _ in }
     var onShowRules: () -> Void
-    /// v39: fortfarande kvar som parameter för bakåtkompatibilitet — används ej i menyn längre.
+    /// V79-svep: används av "Markera flera"-posten nedan (flyttad hit ur huvudmenyn).
     var onToggleMarker: () -> Void
     /// v37: importera Mermaid-kod från AI.
     var onImportMermaid: () -> Void
@@ -73,7 +73,7 @@ struct LägenMenu: View {
             }
             // v1.1: importera flera filer — var och en i en container (jämför varianter).
             Button { onImportMultiple() } label: {
-                Label("Importera flera filer (jämför)…", systemImage: "square.grid.2x2")
+                Label("Importera flera filer (jämför)…", systemImage: "doc.on.doc")
             }
             Divider()
             // v32: Preview-knapp borttagen — kommer tillbaka när Godot-flödet är moget.

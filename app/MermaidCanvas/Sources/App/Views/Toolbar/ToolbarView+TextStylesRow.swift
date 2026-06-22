@@ -21,6 +21,8 @@ extension ToolbarView {
                     .background(Color.accentColor.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+                .accessibilityIdentifier("toolbar.textSize")
+                .accessibilityLabel("Textstorlek")
                 .confirmationDialog("Textstorlek", isPresented: $showSizePicker, titleVisibility: .visible) {
                     ForEach(TextStyle.allCases) { st in
                         Button(st.displayName) { applyTextStyle(st) }
@@ -34,8 +36,7 @@ extension ToolbarView {
                     label: "Fet",
                     active: selectedShape?.textStyle == .r1
                 ) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     let current = model.shapes[idx].textStyle
                     model.shapes[idx].textStyle = current == .r1 ? .body : .r1
                 }
@@ -48,8 +49,7 @@ extension ToolbarView {
                     label: "Punkter",
                     active: selectedShape?.hasBullets == true && selectedShape?.hasNumberedList == false
                 ) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     let on = !(model.shapes[idx].hasBullets)
                     model.shapes[idx].hasBullets = on
                     if on { model.shapes[idx].hasNumberedList = false }
@@ -61,8 +61,7 @@ extension ToolbarView {
                     label: "Numrerad",
                     active: selectedShape?.hasNumberedList == true
                 ) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     let on = !(model.shapes[idx].hasNumberedList)
                     model.shapes[idx].hasNumberedList = on
                     if on { model.shapes[idx].hasBullets = false }
@@ -76,8 +75,7 @@ extension ToolbarView {
                     label: "Vänster",
                     active: selectedShape?.textAlignment == .leading
                 ) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     model.shapes[idx].textAlignment = .leading
                 }
                 textActionButton(
@@ -85,8 +83,7 @@ extension ToolbarView {
                     label: "Centrera",
                     active: selectedShape?.textAlignment == .center
                 ) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     model.shapes[idx].textAlignment = .center
                 }
                 textActionButton(
@@ -94,8 +91,7 @@ extension ToolbarView {
                     label: "Höger",
                     active: selectedShape?.textAlignment == .trailing
                 ) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     model.shapes[idx].textAlignment = .trailing
                 }
 
@@ -103,15 +99,13 @@ extension ToolbarView {
 
                 // Indrag vänster (minska)
                 textActionButton(icon: "decrease.indent", label: "Indrag–", active: false) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     model.shapes[idx].indentLevel = max(0, model.shapes[idx].indentLevel - 1)
                 }
 
                 // Indrag höger (öka)
                 textActionButton(icon: "increase.indent", label: "Indrag+", active: false) {
-                    guard let id = model.selectedShapeId,
-                          let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+                    guard let idx = beginShapeEdit() else { return }
                     model.shapes[idx].indentLevel = min(3, model.shapes[idx].indentLevel + 1)
                 }
             }
@@ -122,28 +116,6 @@ extension ToolbarView {
     var selectedShape: ShapeNode? {
         guard let id = model.selectedShapeId else { return nil }
         return model.shapes.first(where: { $0.id == id })
-    }
-
-    @ViewBuilder
-    func textStyleChip(_ st: TextStyle) -> some View {
-        let isCurrent: Bool = {
-            guard let id = model.selectedShapeId,
-                  let s = model.shapes.first(where: { $0.id == id }) else { return false }
-            return s.textStyle == st
-        }()
-        Button {
-            applyTextStyle(st)
-        } label: {
-            Text(stylePreview(st))
-                .font(.system(size: st.fontSize, weight: st.fontWeight, design: .rounded))
-                .foregroundStyle(isCurrent ? Color.white : Color.primary)
-                .frame(minWidth: 40)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(Capsule().fill(isCurrent ? Color.accentColor : Color(.systemBackground)))
-                .overlay(Capsule().stroke(Color.primary.opacity(0.1), lineWidth: 0.5))
-        }
-        .buttonStyle(.plain)
     }
 
     @ViewBuilder
@@ -166,6 +138,7 @@ extension ToolbarView {
                 )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(label)
     }
 
     func stylePreview(_ st: TextStyle) -> String {
@@ -177,9 +150,17 @@ extension ToolbarView {
         }
     }
 
-    func applyTextStyle(_ st: TextStyle) {
+    /// Markerad form: ta undo-snapshot och returnera index (nil om inget markerat).
+    /// Gör text-radens ändringar ångringsbara — paritet med färg-raden (setFillColor m.fl.).
+    func beginShapeEdit() -> Int? {
         guard let id = model.selectedShapeId,
-              let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+              let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return nil }
+        model.snapshotForUndo()
+        return idx
+    }
+
+    func applyTextStyle(_ st: TextStyle) {
+        guard let idx = beginShapeEdit() else { return }
         model.shapes[idx].textStyle = st
     }
 }

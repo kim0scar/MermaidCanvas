@@ -18,20 +18,24 @@ extension ToolbarView {
 
             // Duplicera
             multiSelectButton("plus.square.on.square", label: "Duplicera",
+                               accId: "multiselect.duplicate",
                                disabled: count == 0) { onDuplicateSelection() }
 
             // Ta bort
             multiSelectButton("trash", label: "Ta bort",
+                               accId: "multiselect.delete",
                                disabled: count == 0, destructive: true) { onDeleteSelection() }
 
             Divider().frame(height: 28)
 
             // Align horisontellt (dela vertikalt centrallinje)
             multiSelectButton("align.horizontal.center", label: "Centrera H",
+                               accId: "multiselect.alignH",
                                disabled: count < 2) { onAlignHorizontal() }
 
             // Align vertikalt (dela horisontellt centrallinje)
             multiSelectButton("align.vertical.center", label: "Centrera V",
+                               accId: "multiselect.alignV",
                                disabled: count < 2) { onAlignVertical() }
         }
     }
@@ -39,6 +43,7 @@ extension ToolbarView {
     @ViewBuilder
     func multiSelectButton(_ icon: String,
                            label: String,
+                           accId: String,
                            disabled: Bool,
                            destructive: Bool = false,
                            action: @escaping () -> Void) -> some View {
@@ -54,5 +59,7 @@ extension ToolbarView {
         }
         .buttonStyle(.plain)
         .disabled(disabled)
+        .accessibilityIdentifier(accId)
+        .accessibilityLabel(label)
     }
 }

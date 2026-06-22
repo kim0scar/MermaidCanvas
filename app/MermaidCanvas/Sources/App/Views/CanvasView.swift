@@ -11,8 +11,7 @@ struct ConnectionDrag: Equatable {
 
 struct CanvasView: View {
     @ObservedObject var model: CanvasModel
-    /// v34: synkroniserad spegel av UIScrollView's pan/zoom + global frame.
-    /// Manuell chip-drop läser detta synkront — ingen race-condition.
+    /// v34: synkroniserad spegel av UIScrollView's pan/zoom (chip-drop läser synkront).
     @ObservedObject var viewportState: CanvasViewportState
     var onShapeEdgeTap: (UUID) -> Void
     var onShapeEdit: (UUID) -> Void
@@ -124,6 +123,7 @@ struct CanvasView: View {
                       onEdgeSetLineShape: { id, ls in model.setEdgeLineShape(id: id, ls) },
                       onEdgeSetColor: { id, hex in model.setEdgeColor(id: id, hex: hex) },
                       onEdgeSetFromSide: { id, side in model.setEdgeFromSide(id: id, side: side) },
+                      onEdgeSnapshot: { _ in model.snapshotForUndo() },
                       onEdgeRename: { id, label, placement in
                           model.setEdgeLabel(id: id, label: label, placement: placement) },
                       onToggleCollapseEdge: { id in model.toggleCollapseEdge(id) })

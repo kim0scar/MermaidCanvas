@@ -143,7 +143,7 @@ struct ToolbarView: View {
             }
         } label: {
             ToolbarIconButton(systemImage: systemImage,
-                              isActive: secondaryRow == row)
+                              isActive: !model.markerMode && secondaryRow == row)
         }
         .buttonStyle(.plain)
         .disabled(disabled)

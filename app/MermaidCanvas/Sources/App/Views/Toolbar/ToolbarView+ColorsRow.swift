@@ -137,6 +137,7 @@ extension ToolbarView {
     func applyColorPack(_ pack: ColorPack) {
         guard let id = model.selectedShapeId,
               let idx = model.shapes.firstIndex(where: { $0.id == id }) else { return }
+        model.snapshotForUndo()
         model.shapes[idx].colorPackId = pack.id == "none" ? nil : pack.id
     }
 }

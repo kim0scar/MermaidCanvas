@@ -166,6 +166,8 @@ struct ShapeView: View {
         // skrivs direkt där, även för ny/tom form) — inte sheeten. Sheeten nås via kortets
         // reglage-knapp för avancerat (textstil/listor/ta bort). Tabeller har egen redigerare.
         .onTapGesture(count: 2) {
+            // K22: i markeringsläge är dubbeltryck ren markering (öppnar ej kortet).
+            if markerMode { onSelect(); return }
             if shape.type == .table {
                 onTableEdit?(shape.id)
             } else {

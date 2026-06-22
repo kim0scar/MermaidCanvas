@@ -67,6 +67,8 @@ struct NoteCard: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("notecard.edit")
+                .accessibilityLabel("Redigera (reglage)")
                 Button(action: onClose) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 17))

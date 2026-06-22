@@ -21,6 +21,7 @@ struct EdgesView: View {
     var onEdgeSetColor: (UUID, String?) -> Void
     /// v64: byt utgångssida på pilen (nil = automatisk)
     var onEdgeSetFromSide: (UUID, EdgeSide?) -> Void
+    var onEdgeSnapshot: (UUID) -> Void = { _ in }
     var onEdgeRename: (UUID, String, EdgeLabelPlacement) -> Void
     /// v48: toggle-callback för collapse-badges. Tar shape-ID.
     /// v63: kollapsa/expandera EN gren (kant-id).
@@ -108,6 +109,7 @@ struct EdgesView: View {
                                        onEdgeSetLineShape: onEdgeSetLineShape,
                                        onEdgeSetColor: onEdgeSetColor,
                                        onEdgeSetFromSide: onEdgeSetFromSide,
+                                       onEdgeSnapshot: onEdgeSnapshot,
                                        onRequestRename: { renamingEdgeId = $0 },
                                        exportMode: exportMode)
                 }

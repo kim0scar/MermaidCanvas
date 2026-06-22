@@ -108,7 +108,8 @@ struct MermaidImportSheet: View {
             specType: parsed.specType,
             platform: parsed.platform,
             activeShapePacks: parsed.activeShapePacks,
-            collapsedEdgeIds: parsed.collapsedEdgeIds
+            collapsedEdgeIds: parsed.collapsedEdgeIds,
+            legend: parsed.legend
         )
         onClose()
     }

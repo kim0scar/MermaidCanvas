@@ -70,7 +70,7 @@ enum AppCapabilities {
         .init(name: "Pil-waypoints/böj",   carrier: "%% e<i> waypoint + state-JSON",       survivesPureMermaid: true),
         .init(name: "Pil-färg/sida/etikett-pos", carrier: "%% e<i> color/fromSide/labelPlacement", survivesPureMermaid: true),
         .init(name: "Pil-linjeform (rak/böjd/vinklad)", carrier: "%% e<i> lineShape + linkStyle interpolate + state-JSON", survivesPureMermaid: true),
-        .init(name: "Visio hoppa-in (underflöde)", carrier: "%% subprocess + subCanvas i state-JSON", survivesPureMermaid: false),
+        .init(name: "Visio hoppa-in (underflöde)", carrier: "subCanvas i state-JSON (inget %%-spår i ren mermaid)", survivesPureMermaid: false),
         .init(name: "Bakåtpil",            carrier: "skrivs som omvänd framåtpil (to-->from)", survivesPureMermaid: true),
         .init(name: "Container-förälder",  carrier: "subgraph-medlemskap + state-JSON",    survivesPureMermaid: true),
         .init(name: "phoneFrame-förälder", carrier: "BARA state-JSON (childOfContainerId)", survivesPureMermaid: false),
