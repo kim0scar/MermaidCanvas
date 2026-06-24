@@ -25,11 +25,11 @@
 | 8 | Canvas–Form-gester | ✅ V46 (tap/markera) | ◻ | drag/dubbeltryck: state-dump (sim-tap opålitlig) |
 | 9 | Anslutningsprickar | ✅ V46 (pil mellan former) | ✅ | 4 prickar (en/sida) syns på vald form |
 | 9b | **Beroende-streck (goal)** | ✅ scenario 08+22 | ✅ | pil kopplar till VARJE formtyp (08) + FÖLJER med vid resize (22) — pilspets på kant, midpoint-badge |
-| 10 | Pil-meny | ◻ kvar | ◻ | nästa svep-batch |
-| 11 | Form-långtrycksmeny | ◻ kvar | ◻ | nästa svep-batch |
-| 12 | Läs-lapp (NoteCard) | ◻ kvar | ◻ | nästa svep-batch |
-| 13 | Brödsmulor (drill) | ◻ kvar | ◻ | nästa svep-batch |
-| 14 | Handtag + markeringsläge | ◻ delvis | ✅ | resize (prop/fri) + rotate-handtag syns på vald form |
+| 10 | Pil-meny | ✅ V48 (pilspets/midpoint/kollaps-badge) | ✅ | full svit körd; flakighet ej app-bugg |
+| 11 | Form-långtrycksmeny | ✅ V74 (long-press → Redigera) | ◻ | behavior täckt; känsla = Kim |
+| 12 | Läs-lapp (NoteCard) | ◻ ej explicit UITest | ✅ (reglage syns) | kvar: explicit täckning ELLER Kims öga |
+| 13 | Brödsmulor (drill) | ◻ ej explicit UITest | ◻ | kvar: explicit täckning ELLER Kims öga |
+| 14 | Handtag + markeringsläge | ✅ V48 (resize/badges) | ✅ | resize (prop/fri) + rotate syns; full svit grön |
 | 15 | Canvas–Övrigt | ✅ V46 (zoom/undo/recenter) | — | |
 | 16 | Sheets/dialoger | ✅ V46 (kod/import/ny) | ◻ | text-läsning i sheet opålitlig på sim |
 
