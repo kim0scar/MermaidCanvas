@@ -11,6 +11,8 @@ struct MermaidCanvasMacApp: App {
     var body: some Scene {
         MenuBarExtra("Visuali2e", systemImage: "scribble.variable") {
             ContentView()
+                // 1.1 Fas 6: användbar popup-storlek (annars blir canvasen en liten ruta).
+                .frame(minWidth: 920, idealWidth: 1100, minHeight: 640, idealHeight: 760)
         }
         .menuBarExtraStyle(.window)
     }
