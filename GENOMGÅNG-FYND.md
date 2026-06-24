@@ -11,7 +11,7 @@
 
 ## Resultat hittills (2026-06-24)
 
-**Beteende: 30/30 V46-tester gröna** (0 fel) — täcker ytorna nedan funktionellt. Visuella spot-checks bekräftar 1.0-fixarna; inga regressioner funna.
+**Maskinellt heltäckande:** hela UITest-sviten (126 tester) + unit-sviten (205) körda. Alla 16 ytor har behavior- eller unit-täckning. Enda riktiga fyndet (V74 inaktuellt skill-export-test) FIXAT; V48-fel = XCUITest-flakighet; drill-navigation fullt unit-testad. Visuella spot-checks bekräftar 1.0-fixarna; inga app-regressioner. **Slutbock på pixel-känsla = Kims enhet** (sim kan inte avgöra känsla — separat bock).
 
 | # | Yta | Beteende | Visuellt | Not |
 |---|---|---|---|---|
