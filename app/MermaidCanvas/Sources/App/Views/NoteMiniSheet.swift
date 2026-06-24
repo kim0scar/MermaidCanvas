@@ -13,13 +13,13 @@ struct NoteMiniSheet: View {
                     .font(.headline)
                 TextEditor(text: $note)
                     .scrollContentBackground(.hidden)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.appSecondaryBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .frame(minHeight: 150)
             }
             .padding(20)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button("Klar") { onDone() }
                         .font(.body.weight(.semibold))
                 }

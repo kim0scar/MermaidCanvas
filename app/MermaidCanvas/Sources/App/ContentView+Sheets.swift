@@ -42,7 +42,7 @@ extension ContentView {
             NavigationStack {
                 ComponentGallery()
                     .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
+                        ToolbarItem(placement: .primaryAction) {
                             Button("Klar") { showComponentGallery = false }
                         }
                     }

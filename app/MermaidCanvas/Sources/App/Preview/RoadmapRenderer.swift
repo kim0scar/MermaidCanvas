@@ -16,7 +16,7 @@ struct RoadmapRenderer: View {
             }
             .padding(20)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.appGroupedBackground)
     }
 
     private func nodes(_ cat: ShapeCategory) -> [ShapeNode] {
@@ -47,7 +47,7 @@ struct RoadmapRenderer: View {
                     }
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)
-                    .background(Color(.secondarySystemGroupedBackground))
+                    .background(Color.appSecondaryGroupedBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }

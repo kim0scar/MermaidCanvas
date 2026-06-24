@@ -76,12 +76,12 @@ struct ToolbarView: View {
             HStack(alignment: .top, spacing: 6) {
                 primaryControls(vertical: true)
                     .padding(8)
-                    .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .background(Color.appBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
                 if let row = activeRow {
                     secondaryRowView(row)
                         .padding(8)
-                        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .background(Color.appBackground, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
                 }
             }
@@ -97,7 +97,7 @@ struct ToolbarView: View {
                         ))
                 }
             }
-            .background(Color(.systemBackground))
+            .background(Color.appBackground)
         }
     }
 
@@ -202,6 +202,6 @@ struct ToolbarView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.appSecondaryBackground)
     }
 }

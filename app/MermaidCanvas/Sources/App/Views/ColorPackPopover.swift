@@ -26,9 +26,9 @@ struct ColorPackSheet: View {
                 .padding(16)
             }
             .navigationTitle("Färg")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button("Stäng") { onPick(selectedPackId) }
                 }
             }

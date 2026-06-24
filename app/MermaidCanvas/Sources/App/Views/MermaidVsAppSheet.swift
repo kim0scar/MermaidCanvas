@@ -46,7 +46,7 @@ struct MermaidVsAppSheet: View {
                 }
             }
             .navigationTitle("Hur funkar appen")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .searchable(text: $search, prompt: "Sök form eller funktion")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Klar") { dismiss() } }

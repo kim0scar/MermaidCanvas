@@ -35,9 +35,9 @@ struct MermaidCodeSheet: View {
                     .padding(16)
                     .accessibilityIdentifier("sheet.codeContent")
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color.appSecondaryBackground)
             .navigationTitle("Mermaid-kod")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Stäng", action: onClose)

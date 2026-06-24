@@ -15,9 +15,9 @@ struct PlatformRulesSheet: View {
                     .padding(16)
             }
             .navigationTitle("Regler — \(platform.displayName)")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button("Stäng", action: onClose)
                 }
             }

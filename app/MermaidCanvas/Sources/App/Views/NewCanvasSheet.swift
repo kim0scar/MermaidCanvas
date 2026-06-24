@@ -28,7 +28,7 @@ struct NewCanvasSheet: View {
                 .padding(20)
             }
             .navigationTitle("Ny canvas")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Avbryt", action: onCancel)
@@ -69,7 +69,7 @@ struct NewCanvasSheet: View {
                 }
             }
             .padding(12)
-            .background(Color(.secondarySystemBackground))
+            .background(Color.appSecondaryBackground)
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)

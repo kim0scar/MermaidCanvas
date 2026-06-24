@@ -19,7 +19,7 @@ struct PreviewSheet: View {
                 specType: specType
             )
             .navigationTitle("Preview — \(specType.displayName)")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Stäng", action: onClose)

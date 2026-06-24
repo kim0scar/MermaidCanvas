@@ -65,7 +65,7 @@ struct ComponentGallery: View {
             }
             .padding(20)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.appGroupedBackground)
         .navigationTitle("Komponentgalleri")
         .accessibilityIdentifier("component.gallery")
     }
@@ -91,7 +91,7 @@ struct ComponentGallery: View {
             content()
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.systemBackground))
+                .background(Color.appBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
@@ -107,14 +107,14 @@ struct ComponentGallery: View {
             // Chip
             ZStack {
                 Circle()
-                    .fill(Color(.systemGray6))
+                    .fill(Color.appGray6)
                     .frame(width: 44, height: 44)
                 entry.chipView
             }
             // Canvas
             entry.canvasView
                 .frame(width: 120, height: 80)
-                .border(Color(.systemGray5), width: 0.5)
+                .border(Color.appGray5, width: 0.5)
             Spacer()
         }
     }

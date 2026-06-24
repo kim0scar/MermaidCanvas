@@ -75,7 +75,7 @@ struct MermaidImportSheet: View {
                 }
             }
             .navigationTitle("Importera Mermaid")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Stäng", action: onClose)

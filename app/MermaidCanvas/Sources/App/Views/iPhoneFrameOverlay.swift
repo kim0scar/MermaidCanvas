@@ -4,7 +4,7 @@ import SwiftUI
 /// Ramen ligger inom samma scale/offset-transform som shapes.
 struct iPhoneFrameOverlay: View {
     var canvasContentSize: CGSize
-    var color: Color = Color(.label).opacity(0.30)
+    var color: Color = Color.appLabel.opacity(0.30)
 
     var body: some View {
         let frame = iPhoneFrameMath.canvasFrame(in: canvasContentSize)

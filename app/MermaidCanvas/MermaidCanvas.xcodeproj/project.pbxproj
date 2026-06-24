@@ -49,6 +49,7 @@
 		1774FA5B79BDAF6050096D79 /* CanvasViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00A564942F1596BCF995981 /* CanvasViewportState.swift */; };
 		17ED72AD26A9BC820FBA2F20 /* CanvasModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64EA15DE9F7EF0E7DBB7DA2 /* CanvasModel.swift */; };
 		180DDD6E2E778B36C6FC4EDF /* CanvasDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63AB7BE4C160CC630F4E4CFA /* CanvasDocument.swift */; };
+		181A80B6903550F027E50E17 /* PlatformModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */; };
 		1C55C6F6A42D303F5FF3E0EF /* ShapeBackgrounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */; };
 		1D627C5D39730C1F0D281100 /* ContentView+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E24759279021A6349EE8F6 /* ContentView+Files.swift */; };
 		1E68196C416C03C102DED14F /* UIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E6FAA7A14093A0397C1316 /* UIRenderer.swift */; };
@@ -99,6 +100,7 @@
 		44B0F34D1E40719CA326A64E /* ToolbarView+MultiSelectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B552BB06C1E0B1CC66FBE56A /* ToolbarView+MultiSelectRow.swift */; };
 		44E0198A49CBBD2E04F7C305 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */; };
 		457A24CC4D25A3D63C47963C /* MermaidImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568A38DC7C5E3F152C0E95AD /* MermaidImportSheet.swift */; };
+		45922DD93DBE46148BFE6050 /* Color+Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA706A570B4C37D302AD049 /* Color+Platform.swift */; };
 		45D4C2ED829D870A7628E884 /* DotGridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */; };
 		46446F482FD69A836DDC86F6 /* ShapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0E6420DE137F57D019A7EB /* ShapeNode.swift */; };
 		492AF805A4E57D71065CE68A /* PromptBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD05DC75C3DACAAAA666424 /* PromptBadge.swift */; };
@@ -190,6 +192,7 @@
 		93FC2F7C01A67B4054E0A95F /* MermaidGenerator+StateJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */; };
 		9552F0FFF809B97E39DFE7B2 /* FileChangeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF04A29A100E836C9DE2317A /* FileChangeObserver.swift */; };
 		95DC4D2C80428626FEC5C2D4 /* UITestScenarios+FormReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C0687C9906120C71388230 /* UITestScenarios+FormReview.swift */; };
+		9672653D822877CCE60EECCC /* PlatformModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */; };
 		96B8B9993668DBBBB0DDF89E /* NoteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DF6BC9457837FA79F79B7A /* NoteCard.swift */; };
 		96CF6AB9416EDCCDAD9F602F /* ToolbarView+PacksRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54CEB71D7B855EEB661A83C /* ToolbarView+PacksRow.swift */; };
 		96DD3B025BE13643B58A0113 /* V65SkrapFlodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEE97DAAFD2C7BA329CC359D /* V65SkrapFlodeTests.swift */; };
@@ -259,6 +262,7 @@
 		C854816CA241FED858ABD2AE /* V64RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C40B3396814B4ACFE3B46F4 /* V64RoundTripTests.swift */; };
 		C8BACFAD99E486DAD79AB498 /* godot-lexicon.md in Resources */ = {isa = PBXBuildFile; fileRef = 4F05E5949388DD0DA7C68672 /* godot-lexicon.md */; };
 		C8D319D0B2DDE4FAD977E375 /* ContentView+Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03993D0F724864F2603EC96D /* ContentView+Canvas.swift */; };
+		C9188BEC510973EF01B2AE3E /* Color+Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA706A570B4C37D302AD049 /* Color+Platform.swift */; };
 		CAA79A1EB7C4EBFAE9CE614B /* NoteMiniSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */; };
 		CAABE56FFDCCA79218FD0018 /* V66LRFlodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4ECFD80C82FFC6521E9E77 /* V66LRFlodeTests.swift */; };
 		CAF3B1AA079DA30839223936 /* RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DBECF727C64AC554A79FCC /* RoundTripTests.swift */; };
@@ -391,6 +395,7 @@
 		2D23C41C85CA5F28CD4F03FC /* ZoomableCanvasMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableCanvasMac.swift; sourceTree = "<group>"; };
 		2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MermaidGenerator+StateJSON.swift"; sourceTree = "<group>"; };
 		2E3CAD65F3CEBBD3CFE9B088 /* V68Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V68Tests.swift; sourceTree = "<group>"; };
+		2EA706A570B4C37D302AD049 /* Color+Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Platform.swift"; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
 		31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeGeometry.swift; sourceTree = "<group>"; };
 		34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_shape.1.png; sourceTree = "<group>"; };
@@ -494,6 +499,7 @@
 		AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+History.swift"; sourceTree = "<group>"; };
 		B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+Chips.swift"; sourceTree = "<group>"; };
 		B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+ColorsRow.swift"; sourceTree = "<group>"; };
+		B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformModifiers.swift; sourceTree = "<group>"; };
 		B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapRenderer.swift; sourceTree = "<group>"; };
 		B552BB06C1E0B1CC66FBE56A /* ToolbarView+MultiSelectRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+MultiSelectRow.swift"; sourceTree = "<group>"; };
 		B5958A7631F79A8FEB1B4108 /* V46ExplorationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V46ExplorationTest.swift; sourceTree = "<group>"; };
@@ -671,6 +677,7 @@
 				05DF6BC9457837FA79F79B7A /* NoteCard.swift */,
 				DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */,
 				FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */,
+				B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */,
 				C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */,
 				D35F5529A9079DF8958E486C /* PreviewSheet.swift */,
 				1AD05DC75C3DACAAAA666424 /* PromptBadge.swift */,
@@ -779,6 +786,7 @@
 			children = (
 				4CD1BE76934D58BBDA17608A /* Clipboard.swift */,
 				231E1F427B96B53352261D55 /* Color+Hex.swift */,
+				2EA706A570B4C37D302AD049 /* Color+Platform.swift */,
 				9FED8B369306CD9E4CF0A850 /* Haptics.swift */,
 				6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */,
 				024C106FB50C0683CF678899 /* PlatformRules.swift */,
@@ -1170,6 +1178,7 @@
 				6EF2076F5F23323035B2E901 /* Clipboard.swift in Sources */,
 				2969CC7F6BE48C05915BE177 /* CollapseBadge.swift in Sources */,
 				0E2DD39826CC4DC274B0EB69 /* Color+Hex.swift in Sources */,
+				45922DD93DBE46148BFE6050 /* Color+Platform.swift in Sources */,
 				BFE7D374EBE6027C54C79F4E /* ColorPack.swift in Sources */,
 				D5DA334EBF020D34A2A2A630 /* ColorPackPopover.swift in Sources */,
 				58589F8D959461C326887FDA /* ColorPickerPopover.swift in Sources */,
@@ -1227,6 +1236,7 @@
 				086A7A423D7BCD4E53B8ED1E /* NotePopupSheet.swift in Sources */,
 				B0AB6FFB2EC3786AEBFCF2E2 /* Orientation.swift in Sources */,
 				AD0DCA78B7188B517185E9BB /* Platform.swift in Sources */,
+				181A80B6903550F027E50E17 /* PlatformModifiers.swift in Sources */,
 				9B2FAACED063C4EC9003C3DE /* PlatformRules.swift in Sources */,
 				736346C7B406F300393FDCCF /* PlatformRulesSheet.swift in Sources */,
 				F9AF857A5FAB68ECC78A54E4 /* PreviewSheet.swift in Sources */,
@@ -1299,6 +1309,7 @@
 				A1BEB832ABD19B567A35FD3D /* Clipboard.swift in Sources */,
 				3CB3443CCE6C72AEF0804D20 /* CollapseBadge.swift in Sources */,
 				B619468758880DC54CD31013 /* Color+Hex.swift in Sources */,
+				C9188BEC510973EF01B2AE3E /* Color+Platform.swift in Sources */,
 				D289533B98FCCF66069A957F /* ColorPack.swift in Sources */,
 				FCDCD38C1EC1587E7BD78E79 /* ColorPackPopover.swift in Sources */,
 				C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */,
@@ -1356,6 +1367,7 @@
 				8ACA8B8CF558FE905EE46D08 /* NotePopupSheet.swift in Sources */,
 				E9F929C8871959ACBABF2FF4 /* Orientation.swift in Sources */,
 				AF71D014F6A90DEEDB254840 /* Platform.swift in Sources */,
+				9672653D822877CCE60EECCC /* PlatformModifiers.swift in Sources */,
 				E89E5E4258D420A82D09BDD6 /* PlatformRules.swift in Sources */,
 				D05D53CCB773A8CDA53268A8 /* PlatformRulesSheet.swift in Sources */,
 				36044040C55FCA0697F0BC79 /* PreviewSheet.swift in Sources */,

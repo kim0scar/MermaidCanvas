@@ -79,7 +79,7 @@ struct NoteCard: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 9)
-            .background(Color(.secondarySystemBackground))
+            .background(Color.appSecondaryBackground)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
@@ -96,7 +96,7 @@ struct NoteCard: View {
                             .font(.footnote)
                             .frame(minHeight: 56, maxHeight: 130)
                             .scrollContentBackground(.hidden)
-                            .background(Color(.secondarySystemBackground),
+                            .background(Color.appSecondaryBackground,
                                         in: RoundedRectangle(cornerRadius: 8))
                             .onChange(of: note) { _, v in commit(note: v) }
                             .accessibilityIdentifier("notecard.note")
@@ -108,10 +108,10 @@ struct NoteCard: View {
             .frame(maxHeight: 230)
         }
         .frame(width: 260)
-        .background(Color(.systemBackground))
+        .background(Color.appBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12)
-            .stroke(Color(.separator), lineWidth: 0.8))
+            .stroke(Color.appSeparator, lineWidth: 0.8))
         .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
         .accessibilityIdentifier("notecard")
         .onAppear {

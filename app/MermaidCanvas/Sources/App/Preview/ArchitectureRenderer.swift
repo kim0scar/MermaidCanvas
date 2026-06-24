@@ -23,7 +23,7 @@ struct ArchitectureRenderer: View {
             }
             .padding(20)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.appGroupedBackground)
     }
 
     private func nodes(_ cat: ShapeCategory) -> [ShapeNode] {
@@ -85,7 +85,7 @@ struct ArchitectureRenderer: View {
                     Spacer()
                 }
                 .padding(10)
-                .background(Color(.secondarySystemGroupedBackground))
+                .background(Color.appSecondaryGroupedBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }

@@ -80,10 +80,10 @@ struct TableEditorSheet: View {
                                     .padding(8)
                                     .frame(minWidth: 80, idealWidth: 110, maxWidth: 160,
                                            minHeight: 40)
-                                    .background(row == 0 ? Color(.systemGray5) : Color(.systemBackground))
+                                    .background(row == 0 ? Color.appGray5 : Color.appBackground)
                                     .overlay(
                                         Rectangle()
-                                            .stroke(Color(.separator), lineWidth: 0.5)
+                                            .stroke(Color.appSeparator, lineWidth: 0.5)
                                     )
                                     .multilineTextAlignment(.center)
                                 }
@@ -93,7 +93,7 @@ struct TableEditorSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color(.separator), lineWidth: 1)
+                            .stroke(Color.appSeparator, lineWidth: 1)
                     )
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
@@ -142,7 +142,7 @@ struct TableEditorSheet: View {
                 }
             }
             .navigationTitle("Redigera tabell")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Avbryt") { onCancel() }

@@ -26,7 +26,7 @@ struct UIScreenRenderer: View {
             ZStack(alignment: .topLeading) {
                 // iPhone-chassi (centrerat)
                 RoundedRectangle(cornerRadius: 42, style: .continuous)
-                    .fill(Color(.systemBackground))
+                    .fill(Color.appBackground)
                     .overlay(
                         RoundedRectangle(cornerRadius: 42, style: .continuous)
                             .stroke(Color.primary.opacity(0.5), lineWidth: 3)
@@ -52,7 +52,7 @@ struct UIScreenRenderer: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
-        .background(Color(.systemGray5))
+        .background(Color.appGray5)
     }
 
     // MARK: - Filtering + positionering
@@ -149,7 +149,7 @@ struct UIScreenRenderer: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
         .frame(width: 160)
-        .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: 10))
+        .background(Color.appGray6, in: RoundedRectangle(cornerRadius: 10))
     }
 
     @ViewBuilder
@@ -174,7 +174,7 @@ struct UIScreenRenderer: View {
                 .font(.caption2.bold())
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(Color(.systemBackground))
+                .background(Color.appBackground)
                 .padding(.leading, 10)
                 .padding(.top, -8)
         }

@@ -33,7 +33,7 @@ struct LegendPanel: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 9)
-            .background(Color(.secondarySystemBackground))
+            .background(Color.appSecondaryBackground)
 
             if categories.isEmpty {
                 Text("Lägg till former så dyker deras kategorier upp här.")
@@ -64,10 +64,10 @@ struct LegendPanel: View {
             }
         }
         .frame(width: 300)
-        .background(Color(.systemBackground))
+        .background(Color.appBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12)
-            .stroke(Color(.separator), lineWidth: 0.8))
+            .stroke(Color.appSeparator, lineWidth: 0.8))
         .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
         .accessibilityIdentifier("legend.panel")
     }

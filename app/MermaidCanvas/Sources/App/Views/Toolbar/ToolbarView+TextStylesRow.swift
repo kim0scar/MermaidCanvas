@@ -130,7 +130,7 @@ extension ToolbarView {
                 .frame(width: 38, height: 36)
                 .background(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(active ? Color.accentColor : Color(.systemBackground))
+                        .fill(active ? Color.accentColor : Color.appBackground)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)

@@ -81,7 +81,7 @@ extension ToolbarView {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(
-                Capsule().fill(isActive ? Color.accentColor : Color(.systemBackground))
+                Capsule().fill(isActive ? Color.accentColor : Color.appBackground)
             )
             .overlay(Capsule().stroke(Color.primary.opacity(0.15), lineWidth: 0.5))
         }

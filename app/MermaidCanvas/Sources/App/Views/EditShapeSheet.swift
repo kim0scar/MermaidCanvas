@@ -122,7 +122,7 @@ struct EditShapeSheet: View {
                 }
             }
             .navigationTitle("Redigera form")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Avbryt", action: onCancel)

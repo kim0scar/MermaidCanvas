@@ -26,7 +26,7 @@ struct FlowRenderer: View {
             }
             .padding(20)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.appGroupedBackground)
     }
 
     private var orderedShapes: [ShapeNode] {
@@ -72,7 +72,7 @@ struct FlowRenderer: View {
             Spacer()
         }
         .padding(12)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color.appSecondaryGroupedBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 

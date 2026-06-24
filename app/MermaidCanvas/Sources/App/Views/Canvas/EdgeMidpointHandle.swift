@@ -182,7 +182,7 @@ struct EdgeMidpointHandle: View {
                 .lineLimit(1)
                 .padding(.horizontal, 4)
                 .padding(.vertical, 2)
-                .background(Color(.systemBackground).opacity(0.88))
+                .background(Color.appBackground.opacity(0.88))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .allowsHitTesting(false)
                 .position(CGPoint(x: mid.x, y: labelY))

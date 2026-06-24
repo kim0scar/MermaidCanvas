@@ -40,7 +40,7 @@ struct EdgeLabelSheet: View {
                 }
             }
             .navigationTitle("Pil-text")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Avbryt") { onCancel() }

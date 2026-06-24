@@ -5,7 +5,7 @@ import SwiftUI
 struct DotGridBackground: View {
     var spacing: CGFloat = 24
     var dotSize: CGFloat = 1.5
-    var color: Color = Color(.tertiaryLabel)
+    var color: Color = Color.appTertiaryLabel
 
     var body: some View {
         Canvas(rendersAsynchronously: false) { ctx, size in

@@ -24,9 +24,9 @@ struct NotePopupSheet: View {
                 .padding()
             }
             .navigationTitle("Anteckningar")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavTitle()
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button("Stäng", action: onClose)
                 }
             }
