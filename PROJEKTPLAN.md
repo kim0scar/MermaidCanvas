@@ -97,7 +97,8 @@ Städa version (dubbel→ren "1.0"), klassisk Apple-ikon, fixa färgmeny-avklipp
 
 ## Milstolpe 1.1 — total genomgång + dual-platform (Kims Goal 2026-06-24)
 Tre spår: (1) TOTAL sim-driven genomgång — varje meny/val körd i simulator, UI/UX perfekt, alla beroende-streck + former funkar; (2) fritt förbättra/lägga till; (3) dual-platform: DELAD hjärna (en modul) + **macOS menyrads-popup** (klick i menyraden → canvas fälls ut, samma iCloud-filer som iPhone — Kims val "bäst kvalitet"). Inga parallella appar — en hjärna, två ansikten.
-- ☐ Steg 1.1 — planeras i planläge (sim-genomgång med sub-agenter + cross-platform-refaktor + menyrads-skal). Klart-kriterium spikas i planen.
+- ⏳ Del 1 — total sim-genomgång (16 ytor i simulatorn: UITest-svep + place-scenarier + state-dump; beteende+beroenden; fynd→GENOMGÅNG-FYND.md; fixa säkra WIP=1). Klart: alla ytor körda med bevis, säkra fynd fixade, deployad 1.1, Kims iPhone-bock.
+- ☐ Del 2 — dual-platform (6 faser, plan godkänd 2026-06-24): delad hjärna + macOS menyrads-popup, samma iCloud-filer. iOS grön efter varje fas. Klart: Mac-appen öppnar samma filer som iPhone, deployad till MacBook.
   Kräver: Steg 1.0 deployad ✅
 
 ## Efter MB (pausat, Kims order) + Efter M3
