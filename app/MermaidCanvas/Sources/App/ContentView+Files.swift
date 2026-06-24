@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 /// Fil- & persistenslager för ContentView (MA spår A steg 12): öppna/spara/reload,
 /// autospar-mål, skill-export, drop-handler och test-scenarier. Utbruten som extension
@@ -188,24 +187,24 @@ extension ContentView {
     /// spara i appens Documents och öppna delningsmenyn. Tom canvas → fel-haptik.
     func exportImage(jpeg: Bool = false) {
         guard let img = CanvasImageExporter.renderImage(model: model, jpeg: jpeg) else {
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            Haptics.error()
             return
         }
         let base = model.canvasTitle.trimmingCharacters(in: .whitespaces)
         let name = base.isEmpty ? "ritning" : base
         guard let url = fileManager.saveImage(img.data, named: name, ext: img.ext) else {
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            Haptics.error()
             return
         }
         exportImageItem = ExportImageItem(url: url)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        Haptics.success()
     }
 
     /// v61: 1-tryck — hela dokumentet (frontmatter + mermaid + state-JSON)
     /// rakt till urklipp, redo att klistras in hos Claude Code.
     func copyMermaidCode() {
-        UIPasteboard.general.string = makeDocument().content
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        Clipboard.copy(makeDocument().content)
+        Haptics.success()
     }
 
     // MARK: - Drop-handler (v34)
@@ -228,9 +227,7 @@ extension ContentView {
         }
         // v33 Apple-nivå: medium haptic-bekräftelse på drop — formen "landade",
         // användaren känner det utan att titta. Klassisk iOS-feedback (jfr Photos drag).
-        #if canImport(UIKit)
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        #endif
+        Haptics.impact(.medium)
     }
 
     static func chipSystemImage(for type: ShapeType) -> String {

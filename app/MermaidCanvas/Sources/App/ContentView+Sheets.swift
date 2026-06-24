@@ -207,10 +207,10 @@ extension ContentView {
             if skillExportMode {
                 switch result {
                 case .success(let url):
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    Haptics.success()
                     skillSavedMessage = "Sparad som \(url.lastPathComponent)"
                 case .failure:
-                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                    Haptics.error()
                     skillSavedMessage = "Kunde inte spara skill-filen"
                 }
                 skillExportMode = false

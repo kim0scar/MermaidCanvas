@@ -1,4 +1,9 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 // MARK: - Color hex helper
 // Utbruten ur ShapeCategory.swift (steg 8, R5-ratchet) — en färg-util hör inte hemma i kategori-enumen.
@@ -41,6 +46,12 @@ extension Color {
                       Int((r * 255).rounded()),
                       Int((g * 255).rounded()),
                       Int((b * 255).rounded()))
+        #elseif canImport(AppKit)
+        let ns = NSColor(self).usingColorSpace(.sRGB) ?? NSColor(self)
+        return String(format: "#%02x%02x%02x",
+                      Int((ns.redComponent * 255).rounded()),
+                      Int((ns.greenComponent * 255).rounded()),
+                      Int((ns.blueComponent * 255).rounded()))
         #else
         return "#000000"
         #endif

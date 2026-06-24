@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 /// Canvas-vyn för ContentView (utbruten ur ContentView.swift för R5-ratchet, steg H).
 /// Bara CanvasView-konfigurationen + dess callbacks — exakt samma beteende.
@@ -26,12 +25,12 @@ extension ContentView {
             onTableEdit: { id in tableEditingShapeId = id },
             // v66: kopiera container + barn + memory-noder som skill-mermaid
             onCopySkill: { id in
-                UIPasteboard.general.string = MermaidGenerator.generateForContainer(
+                Clipboard.copy(MermaidGenerator.generateForContainer(
                     containerId: id,
                     shapes: model.shapes,
                     edges: model.edges,
-                    legend: model.legend)
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    legend: model.legend))
+                Haptics.success()
             },
             // v70: spara containern (= en skill) som EGEN canvas-fil i iCloud,
             // bredvid pipeline-filen. Kim stannar kvar i helheten.

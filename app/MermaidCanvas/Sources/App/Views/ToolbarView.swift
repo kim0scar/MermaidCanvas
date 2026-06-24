@@ -130,9 +130,7 @@ struct ToolbarView: View {
                       accId: String) -> some View {
         Button {
             // v33 Apple-nivå: haptic feedback vid toggle (light impact = avslappnad känsla)
-            #if canImport(UIKit)
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            #endif
+            Haptics.impact()
             // v33 Apple-nivå: smooth spring-animation vid expand/collapse
             withAnimation(.smooth(duration: 0.25)) {
                 if secondaryRow == row {

@@ -29,8 +29,8 @@ struct MermaidImportSheet: View {
                             .foregroundStyle(.secondary)
                             .textSelection(.enabled)
                         Button {
-                            UIPasteboard.general.string = templateText
-                            UINotificationFeedbackGenerator().notificationOccurred(.success)
+                            Clipboard.copy(templateText)
+                            Haptics.success()
                         } label: {
                             Label("Kopiera mall", systemImage: "doc.on.doc")
                         }

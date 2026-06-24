@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct ShapeView: View {
     @Binding var shape: ShapeNode
@@ -201,8 +200,7 @@ struct ShapeView: View {
                     guard !edgeMode else { return }
                     // v50.5 (v5) F13: haptic feedback (gamla .contextMenu gav
                     // system-haptic gratis — popover gör inte det).
-                    let generator = UIImpactFeedbackGenerator(style: .medium)
-                    generator.impactOccurred()
+                    Haptics.impact(.medium)
                     showContextMenu = true
                 }
         )

@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 /// V79-svep / v0.9 (Kims krav #2/#3): facit-menyn "Hur funkar appen / Mermaid vs app".
 /// Läser AppCapabilities (single source of truth → kan inte glida från koden). Färg =
@@ -54,8 +53,8 @@ struct MermaidVsAppSheet: View {
             }
             .safeAreaInset(edge: .bottom) {
                 Button {
-                    UIPasteboard.general.string = AppCapabilities.frameworkText()
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    Clipboard.copy(AppCapabilities.frameworkText())
+                    Haptics.success()
                     copied = true
                 } label: {
                     Label(copied ? "Kopierat — klistra in hos en AI" : "Kopiera AI-ramverk",

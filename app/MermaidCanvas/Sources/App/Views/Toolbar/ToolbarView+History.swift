@@ -35,9 +35,7 @@ extension ToolbarView {
     @ViewBuilder
     var markerButton: some View {
         Button {
-            #if canImport(UIKit)
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            #endif
+            Haptics.impact()
             onToggleMarker()
         } label: {
             ToolbarIconButton(systemImage: "rectangle.dashed", isActive: model.markerMode)

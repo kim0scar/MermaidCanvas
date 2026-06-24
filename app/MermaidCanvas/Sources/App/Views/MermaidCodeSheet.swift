@@ -44,7 +44,7 @@ struct MermaidCodeSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        UIPasteboard.general.string = code
+                        Clipboard.copy(code)
                         withAnimation { copied = true }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                             withAnimation { copied = false }
