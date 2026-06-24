@@ -136,6 +136,7 @@
 		AF69DB14BC28BD45DC00EEA3 /* V29CoverageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */; };
 		AF71D014F6A90DEEDB254840 /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */; };
 		B062DC28E74CDA1E0A26EF4A /* V33AutoLoopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */; };
+		B12D6180335DE51C6F084377 /* ZoomableCanvasMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D23C41C85CA5F28CD4F03FC /* ZoomableCanvasMac.swift */; };
 		B1B15A6CCA968FE3EA9E0D32 /* EdgeMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63EC33DCD9A1923246CA727F /* EdgeMath.swift */; };
 		B1D842FBB6FD85633D1A18EC /* MermaidConformanceCorpusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7E68C5367FDE724AE8BE1C /* MermaidConformanceCorpusTests.swift */; };
 		B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7282ECFED87095333BB0D4 /* LägenMenu.swift */; };
@@ -258,6 +259,7 @@
 		2A42EB21C4C1D82A6F3BB0DC /* V74SkillNrTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V74SkillNrTests.swift; sourceTree = "<group>"; };
 		2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableEditorSheet.swift; sourceTree = "<group>"; };
 		2D0E6420DE137F57D019A7EB /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
+		2D23C41C85CA5F28CD4F03FC /* ZoomableCanvasMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableCanvasMac.swift; sourceTree = "<group>"; };
 		2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MermaidGenerator+StateJSON.swift"; sourceTree = "<group>"; };
 		2E3CAD65F3CEBBD3CFE9B088 /* V68Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V68Tests.swift; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
@@ -495,6 +497,7 @@
 				E00A564942F1596BCF995981 /* CanvasViewportState.swift */,
 				25EF82F1BF18F5CFD8CF0343 /* FloatingChipPreview.swift */,
 				CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */,
+				2D23C41C85CA5F28CD4F03FC /* ZoomableCanvasMac.swift */,
 			);
 			path = Canvas;
 			sourceTree = "<group>";
@@ -1093,6 +1096,7 @@
 				95DC4D2C80428626FEC5C2D4 /* UITestScenarios+FormReview.swift in Sources */,
 				F53B7FFA3D8FF13EF388CADB /* UITestScenarios.swift in Sources */,
 				E1C23B0DD30A0D05C656C957 /* ZoomableCanvas.swift in Sources */,
+				B12D6180335DE51C6F084377 /* ZoomableCanvasMac.swift in Sources */,
 				7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */,
 				7EECEE3DC37DCC6AE815E975 /* iPhoneFrameOverlay.swift in Sources */,
 				D2838AC593B1CDD08A3974F8 /* main.swift in Sources */,

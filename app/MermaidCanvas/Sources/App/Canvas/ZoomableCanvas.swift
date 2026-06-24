@@ -1,14 +1,13 @@
+#if os(iOS)
 import SwiftUI
 import UIKit
 import Combine
 
 /// v34 — UIScrollView-wrap för canvasen. Ersätter ren-SwiftUI-implementationen
 /// med transformEffect + DragGesture + MagnifyGesture som hade tre grundbuggar:
-///
 /// - Drop landade fel (race-condition mellan @Published offset/scale och drop-event)
 /// - Pan var riktningsskev (clamp-logik gav asymmetrisk UX)
 /// - Zoom driftade (MagnifyGesture.value.startLocation invariant under gesten)
-///
 /// UIScrollView löser alla tre gratis:
 /// - Pinch-to-zoom är ankrad där fingrarna är (UIPinchGestureRecognizer sedan iOS 3.2)
 /// - Pan är symmetrisk åt alla håll
@@ -356,3 +355,4 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         }
     }
 }
+#endif

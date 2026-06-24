@@ -1,5 +1,7 @@
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#endif
 
 /// Sheets/alerts/importer-exporter för ContentView (MA spår A steg 13). Hela modifier-
 /// kedjan från `body` flyttad verbatim till `attachSheets(_:)` (samma ordning → samma

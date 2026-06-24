@@ -1,5 +1,9 @@
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 /// Steg H: renderar RITADE ytan (former + kanter) till en PNG via ImageRenderer.
 /// Beskär till ritningens bounding-box + marginal — INTE hela 3000×3000-canvasen.
@@ -37,6 +41,7 @@ enum CanvasImageExporter {
         let renderer = ImageRenderer(content: content)
         renderer.scale = scale
         renderer.isOpaque = true
+        #if canImport(UIKit)
         guard let img = renderer.uiImage else { return nil }
         if jpeg {
             guard let d = img.jpegData(compressionQuality: 0.9) else { return nil }
@@ -44,6 +49,19 @@ enum CanvasImageExporter {
         }
         guard let d = img.pngData() else { return nil }
         return (d, "png")
+        #elseif canImport(AppKit)
+        guard let img = renderer.nsImage,
+              let tiff = img.tiffRepresentation,
+              let rep = NSBitmapImageRep(data: tiff) else { return nil }
+        if jpeg {
+            guard let d = rep.representation(using: .jpeg, properties: [.compressionFactor: 0.9]) else { return nil }
+            return (d, "jpg")
+        }
+        guard let d = rep.representation(using: .png, properties: [:]) else { return nil }
+        return (d, "png")
+        #else
+        return nil
+        #endif
     }
 
     /// Bounding-box runt former (+ ev. waypoints) i canvas-koordinater, med marginal.
