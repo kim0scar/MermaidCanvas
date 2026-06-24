@@ -177,6 +177,32 @@ final class CanvasModelMutationTests: XCTestCase {
                        "underflödets innehåll bevarat på föräldern")
     }
 
+    /// Genomgång (2026-06-24): flernivå-drill (Visio) + brödsmulor (anti-vilse för 2e) + exitToRoot.
+    /// Bevisar att 2 nivåer djupt nästlas korrekt och att brödsmulan speglar nuvarande nivå.
+    func test_visioDrill_multiLevel_breadcrumb_exitToRoot() {
+        let m = CanvasModel()
+        m.addShape(.rectangle, at: c); m.shapes[0].label = "Process A"
+        let aId = m.shapes[0].id
+        XCTAssertEqual(m.drillBreadcrumb, ["Huvudflöde"])
+
+        m.enterSubprocess(aId)                                  // nivå 1
+        XCTAssertEqual(m.drillBreadcrumb, ["Huvudflöde", "Process A"])
+        m.addShape(.diamond, at: c); m.shapes[0].label = "Beslut B"
+        let bId = m.shapes[0].id
+
+        m.enterSubprocess(bId)                                  // nivå 2
+        XCTAssertEqual(m.drillBreadcrumb, ["Huvudflöde", "Process A", "Beslut B"])
+        m.addShape(.circle, at: c)
+
+        m.exitToRoot()                                          // hela vägen ut (brödsmule-tap på roten)
+        XCTAssertFalse(m.isDrilledIn)
+        XCTAssertEqual(m.drillBreadcrumb, ["Huvudflöde"])
+        let a = m.shapes.first { $0.id == aId }
+        XCTAssertEqual(a?.subCanvas?.shapes.count, 1, "A har B i sitt underflöde")
+        XCTAssertEqual(a?.subCanvas?.shapes.first?.subCanvas?.shapes.count, 1,
+                       "B har cirkeln i SITT underflöde (2 nivåer nästlat)")
+    }
+
     /// V79-svep: redo (ångra åt båda håll).
     func test_redo_reappliesAndIsClearedByNewEdit() {
         let m = CanvasModel()
