@@ -42,7 +42,7 @@ enum SkillFileComposer {
         platform: \(platform.rawValue)
         shape_packs: \(packsList)
         contract_version: \(SkillExportContract.version)
-        exported_by: Visuali2e \(AppVersion.current)
+        exported_by: Visuali2e \(AppVersion.version)
         last_updated: \(today)
         ---
 
@@ -61,6 +61,8 @@ enum SkillFileComposer {
         <!-- mermaidcanvas-state
         \(state)
         -->
+
+        \(AppCapabilities.embeddedFrameworkBlock())
         """
     }
 }

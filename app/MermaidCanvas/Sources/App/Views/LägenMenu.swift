@@ -20,8 +20,6 @@ struct LägenMenu: View {
     /// V79-svep: lägg en snabb-mall (AI-Skill / UI / Arkitektur).
     var onInsertTemplate: (CanvasModel.TemplateKind) -> Void = { _ in }
     var onShowRules: () -> Void
-    /// V79-svep: används av "Markera flera"-posten nedan (flyttad hit ur huvudmenyn).
-    var onToggleMarker: () -> Void
     /// v37: importera Mermaid-kod från AI.
     var onImportMermaid: () -> Void
     var onImportMultiple: () -> Void = {}   // v1.1: flera filer som containrar
@@ -103,11 +101,6 @@ struct LägenMenu: View {
                 Label("Legend", systemImage: "list.bullet.rectangle")
             }
             .accessibilityIdentifier("menu.legend")
-            // V79-svep: "Markera flera" flyttad hit ur huvudmenyn.
-            Button { onToggleMarker() } label: {
-                Label("Markera flera", systemImage: model.markerMode ? "checkmark" : "rectangle.dashed")
-            }
-            .accessibilityIdentifier("menu.marker")
             Divider()
             // v51.2: skärmläge porträtt/landskap (äkta orientering)
             Menu {
@@ -123,9 +116,10 @@ struct LägenMenu: View {
             .accessibilityIdentifier("menu.orientation")
             Divider()
             Button(action: {}) {
-                Label("\(AppVersion.milestone) · \(AppVersion.current)", systemImage: "info.circle")
+                Label(AppVersion.version, systemImage: "info.circle")
             }
             .disabled(true)
+            .accessibilityIdentifier("menu.version")
         } label: {
             ToolbarIconButton(systemImage: "slider.horizontal.3", isActive: false)
         }

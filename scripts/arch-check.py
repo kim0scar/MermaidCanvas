@@ -126,28 +126,28 @@ def check_crash_points():
 # ---- (version-sync) AppVersion ↔ project.yml ↔ Info.plist ----------------------
 
 def check_version_sync():
+    # EN enda version (Kims order): AppVersion.version driver BÅDE MARKETING_VERSION och
+    # CURRENT_PROJECT_VERSION — inget separat bygg-räknar-nummer.
     av = (SRC / "App" / "AppVersion.swift").read_text()
-    m = re.search(r'current\s*:\s*String\s*=\s*"v(\d+)"', av)
+    m = re.search(r'\bversion\s*:\s*String\s*=\s*"([^"]+)"', av)
     if not m:
-        errors.append("version: hittar inte AppVersion.current = \"vN\" i AppVersion.swift.")
+        errors.append("version: hittar inte AppVersion.version = \"X.Y\" i AppVersion.swift.")
         return
-    n = m.group(1)
-    exp_marketing = f"1.{n}.0"
-    exp_build = n
+    v = m.group(1)
 
     proj = (APP / "project.yml").read_text()
     pm = re.search(r'MARKETING_VERSION:\s*"([^"]+)"', proj)
     pb = re.search(r'CURRENT_PROJECT_VERSION:\s*"([^"]+)"', proj)
-    if not pm or pm.group(1) != exp_marketing:
+    if not pm or pm.group(1) != v:
         errors.append(f"version: project.yml MARKETING_VERSION = "
-                      f"{pm.group(1) if pm else 'saknas'}, väntat {exp_marketing} (från AppVersion v{n}).")
-    if not pb or pb.group(1) != exp_build:
+                      f"{pm.group(1) if pm else 'saknas'}, väntat {v} (= AppVersion.version).")
+    if not pb or pb.group(1) != v:
         errors.append(f"version: project.yml CURRENT_PROJECT_VERSION = "
-                      f"{pb.group(1) if pb else 'saknas'}, väntat {exp_build}.")
+                      f"{pb.group(1) if pb else 'saknas'}, väntat {v} (= AppVersion.version, EN version).")
 
     plist = (SRC / "App" / "Info.plist").read_text()
     short = re.search(r"<key>CFBundleShortVersionString</key>\s*<string>([^<]*)</string>", plist)
-    if short and short.group(1) not in ("$(MARKETING_VERSION)", exp_marketing):
+    if short and short.group(1) not in ("$(MARKETING_VERSION)", v):
         warnings.append(f"version: Info.plist CFBundleShortVersionString = '{short.group(1)}' "
                         f"(bör vara $(MARKETING_VERSION) så det finns EN källa).")
 

@@ -1,12 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.0 (skarp release)
-*Datum: 2026-06-24*
-
-> **1.0 — skarp release (EN enda version, aldrig två):** version dubbel→ren `1.0` (AppVersion.version
-> driver både app-etikett OCH bundle; bygg-räknaren slopad). Klassisk Apple-ikon (flödesnoder, indigo→violett).
-> Färgmeny: avklippning lagad (`strokeBorder`), markeringsverktyg åter som synlig knapp i toppen, harmoniserad
-> pastell-palett. **Två-lager-fundamentet bevisat + härdat:** AI-ramverket (`frameworkText`) bäddas nu in i VARJE
-> exportfil (självförklarande för en främmande AI) + maskinellt embed-test + `BEVIS-TVÅLAGER.md`. 204 tester ·
-> conformance 3/3 · render 3/3.
+# ARKITEKTUR-MERMAID — Milstolpe v1.1 (build v93)
+*Datum: 2026-06-22*
 
 > **build v93 — kontroll-genomgång (MB Steg 1):** 16-ytors UI-audit (138 funktioner, sub-agents +
 > adversariell verifiering). 21 fynd härdade inom befintliga filer (ingen ny modul, inga lager-ändringar):

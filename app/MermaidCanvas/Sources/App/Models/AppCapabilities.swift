@@ -81,7 +81,7 @@ enum AppCapabilities {
     /// AI-RAMVERKET — copy-paste till en AI så den vet exakt vad den får rita i mermaid
     /// för att appen ska kunna importera det. Genereras ur koden (alltid aktuell).
     static func frameworkText() -> String {
-        var s = "# MermaidCanvas — vad du får använda i mermaid (genererat \(AppVersion.milestone)/\(AppVersion.current))\n\n"
+        var s = "# MermaidCanvas — vad du får använda i mermaid (genererat \(AppVersion.version))\n\n"
         s += "Appen är ett TVÅ-LAGER-system: mermaid är transporten, appen lägger till ett eget lager via\n"
         s += "`%%`-kommentarer + ett `<!-- mermaidcanvas-state … -->`-block. Rita med vanlig flowchart-syntax.\n\n"
         s += "## NATIVE mermaid-former (renderas identiskt)\n"
@@ -102,6 +102,25 @@ enum AppCapabilities {
         }
         s += "\n> Lägger du till en form/funktion utan att uppdatera detta + round-trippa = brott mot CLAUDE.md regel 15.\n"
         return s
+    }
+
+    /// 1.0 (Kims fundament-krav): AI-ramverket som ett INBÄDDAT block i VARJE exportfil — så
+    /// filen ensam är självförklarande för en främmande AI (spec:en följer alltid med, inte
+    /// bara bakom in-app-knappar). Läggs SIST, EFTER `<!-- mermaidcanvas-state -->`, som SYNLIG
+    /// markdown — INTE i en HTML-kommentar: ramverket innehåller `-->` och själva strängen
+    /// `<!-- mermaidcanvas-state -->`, vilket skulle stänga kommentaren i förtid / krocka med
+    /// state-parsningen. En vän som klistrar in i mermaid.live påverkas inte (bara ```mermaid-
+    /// blocket ritas); en AI som läser hela filen får hela spec:en gratis.
+    static func embeddedFrameworkBlock() -> String {
+        return """
+        ---
+
+        > 🤖 **Till en AI som tar emot denna fil:** sektionen nedan beskriver appens två lager \
+        (genereras ur appen → alltid aktuell). En vän som öppnar i mermaid.live påverkas inte — \
+        bara mermaid-blocket ovan ritas.
+
+        \(frameworkText())
+        """
     }
 
     // MARK: - Maskinell currency (regel 15)

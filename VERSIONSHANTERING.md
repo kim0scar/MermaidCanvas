@@ -6,7 +6,7 @@ Exakt checklista som Claude Code följer **vid varje deploy** till iPhone. En de
 
 En version skapas varje gång appen byggs och installeras på iPhone. **Inte** vid varje liten kod-iteration under pågående arbete.
 
-Versionsnummer: enkelt löpnummer `v1`, `v2`, `v3`, …
+**EN enda version — aldrig två** (Kims order 2026-06-24). Versionsnummer: `1.0`, `1.1`, `1.2`, … Samma nummer används BÅDE i appen (det Kim ser), i bundle-versionen (MARKETING_VERSION + CURRENT_PROJECT_VERSION — lika), i git-taggen (`v1.0`) och i ZIP-namnet. Inget separat bygg-räknar-nummer.
 
 ## Checklista vid varje deploy
 
@@ -21,10 +21,11 @@ git status
 
 Allt ska vara stagat eller commitat innan deploy startar.
 
-### 1b. Bumpa versionsnumret
+### 1b. Bumpa versionsnumret (EN enda)
 
-Öppna `app/MermaidCanvas/Sources/AppVersion.swift`.
-Höj `AppVersion.current` till nästa `vN`. **Detta är enda stället versionsnumret bor.**
+Öppna `app/MermaidCanvas/Sources/App/AppVersion.swift`.
+Höj `AppVersion.version` till nästa nummer (t.ex. `1.0` → `1.1`). **Detta är enda stället versionsnumret bor.**
+Uppdatera `project.yml` så `MARKETING_VERSION` OCH `CURRENT_PROJECT_VERSION` = SAMMA nummer (`scripts/arch-check.py` blockerar annars).
 
 Statusen i appen visar denna sträng. Om den inte uppdateras vet inte Kim om han kör nya eller gamla bygget.
 
@@ -85,17 +86,18 @@ Exempel: `git commit -m "v3: la till stöd för att rita pilar mellan former"`
 
 ```bash
 git push
-git tag vN && git push origin vN
+# Taggen = v + versionen (t.ex. v1.0). EN version, samma nummer överallt.
+git tag v1.0 && git push origin v1.0
 # ZIP till iCloud så Kim själv kan backa version utan git:
 git archive --format=zip \
-  -o "/Users/kim/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/Visuali2e-versioner/Visuali2e-vN.zip" vN
+  -o "/Users/kim/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/Visuali2e-versioner/Visuali2e-1.0.zip" v1.0
 ```
 
 Varje version finns då på TRE sätt: git-historik, GitHub-tagg och separat ZIP i iCloud.
 
 **Rollback utan git (Kims väg):** öppna `Visuali2e-versioner/` i iCloud → packa upp
-önskad `Visuali2e-vN.zip` → be Claude Code bygga+deploya från den mappen.
-**Rollback med git:** `git checkout vN` (eller `git revert`).
+önskad `Visuali2e-X.Y.zip` → be Claude Code bygga+deploya från den mappen.
+**Rollback med git:** `git checkout v1.0` (eller `git revert`).
 
 ### 7. Rapportera till Kim
 

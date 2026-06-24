@@ -6,7 +6,7 @@ Det här är **det app-egna lagret** som MermaidCanvas bär *inuti* mermaid-file
 
 ## Två-lager-modellen
 
-Mermaid är **transporten** (portabel, AI-läsbar kropp). Appen är **renderaren** med ett eget tilläggslager. Filen har därför tre bärare:
+Mermaid är **transporten** (portabel, AI-läsbar kropp). Appen är **renderaren** med ett eget tilläggslager. Filen har därför flera bärare:
 
 | Bärare | Vad | Vem läser | Förlustfri? |
 |---|---|---|---|
@@ -14,8 +14,11 @@ Mermaid är **transporten** (portabel, AI-läsbar kropp). Appen är **renderaren
 | **`%%`-rader** | app-only-fält som inline-kommentarer | appens fallback-parser + människa/Claude | ren-mermaid-trogen |
 | **`<!-- mermaidcanvas-state … -->`** | hela modellen som JSON | appens state-parser | **bokstavligt noll avvikelse** |
 | **`---` frontmatter** | title, spec_type, platform, shape_packs | appens frontmatter-parser | exakt |
+| **Inbäddat AI-ramverk (1.0)** | förklaring av de två lagren + varje bärare, genererat ur `AppCapabilities` | en främmande AI som tar emot filen | n/a (ren spec-text, ej data) |
 
 **Vid import vinner state-JSON** om blocket finns (Tier 1 = exakt). Saknas det (vän strippade det, eller en AI ritade för hand) faller appen tillbaka på `%%` + mermaid-strukturen (Tier 2 = troget, men egna former visas som närmaste native-form och `%%`-only-fält bärs av kommentarerna).
+
+**Inbäddat AI-ramverk (1.0):** sist i varje exportfil ligger `AppCapabilities.frameworkText()` som **synlig markdown** (efter state-blocket, inte i en HTML-kommentar — ramverket innehåller `-->` och strängen `<!-- mermaidcanvas-state -->`). Så filen är *själv-förklarande*: en främmande AI ser direkt vad som är ren mermaid och vad som är app-lagret, och kan bygga vidare utan att förstöra något. mermaid.live/markdown-preview påverkas inte (de bryr sig bara om ```mermaid-blocket). Genereras ur samma single source som menyn → kan aldrig bli inaktuellt; `AppCapabilitiesCoverageTests.test_exportEmbedsFrameworkAndStillRoundTrips` tvingar att det följer med OCH att inbäddningen inte bryter round-trippen.
 
 **Egna former** (phoneFrame, tabell, oktagon, kvadrat, processpil, lös linje/pil) renderas i ren mermaid som närmaste native-form; identiteten bärs av `%% <id> shape-type:` så den round-trippar. Det är mermaids gräns, inte en bugg.
 

@@ -489,12 +489,12 @@ enum MermaidGenerator {
     /// värdena direkt istället för att anropa ColorPack.fillColor.hex.
     private static func colorPackHex(_ id: String) -> (fill: String, stroke: String, text: String)? {
         switch id {
-        case "persika": return ("#ffe3d0", "#e5a57a", "#7a3f1a")
-        case "rosa":    return ("#ffe5ec", "#ff8fa3", "#8b2a3e")
-        case "blå":     return ("#e0f0ff", "#7fb8e5", "#1a4a7a")
-        case "grön":    return ("#d9f5e0", "#7cc196", "#1f5733")
-        case "gul":     return ("#fff4d6", "#e0b85c", "#6b4a1a")
-        case "lila":    return ("#ecdfff", "#b89ce0", "#4a2d7a")
+        case "persika": return ("#ffe6d6", "#efa379", "#7e4226")
+        case "rosa":    return ("#ffe1ea", "#f291a8", "#883350")
+        case "blå":     return ("#deedfd", "#74b0e6", "#18497e")
+        case "grön":    return ("#daf0e0", "#74c09a", "#205a3c")
+        case "gul":     return ("#fff0cd", "#e4b854", "#6c4b16")
+        case "lila":    return ("#ebdcfb", "#ad92dd", "#46296f")
         default:        return nil
         }
     }

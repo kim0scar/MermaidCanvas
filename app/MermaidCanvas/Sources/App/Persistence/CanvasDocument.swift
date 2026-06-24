@@ -47,6 +47,8 @@ struct CanvasDocument: FileDocument {
         <!-- mermaidcanvas-state
         \(state)
         -->
+
+        \(AppCapabilities.embeddedFrameworkBlock())
         """
     }
 

@@ -44,6 +44,8 @@ extension ToolbarView {
                     }
                 }
                 .padding(.horizontal, 2)
+                // 1.0: vertikal luft inuti ScrollViewn så cirklarna + ringen inte klipps topp/botten.
+                .padding(.vertical, 4)
             }
         }
     }
@@ -56,7 +58,7 @@ extension ToolbarView {
         } label: {
             ZStack {
                 Circle().fill(Color.white)
-                    .overlay(Circle().stroke(Color.secondary, lineWidth: 1.5))
+                    .overlay(Circle().strokeBorder(Color.secondary, lineWidth: 1.5))
                 Image(systemName: "slash.circle")
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
@@ -83,13 +85,13 @@ extension ToolbarView {
             ZStack {
                 if colorTarget == .fill {
                     Circle().fill(color)
-                        .overlay(Circle().stroke(Color.primary.opacity(0.25), lineWidth: 1))
+                        .overlay(Circle().strokeBorder(Color.primary.opacity(0.25), lineWidth: 1))
                 } else {
                     Circle().fill(Color.white)
-                        .overlay(Circle().stroke(color, lineWidth: 4))
+                        .overlay(Circle().strokeBorder(color, lineWidth: 4))
                 }
                 if isCurrent {
-                    Circle().stroke(Color.accentColor, lineWidth: 2.5)
+                    Circle().strokeBorder(Color.accentColor, lineWidth: 2.5)
                 }
             }
             .frame(width: 36, height: 36)
@@ -119,9 +121,9 @@ extension ToolbarView {
             ZStack {
                 Circle()
                     .fill(pack.fillColor)
-                    .overlay(Circle().stroke(pack.strokeColor, lineWidth: 1.5))
+                    .overlay(Circle().strokeBorder(pack.strokeColor, lineWidth: 1.5))
                 if isCurrent {
-                    Circle().stroke(Color.accentColor, lineWidth: 2.5)
+                    Circle().strokeBorder(Color.accentColor, lineWidth: 2.5)
                 }
                 if pack.id == "none" {
                     Image(systemName: "slash.circle")

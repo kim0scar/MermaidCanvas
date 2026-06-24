@@ -1,10 +1,10 @@
 import Foundation
 
 /// Single source of truth för MermaidCanvas-versionsnummer.
-/// Bumpas till nästa nummer vid varje deploy enligt VERSIONSHANTERING.md.
+///
+/// **EN enda version — aldrig två** (Kims order 2026-06-24). Inget separat bygg-räknar-nummer:
+/// `version` driver BÅDE det Kim ser i appen OCH bundle-versionen (project.yml MARKETING_VERSION
+/// + CURRENT_PROJECT_VERSION, synkat av scripts/arch-check.py). Bumpas vid varje release (1.0 → 1.1 → …).
 enum AppVersion {
-    /// Bygg-räknare (driver bundle-version + arch-check version-sync). Bumpas vid varje deploy.
-    static let current: String = "v93"
-    /// Milstolpe-etikett (det Kim känner igen). Bumpas vid milstolpar, inte varje bygge.
-    static let milestone: String = "v1.1"
+    static let version: String = "1.0"
 }

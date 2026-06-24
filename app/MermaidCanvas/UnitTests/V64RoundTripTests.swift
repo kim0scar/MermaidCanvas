@@ -32,10 +32,14 @@ final class V64RoundTripTests: XCTestCase {
         let a = ShapeNode(type: .rectangle, position: CGPoint(x: 100, y: 100), label: "A")
         let b = ShapeNode(type: .rectangle, position: CGPoint(x: 300, y: 100), label: "B")
         let edge = EdgeConnection(from: a.id, to: b.id)
+        // Kolla mermaid-KROPPEN (det inbäddade AI-ramverket nämner ordet "fromSide" som doc).
+        let mermaid = MermaidGenerator.generate(shapes: [a, b], edges: [edge],
+                                                canvasSize: CGSize(width: 800, height: 800),
+                                                specType: .general)
+        XCTAssertFalse(mermaid.contains("fromSide"), "Automatisk sida → ingen meta i mermaid-kroppen")
         let doc = CanvasDocument(title: "T", shapes: [a, b], edges: [edge],
                                  canvasSize: CGSize(width: 800, height: 800),
                                  specType: .general).content
-        XCTAssertFalse(doc.contains("fromSide"), "Automatisk sida → ingen meta i filen")
         XCTAssertNil(MermaidParser.parse(doc).edges.first?.fromSide)
     }
 

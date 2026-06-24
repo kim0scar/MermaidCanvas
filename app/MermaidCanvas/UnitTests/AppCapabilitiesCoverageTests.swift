@@ -106,4 +106,31 @@ final class AppCapabilitiesCoverageTests: XCTestCase {
         }
         XCTAssertFalse(AppCapabilities.features.isEmpty)
     }
+
+    /// 1.0 (Kims fundament-krav, regel 15-anda): AI-ramverket MÅSTE bäddas in i VARJE
+    /// exportfil, och inbäddningen får inte störa state-round-trippen. Annars kan
+    /// "spec:en följer alltid med" tyst falla bort — gaten gör det maskinellt tvingat.
+    func test_exportEmbedsFrameworkAndStillRoundTrips() {
+        let n = ShapeNode(type: .diamond, position: CGPoint(x: 321, y: 88), label: "Beslut")
+        let doc = CanvasDocument(title: "T", shapes: [n], edges: [],
+                                 canvasSize: CGSize(width: 1200, height: 900),
+                                 specType: .flow)
+        // (a) ramverket finns inbäddat i normal export
+        XCTAssertTrue(doc.content.contains("Till en AI som tar emot denna fil"),
+                      "Exportfilen saknar inbäddat AI-ramverk (regel 15: spec:en ska alltid följa med).")
+        XCTAssertTrue(doc.content.contains("TVÅ-LAGER-system"))
+        XCTAssertTrue(doc.content.contains("## Kanter"))
+        // (b) inbäddningen bryter inte state-round-trippen — formen överlever exakt
+        let parsed = MermaidParser.parse(doc.content)
+        XCTAssertEqual(parsed.shapes.count, 1, "State-blocket gick inte att läsa efter inbäddning.")
+        XCTAssertEqual(parsed.shapes.first?.type, .diamond)
+        XCTAssertEqual(parsed.shapes.first.map { Int($0.position.x.rounded()) }, 321)
+        // (c) skill-exporten bär också ramverket
+        let skill = SkillFileComposer.compose(
+            skillName: "S", skillNumber: 1, shapes: [n], edges: [],
+            canvasSize: CGSize(width: 1200, height: 900),
+            platform: .blank, activeShapePacks: [.basic], legend: [:])
+        XCTAssertTrue(skill.contains("Till en AI som tar emot denna fil"),
+                      "Skill-exporten saknar inbäddat AI-ramverk.")
+    }
 }

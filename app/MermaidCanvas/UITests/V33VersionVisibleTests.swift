@@ -36,14 +36,14 @@ final class V33VersionVisibleTests: XCTestCase {
         attMenu.lifetime = .keepAlways
         add(attMenu)
 
-        // Steg 4: leta efter en versionsrad — matchar regex "v\d+" så testet
-        // automatiskt klarar varje version-bump.
-        let predicate = NSPredicate(format: "label MATCHES %@", ".*v\\d+.*")
+        // Steg 4: leta efter den rena release-raden — matchar regex "<siffra>.<siffra>"
+        // (1.0 visas nu istället för dubbel-versionen) så testet klarar varje release-bump.
+        let predicate = NSPredicate(format: "label MATCHES %@", ".*\\d+\\.\\d+.*")
         let matches = app.descendants(matching: .any).matching(predicate)
         let found = matches.firstMatch.waitForExistence(timeout: 3)
         XCTAssertTrue(found,
-                      "Ingen versionsrad (mönster v<siffror>) syns i Lägen-menyn. " +
-                      "Kontrollera att AppVersion.current visas i LägenMenu.swift.")
+                      "Ingen versionsrad (mönster <siffra>.<siffra>) syns i Lägen-menyn. " +
+                      "Kontrollera att AppVersion.version visas i LägenMenu.swift.")
         print("V33_VERSION_VISIBLE: PASS")
     }
 }

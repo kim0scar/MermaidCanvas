@@ -678,12 +678,12 @@ final class V35MermaidValidationTests: XCTestCase {
             canvasSize: CGSize(width: 800, height: 600), specType: .general
         )
 
-        // Lila pack → fill:#ecdfff
-        XCTAssertTrue(code.contains("fill:#ecdfff"),
-                      "Lila colorPack ska ge fill:#ecdfff:\n\(code)")
-        // Rosa pack → fill:#ffe5ec
-        XCTAssertTrue(code.contains("fill:#ffe5ec"),
-                      "Rosa colorPack ska ge fill:#ffe5ec:\n\(code)")
+        // Lila pack → fill:#ebdcfb (1.0 harmoniserad palett)
+        XCTAssertTrue(code.contains("fill:#ebdcfb"),
+                      "Lila colorPack ska ge fill:#ebdcfb:\n\(code)")
+        // Rosa pack → fill:#ffe1ea (1.0 harmoniserad palett)
+        XCTAssertTrue(code.contains("fill:#ffe1ea"),
+                      "Rosa colorPack ska ge fill:#ffe1ea:\n\(code)")
         // Ingen pack → ingen style-tag för den noden (N2 har ingen size/color)
         XCTAssertFalse(code.contains("style ui_N2"),
                        "Nod utan pack ska inte ha style-tag:\n\(code)")

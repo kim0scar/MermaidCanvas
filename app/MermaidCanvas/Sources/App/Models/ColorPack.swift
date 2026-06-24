@@ -18,18 +18,20 @@ struct ColorPack: Identifiable, Hashable {
     static let none = ColorPack(id: "none", displayName: "Ingen färg",
                                 fill: 0xFFFFFF, stroke: 0x6B7280, text: 0x111827)
 
+    // 1.0: harmoniserad pastell-palett — jämn ram-mättnad + jämn fyll-ljushet så paketen
+    // ser genomtänkta ut tillsammans (tidigare varierade ramarna från skrikiga till matta).
     static let persika = ColorPack(id: "persika", displayName: "Persika",
-                                   fill: 0xFFE3D0, stroke: 0xE5A57A, text: 0x7A3F1A)
+                                   fill: 0xFFE6D6, stroke: 0xEFA379, text: 0x7E4226)
     static let rosa    = ColorPack(id: "rosa",    displayName: "Rosa",
-                                   fill: 0xFFE5EC, stroke: 0xFF8FA3, text: 0x8B2A3E)
+                                   fill: 0xFFE1EA, stroke: 0xF291A8, text: 0x883350)
     static let blå     = ColorPack(id: "blå",     displayName: "Blå",
-                                   fill: 0xE0F0FF, stroke: 0x7FB8E5, text: 0x1A4A7A)
+                                   fill: 0xDEEDFD, stroke: 0x74B0E6, text: 0x18497E)
     static let grön    = ColorPack(id: "grön",    displayName: "Grön",
-                                   fill: 0xD9F5E0, stroke: 0x7CC196, text: 0x1F5733)
+                                   fill: 0xDAF0E0, stroke: 0x74C09A, text: 0x205A3C)
     static let gul     = ColorPack(id: "gul",     displayName: "Gul",
-                                   fill: 0xFFF4D6, stroke: 0xE0B85C, text: 0x6B4A1A)
+                                   fill: 0xFFF0CD, stroke: 0xE4B854, text: 0x6C4B16)
     static let lila    = ColorPack(id: "lila",    displayName: "Lila",
-                                   fill: 0xECDFFF, stroke: 0xB89CE0, text: 0x4A2D7A)
+                                   fill: 0xEBDCFB, stroke: 0xAD92DD, text: 0x46296F)
 
     // v1.1 "Färger UI bygg": kraftiga UI-färger (knappar/ytor) för UI-mockups — iOS-system-
     // färger med vit/mörk text för kontrast. Round-trippar via colorPackId som pastellerna.
