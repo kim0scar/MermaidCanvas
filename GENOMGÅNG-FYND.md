@@ -24,6 +24,7 @@
 | 7 | Lägen-meny | ✅ V46 | — | öppnas; Visa-kod/Importera/Ny-canvas nås; visar EN version "1.0" |
 | 8 | Canvas–Form-gester | ✅ V46 (tap/markera) | ◻ | drag/dubbeltryck: state-dump (sim-tap opålitlig) |
 | 9 | Anslutningsprickar | ✅ V46 (pil mellan former) | ✅ | 4 prickar (en/sida) syns på vald form |
+| 9b | **Beroende-streck (goal)** | ✅ scenario 08+22 | ✅ | pil kopplar till VARJE formtyp (08) + FÖLJER med vid resize (22) — pilspets på kant, midpoint-badge |
 | 10 | Pil-meny | ◻ kvar | ◻ | nästa svep-batch |
 | 11 | Form-långtrycksmeny | ◻ kvar | ◻ | nästa svep-batch |
 | 12 | Läs-lapp (NoteCard) | ◻ kvar | ◻ | nästa svep-batch |
