@@ -122,6 +122,23 @@ targets:
         TEST_HOST: $(BUILT_PRODUCTS_DIR)/MermaidCanvas.app/MermaidCanvas
         BUNDLE_LOADER: $(TEST_HOST)
 
+  # 1.1: macOS-testtarget — bevisar att DELADE hjärnan (parser + render) funkar kompilerad för macOS.
+  MermaidCanvasMacTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: MacTests
+    dependencies:
+      - target: MermaidCanvasMac
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kimlundqvist.mermaidcanvas.mactests
+        DEVELOPMENT_TEAM: SFXR8MV6MP
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/MermaidCanvasMac.app/Contents/MacOS/MermaidCanvasMac
+        BUNDLE_LOADER: $(TEST_HOST)
+
 schemes:
   MermaidCanvas:
     build:
@@ -137,3 +154,7 @@ schemes:
     build:
       targets:
         MermaidCanvasMac: all
+        MermaidCanvasMacTests: [test]
+    test:
+      targets:
+        - MermaidCanvasMacTests

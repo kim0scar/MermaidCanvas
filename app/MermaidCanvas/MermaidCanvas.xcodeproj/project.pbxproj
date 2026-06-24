@@ -142,6 +142,7 @@
 		66E7C0CA771E5C607A4F1B41 /* V49VisualVerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */; };
 		67C5E692431A416DA4802220 /* test_pill_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FCD095D020EF17998E82F01 /* test_pill_chip_vs_canvas_side_by_side.1.png */; };
 		684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6F52E499ADD995928FF171 /* SnapshotTests.swift */; };
+		693F34A9A720A37E0AD03648 /* MacRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B279CA0F1B8B398DC276B45F /* MacRenderTests.swift */; };
 		695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
 		6A5E9787481C28FE9DF5460A /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
 		6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */; };
@@ -346,6 +347,13 @@
 			remoteGlobalIDString = 928846310326DCCC8D417F46;
 			remoteInfo = MermaidCanvas;
 		};
+		C21FF5879440200460FCC8F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D5E6C3DA22FF8DB06D25532C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13500E90772A6905EDEC0C54;
+			remoteInfo = MermaidCanvasMac;
+		};
 		C407B78B58C497B217304C42 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D5E6C3DA22FF8DB06D25532C /* Project object */;
@@ -417,6 +425,7 @@
 		4913E980F026A3D6E49070B7 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidParser.swift; sourceTree = "<group>"; };
 		4ABF8F505A711743DBEECEB3 /* V66EdgeMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V66EdgeMathTests.swift; sourceTree = "<group>"; };
+		4ADC9AEF95F76010D320E39C /* MermaidCanvasMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MermaidCanvasMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B0B2C2F7D2B4A21B6A0B70F /* ContentView+MultiImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView+MultiImport.swift"; sourceTree = "<group>"; };
 		4B93FA11AE7F0B2432FF64A0 /* V74SkillExportUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V74SkillExportUITest.swift; sourceTree = "<group>"; };
 		4CB5219BDA65C560A990E1E1 /* CanvasModel+Containers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasModel+Containers.swift"; sourceTree = "<group>"; };
@@ -498,6 +507,7 @@
 		ADAFD7500719BA94561524F9 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
 		AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+History.swift"; sourceTree = "<group>"; };
 		B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+Chips.swift"; sourceTree = "<group>"; };
+		B279CA0F1B8B398DC276B45F /* MacRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRenderTests.swift; sourceTree = "<group>"; };
 		B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+ColorsRow.swift"; sourceTree = "<group>"; };
 		B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformModifiers.swift; sourceTree = "<group>"; };
 		B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapRenderer.swift; sourceTree = "<group>"; };
@@ -694,6 +704,14 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		39F75851C61E8E91BD2012F4 /* MacTests */ = {
+			isa = PBXGroup;
+			children = (
+				B279CA0F1B8B398DC276B45F /* MacRenderTests.swift */,
+			);
+			path = MacTests;
+			sourceTree = "<group>";
+		};
 		3A3BC9C085033B21CE4FBA3E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -714,6 +732,7 @@
 		4D94A3A742023EF3733588D3 = {
 			isa = PBXGroup;
 			children = (
+				39F75851C61E8E91BD2012F4 /* MacTests */,
 				3A3BC9C085033B21CE4FBA3E /* Resources */,
 				660D91CE59927312F56CDC86 /* Sources */,
 				E3D18F6332B423EFA76528CE /* UITests */,
@@ -803,6 +822,7 @@
 			children = (
 				A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */,
 				AADE3048B5CEF609D82CB219 /* MermaidCanvasMac.app */,
+				4ADC9AEF95F76010D320E39C /* MermaidCanvasMacTests.xctest */,
 				37BFF9992642AD7A34ABD264 /* MermaidCanvasUITests.xctest */,
 				0B2B5D75E6C39BD72EC980C0 /* MermaidCanvasUnitTests.xctest */,
 			);
@@ -977,6 +997,24 @@
 			productReference = AADE3048B5CEF609D82CB219 /* MermaidCanvasMac.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2379AFB6A051F8FCA2BA99AD /* MermaidCanvasMacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 25004CEB346593DDC85EDDD1 /* Build configuration list for PBXNativeTarget "MermaidCanvasMacTests" */;
+			buildPhases = (
+				4679C026ED2F6924F88E7F7D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				007E5FF83E064D93252BE75E /* PBXTargetDependency */,
+			);
+			name = MermaidCanvasMacTests;
+			packageProductDependencies = (
+			);
+			productName = MermaidCanvasMacTests;
+			productReference = 4ADC9AEF95F76010D320E39C /* MermaidCanvasMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		4A0EED9766A7F01541647364 /* MermaidCanvasUITests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 749F8DD1CC5BF3C68A147363 /* Build configuration list for PBXNativeTarget "MermaidCanvasUITests" */;
@@ -1048,6 +1086,10 @@
 						DevelopmentTeam = SFXR8MV6MP;
 						ProvisioningStyle = Automatic;
 					};
+					2379AFB6A051F8FCA2BA99AD = {
+						DevelopmentTeam = SFXR8MV6MP;
+						ProvisioningStyle = Automatic;
+					};
 					4A0EED9766A7F01541647364 = {
 						DevelopmentTeam = SFXR8MV6MP;
 						ProvisioningStyle = Automatic;
@@ -1082,6 +1124,7 @@
 			targets = (
 				928846310326DCCC8D417F46 /* MermaidCanvas */,
 				13500E90772A6905EDEC0C54 /* MermaidCanvasMac */,
+				2379AFB6A051F8FCA2BA99AD /* MermaidCanvasMacTests */,
 				4A0EED9766A7F01541647364 /* MermaidCanvasUITests */,
 				BF6E1BF1DF8900B9387F894B /* MermaidCanvasUnitTests */,
 			);
@@ -1149,6 +1192,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4679C026ED2F6924F88E7F7D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				693F34A9A720A37E0AD03648 /* MacRenderTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7AC98B9EA5A956F197D04441 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1479,6 +1530,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		007E5FF83E064D93252BE75E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13500E90772A6905EDEC0C54 /* MermaidCanvasMac */;
+			targetProxy = C21FF5879440200460FCC8F6 /* PBXContainerItemProxy */;
+		};
 		90C53F4877831D3977639D8E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 928846310326DCCC8D417F46 /* MermaidCanvas */;
@@ -1569,6 +1625,25 @@
 			};
 			name = Release;
 		};
+		5418A64D08EEBB519F94444D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = SFXR8MV6MP;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kimlundqvist.mermaidcanvas.mactests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MermaidCanvasMac.app/Contents/MacOS/MermaidCanvasMac";
+			};
+			name = Release;
+		};
 		54485E35E5F1281D88431891 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1587,6 +1662,25 @@
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		848386697FDE05EFFBB55EA3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = SFXR8MV6MP;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kimlundqvist.mermaidcanvas.mactests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MermaidCanvasMac.app/Contents/MacOS/MermaidCanvasMac";
 			};
 			name = Debug;
 		};
@@ -1776,6 +1870,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		25004CEB346593DDC85EDDD1 /* Build configuration list for PBXNativeTarget "MermaidCanvasMacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				848386697FDE05EFFBB55EA3 /* Debug */,
+				5418A64D08EEBB519F94444D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		2E0D5929DCCA552A2B1FF907 /* Build configuration list for PBXNativeTarget "MermaidCanvas" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
