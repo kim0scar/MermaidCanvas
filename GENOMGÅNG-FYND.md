@@ -1,0 +1,44 @@
+# GENOMGÅNG-FYND — total sim-genomgång (Milstolpe 1.1, Del 1)
+
+*Levande dokument. Startad 2026-06-24. Arbetslista: `FUNKTIONSKarta.md` (16 ytor × 138 funktioner × 4 dim).*
+*Metod: `Metoder/KONTROLL-GENOMGANG.md` — men NU sim-DRIVEN (körd i simulatorn), inte kod-analys.*
+
+## Metod (Del 1)
+- **Ryggrad:** UITest-utforskningssviten (`V46ExplorationTest`, 30 tester) driver toolbar/menyer/chips/sheets i simulatorn (iPhone 17 Pro) + fångar skärmdumpar (XCTAttachment).
+- **Visuellt:** skärmdumpar granskas per yta (avklippning, etiketter, utanför-kant, känsla).
+- **State-dump** (`-uitest-dump-state` → `uitest-state.json`) för att skilja data-bugg från rit-bugg, särskilt där sim-tap är opålitlig (anslutnings-DRAG, sheet-text, dubbeltryck — XCTSkip-dokumenterat).
+- **Slutbock på pixel-känsla = Kims iPhone** (sim ljuger om känsla).
+
+## Resultat hittills (2026-06-24)
+
+**Beteende: 30/30 V46-tester gröna** (0 fel) — täcker ytorna nedan funktionellt. Visuella spot-checks bekräftar 1.0-fixarna; inga regressioner funna.
+
+| # | Yta | Beteende | Visuellt | Not |
+|---|---|---|---|---|
+| 1 | Verktygsrad–Huvudrad | ✅ V46 | ✅ | Markeringsknapp (▢) ÅTER i toppen; färg/text rätt utgråade utan markering |
+| 2 | Former-rad | ✅ V46 (alla chips) | — | alla 14 chips skapar form |
+| 3 | Färg-rad | ✅ V46 | ✅ | **Avklippning BORTA** (cirklar hela topp/botten); harmoniserad pastell-palett; Paket/Fyllning/Ram |
+| 4 | Text-rad | ✅ V46 | — | öppnas, kräver markering |
+| 5 | Formpaket-rad | ✅ V46 | — | toggle + chips |
+| 6 | Markera-flera-rad | ✅ V46 | ✅ | markeringsläge aktiverar raden; Duplicera/Ta bort/Centrera H/V rätt utgråade tomt |
+| 7 | Lägen-meny | ✅ V46 | — | öppnas; Visa-kod/Importera/Ny-canvas nås; visar EN version "1.0" |
+| 8 | Canvas–Form-gester | ✅ V46 (tap/markera) | ◻ | drag/dubbeltryck: state-dump (sim-tap opålitlig) |
+| 9 | Anslutningsprickar | ✅ V46 (pil mellan former) | ✅ | 4 prickar (en/sida) syns på vald form |
+| 10 | Pil-meny | ◻ kvar | ◻ | nästa svep-batch |
+| 11 | Form-långtrycksmeny | ◻ kvar | ◻ | nästa svep-batch |
+| 12 | Läs-lapp (NoteCard) | ◻ kvar | ◻ | nästa svep-batch |
+| 13 | Brödsmulor (drill) | ◻ kvar | ◻ | nästa svep-batch |
+| 14 | Handtag + markeringsläge | ◻ delvis | ✅ | resize (prop/fri) + rotate-handtag syns på vald form |
+| 15 | Canvas–Övrigt | ✅ V46 (zoom/undo/recenter) | — | |
+| 16 | Sheets/dialoger | ✅ V46 (kod/import/ny) | ◻ | text-läsning i sheet opålitlig på sim |
+
+**Bevis:** `V46ExplorationTest` 30/30 (xcresult 2026-06-24 13:39); skärmdumpar i xcresult; spot-checks: hemskärm, färg-rad (CC8BCEC8), markeringsläge (1D6C1FBC).
+
+## Fynd
+- *Inga nya fynd / regressioner ännu.* 1.0-fixarna (markeringsknapp, avklippning, palett) bekräftade i sim.
+- (Fynd loggas här: yta · funktion · problem · allvar · fix · status — när de hittas i fortsatt svep.)
+
+## Kvar i svepet
+- Ytor 10–13 + handtags-detalj (14): driv i sim (place-scenarier + state-dump), granska visuellt.
+- Edge/beroende-fördjupning: bekräfta att pilar följer former vid flytt/resize via state-dump (place-scenario 22).
+- Sedan: triagé → fixa säkra (WIP=1) → deploy 1.1 → Kims iPhone-bock.
