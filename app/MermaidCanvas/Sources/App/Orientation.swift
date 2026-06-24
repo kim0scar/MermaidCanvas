@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 import UIKit
 
@@ -86,3 +87,4 @@ enum OrientationStore {
         scene.requestGeometryUpdate(.iOS(interfaceOrientations: mode.geometryOrientations)) { _ in }
     }
 }
+#endif

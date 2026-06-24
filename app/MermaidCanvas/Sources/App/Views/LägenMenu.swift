@@ -27,7 +27,9 @@ struct LägenMenu: View {
     var onToggleLegend: () -> Void = {}
 
     /// v51.2: speglar valt skärmläge för bock-markering.
+    #if os(iOS)
     @AppStorage(OrientationStore.key) private var orientationMode: String = OrientationMode.portrait.rawValue
+    #endif
 
     var body: some View {
         Menu {
@@ -102,7 +104,8 @@ struct LägenMenu: View {
             }
             .accessibilityIdentifier("menu.legend")
             Divider()
-            // v51.2: skärmläge porträtt/landskap (äkta orientering)
+            // v51.2: skärmläge porträtt/landskap (äkta orientering) — iOS-bara (Mac roterar ej).
+            #if os(iOS)
             Menu {
                 Button { OrientationStore.set(.portrait) } label: {
                     Label("Porträttläge", systemImage: orientationMode == OrientationMode.portrait.rawValue ? "checkmark" : "iphone")
@@ -114,6 +117,7 @@ struct LägenMenu: View {
                 Label("Skärmläge", systemImage: "rotate.right")
             }
             .accessibilityIdentifier("menu.orientation")
+            #endif
             Divider()
             Button(action: {}) {
                 Label(AppVersion.version, systemImage: "info.circle")

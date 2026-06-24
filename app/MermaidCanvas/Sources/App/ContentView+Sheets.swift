@@ -238,9 +238,12 @@ extension ContentView {
         }
         // v60.1: UIKit-livscykeln (egen UIWindow i stället för WindowGroup) kan göra scenePhase
         // mindre pålitlig — lyssna även direkt på didEnterBackground så autospar garanterat sker.
+        // 1.1: iOS-bara (macOS autosparar via scenePhase ovan).
+        #if os(iOS)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
             if fileManager.hasOpenFile { saveToOpenFile() }
         }
+        #endif
         .confirmationDialog("Spara nuvarande canvas först?",
                             isPresented: $showNewCanvasPrompt,
                             titleVisibility: .visible) {

@@ -1,8 +1,18 @@
 import SwiftUI
 
-// v60.1: App-entrypoint flyttad till UIKit-livscykel (se main.swift + Orientation.swift).
-// Den tidigare `@main struct MermaidCanvasApp: App { WindowGroup { ContentView() } }`
-// gav SwiftUI kontroll över fönstret och gjorde orienteringslåset omöjligt att tvinga
-// igenom. Fönstret skapas nu i SceneDelegate med en låsbar hosting-controller.
-//
-// Filen behålls avsiktligt utan typer för att undvika dubbel `@main`.
+// v60.1: iOS-entrypoint = UIKit-livscykel (se main.swift + Orientation.swift) för att kunna
+// tvinga igenom orienteringslåset. iOS har därför ingen `@main` här (den bor i main.swift).
+
+#if os(macOS)
+// 1.1 dual-platform: macOS-entré = menyrads-popup (MenuBarExtra) som hostar SAMMA ContentView.
+// Klick på menyrads-ikonen fäller ut canvasen. Delar hela hjärnan med iPhone-appen.
+@main
+struct MermaidCanvasMacApp: App {
+    var body: some Scene {
+        MenuBarExtra("Visuali2e", systemImage: "scribble.variable") {
+            ContentView()
+        }
+        .menuBarExtraStyle(.window)
+    }
+}
+#endif

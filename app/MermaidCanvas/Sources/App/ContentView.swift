@@ -13,13 +13,13 @@ struct ContentView: View {
     /// v36: autosave vid bakgrundning.
     @Environment(\.scenePhase) var scenePhase
     /// v60: landskap (compact höjd på iPhone) → vänster vertikal sidebar i stället för topp-bar.
+    #if os(iOS)
     @Environment(\.verticalSizeClass) var vSizeClass
-    /// v34: synkroniserad spegel av UIScrollView's pan/zoom-state.
-    /// Speglat live i ZoomableCanvas-callbacks; chip-drop läser synkront vid drag-end (ingen race).
+    #endif
+    /// v34: synkad spegel av pan/zoom-state (chip-drop läser synkront vid drag-end, ingen race).
     @StateObject var viewportState = CanvasViewportState()
     /// v34: aktivt chip-drag (Apple's .draggable/.dropDestination opålitligt i UIScrollView).
     @StateObject var chipDragState = ChipDragState()
-
     /// v35: canvasCenter är nu DYNAMISK — räknas från viewportState's
     /// synliga viewport-mitt. När Kim panorerar/zoomar och sedan tappar
     /// en chip, läggs formen DÄR HAN TITTAR — inte vid statisk (2000,2000)
@@ -115,7 +115,7 @@ struct ContentView: View {
         // (attachSheets). Kärn-vyn + .onAppear stannar här.
         attachSheets(
         ZStack(alignment: .topLeading) {
-            if vSizeClass == .compact {
+            if isCompactHeight {
                 // v60: landskap — canvas i fullskärm, toolbar som vänster sidebar (overlay).
                 canvasView
                 toolbarView(vertical: true)
