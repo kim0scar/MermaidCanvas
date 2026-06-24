@@ -92,8 +92,13 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 
 ## Milstolpe 1.0 — skarp release (Kims order 2026-06-22)
 Städa version (dubbel→ren "1.0"), klassisk Apple-ikon, fixa färgmeny-avklippning + markeringsverktyg tillbaka + snyggare paketfärger, och BEVISA två-lager-fundamentet (AI-ramverket bäddas in i export så det alltid följer med).
-- ⏳ Steg 1.0 — release-svepet. Klart när: app visar EN version "1.0" (aldrig två); swatchar klipps ej; markeringsknapp synlig+aktiv i toppen; ny ikon på iPhone (Kims bock); exportfil bär alla fyra lager + embed-test grönt + BEVIS-TVÅLAGER.md klar; alla grindar gröna; deployad 1.0 (tagg v1.0 + ZIP).
+- ⏳ Steg 1.0 — release-svepet. ✅ DEPLOYAD 2026-06-24 (1.0 på iPhone, tagg v1.0 + ZIP, 204 tester/conformance/render gröna; embed-test + BEVIS-TVÅLAGER.md klara; EN version bekräftad). KVAR: bara Kims iPhone-bock på ikon/färgmeny/markeringsknapp-känsla.
   Kräver: MB Steg 1 (maskindelen) ✅
+
+## Milstolpe 1.1 — total genomgång + dual-platform (Kims Goal 2026-06-24)
+Tre spår: (1) TOTAL sim-driven genomgång — varje meny/val körd i simulator, UI/UX perfekt, alla beroende-streck + former funkar; (2) fritt förbättra/lägga till; (3) dual-platform: DELAD hjärna (en modul) + **macOS menyrads-popup** (klick i menyraden → canvas fälls ut, samma iCloud-filer som iPhone — Kims val "bäst kvalitet"). Inga parallella appar — en hjärna, två ansikten.
+- ☐ Steg 1.1 — planeras i planläge (sim-genomgång med sub-agenter + cross-platform-refaktor + menyrads-skal). Klart-kriterium spikas i planen.
+  Kräver: Steg 1.0 deployad ✅
 
 ## Efter MB (pausat, Kims order) + Efter M3
 - MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
@@ -114,6 +119,7 @@ Städa version (dubbel→ren "1.0"), klassisk Apple-ikon, fixa färgmeny-avklipp
 - 2026-06-21 · 💡#12 Markdown-läsare i appen (read-only): öppna en .md (t.ex. FUNKTIONSKarta) och läsa den formaterad — rubriker + tabeller · kräver markdown-render-lib (SwiftUI-inbyggd renderar ej tabeller) = eget litet bygge + nytt beroende + scope-fråga (PRODUKT.md: appen är ritverktyg, ej dok-läsare) · väntar
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-24 · Milstolpe 1.1 satt (Kims Goal): total sim-driven genomgång av alla menyer/val + fritt förbättra + dual-platform via DELAD hjärna + macOS menyrads-popup (Kim valde "bäst kvalitet"; uttryckligt: inga parallella appar, mest delas, vill kunna trycka upp/visualisera/spara på samma plats som iPhone). Detaljplan i planläge före bygge.
 - 2026-06-24 · EN enda version (Kims order "aldrig två"): AppVersion.version driver BÅDE app-etikett OCH bundle (MARKETING_VERSION = CURRENT_PROJECT_VERSION = samma nummer); bygg-räknaren vN slopad; arch-check version-sync + VERSIONSHANTERING omskrivna; tagg `v1.0`, ZIP `Visuali2e-1.0.zip`. Varför: Kim vill aldrig se två versionsnummer.
 - 2026-06-22 · Milstolpe 1.0 på Kims order: ren version, klassisk Apple-ikon, färgmeny-avklippning lagas + markeringsverktyg åter i toppen + snyggare paketfärger (behåll färg-knapp separat per Kims val), OCH AI-ramverket (frameworkText) bäddas in i VARJE exportfil + maskinellt embed-test + BEVIS-TVÅLAGER.md. Varför: Kim vill ha en skarp 1.0 OCH tekniskt bevis att export/import alltid bär "vad är mermaid / vad är app-lagret" — appens fundament (gapet: spec:en låg bara bakom in-app-knappar, följde ej med filen).
 - 2026-06-22 · MB Steg 1 breddat + startat på Kims /goal: kontroll-genomgång av HELA UI-ytan (ej bara UX-111–122) enligt Metoder/KONTROLL-GENOMGANG.md — sub-agents per yta, 4 dim (Me/UI/Ber/Plats), adversariell verifiering, fixa fynd i WIP=1, fråga vid vägval. Output: ifylld FUNKTIONSKarta + KONTROLL-FYND.md. Varför: Kim vill ha bevisad kontroll på att allt sitter rätt/ser rätt ut/funkar/behövs innan vidare bygge.
