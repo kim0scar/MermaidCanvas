@@ -31,6 +31,10 @@ final class CanvasFileManager: ObservableObject {
             return nil
         }
         currentFileURL = url
+        #if os(macOS)
+        // 1.1 Fas 5: kom ihåg senaste filen så Mac-menyradsappen kan återöppna den.
+        UserDefaults.standard.set(url.path, forKey: "mac.lastFilePath")
+        #endif
         openedExisting = asExisting
         lastModificationDate = modificationDate(for: url)
         lastContentHash = content.hashValue

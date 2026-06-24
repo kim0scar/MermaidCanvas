@@ -38,6 +38,9 @@ extension ContentView {
     @ViewBuilder
     func attachSheets<Content: View>(_ content: Content) -> some View {
         content
+        #if os(macOS)
+        .onAppear { restoreLastFileMac() }
+        #endif
         .sheet(isPresented: $showComponentGallery) {
             NavigationStack {
                 ComponentGallery()
