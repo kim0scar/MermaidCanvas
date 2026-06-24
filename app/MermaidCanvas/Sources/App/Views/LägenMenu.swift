@@ -37,6 +37,9 @@ struct LägenMenu: View {
             Button { onNewCanvas() } label: {
                 Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
             }
+            #if os(macOS)
+            .keyboardShortcut("n", modifiers: .command)   // 1.1 Fas 6: Mac-genvägar
+            #endif
             // V79-svep: snabb-mallar
             Menu {
                 ForEach(CanvasModel.TemplateKind.allCases, id: \.self) { kind in
@@ -62,12 +65,21 @@ struct LägenMenu: View {
             Button { onSave() } label: {
                 Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
             }
+            #if os(macOS)
+            .keyboardShortcut("s", modifiers: .command)
+            #endif
             Button { onSaveAs() } label: {
                 Label("Spara som ny fil…", systemImage: "square.and.arrow.down")
             }
+            #if os(macOS)
+            .keyboardShortcut("s", modifiers: [.command, .shift])
+            #endif
             Button { onOpen() } label: {
                 Label("Öppna fil…", systemImage: "folder")
             }
+            #if os(macOS)
+            .keyboardShortcut("o", modifiers: .command)
+            #endif
             Button { onImportMermaid() } label: {
                 Label("Importera Mermaid…", systemImage: "arrow.down.doc")
             }
