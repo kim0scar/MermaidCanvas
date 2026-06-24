@@ -36,8 +36,10 @@
 **Bevis:** `V46ExplorationTest` 30/30 (xcresult 2026-06-24 13:39); skärmdumpar i xcresult; spot-checks: hemskärm, färg-rad (CC8BCEC8), markeringsläge (1D6C1FBC).
 
 ## Fynd
-- *Inga nya fynd / regressioner ännu.* 1.0-fixarna (markeringsknapp, avklippning, palett) bekräftade i sim.
-- (Fynd loggas här: yta · funktion · problem · allvar · fix · status — när de hittas i fortsatt svep.)
+- 1.0-fixarna (markeringsknapp, avklippning, palett) bekräftade i sim.
+- **2026-06-24: hela UITest-sviten körd** (126 tester, 11 skip). Resultat:
+  - 🟡 **V48** `test_a4_arrow_horizontal` + `test_a7_arrow_collapsed_plus_stub` — failade i full körning, **passerar på omkörning = XCUITest-flakighet** (inte app-bugg). Pil-meny/pilspets/kollaps-badge funkar.
+  - 🟠 **V74 skill-export** — failade KONSEKVENT = **riktig kvarleva (inaktuellt test).** Roten: testet refererade `toggle.pack.n8n` + `chip.flow.agent/skill` från FÖRE skill-flöde-omarbetningen (n8n-paketet pausat, ersatt av `skillFlow`; chips omdöpta till `chip.skill.*`, "agent"→"subagent"). **Fixat:** uppdaterat till nuvarande id:n + Files-systemdialogen gjord best-effort (OS-styrd/språkberoende, opålitlig i XCUITest — samma mönster projektet XCTSkip:ar; fil-INNEHÅLLET unit-testat). V74 passerar nu. Status: ✅ FIXAT.
 
 ## Kvar i svepet
 - Ytor 10–13 + handtags-detalj (14): driv i sim (place-scenarier + state-dump), granska visuellt.
