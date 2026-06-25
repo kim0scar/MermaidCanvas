@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.2 — UI/UX-städning (topprad + meny): alla 5 steg BYGGDA + verifierade (overflow fixad, Former-flikar, dubbelklick-marker, zoom-info, meny-sektioner). KVAR: deploy 1.2 (full svit kör) + Kims iPhone-bock. n8n + M4 PAUSADE. MA + M3 klara.
+NU: ⏳ Milstolpe 1.2 — UI/UX-städning (topprad + meny): alla 5 steg + deploy KLART (1.2 installerad på iPhone; overflow fixad, Former-flikar, dubbelklick-marker, zoom-info, meny-sektioner, version överst). KVAR: bara Kims iPhone-bock på känslan. n8n + M4 PAUSADE. MA + M3 klara.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -108,7 +108,7 @@ Kim såg att topprads-ikoner klipps av kanterna → bredare städning. Mål: top
 - ✅ Steg 3 — Markering via dubbelklick på tom canvas (count:2 före count:1) + hint i "Börja här" + "Klar"-knapp. test30 PASS (dubbeltryck→Klar-knapp), test31 marquee PASS.
 - ✅ Steg 4 — Former = ett "lägg till"-ställe (flikar Grundformer/Paket/Mallar + verktygsrad; packs-knapp + Notis-chip bort). **Overflow MASKINELLT FIXAD** (LayoutOverflowTests 2/2). V74 skill-export + test03/90 gröna (retry mot XCUITest segment-flakighet).
 - ✅ Steg 5 — Meny-sektioner (Skapa/Fil/Kod&export/Visa/Om appen) + "Funktionsöversikt" + "Alla anteckningar" + Mallar-undermeny bort. Section-rubriker verifierat renderar i Menu (skärmdump). unit 205/0.
-- ⏳ Deploy 1.2: versionsbump 1.0→1.2 + grindar gröna + full svit (kör) + iPhone-install + tagg v1.2 + ZIP. KVAR: Kims iPhone-bock på känslan.
+- ✅ Deploy 1.2: version 1.0→1.2, grindar gröna (conformance 3/3, render 3/3, unit 205/0), **installerad på iPhone**, tagg v1.2 + ZIP. Full svit: 1 riktigt fel (V33 version under-fold → FIXAT, version överst) + 6 flakiga/scratch (DragOut/V27/V48 passerar på omkörning, Takeover=Files-dialog, DispatchTest=scratch som startar Claude-appen). KVAR: bara **Kims iPhone-bock på känslan**.
   Kräver: Steg 1.0 deployad ✅
 
 ## Efter MB (pausat, Kims order) + Efter M3

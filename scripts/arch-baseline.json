@@ -3,7 +3,7 @@
   "new_file_limit": 300,
   "file_line_limits": {
     "app/MermaidCanvas/Sources/App/Views/CanvasView.swift": 222,
-    "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 207,
+    "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 200,
     "app/MermaidCanvas/Sources/App/Models/CanvasModel.swift": 56,
     "app/MermaidCanvas/Sources/App/ContentView.swift": 206,
     "app/MermaidCanvas/Sources/Mermaid/MermaidParser.swift": 625,
