@@ -156,24 +156,21 @@ struct ToolbarView: View {
 
     @ViewBuilder
     var zoomBadge: some View {
-        Button(action: onResetZoom) {
-            Text("\(zoomPercent)%")
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(Color.primary.opacity(0.7))
-                // v33 polish: 48→40 så zoom-badge tar mindre plats i primary-raden
-                .frame(minWidth: 40, minHeight: 28)
-                .background(Capsule().fill(.ultraThinMaterial))
-                .overlay(Capsule().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
-                // v50.7 UX-006: tap-ytan ≥44pt (Apple-minimum) — kapseln förblir
-                // visuellt kompakt, men träffytan runt den är full 44×44.
-                .frame(minWidth: 44, minHeight: 44)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("toolbar.zoom")
-        .accessibilityLabel(a11yLabel(for: "toolbar.zoom"))
-        .accessibilityValue(diagnosticsValue)
+        // 1.2: zoom är INFO, inte knapp (Kims order). Behåller .isButton-trait +
+        // diagnosticsValue så XCUITest (toolbar.zoom) ser den oförändrat. Reset → menyn.
+        Text("\(zoomPercent)%")
+            .font(.system(size: 12, weight: .semibold, design: .rounded))
+            .monospacedDigit()
+            .foregroundStyle(Color.primary.opacity(0.7))
+            .frame(minWidth: 40, minHeight: 28)
+            .background(Capsule().fill(.ultraThinMaterial))
+            .overlay(Capsule().stroke(Color.primary.opacity(0.08), lineWidth: 0.5))
+            .frame(minHeight: 44)
+            .accessibilityElement()
+            .accessibilityAddTraits(.isButton)
+            .accessibilityIdentifier("toolbar.zoom")
+            .accessibilityLabel(a11yLabel(for: "toolbar.zoom"))
+            .accessibilityValue(diagnosticsValue)
     }
 
     /// v27: testdiagnostik — rapporterar shape-count + position på senaste form

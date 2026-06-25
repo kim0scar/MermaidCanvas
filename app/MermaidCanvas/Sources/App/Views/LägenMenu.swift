@@ -25,6 +25,8 @@ struct LägenMenu: View {
     var onImportMultiple: () -> Void = {}   // v1.1: flera filer som containrar
     /// v66: visa/dölj legend-panelen på canvasen.
     var onToggleLegend: () -> Void = {}
+    /// 1.2: zoom blev info (ej knapp) — återställ-funktionen bor här istället.
+    var onResetZoom: () -> Void = {}
 
     /// v51.2: speglar valt skärmläge för bock-markering.
     #if os(iOS)
@@ -115,6 +117,11 @@ struct LägenMenu: View {
                 Label("Legend", systemImage: "list.bullet.rectangle")
             }
             .accessibilityIdentifier("menu.legend")
+            // 1.2: zoom är info i toppraden → återställ till 100 % här.
+            Button { onResetZoom() } label: {
+                Label("Återställ zoom (100 %)", systemImage: "1.magnifyingglass")
+            }
+            .accessibilityIdentifier("menu.resetZoom")
             Divider()
             // v51.2: skärmläge porträtt/landskap (äkta orientering) — iOS-bara (Mac roterar ej).
             #if os(iOS)

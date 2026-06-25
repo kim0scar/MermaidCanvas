@@ -18,7 +18,8 @@ extension ToolbarView {
             onShowRules: onShowRules,
             onImportMermaid: onImportMermaid,
             onImportMultiple: onImportMultiple,
-            onToggleLegend: onToggleLegend
+            onToggleLegend: onToggleLegend,
+            onResetZoom: onResetZoom
         )
     }
 }
