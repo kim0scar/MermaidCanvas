@@ -35,6 +35,12 @@ struct LägenMenu: View {
 
     var body: some View {
         Menu {
+            // 1.2: version ÖVERST så den ALLTID syns (menyn scrollar — version får ej hamna under fold).
+            Button(action: {}) {
+                Label("Visuali2e \(AppVersion.version)", systemImage: "info.circle")
+            }
+            .disabled(true)
+            .accessibilityIdentifier("menu.version")
             // 1.2: namngivna sektioner (Kims order) — ersätter nakna Divider.
             Section("Skapa") {
                 Button { onNewCanvas() } label: {
@@ -133,11 +139,6 @@ struct LägenMenu: View {
                         Label("Visa regler för Godot", systemImage: "book")
                     }
                 }
-                Button(action: {}) {
-                    Label(AppVersion.version, systemImage: "info.circle")
-                }
-                .disabled(true)
-                .accessibilityIdentifier("menu.version")
             }
         } label: {
             ToolbarIconButton(systemImage: "slider.horizontal.3", isActive: false)
