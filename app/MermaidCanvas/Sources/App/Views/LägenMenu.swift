@@ -15,10 +15,8 @@ struct LägenMenu: View {
     var onCopyCode: () -> Void
     /// Steg H: exportera ritade ytan som bild → delningsmeny. Bool = JPG (annars PNG).
     var onExportImage: (Bool) -> Void = { _ in }
-    /// V79-svep: visa "Mermaid vs app-funktioner"-vyn.
+    /// V79-svep: visa "Funktionsöversikt"-vyn.
     var onShowCapabilities: () -> Void = {}
-    /// V79-svep: lägg en snabb-mall (AI-Skill / UI / Arkitektur).
-    var onInsertTemplate: (CanvasModel.TemplateKind) -> Void = { _ in }
     var onShowRules: () -> Void
     /// v37: importera Mermaid-kod från AI.
     var onImportMermaid: () -> Void
@@ -37,119 +35,110 @@ struct LägenMenu: View {
 
     var body: some View {
         Menu {
-            // v40: Ny canvas överst + kompakt plattform-rad
-            Button { onNewCanvas() } label: {
-                Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
+            // 1.2: namngivna sektioner (Kims order) — ersätter nakna Divider.
+            Section("Skapa") {
+                Button { onNewCanvas() } label: {
+                    Label("Ny canvas (välj plattform)", systemImage: "doc.badge.plus")
+                }
+                #if os(macOS)
+                .keyboardShortcut("n", modifiers: .command)   // 1.1 Fas 6: Mac-genvägar
+                #endif
             }
-            #if os(macOS)
-            .keyboardShortcut("n", modifiers: .command)   // 1.1 Fas 6: Mac-genvägar
-            #endif
-            // V79-svep: snabb-mallar
-            Menu {
-                ForEach(CanvasModel.TemplateKind.allCases, id: \.self) { kind in
-                    Button { onInsertTemplate(kind) } label: {
-                        Label(kind.title, systemImage: kind.systemImage)
+            Section("Fil") {
+                Button { onSave() } label: {
+                    Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
+                }
+                #if os(macOS)
+                .keyboardShortcut("s", modifiers: .command)
+                #endif
+                Button { onSaveAs() } label: {
+                    Label("Spara som ny fil…", systemImage: "square.and.arrow.down")
+                }
+                #if os(macOS)
+                .keyboardShortcut("s", modifiers: [.command, .shift])
+                #endif
+                Button { onOpen() } label: {
+                    Label("Öppna fil…", systemImage: "folder")
+                }
+                #if os(macOS)
+                .keyboardShortcut("o", modifiers: .command)
+                #endif
+                Button { onImportMermaid() } label: {
+                    Label("Importera Mermaid (en fil)…", systemImage: "arrow.down.doc")
+                }
+                Button { onImportMultiple() } label: {
+                    Label("Importera flera filer (jämför)…", systemImage: "doc.on.doc")
+                }
+            }
+            Section("Kod & export") {
+                Button { onShowCode() } label: {
+                    Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")
+                }
+                .accessibilityIdentifier("menu.showCode")
+                Button { onCopyCode() } label: {
+                    Label("Kopiera Mermaid-kod", systemImage: "doc.on.doc")
+                }
+                .accessibilityIdentifier("menu.copyCode")
+                Menu {
+                    Button { onExportImage(false) } label: { Label("PNG (skarp)", systemImage: "photo") }
+                    Button { onExportImage(true) } label: { Label("JPG (mindre fil)", systemImage: "photo.fill") }
+                } label: {
+                    Label("Exportera som bild…", systemImage: "photo")
+                }
+                .accessibilityIdentifier("menu.exportImage")
+            }
+            Section("Visa") {
+                Button { onToggleLegend() } label: {
+                    Label("Legend", systemImage: "list.bullet.rectangle")
+                }
+                .accessibilityIdentifier("menu.legend")
+                // 1.2: tydligare namn (var "Mermaid vs app-funktioner").
+                Button { onShowCapabilities() } label: {
+                    Label("Funktionsöversikt", systemImage: "rectangle.split.2x1")
+                }
+                .accessibilityIdentifier("menu.capabilities")
+                // 1.2: global notis-lista (flyttad från det missvisande Notis-chippet).
+                Button { onShowNotePopup() } label: {
+                    Label("Alla anteckningar", systemImage: "note.text")
+                }
+                .accessibilityIdentifier("menu.allNotes")
+                // 1.2: zoom är info i toppraden → återställ här.
+                Button { onResetZoom() } label: {
+                    Label("Återställ zoom (100 %)", systemImage: "1.magnifyingglass")
+                }
+                .accessibilityIdentifier("menu.resetZoom")
+                // skärmläge porträtt/landskap — iOS-bara (Mac roterar ej).
+                #if os(iOS)
+                Menu {
+                    Button { OrientationStore.set(.portrait) } label: {
+                        Label("Porträttläge", systemImage: orientationMode == OrientationMode.portrait.rawValue ? "checkmark" : "iphone")
+                    }
+                    Button { OrientationStore.set(.landscape) } label: {
+                        Label("Landskapsläge", systemImage: orientationMode == OrientationMode.landscape.rawValue ? "checkmark" : "iphone.landscape")
+                    }
+                } label: {
+                    Label("Skärmläge", systemImage: "rotate.right")
+                }
+                .accessibilityIdentifier("menu.orientation")
+                #endif
+            }
+            Section("Om appen") {
+                Button(action: {}) {
+                    Label("Aktuell plattform: \(model.platform.displayName)",
+                          systemImage: model.platform.badgeSystemImage)
+                }
+                .disabled(true)
+                if model.platform == .godot {
+                    Button(action: onShowRules) {
+                        Label("Visa regler för Godot", systemImage: "book")
                     }
                 }
-            } label: {
-                Label("Mallar", systemImage: "square.grid.2x2")
-            }
-            .accessibilityIdentifier("menu.templates")
-            Button(action: {}) {
-                Label("Aktuell plattform: \(model.platform.displayName)",
-                      systemImage: model.platform.badgeSystemImage)
-            }
-            .disabled(true)
-            if model.platform == .godot {
-                Button(action: onShowRules) {
-                    Label("Visa regler för Godot", systemImage: "book")
+                Button(action: {}) {
+                    Label(AppVersion.version, systemImage: "info.circle")
                 }
+                .disabled(true)
+                .accessibilityIdentifier("menu.version")
             }
-            Divider()
-            Button { onSave() } label: {
-                Label(hasOpenFile ? "Spara" : "Spara…", systemImage: "internaldrive")
-            }
-            #if os(macOS)
-            .keyboardShortcut("s", modifiers: .command)
-            #endif
-            Button { onSaveAs() } label: {
-                Label("Spara som ny fil…", systemImage: "square.and.arrow.down")
-            }
-            #if os(macOS)
-            .keyboardShortcut("s", modifiers: [.command, .shift])
-            #endif
-            Button { onOpen() } label: {
-                Label("Öppna fil…", systemImage: "folder")
-            }
-            #if os(macOS)
-            .keyboardShortcut("o", modifiers: .command)
-            #endif
-            Button { onImportMermaid() } label: {
-                Label("Importera Mermaid…", systemImage: "arrow.down.doc")
-            }
-            // v1.1: importera flera filer — var och en i en container (jämför varianter).
-            Button { onImportMultiple() } label: {
-                Label("Importera flera filer (jämför)…", systemImage: "doc.on.doc")
-            }
-            Divider()
-            // v32: Preview-knapp borttagen — kommer tillbaka när Godot-flödet är moget.
-            Button { onShowCode() } label: {
-                Label("Visa Mermaid-kod", systemImage: "chevron.left.forwardslash.chevron.right")
-            }
-            .accessibilityIdentifier("menu.showCode")
-            Button { onCopyCode() } label: {
-                Label("Kopiera Mermaid-kod", systemImage: "doc.on.doc")
-            }
-            .accessibilityIdentifier("menu.copyCode")
-            // Steg H + V79-svep: bild av ritade ytan → PNG (skarp) eller JPG (mindre fil)
-            Menu {
-                Button { onExportImage(false) } label: { Label("PNG (skarp)", systemImage: "photo") }
-                Button { onExportImage(true) } label: { Label("JPG (mindre fil)", systemImage: "photo.fill") }
-            } label: {
-                Label("Exportera som bild…", systemImage: "photo")
-            }
-            .accessibilityIdentifier("menu.exportImage")
-            // V79-svep: vad blir mermaid + app-egna funktioner + AI-ramverk
-            Button { onShowCapabilities() } label: {
-                Label("Mermaid vs app-funktioner", systemImage: "rectangle.split.2x1")
-            }
-            .accessibilityIdentifier("menu.capabilities")
-            // v66: legend — skriv vad varje form/kategori betyder (följer med i koden)
-            Button { onToggleLegend() } label: {
-                Label("Legend", systemImage: "list.bullet.rectangle")
-            }
-            .accessibilityIdentifier("menu.legend")
-            // 1.2: alla anteckningar (flyttad från Notis-chippet — missvisande som "skapa"-chip).
-            Button { onShowNotePopup() } label: {
-                Label("Alla anteckningar", systemImage: "note.text")
-            }
-            .accessibilityIdentifier("menu.allNotes")
-            // 1.2: zoom är info i toppraden → återställ till 100 % här.
-            Button { onResetZoom() } label: {
-                Label("Återställ zoom (100 %)", systemImage: "1.magnifyingglass")
-            }
-            .accessibilityIdentifier("menu.resetZoom")
-            Divider()
-            // v51.2: skärmläge porträtt/landskap (äkta orientering) — iOS-bara (Mac roterar ej).
-            #if os(iOS)
-            Menu {
-                Button { OrientationStore.set(.portrait) } label: {
-                    Label("Porträttläge", systemImage: orientationMode == OrientationMode.portrait.rawValue ? "checkmark" : "iphone")
-                }
-                Button { OrientationStore.set(.landscape) } label: {
-                    Label("Landskapsläge", systemImage: orientationMode == OrientationMode.landscape.rawValue ? "checkmark" : "iphone.landscape")
-                }
-            } label: {
-                Label("Skärmläge", systemImage: "rotate.right")
-            }
-            .accessibilityIdentifier("menu.orientation")
-            #endif
-            Divider()
-            Button(action: {}) {
-                Label(AppVersion.version, systemImage: "info.circle")
-            }
-            .disabled(true)
-            .accessibilityIdentifier("menu.version")
         } label: {
             ToolbarIconButton(systemImage: "slider.horizontal.3", isActive: false)
         }
