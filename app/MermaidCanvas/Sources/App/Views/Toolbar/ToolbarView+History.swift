@@ -29,19 +29,4 @@ extension ToolbarView {
         .accessibilityIdentifier("toolbar.redo")
         .accessibilityLabel(a11yLabel(for: "toolbar.redo"))
     }
-
-    /// 1.0: markeringsverktyget ("Markera flera") åter som synlig knapp i primärraden.
-    /// Egen knapp (ej toggleButton) — styr model.markerMode, inte secondaryRow.
-    @ViewBuilder
-    var markerButton: some View {
-        Button {
-            Haptics.impact()
-            onToggleMarker()
-        } label: {
-            ToolbarIconButton(systemImage: "rectangle.dashed", isActive: model.markerMode)
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("toolbar.marker")
-        .accessibilityLabel(a11yLabel(for: "toolbar.marker"))
-    }
 }

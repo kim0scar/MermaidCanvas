@@ -23,10 +23,17 @@ struct EmptyCanvasHint: View {
                 .font(.system(size: 14, design: .rounded))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 280)
+            // 1.2: markeringsläge har ingen knapp längre — lär ut gesten här.
+            (Text("Markera flera: ")
+             + Text("dubbeltryck").bold()
+             + Text(" på tomma ytan."))
+                .font(.system(size: 14, design: .rounded))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 280)
         }
         .foregroundStyle(.secondary)
         .padding(28)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Tom canvas. Tryck på Former uppe till vänster för att lägga till en form. Skapa pil genom att markera en form och dra från pilhandtaget.")
+        .accessibilityLabel("Tom canvas. Tryck på Former uppe till vänster för att lägga till en form. Skapa pil genom att markera en form och dra från pilhandtaget. Markera flera former genom att dubbeltrycka på tomma ytan.")
     }
 }

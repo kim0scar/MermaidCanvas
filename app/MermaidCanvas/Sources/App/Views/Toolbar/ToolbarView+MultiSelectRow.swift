@@ -37,6 +37,13 @@ extension ToolbarView {
             multiSelectButton("align.vertical.center", label: "Centrera V",
                                accId: "multiselect.alignV",
                                disabled: count < 2) { onAlignVertical() }
+
+            Divider().frame(height: 28)
+
+            // 1.2: synlig väg UT ur markeringsläget (gesten för IN är dold dubbeltryck).
+            multiSelectButton("checkmark.circle.fill", label: "Klar",
+                               accId: "multiselect.done",
+                               disabled: false) { onToggleMarker() }
         }
     }
 

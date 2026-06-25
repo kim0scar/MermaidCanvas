@@ -114,7 +114,7 @@ struct ToolbarView: View {
             toggleButton("swatchpalette", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
-            markerButton   // 1.0: markeringsverktyget åter som synlig primär-knapp
+            // 1.2: marker-knappen borttagen → markering via dubbelklick på tom yta (CanvasView).
             if !vertical { Spacer(minLength: 0) }
             zoomBadge
             undoButton
@@ -149,8 +149,6 @@ struct ToolbarView: View {
         .accessibilityIdentifier(accId)
         .accessibilityLabel(a11yLabel(for: accId))
     }
-
-    // markerButton → ToolbarView+History.swift (1.0: åter i primärraden, R5-ratchet)
 
     // undoButton + redoButton → ToolbarView+History.swift (R5-ratchet, V79-svep)
 

@@ -273,16 +273,20 @@ final class V46ExplorationTest: XCTestCase {
 
     @MainActor
     func test30_toggleMarkerMode() throws {
-        if app.buttons["toolbar.marker"].waitForExistence(timeout: 2) {
-            app.buttons["toolbar.marker"].tap()
-            sleep(1)
-            snap("30_marker_on")
-            log("30. toolbar.marker togglar markering", status: "PASS")
-            // Toggle av igen
-            app.buttons["toolbar.marker"].tap()
+        // 1.2: marker-knappen borttagen → dubbeltryck på tom yta togglar markering.
+        let canvas = app.scrollViews["canvas"]
+        guard canvas.waitForExistence(timeout: 3) else {
+            log("30. dubbeltryck togglar markering", status: "FAIL", note: "canvas saknas"); return
+        }
+        canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).doubleTap()
+        sleep(1)
+        snap("30_marker_on")
+        if app.buttons["multiselect.done"].waitForExistence(timeout: 2) {
+            log("30. dubbeltryck togglar markering", status: "PASS")
+            app.buttons["multiselect.done"].tap()   // Klar → ut ur markering
             sleep(1)
         } else {
-            log("30. toolbar.marker togglar markering", status: "FAIL", note: "knapp saknas")
+            log("30. dubbeltryck togglar markering", status: "FAIL", note: "Klar-knapp uteblev")
         }
     }
 
@@ -294,13 +298,13 @@ final class V46ExplorationTest: XCTestCase {
             app.buttons["chip.circle"].tap(); sleep(1)
             app.buttons["chip.rectangle"].tap(); sleep(1)
         }
-        // Aktivera marker
-        if app.buttons["toolbar.marker"].exists {
-            app.buttons["toolbar.marker"].tap()
+        // Aktivera marker via dubbeltryck på tom yta (1.2: knappen borttagen)
+        let canvas = app.scrollViews["canvas"]
+        if canvas.waitForExistence(timeout: 2) {
+            canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.15)).doubleTap()
             sleep(1)
         }
         // Dra över canvas
-        let canvas = app.scrollViews["canvas"]
         if canvas.waitForExistence(timeout: 2) {
             let p1 = canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.3))
             let p2 = canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.8))
