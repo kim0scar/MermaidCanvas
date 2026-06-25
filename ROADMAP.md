@@ -2,7 +2,21 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: v1.1 (build v92) — "V79-listan komplett (multi-fil-import sista punkten)"
+## Aktuell version: 1.2 — "UI/UX-städning: topprad + meny"
+
+*Tema:* Topprads-overflow fixad (Former + reglage klipptes av kanterna). **Formpaket smälte in i
+Former** som flikar (Grundformer/Paket/Mallar); **marker-knappen ersatt av dubbelklick på tom yta**
+(+ hint i tomt-läget + "Klar"-knapp); **zoom blev ren info** (reset → menyn). Lägen-menyn fick
+**namngivna sektioner** (Skapa/Fil/Kod & export/Visa/Om appen) + "Funktionsöversikt" (f.d. "Mermaid
+vs app-funktioner"). Missvisande Notis-chip borttaget → "Alla anteckningar" i menyn. Inga
+format/bärar-ändringar. `LayoutOverflowTests` bevisar overflow borta; 205 unit + UITest-svit gröna.
+
+## v1.1 dual-platform (app-version 1.0) — "macOS menyrads-app (delad hjärna)"
+
+*Tema:* Native macOS menyrads-app som DELAR all kod med iPhone (en kodbas, två targets). NSScrollView-
+tvilling = äkta zoom/pan på Mac; samma iCloud-filer. Mac-canvasen renderar maskinellt bevisat.
+
+## v1.1 iPhone (build v92) — "V79-listan komplett (multi-fil-import sista punkten)"
 
 *Tema:* Facit-täckningsgrind (bijektion generator↔facit) + ärlig regel 15. Facit-menyn
 redesignad (färg=överlevnad, riktiga glyfer, sök, sticky copy). JPG-export. Import-mallen

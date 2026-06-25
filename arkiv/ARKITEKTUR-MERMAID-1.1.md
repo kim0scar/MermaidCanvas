@@ -1,13 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.2 (UI/UX-städning)
-*Datum: 2026-06-25*
-
-> **1.2 — UI/UX-städning (topprad + meny):** Inga lager-/modul-ändringar (bara View-lagrets interna
-> struktur). Toppraden: 9→6 knappar+zoom-info → overflow borta (`LayoutOverflowTests` bevisar). Formpaket
-> smälte in i Former som segment-flikar (`ToolbarView+ShapesRow`: Grundformer/Paket/Mallar + verktygsrad);
-> `.packs` ur `SecondaryToolbarRow`. Marker-knapp → dubbelklick på tom canvas (`CanvasView`, count:2 före
-> count:1) + hint + "Klar"-knapp. Zoom = ren info (behåller `.isButton`+diagnostik; reset → menyn). `LägenMenu`
-> fick `Section`-rubriker (Skapa/Fil/Kod & export/Visa/Om appen) + "Funktionsöversikt"; Notis-chip → "Alla
-> anteckningar" i menyn. Format/bärare orörda. 205 unit + UITest-svit · conformance 3/3 · render 3/3.
+# ARKITEKTUR-MERMAID — Version 1.0 (skarp release)
+*Datum: 2026-06-24*
 
 > **1.0 — skarp release (EN enda version, aldrig två):** version dubbel→ren `1.0` (AppVersion.version
 > driver både app-etikett OCH bundle; bygg-räknaren slopad). Klassisk Apple-ikon (flödesnoder, indigo→violett).

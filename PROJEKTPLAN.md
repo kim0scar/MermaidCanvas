@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.2 — UI/UX-städning (topprad + meny): 5 steg, plan godkänd 2026-06-24. 1.0 deployad ✅; 1.1 dual-platform klar (Mac-app i menyraden) + sim-genomgång maskinellt klar — bara Kims känsla-bock kvar. n8n + M4 PAUSADE. MA + M3 klara.
+NU: ⏳ Milstolpe 1.2 — UI/UX-städning (topprad + meny): alla 5 steg BYGGDA + verifierade (overflow fixad, Former-flikar, dubbelklick-marker, zoom-info, meny-sektioner). KVAR: deploy 1.2 (full svit kör) + Kims iPhone-bock. n8n + M4 PAUSADE. MA + M3 klara.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -103,11 +103,12 @@ Tre spår: (1) TOTAL sim-driven genomgång — varje meny/val körd i simulator,
 
 ## Milstolpe 1.2 — UI/UX-städning: topprad + meny (Kims order 2026-06-24, plan godkänd)
 Kim såg att topprads-ikoner klipps av kanterna → bredare städning. Mål: topprad+meny som Apple byggt den. Två låsta val: Formpaket smälter in i Former (flikar Grundformer/Paket/Mallar); marker-knapp bort → dubbelklick på tom yta. Format/bärare orörda (inga nya former). WIP=1, grön checkpoint mellan varje. Detaljplan: ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md.
-- ⏳ Steg 1 — Zoom → ren info. Behåll .isButton + diagnosticsValue (noll teständring); flytta onResetZoom → menyrad "Återställ zoom". Klart: full svit grön, zoom ser ut som info.
-- ☐ Steg 2 — Ta bort marker-knappen ur primärraden (def kvar tills steg 3). Klart: bygg + overflow-test grön.
-- ☐ Steg 3 — Markering via dubbelklick på tom canvas (count:2 före count:1) + hint i "Börja här" + "Klar"-knapp. Klart: gest-test grönt, V46 marker-test migrerat.
-- ☐ Steg 4 — Former = ett "lägg till"-ställe: flikar Grundformer/Paket/Mallar + verktygsrad; packs-knapp + Notis-chip bort; R5: flytta diagnosticsValue ut först. Klart: alla former nås, arch-check grön.
-- ☐ Steg 5 — Meny-sektioner (Skapa/Fil/Kod&export/Visa/Vy/Om appen) + omdöp + "Alla anteckningar" + ta bort Mallar-undermeny. Klart: Section renderar i Menu (sim+iPhone), full svit grön, deploy + Kims öga.
+- ✅ Steg 1 — Zoom → ren info (behöll .isButton + diagnosticsValue, noll teständring; onResetZoom → menyrad). V27/V34 gröna.
+- ✅ Steg 2 — Marker-knappen borttagen ur primärraden (+ död def städad).
+- ✅ Steg 3 — Markering via dubbelklick på tom canvas (count:2 före count:1) + hint i "Börja här" + "Klar"-knapp. test30 PASS (dubbeltryck→Klar-knapp), test31 marquee PASS.
+- ✅ Steg 4 — Former = ett "lägg till"-ställe (flikar Grundformer/Paket/Mallar + verktygsrad; packs-knapp + Notis-chip bort). **Overflow MASKINELLT FIXAD** (LayoutOverflowTests 2/2). V74 skill-export + test03/90 gröna (retry mot XCUITest segment-flakighet).
+- ✅ Steg 5 — Meny-sektioner (Skapa/Fil/Kod&export/Visa/Om appen) + "Funktionsöversikt" + "Alla anteckningar" + Mallar-undermeny bort. Section-rubriker verifierat renderar i Menu (skärmdump). unit 205/0.
+- ⏳ Deploy 1.2: versionsbump 1.0→1.2 + grindar gröna + full svit (kör) + iPhone-install + tagg v1.2 + ZIP. KVAR: Kims iPhone-bock på känslan.
   Kräver: Steg 1.0 deployad ✅
 
 ## Efter MB (pausat, Kims order) + Efter M3
