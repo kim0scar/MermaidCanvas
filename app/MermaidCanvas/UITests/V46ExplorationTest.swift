@@ -104,18 +104,21 @@ final class V46ExplorationTest: XCTestCase {
 
     @MainActor
     func test03_openPacksRow() throws {
-        if app.buttons["toolbar.packs"].waitForExistence(timeout: 2) {
-            app.buttons["toolbar.packs"].tap()
-            sleep(1)
-            snap("03_packs_row")
-            let hasToggle = app.descendants(matching: .any)
-                .matching(NSPredicate(format: "identifier BEGINSWITH 'toggle.pack.'"))
-                .firstMatch.waitForExistence(timeout: 1.5)
-            log("03. toolbar.packs opens row", status: hasToggle ? "PASS" : "FAIL",
-                note: "first toggle.pack visible=\(hasToggle)")
-        } else {
-            log("03. toolbar.packs opens row", status: "FAIL", note: "button missing")
+        // 1.2: packs flyttade in i Former → Paket-fliken.
+        guard app.buttons["toolbar.shapes"].waitForExistence(timeout: 2) else {
+            log("03. Paket-fliken visar pack-toggles", status: "FAIL", note: "Former saknas"); return
         }
+        app.buttons["toolbar.shapes"].tap(); sleep(1)
+        // segment-tap flakig i XCUITest → retry tills Paket-innehållet syns (no-op om redan vald).
+        let firstToggle = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'toggle.pack.'")).firstMatch
+        for _ in 0..<6 where !firstToggle.exists {
+            app.segmentedControls["shapes.section"].buttons["Paket"].tap()
+            _ = firstToggle.waitForExistence(timeout: 2)
+        }
+        snap("03_packs_row")
+        log("03. Paket-fliken visar pack-toggles", status: firstToggle.exists ? "PASS" : "FAIL",
+            note: "first toggle.pack visible=\(firstToggle.exists)")
     }
 
     // MARK: - Test 04-12: Add each shape type via chip-tap
@@ -191,15 +194,20 @@ final class V46ExplorationTest: XCTestCase {
 
     @MainActor
     func test14_chipNotePopup() throws {
-        openShapes()
-        let chip = app.buttons["chip.notepopup"]
-        if chip.waitForExistence(timeout: 2) {
-            chip.tap()
+        // 1.2: Notis-chippet borttaget → global lista bor i Lägen-menyn ("Alla anteckningar").
+        guard app.buttons["toolbar.modes"].waitForExistence(timeout: 2) else {
+            log("14. Alla anteckningar öppnar sheet", status: "FAIL", note: "meny saknas"); return
+        }
+        app.buttons["toolbar.modes"].tap()
+        sleep(1)
+        let item = app.buttons["menu.allNotes"]
+        if item.waitForExistence(timeout: 2) {
+            item.tap()
             sleep(2)
             snap("14_notepopup_sheet")
-            log("14. chip.notepopup öppnar sheet", status: "PASS", note: "kontrollera screenshot")
+            log("14. Alla anteckningar öppnar sheet", status: "PASS", note: "kontrollera screenshot")
         } else {
-            log("14. chip.notepopup öppnar sheet", status: "FAIL", note: "chip ej hittad")
+            log("14. Alla anteckningar öppnar sheet", status: "FAIL", note: "menyrad ej hittad")
         }
     }
 
@@ -585,24 +593,26 @@ final class V46ExplorationTest: XCTestCase {
 
     @MainActor
     func test90_togglePack() throws {
-        if app.buttons["toolbar.packs"].waitForExistence(timeout: 2) {
-            app.buttons["toolbar.packs"].tap()
-            sleep(1)
-            let toggle = app.descendants(matching: .any)
-                .matching(NSPredicate(format: "identifier BEGINSWITH 'toggle.pack.'")).firstMatch
-            if toggle.waitForExistence(timeout: 2) {
-                toggle.tap()
-                sleep(1)
-                snap("90_pack_toggled_on")
-                toggle.tap()
-                sleep(1)
-                snap("90_pack_toggled_off")
-                log("90. Pack-toggle togglar fram/tillbaka", status: "PASS")
-            } else {
-                log("90. Pack-toggle togglar fram/tillbaka", status: "FAIL", note: "ingen toggle hittad")
-            }
+        // 1.2: pack-toggles bor i Former → Paket-fliken.
+        guard app.buttons["toolbar.shapes"].waitForExistence(timeout: 2) else {
+            log("90. Pack-toggle togglar fram/tillbaka", status: "FAIL", note: "Former saknas"); return
+        }
+        app.buttons["toolbar.shapes"].tap(); sleep(1)
+        // segment-tap flakig i XCUITest → retry tills Paket-innehållet syns (no-op om redan vald).
+        let toggle = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'toggle.pack.'")).firstMatch
+        for _ in 0..<6 where !toggle.exists {
+            app.segmentedControls["shapes.section"].buttons["Paket"].tap()
+            _ = toggle.waitForExistence(timeout: 2)
+        }
+        if toggle.exists {
+            toggle.tap(); sleep(1)
+            snap("90_pack_toggled_on")
+            toggle.tap(); sleep(1)
+            snap("90_pack_toggled_off")
+            log("90. Pack-toggle togglar fram/tillbaka", status: "PASS")
         } else {
-            log("90. Pack-toggle togglar fram/tillbaka", status: "FAIL", note: "toolbar.packs saknas")
+            log("90. Pack-toggle togglar fram/tillbaka", status: "FAIL", note: "ingen toggle hittad")
         }
     }
 }

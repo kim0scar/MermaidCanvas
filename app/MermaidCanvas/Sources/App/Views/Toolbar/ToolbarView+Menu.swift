@@ -19,7 +19,8 @@ extension ToolbarView {
             onImportMermaid: onImportMermaid,
             onImportMultiple: onImportMultiple,
             onToggleLegend: onToggleLegend,
-            onResetZoom: onResetZoom
+            onResetZoom: onResetZoom,
+            onShowNotePopup: onShowNotePopup
         )
     }
 }

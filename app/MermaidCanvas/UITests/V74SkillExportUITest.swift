@@ -37,19 +37,19 @@ final class V74SkillExportUITest: XCTestCase {
         app.launch()
         snap("01-start")
 
-        // 1. Öppna formpaket-raden och slå på Skillflöde-paketet (ersatte n8n)
-        let packsBtn = app.buttons["toolbar.packs"]
-        XCTAssertTrue(packsBtn.waitForExistence(timeout: 5))
-        packsBtn.tap()
+        // 1.2: Öppna Former → Paket-fliken och slå på Skillflöde-paketet (ersatte n8n).
+        // OBS: segment-tap är flakig i XCUITest → försök tills Paket-innehållet syns (no-op om redan vald).
+        let shapesBtn = app.buttons["toolbar.shapes"]
+        XCTAssertTrue(shapesBtn.waitForExistence(timeout: 5))
+        shapesBtn.tap()
         sleep(1)
-        snap("02a-packs-rad")
-        // Skillflöde-paketet (ersatte n8n-paketet) — togglas via toggle.pack.skillFlow.
         let skillToggle = app.buttons["toggle.pack.skillFlow"]
-        if !skillToggle.waitForExistence(timeout: 4) {
-            try? app.debugDescription.write(toFile: "/tmp/v74-ui/tree.txt",
-                                            atomically: true, encoding: .utf8)
+        for _ in 0..<6 where !skillToggle.exists {
+            app.segmentedControls["shapes.section"].buttons["Paket"].tap()
+            _ = skillToggle.waitForExistence(timeout: 2)
         }
-        XCTAssertTrue(skillToggle.exists, "skillFlow-pack-toggle saknas")
+        snap("02a-packs-rad")
+        XCTAssertTrue(skillToggle.exists, "skillFlow-pack-toggle saknas (Paket-fliken öppnade ej)")
         if !app.buttons["chip.skill.skill"].exists {
             skillToggle.tap()
             sleep(1)
@@ -62,7 +62,7 @@ final class V74SkillExportUITest: XCTestCase {
         sleep(1)
         app.buttons["chip.skill.skill"].tap()
         sleep(1)
-        packsBtn.tap()   // stäng panelen så containern inte täcks
+        shapesBtn.tap()   // stäng Former-raden så containern inte täcks
         sleep(1)
         let container = app.descendants(matching: .any)
             .matching(identifier: "shape.container").firstMatch

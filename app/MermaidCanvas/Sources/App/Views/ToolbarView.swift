@@ -8,8 +8,6 @@ enum SecondaryToolbarRow: Equatable {
     case shapes
     case colors
     case textStyles
-    /// v31: form-paket-rad (visar UI-pack + Prompt-Process-pack-toggles)
-    case packs
     /// v39: multi-select-operationer (duplicera, ta bort, align)
     case multiSelect
 }
@@ -66,6 +64,8 @@ struct ToolbarView: View {
     @State var showSizePicker = false   // v40: textstorlek-popup
     /// v62: vad färg-valet ska gälla — flyttad hit (extensions kan ej ha stored properties).
     @State var colorTarget: ColorTarget = .pack
+    /// 1.2: vald flik i Former-raden (Grundformer/Paket/Mallar).
+    @State var shapeSection: ShapeSection = .basic
 
     var body: some View {
         // v39: visa multi-select-operationer automatiskt när markerMode är aktivt
@@ -111,7 +111,6 @@ struct ToolbarView: View {
             : AnyLayout(HStackLayout(spacing: 4))
         layout {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
-            toggleButton("swatchpalette", row: .packs, accId: "toolbar.packs")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
             // 1.2: marker-knappen borttagen → markering via dubbelklick på tom yta (CanvasView).
@@ -190,7 +189,6 @@ struct ToolbarView: View {
             case .shapes:      shapesSecondary
             case .colors:      colorsSecondary
             case .textStyles:  textStylesSecondary
-            case .packs:       packsSecondary
             case .multiSelect: multiSelectSecondary
             }
         }

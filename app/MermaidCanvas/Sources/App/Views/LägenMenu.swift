@@ -27,6 +27,8 @@ struct LägenMenu: View {
     var onToggleLegend: () -> Void = {}
     /// 1.2: zoom blev info (ej knapp) — återställ-funktionen bor här istället.
     var onResetZoom: () -> Void = {}
+    /// 1.2: global lista över alla anteckningar (flyttad från det missvisande Notis-chippet).
+    var onShowNotePopup: () -> Void = {}
 
     /// v51.2: speglar valt skärmläge för bock-markering.
     #if os(iOS)
@@ -117,6 +119,11 @@ struct LägenMenu: View {
                 Label("Legend", systemImage: "list.bullet.rectangle")
             }
             .accessibilityIdentifier("menu.legend")
+            // 1.2: alla anteckningar (flyttad från Notis-chippet — missvisande som "skapa"-chip).
+            Button { onShowNotePopup() } label: {
+                Label("Alla anteckningar", systemImage: "note.text")
+            }
+            .accessibilityIdentifier("menu.allNotes")
             // 1.2: zoom är info i toppraden → återställ till 100 % här.
             Button { onResetZoom() } label: {
                 Label("Återställ zoom (100 %)", systemImage: "1.magnifyingglass")
