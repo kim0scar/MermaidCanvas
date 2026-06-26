@@ -2,7 +2,20 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: 1.2 — "UI/UX-städning: topprad + meny"
+## Aktuell version: 1.3 — "Redigeringsytan som fundament (Lucidchart-känsla)"
+
+*Tema:* Appens viktigaste yta gjord Apple-grad. **Aldrig fast:** text-redigering bunden till
+markeringen — tryck utanför / på annan form avslutar alltid (`onChange(of: isSelected)`).
+**Anteckning = EN väg:** `NoteMiniSheet` borttagen; långtryck "Anteckning" öppnar NoteCard på
+canvasen (en skriv-väg, konsekvent ångra). **EN formateringsmeny:** ny delad `FormattingBar`
+renderas BÅDE som verktygsfältets textstil-rad OCH ovanför tangentbordet vid inline-redigering
+(Apple Notes-mönstret) — kan aldrig glida isär. EditShapeSheet slutar vara formateringsyta.
+**Rensat:** bluff-"Fet"-knappen (ändrade storlek, inte vikt) + död kod (ColorPickerPopover,
+ColorPackPopover) bort. Plus 4 interaktionsfixar (emoji-rutnät, kollaps-badge z-order, mål-ankare
+`toSide` + full regel-15, orthogonal routing). Inga nya bärare i redigerings-svepet. Conformance
+3/3, render 3/3, unit-svit grön. Fas 2 (individuell text per rad) = v1.4.
+
+## v1.2 — "UI/UX-städning: topprad + meny"
 
 *Tema:* Topprads-overflow fixad (Former + reglage klipptes av kanterna). **Formpaket smälte in i
 Former** som flikar (Grundformer/Paket/Mallar); **marker-knappen ersatt av dubbelklick på tom yta**

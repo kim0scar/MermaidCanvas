@@ -11,7 +11,6 @@ struct FormattingBar: View {
     let hasBullets: Bool
     let hasNumbered: Bool
     var onStyle: (TextStyle) -> Void
-    var onBold: () -> Void
     var onToggleBullets: () -> Void
     var onToggleNumbered: () -> Void
     var onAlign: (TextAlignMode) -> Void
@@ -44,8 +43,6 @@ struct FormattingBar: View {
                     }
                     Button("Avbryt", role: .cancel) {}
                 }
-
-                button(icon: "bold", label: "Fet", active: style == .r1, action: onBold)
 
                 Divider().frame(height: 28).padding(.horizontal, 2)
 

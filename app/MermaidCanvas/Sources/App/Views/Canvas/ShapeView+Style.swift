@@ -121,8 +121,6 @@ extension ShapeView {
                                 hasBullets: shape.hasBullets,
                                 hasNumbered: shape.hasNumberedList,
                                 onStyle: { st in onBeginTextEdit?(shape.id); shape.textStyle = st },
-                                onBold: { onBeginTextEdit?(shape.id)
-                                    shape.textStyle = shape.textStyle == .r1 ? .body : .r1 },
                                 onToggleBullets: { onBeginTextEdit?(shape.id)
                                     let on = !shape.hasBullets; shape.hasBullets = on
                                     if on { shape.hasNumberedList = false } },

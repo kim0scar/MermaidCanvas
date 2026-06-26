@@ -1,18 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.3 (redigeringsytan som fundament)
-*Datum: 2026-06-26*
-
-> **1.3 — redigeringsytan som fundament (Lucidchart-känsla):** Inga lager-/modul-ändringar (bara
-> View-lagrets interna struktur). **Aldrig fast:** `ShapeView.onChange(of: isSelected)` nollar
-> inline-redigeringen → ej markerad ⇒ ej redigering (tap-utanför/markera-annan/fokus-loss; sim-
-> verifierat). **Anteckning = EN väg:** `NoteMiniSheet` raderad; långtryck "Anteckning" → NoteCard
-> på canvasen (en skriv-väg, konsekvent ångra). **EN formateringsmeny:** ny delad `FormattingBar`
-> (`Views/Formatting/`) renderas BÅDE som verktygsfältets textstil-rad OCH ovanför tangentbordet vid
-> inline-redigering (Apple Notes-mönstret) → kan aldrig glida isär; `ToolbarView+TextStylesRow`
-> 166→49 rad. EditShapeSheet slutar vara formateringsyta (värden bevaras via draft). **Rensat:**
-> bluff-"Fet"-knappen + död kod (`ColorPickerPopover`, `ColorPackPopover`). Plus 4 interaktionsfixar
-> (emoji-rutnät, kollaps-badge z-order, `toSide` mål-ankare + full regel-15, orthogonal routing).
-> Inga nya bärare i redigerings-svepet. 205 unit · conformance 3/3 · render 3/3. Fas 2 (individuell
-> text per rad: rubrik+fet+justering) = v1.4.
+# ARKITEKTUR-MERMAID — Version 1.2 (UI/UX-städning)
+*Datum: 2026-06-25*
 
 > **1.2 — UI/UX-städning (topprad + meny):** Inga lager-/modul-ändringar (bara View-lagrets interna
 > struktur). Toppraden: 9→6 knappar+zoom-info → overflow borta (`LayoutOverflowTests` bevisar). Formpaket

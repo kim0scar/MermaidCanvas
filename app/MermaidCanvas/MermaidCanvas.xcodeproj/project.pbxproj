@@ -123,7 +123,6 @@
 		574096707242C4DEA5E908EA /* NewCanvasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */; };
 		581721310B1EA93F55009C4E /* prompt-process-rules.md in Resources */ = {isa = PBXBuildFile; fileRef = 0E42EE69DC47FA92EA10BD2F /* prompt-process-rules.md */; };
 		582F07276E5A3DFC2FA004CD /* ShapePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */; };
-		58589F8D959461C326887FDA /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */; };
 		59180BADCEB07539F7339DCA /* MermaidMetaComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */; };
 		59AA65D2448161A90BCE5383 /* test_square_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 7AEE1B1C74B79EB4BCC084BF /* test_square_chip.1.png */; };
 		59B215E31D7B5C9678CC398C /* ShapeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */; };
@@ -254,7 +253,6 @@
 		BFC33E39FEE1687B2C29B7C4 /* NoteBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADAFD7500719BA94561524F9 /* NoteBadge.swift */; };
 		BFE7D374EBE6027C54C79F4E /* ColorPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */; };
 		C03477577A27664A89EA3375 /* ContentView+Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43835205713CD9D57FDB1841 /* ContentView+Platform.swift */; };
-		C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */; };
 		C1474A2912CBA4392B32B375 /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
 		C39F21F7AA98F23421D45EDF /* ContentView+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E24759279021A6349EE8F6 /* ContentView+Files.swift */; };
 		C3B496C63DBE11E88733B214 /* CanvasModel+Collapse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB3515CEC6B12426998B32B /* CanvasModel+Collapse.swift */; };
@@ -288,7 +286,6 @@
 		D4A881B17FD8930CD3C37542 /* CanvasModel+Undo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF062E95A85446BD3B9B18C /* CanvasModel+Undo.swift */; };
 		D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */; };
 		D54156408C667EDEE21485AD /* ShapeView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EBAAA5B57732DBB735EF0E /* ShapeView+Style.swift */; };
-		D5DA334EBF020D34A2A2A630 /* ColorPackPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */; };
 		D78FDD336CE79EF5EAEB5704 /* ContentView+Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03993D0F724864F2603EC96D /* ContentView+Canvas.swift */; };
 		D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */; };
 		D7C11E4CD260ADFA3F66482A /* LineEndpointHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */; };
@@ -338,7 +335,6 @@
 		FB9AA1225580A95577012B46 /* MermaidVsAppSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434D9BC76F4212729FD79A8B /* MermaidVsAppSheet.swift */; };
 		FC9084E24FF07A48A593D8DA /* MermaidParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */; };
 		FCAC9FAF1E4E5B985ABC8738 /* EmptyCanvasHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246DAEE1890CEA36F3801363 /* EmptyCanvasHint.swift */; };
-		FCDCD38C1EC1587E7BD78E79 /* ColorPackPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */; };
 		FE739DF984FAF34BF437F261 /* ToolbarView+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B8E3177EAFE7D93F9063ED /* ToolbarView+Menu.swift */; };
 		FF09753D933EB58CD5CC94A7 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228F689846F0D1503749250D /* CanvasView.swift */; };
 /* End PBXBuildFile section */
@@ -461,7 +457,6 @@
 		6660E4DB431B5BBCAF625147 /* SpecType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecType.swift; sourceTree = "<group>"; };
 		67B24EFDC5E300CE42A333DD /* ToolbarView+TextStylesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+TextStylesRow.swift"; sourceTree = "<group>"; };
 		68762DE9C9330AD26444ACF6 /* V33SensorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33SensorTests.swift; sourceTree = "<group>"; };
-		6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPackPopover.swift; sourceTree = "<group>"; };
 		6C3DCDC8331BCDF47CCDAF74 /* Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		6C857637FAB48F6C5E7460F8 /* EdgeRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeRouting.swift; sourceTree = "<group>"; };
 		7052AEAD21FE4BBA576C49FE /* MultiSelectResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectResizeHandle.swift; sourceTree = "<group>"; };
@@ -504,7 +499,6 @@
 		A41F5BB86AF1A189F4D59116 /* test_processarrow_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_processarrow_chip.1.png; sourceTree = "<group>"; };
 		A41FA538C9BC15A0207D05FA /* MermaidCanvas.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MermaidCanvas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOverlay.swift; sourceTree = "<group>"; };
-		A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerPopover.swift; sourceTree = "<group>"; };
 		A818A1C45A21F8DA6485646C /* EdgeGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeGeometry.swift; sourceTree = "<group>"; };
 		A9C7E3DC4CA7364213643DD3 /* CanvasImageExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasImageExporter.swift; sourceTree = "<group>"; };
 		AADE3048B5CEF609D82CB219 /* MermaidCanvasMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MermaidCanvasMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -672,8 +666,6 @@
 				56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */,
 				E12CB64D782A2EB21CFEB3C9 /* CanvasView+Selection.swift */,
 				BC3F29CF8344C9E9506C6A7C /* CollapseBadge.swift */,
-				6B178BEA1AEBDF17190855C6 /* ColorPackPopover.swift */,
-				A5D9B47CD0F8611AE60375D4 /* ColorPickerPopover.swift */,
 				0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */,
 				FCB8DCE62B98DDD6EEF8D7EF /* DrillBreadcrumbBar.swift */,
 				56A46A6F6935FA0155F48A20 /* EdgeCollapseBadges.swift */,
@@ -1247,8 +1239,6 @@
 				0E2DD39826CC4DC274B0EB69 /* Color+Hex.swift in Sources */,
 				45922DD93DBE46148BFE6050 /* Color+Platform.swift in Sources */,
 				BFE7D374EBE6027C54C79F4E /* ColorPack.swift in Sources */,
-				D5DA334EBF020D34A2A2A630 /* ColorPackPopover.swift in Sources */,
-				58589F8D959461C326887FDA /* ColorPickerPopover.swift in Sources */,
 				32846DC5BC1F515EA0840591 /* ComponentGallery.swift in Sources */,
 				42F9933A7FE6141C94F4BDBE /* ConnectionOverlay.swift in Sources */,
 				C8D319D0B2DDE4FAD977E375 /* ContentView+Canvas.swift in Sources */,
@@ -1380,8 +1370,6 @@
 				B619468758880DC54CD31013 /* Color+Hex.swift in Sources */,
 				C9188BEC510973EF01B2AE3E /* Color+Platform.swift in Sources */,
 				D289533B98FCCF66069A957F /* ColorPack.swift in Sources */,
-				FCDCD38C1EC1587E7BD78E79 /* ColorPackPopover.swift in Sources */,
-				C05B5E2C32DE5A1A45EDB120 /* ColorPickerPopover.swift in Sources */,
 				2F596CE0C3F0E7DF851D38C8 /* ComponentGallery.swift in Sources */,
 				6072D740B3E13C1BCDE9FB5A /* ConnectionOverlay.swift in Sources */,
 				D78FDD336CE79EF5EAEB5704 /* ContentView+Canvas.swift in Sources */,
@@ -1776,7 +1764,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.2;
+				CURRENT_PROJECT_VERSION = 1.3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1791,7 +1779,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1855,7 +1843,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.2;
+				CURRENT_PROJECT_VERSION = 1.3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1876,7 +1864,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

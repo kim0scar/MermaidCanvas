@@ -16,8 +16,6 @@ extension ToolbarView {
             hasNumbered: s?.hasNumberedList ?? false,
             onStyle: { st in guard let idx = beginShapeEdit() else { return }
                 model.shapes[idx].textStyle = st },
-            onBold: { guard let idx = beginShapeEdit() else { return }
-                model.shapes[idx].textStyle = model.shapes[idx].textStyle == .r1 ? .body : .r1 },
             onToggleBullets: { guard let idx = beginShapeEdit() else { return }
                 let on = !model.shapes[idx].hasBullets
                 model.shapes[idx].hasBullets = on
