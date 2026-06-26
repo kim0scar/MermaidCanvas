@@ -267,7 +267,6 @@
 		C8BACFAD99E486DAD79AB498 /* godot-lexicon.md in Resources */ = {isa = PBXBuildFile; fileRef = 4F05E5949388DD0DA7C68672 /* godot-lexicon.md */; };
 		C8D319D0B2DDE4FAD977E375 /* ContentView+Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03993D0F724864F2603EC96D /* ContentView+Canvas.swift */; };
 		C9188BEC510973EF01B2AE3E /* Color+Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA706A570B4C37D302AD049 /* Color+Platform.swift */; };
-		CAA79A1EB7C4EBFAE9CE614B /* NoteMiniSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */; };
 		CAABE56FFDCCA79218FD0018 /* V66LRFlodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4ECFD80C82FFC6521E9E77 /* V66LRFlodeTests.swift */; };
 		CAF3B1AA079DA30839223936 /* RoundTripTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DBECF727C64AC554A79FCC /* RoundTripTests.swift */; };
 		CB744EE5C101B0A30D75CC42 /* test_edge_stub_plus_badge.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 66600DB6D99224DEC8E1EF22 /* test_edge_stub_plus_badge.1.png */; };
@@ -324,7 +323,6 @@
 		F1768FADFA994A9D12D1B2E0 /* CanvasImageExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C7E3DC4CA7364213643DD3 /* CanvasImageExporter.swift */; };
 		F4427928448FD5373334CDFF /* EdgeCollapseBadgesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31383F5C0DD2A94372B23B74 /* EdgeCollapseBadgesLayer.swift */; };
 		F4BB4E91399DF33BC7E57204 /* EdgeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A818A1C45A21F8DA6485646C /* EdgeGeometry.swift */; };
-		F53701C897FDDA7AA1100C11 /* NoteMiniSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */; };
 		F53B7FFA3D8FF13EF388CADB /* UITestScenarios.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C546896307FCCDB4AC2C2F /* UITestScenarios.swift */; };
 		F53E1ACD7389D099EEDBF7EB /* CanvasModel+Containers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5219BDA65C560A990E1E1 /* CanvasModel+Containers.swift */; };
 		F5F6A05E09F52FF250B76BDC /* EdgeDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431C890F2470BD8C2F7D16D5 /* EdgeDrawing.swift */; };
@@ -544,7 +542,6 @@
 		DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V49VisualVerificationTest.swift; sourceTree = "<group>"; };
 		DF227819CFEFE7C421204419 /* SkillFileComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillFileComposer.swift; sourceTree = "<group>"; };
 		DFB24B5CB42FC0F5F7ACEB3C /* V28VisualTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V28VisualTests.swift; sourceTree = "<group>"; };
-		DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteMiniSheet.swift; sourceTree = "<group>"; };
 		E00A564942F1596BCF995981 /* CanvasViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasViewportState.swift; sourceTree = "<group>"; };
 		E0DB770D9036DCE9E3A4CCAE /* V50PlacementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V50PlacementTests.swift; sourceTree = "<group>"; };
 		E12CB64D782A2EB21CFEB3C9 /* CanvasView+Selection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CanvasView+Selection.swift"; sourceTree = "<group>"; };
@@ -692,7 +689,6 @@
 				5E8939496F66A840CB33C797 /* NewCanvasSheet.swift */,
 				ADAFD7500719BA94561524F9 /* NoteBadge.swift */,
 				05DF6BC9457837FA79F79B7A /* NoteCard.swift */,
-				DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */,
 				FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */,
 				B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */,
 				C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */,
@@ -1293,7 +1289,6 @@
 				574096707242C4DEA5E908EA /* NewCanvasSheet.swift in Sources */,
 				BFC33E39FEE1687B2C29B7C4 /* NoteBadge.swift in Sources */,
 				96B8B9993668DBBBB0DDF89E /* NoteCard.swift in Sources */,
-				F53701C897FDDA7AA1100C11 /* NoteMiniSheet.swift in Sources */,
 				086A7A423D7BCD4E53B8ED1E /* NotePopupSheet.swift in Sources */,
 				B0AB6FFB2EC3786AEBFCF2E2 /* Orientation.swift in Sources */,
 				AD0DCA78B7188B517185E9BB /* Platform.swift in Sources */,
@@ -1426,7 +1421,6 @@
 				56EC69DCCC047B4A694F09FA /* NewCanvasSheet.swift in Sources */,
 				8F2521DE2FAD8F29346237F5 /* NoteBadge.swift in Sources */,
 				3CDFC565E91B8D9F5E22E2CC /* NoteCard.swift in Sources */,
-				CAA79A1EB7C4EBFAE9CE614B /* NoteMiniSheet.swift in Sources */,
 				8ACA8B8CF558FE905EE46D08 /* NotePopupSheet.swift in Sources */,
 				E9F929C8871959ACBABF2FF4 /* Orientation.swift in Sources */,
 				AF71D014F6A90DEEDB254840 /* Platform.swift in Sources */,

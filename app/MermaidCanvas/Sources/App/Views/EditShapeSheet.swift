@@ -107,11 +107,8 @@ struct EditShapeSheet: View {
                     }
                 }
 
-                Section("Anteckning (din egen — ingår aldrig i skillen)") {
-                    TextField("Skriv anteckning här", text: $draft.note, axis: .vertical)
-                        .lineLimit(2...8)
-                        .accessibilityIdentifier("edit.note")
-                }
+                // 1.3 S1.2: anteckningsfältet borttaget — anteckning redigeras i NoteCard
+                // på canvasen (EN väg). Värdet bevaras orört via draft.note.
 
                 Section {
                     Button(role: .destructive) {

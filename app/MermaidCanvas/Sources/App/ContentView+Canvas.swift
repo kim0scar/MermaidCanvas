@@ -13,7 +13,10 @@ extension ContentView {
             onEdgeDelete: { id in model.deleteEdge(id: id) },
             onShapeSelect: { id in model.selectShape(id) },
             onShapeDuplicate: { id in model.duplicateShape(id: id) },
-            onShapeShowNote: { id in notingShapeId = id },
+            onShapeShowNote: { id in
+                // 1.3 S1.2: anteckning = EN väg — öppna NoteCard på canvasen (ej NoteMiniSheet).
+                if !openCards.contains(id) { openCards.append(id) }
+            },
             onShapeQuickRead: { id in
                 // v66: toggla lappen — flera kan vara öppna samtidigt
                 if openCards.contains(id) {

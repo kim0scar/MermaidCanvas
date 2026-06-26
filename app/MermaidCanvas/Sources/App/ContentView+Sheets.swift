@@ -18,13 +18,6 @@ extension ContentView {
         )
     }
 
-    var notingBinding: Binding<Bool> {
-        Binding(
-            get: { notingShapeId != nil },
-            set: { if !$0 { notingShapeId = nil } }
-        )
-    }
-
     var tableEditingBinding: Binding<Bool> {
         Binding(get: { tableEditingShapeId != nil },
                 set: { if !$0 { tableEditingShapeId = nil } })
@@ -91,16 +84,7 @@ extension ContentView {
                 )
             }
         }
-        .sheet(isPresented: notingBinding) {
-            if let id = notingShapeId,
-               let idx = model.shapes.firstIndex(where: { $0.id == id }) {
-                NoteMiniSheet(
-                    note: $model.shapes[idx].note,
-                    onDone: { notingShapeId = nil }
-                )
-            }
-        }
-        // v66: snabbläsning sker nu via läs-LAPPAR på canvasen (NoteCardsLayer)
+        // 1.3 S1.2: NoteMiniSheet borttagen — anteckning redigeras i NoteCard på canvasen (EN väg).
         .sheet(isPresented: $showCodeSheet) {
             // v32: live från model (inte cached string)
             MermaidCodeSheet(model: model) {

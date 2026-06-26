@@ -32,7 +32,6 @@ struct ContentView: View {
     /// "har Kim ändrat något?". Oförändrat → autospar rör ingenting alls.
     @State var contentAtOpen: String?
     @State var editingShapeId: UUID? = nil
-    @State var notingShapeId: UUID? = nil
     /// v66: öppna läs-lappar (flera samtidigt) — ersätter v63:s QuickReadSheet
     @State var openCards: [UUID] = []
     /// v70: bekräftelse efter "Spara skill som fil".
