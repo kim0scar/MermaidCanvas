@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.3 — redigeringsytan som fundament (Kims order 2026-06-26). Fas 1 (städa+ena) BYGGD + maskinellt grön: aldrig-fast + EN anteckningsväg + EN formateringsmeny (FormattingBar i två lägen) + rensat (bluff-fet/död kod). 205 unit · conformance/render 3/3 · sim-verifierat (båda menylägena + tap-utanför avslutar). Deploy v1.3 → iPhone pågår. KVAR: Kims iPhone-bock → sen Fas 2 (individuell text per rad). n8n + M4 PAUSADE.
+NU: ⏳ Milstolpe 1.3 — redigeringsytan som fundament (Kims order 2026-06-26). Fas 1 (städa+ena) ✅ DEPLOYAD v1.3 på iPhone (tagg v1.3 + ZIP): aldrig-fast + EN anteckningsväg + EN formateringsmeny (FormattingBar i två lägen) + rensat (bluff-fet/död kod). 205 unit · conformance/render 3/3 · sim-verifierat · git synkat. KVAR: bara Kims iPhone-bock på känslan → sen Fas 2 (individuell text per rad). n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -117,7 +117,7 @@ Kim testade 1.2, gav 5 interaktionsfel + pekade ut redigeringsytan som appens VI
 - ✅ fix2 — kollaps-badge i eget lager ÖVER former (z-order, Kims "döljs").
 - ✅ fix3 — mål-ankare (toSide): välj inkommande sida på mål-formen; full regel-15-kedja grön.
 - ✅ fix4 — orthogonal routing: lämnar/anländer vinkelrätt mot valda sidor.
-- ⏳ Fas 1 (v1.3) — ren redigeringsyta (INGEN ny bärare): ✅ S1.1 aldrig-fast (onChange isSelected) · ✅ S1.2 anteckning=EN väg (NoteMiniSheet raderad) · ✅ S1.3 EN formateringsmeny (FormattingBar i två lägen, sim-verifierad) · ✅ S1.4 audit+rensa (bluff-fet + död kod bort). Maskinellt KLART: 205 unit · conformance/render 3/3 · arch grön · sim-bevis. KVAR: deploy-bekräftelse + Kims iPhone-bock på känslan.
+- ⏳ Fas 1 (v1.3) — ren redigeringsyta (INGEN ny bärare): ✅ S1.1 aldrig-fast · ✅ S1.2 anteckning=EN väg · ✅ S1.3 EN formateringsmeny (FormattingBar i två lägen) · ✅ S1.4 audit+rensa. ✅ DEPLOYAD v1.3 (iPhone installerad+startad, tagg+ZIP, 205 unit · conformance/render 3/3 · arch · sim-bevis · git synkat). KVAR: bara Kims iPhone-bock på känslan.
 - ☐ Fas 2 (v1.4) — individuell text per rad (rubrik+fet+justering): LineStyle-modell + `line-styles`-bärare (full regel-15) + StyledLabel-renderare + caret-radväljare. Klart: per-rad round-trippar (ren mermaid + state-JSON) + bijektion grön, deploy v1.4, Kims bock.
   Kräver: Milstolpe 1.2 deployad ✅
 
