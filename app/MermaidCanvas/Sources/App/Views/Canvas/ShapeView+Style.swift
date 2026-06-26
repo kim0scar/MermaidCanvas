@@ -110,6 +110,32 @@ extension ShapeView {
                     .lineLimit(1...6)
                     .padding(.horizontal, textHorizontalInset)
                     .onChange(of: labelFocused) { _, focused in if !focused { isEditing = false } }
+                    // 1.3 S1.3: SAMMA formateringsmeny ovanför tangentbordet (Apple Notes) —
+                    // formatera medan du skriver direkt i formen. Snapshot per åtgärd via onBeginTextEdit.
+                    #if os(iOS)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            FormattingBar(
+                                style: shape.textStyle,
+                                alignment: shape.textAlignment,
+                                hasBullets: shape.hasBullets,
+                                hasNumbered: shape.hasNumberedList,
+                                onStyle: { st in onBeginTextEdit?(shape.id); shape.textStyle = st },
+                                onBold: { onBeginTextEdit?(shape.id)
+                                    shape.textStyle = shape.textStyle == .r1 ? .body : .r1 },
+                                onToggleBullets: { onBeginTextEdit?(shape.id)
+                                    let on = !shape.hasBullets; shape.hasBullets = on
+                                    if on { shape.hasNumberedList = false } },
+                                onToggleNumbered: { onBeginTextEdit?(shape.id)
+                                    let on = !shape.hasNumberedList; shape.hasNumberedList = on
+                                    if on { shape.hasBullets = false } },
+                                onAlign: { a in onBeginTextEdit?(shape.id); shape.textAlignment = a },
+                                onIndent: { d in onBeginTextEdit?(shape.id)
+                                    shape.indentLevel = min(3, max(0, shape.indentLevel + d)) }
+                            )
+                        }
+                    }
+                    #endif
             } else if shape.label.isEmpty {
                 // 1.3 (Kim): tom form — svag "dubbeltryck för text"-ledtråd BARA när markerad.
                 if isSelected && !exportMode {

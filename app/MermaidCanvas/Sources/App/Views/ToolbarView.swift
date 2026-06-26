@@ -61,7 +61,6 @@ struct ToolbarView: View {
     var axis: Axis = .horizontal
 
     @State var secondaryRow: SecondaryToolbarRow? = nil
-    @State var showSizePicker = false   // v40: textstorlek-popup
     /// v62: vad färg-valet ska gälla — flyttad hit (extensions kan ej ha stored properties).
     @State var colorTarget: ColorTarget = .pack
     /// 1.2: vald flik i Former-raden (Grundformer/Paket/Mallar).

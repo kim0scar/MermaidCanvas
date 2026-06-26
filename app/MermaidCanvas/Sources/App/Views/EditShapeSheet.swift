@@ -56,28 +56,10 @@ struct EditShapeSheet: View {
                         .lineLimit(1...4)
                         .focused($labelFocused)
                         .accessibilityIdentifier("edit.label")
-                    Picker("Stil", selection: $draft.textStyle) {
-                        ForEach(TextStyle.allCases) { st in
-                            Text(st.displayName).tag(st)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    // v37: textjustering + punktlista — kompakt rad
-                    HStack(spacing: 12) {
-                        Picker("Justering", selection: $draft.textAlignment) {
-                            Image(systemName: "text.alignleft").tag(TextAlignMode.leading)
-                            Image(systemName: "text.aligncenter").tag(TextAlignMode.center)
-                            Image(systemName: "text.alignright").tag(TextAlignMode.trailing)
-                        }
-                        .pickerStyle(.segmented)
-                        .frame(maxWidth: 130)
-                        Spacer()
-                        Toggle(isOn: $draft.hasBullets) {
-                            Image(systemName: "list.bullet")
-                        }
-                        .toggleStyle(.button)
-                    }
                 }
+                // 1.3 S1.3: stil/justering/punktlista borttagna här — formateras i den delade
+                // FormattingBar:en (verktygsfält + ovanför tangentbordet). EN formateringsyta.
+                // Värdena bevaras orört via draft (textStyle/textAlignment/hasBullets).
 
                 // v74: skill-nummer — ordningen i kedjan ("Skill 2 · namn" i rubriken).
                 if isSkillContainer {
