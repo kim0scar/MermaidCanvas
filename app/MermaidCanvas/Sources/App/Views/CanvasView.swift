@@ -186,25 +186,22 @@ struct CanvasView: View {
                         onSetZLayer: { id, z in onShapeSetZLayer(id, z) },
                         onEnterSubprocess: { id in onShapeEnterSubprocess(id) }
                     )
-                    // v60 D: containrar ritas UNDER övriga former (barn fångar då inte
-                    // containerns tap → namnbyte funkar; barn ligger visuellt ovanpå).
-                    // v66: container får NEGATIVT zIndex → hamnar även UNDER pilarna
-                    // (EdgesView zIndex 0) — Kims fynd: containern åt pilar/etiketter.
-                    // V79-svep: ±0,3 per användar-lager (underst/mellan/överst) håller sig
-                    // inom band (container -1,3..-0,7 < pilar 0 < former 0,7..1,3 < handtag 3).
+                    // zIndex-band: container -1,3..-0,7 < pilar 0 < former 0,7..1,3 < kollaps-badge 4.
                     .zIndex((shape.type == .container ? -1.0 : 1.0) + Double(shape.zLayer) * 0.3)
                 }
             }
 
-            // v67: läs-LAPPAR ligger PÅ canvasen (canvas-space) — de panorerar och
-            // zoomar med tavlan och försvinner ur vy när Kim panorerar bort, i stället
-            // för att sitta fast på skärmen och täcka saker (Kims fynd 2).
-            NoteCardsLayer(model: model,
-                           openCards: $openCards,
-                           onEdit: { id in onShapeEdit(id) })
-                .frame(width: model.contentSize.width,
-                       height: model.contentSize.height,
-                       alignment: .topLeading)
+            // 1.3: kollaps-badges i EGET lager ÖVER former (zIndex 4) — minus-badgen doldes annars (Kims fynd).
+            EdgeCollapseBadgesLayer(edges: model.edges, shapes: model.shapes, canvasScale: zoomScale,
+                                    hiddenShapeIds: hidden, collapsedEdgeIds: model.collapsedEdgeIds,
+                                    selectedShapeId: model.selectedShapeId,
+                                    onToggleCollapseEdge: { id in model.toggleCollapseEdge(id) })
+                .frame(width: model.contentSize.width, height: model.contentSize.height, alignment: .topLeading)
+                .zIndex(4)
+
+            // v67: läs-LAPPAR i canvas-space — panorerar/zoomar med tavlan (Kims fynd 2).
+            NoteCardsLayer(model: model, openCards: $openCards, onEdit: { id in onShapeEdit(id) })
+                .frame(width: model.contentSize.width, height: model.contentSize.height, alignment: .topLeading)
                 .zIndex(5)
 
             // V79-svep: markerings-/handtags-lagret → CanvasView+Selection.swift (R5-ratchet).

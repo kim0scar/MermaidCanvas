@@ -36,30 +36,6 @@ struct EdgesView: View {
         !hiddenShapeIds.contains(edge.from) && !hiddenShapeIds.contains(edge.to)
     }
 
-    /// v63: stub-linjens geometri för en kollapsad gren. Solfjäder-spridning
-    /// (±0.5 rad/steg) när flera kollapsade grenar delar samma from-nod —
-    /// annars hamnar plus-badges ovanpå varandra. Stub-linje och plus-badge
-    /// använder SAMMA geometri så de alltid linjerar.
-    private func stubGeometry(for edge: EdgeConnection,
-                              fromShape: ShapeNode,
-                              toShape: ShapeNode) -> (start: CGPoint, end: CGPoint) {
-        let siblings = edges.filter {
-            $0.from == edge.from && collapsedEdgeIds.contains($0.id)
-        }
-        let idx = siblings.firstIndex(where: { $0.id == edge.id }) ?? 0
-        let count = max(siblings.count, 1)
-        let dx = toShape.position.x - fromShape.position.x
-        let dy = toShape.position.y - fromShape.position.y
-        let baseAngle = atan2(dy, dx)
-        let spreadStep: CGFloat = 0.5
-        let angle = baseAngle + (CGFloat(idx) - CGFloat(count - 1) / 2) * spreadStep
-        let start = EdgeGeometry.edgePoint(for: fromShape, towards: toShape.position)
-        let stubLen: CGFloat = 62
-        let end = CGPoint(x: start.x + stubLen * cos(angle),
-                          y: start.y + stubLen * sin(angle))
-        return (start, end)
-    }
-
     var body: some View {
         ZStack {
             Canvas { context, _ in
@@ -80,7 +56,8 @@ struct EdgesView: View {
                     guard let fromShape = shapes.first(where: { $0.id == edge.from }),
                           let toShape   = shapes.first(where: { $0.id == edge.to })
                     else { continue }
-                    let geo = stubGeometry(for: edge, fromShape: fromShape, toShape: toShape)
+                    let geo = EdgeGeometry.stubGeometry(for: edge, fromShape: fromShape, toShape: toShape,
+                                                        edges: edges, collapsedEdgeIds: collapsedEdgeIds)
                     let stubColor: Color = edge.colorHex.flatMap { Color(hexString: $0) }
                         ?? Color(hex: 0x3a3f47)
                     var stub = Path()
@@ -115,37 +92,9 @@ struct EdgesView: View {
                 }
             }
 
-            // v48 Fel #3+#4 / v63: Collapse-badges PER GREN.
-            // Minus: på utgående o-kollapsad kant, BARA när from är markerad —
-            //        kollapsar bara DEN grenen. Förskjuten vinkelrätt från linjen
-            //        (Kims fynd: låg ihop med midpoint-ikonen).
-            // Plus:  vid stub-änden för varje kollapsad gren, alltid synlig.
-            ForEach(edges) { edge in
-                if let fromShape = shapes.first(where: { $0.id == edge.from }),
-                   let toShape   = shapes.first(where: { $0.id == edge.to }),
-                   !hiddenShapeIds.contains(edge.from) {
-                    let isCollapsed = collapsedEdgeIds.contains(edge.id)
-                    let isFromSelected = (selectedShapeId == edge.from)
-                    // Steg H: i exportläge ritas inga +/–-badges (men stub-linjen i
-                    // Canvas-lagret ovan står kvar → kollapsad gren syns ändå).
-                    if isCollapsed, !exportMode {
-                        let geo = stubGeometry(for: edge, fromShape: fromShape, toShape: toShape)
-                        EdgeStubBadge(position: geo.end,
-                                      canvasScale: canvasScale,
-                                      onTap: { onToggleCollapseEdge(edge.id) })
-                    } else if isFromSelected, !hiddenShapeIds.contains(edge.to) {
-                        // v67: minus-badgen sitter vid pilens UTGÅNGSPUNKT på
-                        // källnodens kant (inte mitt på pilen) och bara när noden
-                        // är markerad — Kims fynd 3. Pilen blir ren i normalläge.
-                        EdgeStartCollapseBadge(
-                            position: minusBadgePosition(edge: edge,
-                                                         fromShape: fromShape,
-                                                         toShape: toShape),
-                            canvasScale: canvasScale,
-                            onTap: { onToggleCollapseEdge(edge.id) })
-                    }
-                }
-            }
+            // 1.3: collapse-badges (+/–) flyttade till EGET lager (EdgeCollapseBadgesLayer,
+            // zIndex 4 i CanvasView) så de ritas ÖVER former (Kims fynd: minus-badgen doldes).
+            // Stub-LINJEN ligger kvar i Canvas-lagret ovan (ska vara under former).
         }
         // v44: byt alert mot EdgeLabelSheet — mer rymligt för längre etiketter.
         .sheet(isPresented: Binding(
@@ -167,22 +116,4 @@ struct EdgesView: View {
         }
     }
 
-    /// v67: minus-badgens position — vid pilens UTGÅNGSPUNKT på källnodens kant
-    /// (inte mitt på pilen). Liten radiell knuff utåt + vinkelrätt så den ligger
-    /// på kanten utan att täcka linjen. Flera grenar lämnar olika perimeter-
-    /// punkter → badges hamnar naturligt isär (Kims fynd 3).
-    private func minusBadgePosition(edge: EdgeConnection,
-                                    fromShape: ShapeNode,
-                                    toShape: ShapeNode) -> CGPoint {
-        let anchors = EdgeGeometry.edgeAnchors(edge: edge, fromShape: fromShape, toShape: toShape,
-                                               shapes: shapes, hiddenShapeIds: hiddenShapeIds)
-        let dx = anchors.start.x - fromShape.position.x
-        let dy = anchors.start.y - fromShape.position.y
-        let len = max(hypot(dx, dy), 0.001)
-        let tx = dx / len, ty = dy / len                 // radiell riktning utåt från noden
-        var px = -ty, py = tx                             // vinkelrät mot utgångsriktningen
-        if py > 0 { px = -px; py = -py }                 // peka uppåt på skärmen
-        return CGPoint(x: anchors.start.x + tx * 6 + px * 16,
-                       y: anchors.start.y + ty * 6 + py * 16)
-    }
 }

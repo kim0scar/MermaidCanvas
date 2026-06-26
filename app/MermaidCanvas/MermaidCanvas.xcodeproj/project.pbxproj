@@ -111,6 +111,7 @@
 		4D6BFFBE6BC5EE66A23D05DA /* test_diamond_chip.1.png in Resources */ = {isa = PBXBuildFile; fileRef = A29372DCECBC709B68A13662 /* test_diamond_chip.1.png */; };
 		4F4607E6C9E9BD2B94C7BB6A /* OrientationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA597C88CA5ABD913AC7597 /* OrientationTests.swift */; };
 		507164514BCB53796923143D /* TakeoverUIGranskning.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF913E502F02D7E2165F22B /* TakeoverUIGranskning.swift */; };
+		50E8A05EC728BB5506F47464 /* EdgeCollapseBadgesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31383F5C0DD2A94372B23B74 /* EdgeCollapseBadgesLayer.swift */; };
 		529A1D3CC9D8C7B597BE2B71 /* ToolbarView+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */; };
 		53F882EE083CF26E451B1770 /* ShapeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0E6420DE137F57D019A7EB /* ShapeNode.swift */; };
 		544D1031BCB9A98913A5DC1F /* V50PlacementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DB770D9036DCE9E3A4CCAE /* V50PlacementTests.swift */; };
@@ -321,6 +322,7 @@
 		F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E6FAA7A14093A0397C1316 /* UIRenderer.swift */; };
 		F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */; };
 		F1768FADFA994A9D12D1B2E0 /* CanvasImageExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C7E3DC4CA7364213643DD3 /* CanvasImageExporter.swift */; };
+		F4427928448FD5373334CDFF /* EdgeCollapseBadgesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31383F5C0DD2A94372B23B74 /* EdgeCollapseBadgesLayer.swift */; };
 		F4BB4E91399DF33BC7E57204 /* EdgeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A818A1C45A21F8DA6485646C /* EdgeGeometry.swift */; };
 		F53701C897FDDA7AA1100C11 /* NoteMiniSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFC87568BE840D5C7D10ADC2 /* NoteMiniSheet.swift */; };
 		F53B7FFA3D8FF13EF388CADB /* UITestScenarios.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C546896307FCCDB4AC2C2F /* UITestScenarios.swift */; };
@@ -407,6 +409,7 @@
 		2E3CAD65F3CEBBD3CFE9B088 /* V68Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V68Tests.swift; sourceTree = "<group>"; };
 		2EA706A570B4C37D302AD049 /* Color+Platform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Platform.swift"; sourceTree = "<group>"; };
 		2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCategory.swift; sourceTree = "<group>"; };
+		31383F5C0DD2A94372B23B74 /* EdgeCollapseBadgesLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeCollapseBadgesLayer.swift; sourceTree = "<group>"; };
 		31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeGeometry.swift; sourceTree = "<group>"; };
 		34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_shape.1.png; sourceTree = "<group>"; };
 		36C515D01227ECFFACAFCE12 /* V67Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V67Tests.swift; sourceTree = "<group>"; };
@@ -627,6 +630,7 @@
 			isa = PBXGroup;
 			children = (
 				A422DB574A82E54F62BFB896 /* ConnectionOverlay.swift */,
+				31383F5C0DD2A94372B23B74 /* EdgeCollapseBadgesLayer.swift */,
 				431C890F2470BD8C2F7D16D5 /* EdgeDrawing.swift */,
 				A818A1C45A21F8DA6485646C /* EdgeGeometry.swift */,
 				541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */,
@@ -1249,6 +1253,7 @@
 				45D4C2ED829D870A7628E884 /* DotGridBackground.swift in Sources */,
 				64EAF3EA3B3260476EFA3810 /* DrillBreadcrumbBar.swift in Sources */,
 				0FCD38E70327C25F1A947A6D /* EdgeCollapseBadges.swift in Sources */,
+				F4427928448FD5373334CDFF /* EdgeCollapseBadgesLayer.swift in Sources */,
 				59C22EE2D172A8BE689EABF2 /* EdgeConnection.swift in Sources */,
 				54B93D1F6B9161DC073E2E8A /* EdgeDrawing.swift in Sources */,
 				E4C19F8D61715357C426A26F /* EdgeGeometry.swift in Sources */,
@@ -1381,6 +1386,7 @@
 				6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */,
 				79C0A2DB97B4908F3871A450 /* DrillBreadcrumbBar.swift in Sources */,
 				3B9451B0A7EE6F905F567419 /* EdgeCollapseBadges.swift in Sources */,
+				50E8A05EC728BB5506F47464 /* EdgeCollapseBadgesLayer.swift in Sources */,
 				7BCCD9DB163AFD89CFA15B6E /* EdgeConnection.swift in Sources */,
 				F5F6A05E09F52FF250B76BDC /* EdgeDrawing.swift in Sources */,
 				F4BB4E91399DF33BC7E57204 /* EdgeGeometry.swift in Sources */,

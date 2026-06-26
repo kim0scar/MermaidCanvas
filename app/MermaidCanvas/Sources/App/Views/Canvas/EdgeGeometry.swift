@@ -230,4 +230,35 @@ enum EdgeGeometry {
                            cp1: cp1, cp2: cp2,
                            mid: mid, midAngle: midAngle)
     }
+
+    /// 1.3: kollaps-stubbens geometri (flyttad hit ur EdgesView så badge-LAGRET kan dela den).
+    /// Solfjäder-spridning när flera kollapsade grenar delar samma from-nod. Matematik oförändrad.
+    static func stubGeometry(for edge: EdgeConnection, fromShape: ShapeNode, toShape: ShapeNode,
+                             edges: [EdgeConnection], collapsedEdgeIds: Set<UUID>) -> (start: CGPoint, end: CGPoint) {
+        let siblings = edges.filter { $0.from == edge.from && collapsedEdgeIds.contains($0.id) }
+        let idx = siblings.firstIndex(where: { $0.id == edge.id }) ?? 0
+        let count = max(siblings.count, 1)
+        let baseAngle = atan2(toShape.position.y - fromShape.position.y,
+                              toShape.position.x - fromShape.position.x)
+        let angle = baseAngle + (CGFloat(idx) - CGFloat(count - 1) / 2) * 0.5
+        let start = edgePoint(for: fromShape, towards: toShape.position)
+        let stubLen: CGFloat = 62
+        return (start, CGPoint(x: start.x + stubLen * cos(angle), y: start.y + stubLen * sin(angle)))
+    }
+
+    /// 1.3: minus-badgens position (flyttad hit ur EdgesView). Vid pilens utgångspunkt,
+    /// liten knuff radiellt + vinkelrätt så den ligger på kanten utan att täcka linjen.
+    static func minusBadgePosition(edge: EdgeConnection, fromShape: ShapeNode, toShape: ShapeNode,
+                                   shapes: [ShapeNode], hiddenShapeIds: Set<UUID>) -> CGPoint {
+        let anchors = edgeAnchors(edge: edge, fromShape: fromShape, toShape: toShape,
+                                  shapes: shapes, hiddenShapeIds: hiddenShapeIds)
+        let dx = anchors.start.x - fromShape.position.x
+        let dy = anchors.start.y - fromShape.position.y
+        let len = max(hypot(dx, dy), 0.001)
+        let tx = dx / len, ty = dy / len
+        var px = -ty, py = tx
+        if py > 0 { px = -px; py = -py }
+        return CGPoint(x: anchors.start.x + tx * 6 + px * 16,
+                       y: anchors.start.y + ty * 6 + py * 16)
+    }
 }
