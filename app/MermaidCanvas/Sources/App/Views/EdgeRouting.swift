@@ -134,6 +134,39 @@ enum EdgeRouting {
         return false
     }
 
+    /// 1.3: ortogonala (rätvinklade) hörn mellan start och end — lämnar VINKELRÄTT mot
+    /// fromSide-normalen (n1) och går in VINKELRÄTT mot toSide-normalen (n2), Lucidchart-stil.
+    /// Returnerar mellanpunkterna (exkl. start/end); ritas som raka segment mellan punkterna.
+    static func orthogonalCorners(start: CGPoint, end: CGPoint, n1: CGPoint, n2: CGPoint) -> [CGPoint] {
+        let stub: CGFloat = 22
+        let d1 = cardinal(n1)            // utgångsriktning, snäppt till axel
+        let d2 = cardinal(n2)            // ingångsriktning
+        let p1 = CGPoint(x: start.x + d1.x * stub, y: start.y + d1.y * stub)
+        let p2 = CGPoint(x: end.x + d2.x * stub,   y: end.y + d2.y * stub)
+        let exitH = abs(d1.x) > abs(d1.y)
+        let entryH = abs(d2.x) > abs(d2.y)
+        var mids: [CGPoint] = []
+        switch (exitH, entryH) {
+        case (true, true):                          // H..H → Z med vertikalt mittsegment
+            let mx = (p1.x + p2.x) / 2
+            mids = [CGPoint(x: mx, y: p1.y), CGPoint(x: mx, y: p2.y)]
+        case (false, false):                        // V..V → Z med horisontellt mittsegment
+            let my = (p1.y + p2.y) / 2
+            mids = [CGPoint(x: p1.x, y: my), CGPoint(x: p2.x, y: my)]
+        case (true, false):                         // H..V → ett hörn
+            mids = [CGPoint(x: p2.x, y: p1.y)]
+        case (false, true):                         // V..H → ett hörn
+            mids = [CGPoint(x: p1.x, y: p2.y)]
+        }
+        return [p1] + mids + [p2]
+    }
+
+    /// Snäpp en normal till närmaste kardinal-axel (±x eller ±y).
+    private static func cardinal(_ n: CGPoint) -> CGPoint {
+        abs(n.x) >= abs(n.y) ? CGPoint(x: n.x >= 0 ? 1 : -1, y: 0)
+                             : CGPoint(x: 0, y: n.y >= 0 ? 1 : -1)
+    }
+
     private static func segmentsIntersect(_ p: CGPoint, _ p2: CGPoint, _ q: CGPoint, _ q2: CGPoint) -> Bool {
         func cross(_ a: CGPoint, _ b: CGPoint, _ c: CGPoint) -> CGFloat {
             (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)

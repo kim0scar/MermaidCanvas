@@ -123,10 +123,8 @@ enum EdgeDrawing {
             }
         }
 
-        // Vinklat L-hörn: gå längs den dominerande axeln först.
-        let orthoCorner: CGPoint = abs(end.x - start.x) >= abs(end.y - start.y)
-            ? CGPoint(x: end.x, y: start.y)
-            : CGPoint(x: start.x, y: end.y)
+        // 1.3: ortogonal väg — lämnar/anländer VINKELRÄTT mot valda sidor (Lucidchart-stil).
+        let orthoCorners = EdgeRouting.orthogonalCorners(start: start, end: end, n1: n1, n2: n2)
 
         // Pilspets-vinklar vid ändarna — beror på linjeform.
         let endAngle: CGFloat
@@ -136,8 +134,9 @@ enum EdgeDrawing {
             endAngle   = atan2(end.y - start.y, end.x - start.x)
             startAngle = atan2(start.y - end.y, start.x - end.x)
         case .orthogonal:
-            endAngle   = atan2(end.y - orthoCorner.y, end.x - orthoCorner.x)
-            startAngle = atan2(start.y - orthoCorner.y, start.x - orthoCorner.x)
+            let lastC = orthoCorners.last ?? start, firstC = orthoCorners.first ?? end
+            endAngle   = atan2(end.y - lastC.y, end.x - lastC.x)
+            startAngle = atan2(start.y - firstC.y, start.x - firstC.x)
         case .curved:
             // v62: sampla kurvan nära ändarna (numeriskt stabilt även för korta pilar).
             let nearEnd: CGPoint
@@ -179,7 +178,7 @@ enum EdgeDrawing {
         case .straight:
             path.addLine(to: lineEnd)
         case .orthogonal:
-            path.addLine(to: orthoCorner)
+            for c in orthoCorners { path.addLine(to: c) }
             path.addLine(to: lineEnd)
         case .curved:
             if let wp = edge.waypoints.first {

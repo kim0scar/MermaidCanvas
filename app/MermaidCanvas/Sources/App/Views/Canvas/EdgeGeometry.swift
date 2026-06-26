@@ -212,11 +212,10 @@ enum EdgeGeometry {
             mid = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
             midAngle = atan2(Double(end.y - start.y), Double(end.x - start.x))
         case .orthogonal:
-            let corner = abs(end.x - start.x) >= abs(end.y - start.y)
-                ? CGPoint(x: end.x, y: start.y)
-                : CGPoint(x: start.x, y: end.y)
-            mid = corner   // handtaget sitter på böjen
-            midAngle = atan2(Double(end.y - corner.y), Double(end.x - corner.x))
+            let corners = EdgeRouting.orthogonalCorners(start: start, end: end, n1: n1, n2: n2)
+            let midCorner = corners[corners.count / 2]
+            mid = midCorner   // handtaget sitter på en böj
+            midAngle = atan2(Double(end.y - midCorner.y), Double(end.x - midCorner.x))
         case .curved:
             let u: CGFloat = 0.5
             let v: CGFloat = 1 - u
