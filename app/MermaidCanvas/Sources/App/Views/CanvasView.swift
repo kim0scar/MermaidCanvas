@@ -185,7 +185,9 @@ struct CanvasView: View {
                         onSaveContainerMermaid: { id in onSaveContainerMermaid(id) },
                         onToggleLock: { id in onShapeToggleLock(id) },
                         onSetZLayer: { id, z in onShapeSetZLayer(id, z) },
-                        onEnterSubprocess: { id in onShapeEnterSubprocess(id) }
+                        onEnterSubprocess: { id in onShapeEnterSubprocess(id) },
+                        isSelected: model.selectedShapeId == shape.id,
+                        onBeginTextEdit: { _ in model.snapshotForUndo() }
                     )
                     // zIndex-band: container -1,3..-0,7 < pilar 0 < former 0,7..1,3 < kollaps-badge 4.
                     .zIndex((shape.type == .container ? -1.0 : 1.0) + Double(shape.zLayer) * 0.3)

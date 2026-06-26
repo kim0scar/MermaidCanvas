@@ -40,6 +40,10 @@ struct ShapeView: View {
     var onEnterSubprocess: ((UUID) -> Void)? = nil   // v1.0+ Visio
     /// Steg H: exportläge — rendera bara form + text (ingen badge-chrome) för bild-export.
     var exportMode: Bool = false
+    /// 1.3: är detta den markerade formen (styr "dubbeltryck för text"-ledtråden).
+    var isSelected: Bool = false
+    /// 1.3: ta EN undo-snapshot när inline-textredigering startar.
+    var onBeginTextEdit: ((UUID) -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
@@ -47,7 +51,11 @@ struct ShapeView: View {
     /// v50.5 F4: egen popover-meny vid long-press — ersätter .contextMenu
     /// som triggade SwiftUI's snapshot-preview (svart blurred flash) innan
     /// menyn visades.
-    @State private var showContextMenu: Bool = false
+    @State var showContextMenu: Bool = false
+    /// 1.3: inline text-redigering I formen (Lucidchart) — dubbeltryck startar.
+    /// internal (ej private): labelContent i ShapeView+Style.swift läser/skriver dem.
+    @State var isEditing: Bool = false
+    @FocusState var labelFocused: Bool
 
     // Härledda färg-/text-/rubrik-värden → ShapeView+Style.swift (R5-ratchet, steg H).
 
@@ -62,29 +70,7 @@ struct ShapeView: View {
             // v50.3 R3: Containers label hanteras via separat .overlay nedan
             // (Lucidchart-stil ovanför ramen). Andra former behåller centrerad
             // text inuti ZStack:en.
-            if shape.type == .emoji {
-                // v1.0: naken emoji — bara glyfen, stor, fyller formen (ingen ruta bakom).
-                Text(shape.label.isEmpty ? "🙂" : shape.label)
-                    .font(.system(size: ShapeGeometry.height(for: shape) * 0.78))
-                    .minimumScaleFactor(0.2)
-                    .lineLimit(1)
-            } else if shape.showLabel && shape.type != .container && shape.type != .phoneFrame {
-                // v73: tom nod visar sin typ som svag platshållare (P4: "bara form+färg
-                // skiljer Script från Bevis") — försvinner så fort Kim skriver eget namn.
-                // Bara visning; exporten påverkas inte.
-                Text(shape.label.isEmpty ? shape.category.displayName : formattedLabel)
-                    .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
-                                  weight: shape.textStyle.fontWeight,
-                                  design: .rounded))
-                    .foregroundStyle(shape.label.isEmpty
-                        ? effectiveTextColor.opacity(0.35)
-                        : effectiveTextColor)
-                    .multilineTextAlignment(textAlignment)
-                    .lineLimit(6)
-                    .minimumScaleFactor(0.6)
-                    .padding(.horizontal, textHorizontalInset)
-                    .offset(y: textVerticalOffset)
-            }
+            labelContent
         }
         .frame(width: ShapeGeometry.width(for: shape),
                height: ShapeGeometry.height(for: shape))
@@ -104,8 +90,10 @@ struct ShapeView: View {
         // "i vägen"); på container UNDER den 28pt höga headern så namnet syns.
         .overlay(alignment: .topTrailing) {
             if !shape.note.isEmpty && !markerMode && !exportMode {
+                // 1.3: notis-bubblan ligger UTANFÖR formen (bredvid övre högra hörnet) så
+                // den inte stör formens text + är lätt att trycka upp (Kims fynd).
                 NoteBadge(canvasScale: canvasScale, onTap: onQuickRead)
-                    .offset(x: -3, y: shape.type == .container ? 31 : 3)
+                    .offset(x: 22, y: shape.type == .container ? 31 : -10)
                     .rotationEffect(.degrees(-shape.rotation))
             }
         }
@@ -170,8 +158,11 @@ struct ShapeView: View {
             if shape.type == .table {
                 onTableEdit?(shape.id)
             } else {
+                // 1.3: dubbeltryck = redigera text I formen (Lucidchart), inte öppna lapp.
                 onSelect()
-                onQuickRead()
+                onBeginTextEdit?(shape.id)
+                isEditing = true
+                labelFocused = true
             }
         }
         .onTapGesture(count: 1) {
@@ -204,31 +195,11 @@ struct ShapeView: View {
                     showContextMenu = true
                 }
         )
-        .popover(isPresented: $showContextMenu) {
-            ShapeContextMenu(
-                noteIsEmpty: shape.note.isEmpty,
-                onEdit:      { showContextMenu = false; onEdit() },
-                onDuplicate: { showContextMenu = false; onDuplicate() },
-                onShowNote:  { showContextMenu = false; onShowNote() },
-                onDelete:    { showContextMenu = false; onDelete() },
-                // v66: containrar kan kopieras som skill-mermaid
-                onCopySkill: shape.type == .container && onCopySkill != nil
-                    ? { showContextMenu = false; onCopySkill?(shape.id) }
-                    : nil,
-                onSaveSkillFile: shape.type == .container && onSaveSkillFile != nil
-                    ? { showContextMenu = false; onSaveSkillFile?(shape.id) }
-                    : nil,
-                onSaveContainerMermaid: shape.type == .container && onSaveContainerMermaid != nil
-                    ? { showContextMenu = false; onSaveContainerMermaid?(shape.id) }
-                    : nil,
-                locked: shape.locked,
-                onToggleLock: { showContextMenu = false; onToggleLock?(shape.id) },
-                zLayer: shape.zLayer,
-                onSetZLayer: { z in onSetZLayer?(shape.id, z) },
-                hasSubCanvas: shape.subCanvas != nil,
-                onEnterSubprocess: { showContextMenu = false; onEnterSubprocess?(shape.id) }
-            )
-            .presentationCompactAdaptation(.popover)
+        .popover(isPresented: $showContextMenu) { contextMenuContent }
+        // 1.3 S1.1: aldrig fast — avmarkering avslutar ALLTID text-redigering.
+        // Invariant: ej markerad ⇒ ej redigering (bakgrunds-tap / markera-annan / fokus-loss).
+        .onChange(of: isSelected) { _, sel in
+            if !sel { isEditing = false; labelFocused = false }
         }
     }
 

@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.2 — UI/UX-städning (topprad + meny): alla 5 steg + deploy KLART (1.2 installerad på iPhone; overflow fixad, Former-flikar, dubbelklick-marker, zoom-info, meny-sektioner, version överst). KVAR: bara Kims iPhone-bock på känslan. n8n + M4 PAUSADE. MA + M3 klara.
+NU: ⏳ Milstolpe 1.3 — Lucidchart-interaktion + redigeringsytan som fundament (Kims order 2026-06-26, plan godkänd). Emoji + 4 edge-fixar ✅ committade. PÅGÅR: Fas 1 S1.1 (aldrig-fast: redigering bunden till markering). Per rad=rubrik+fet+justering, leverans i 2 steg (v1.3 städa+ena, v1.4 per-rad). 1.2 deployad (Kims känsla-bock kvar). n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -111,6 +111,16 @@ Kim såg att topprads-ikoner klipps av kanterna → bredare städning. Mål: top
 - ✅ Deploy 1.2: version 1.0→1.2, grindar gröna (conformance 3/3, render 3/3, unit 205/0), **installerad på iPhone**, tagg v1.2 + ZIP. Full svit: 1 riktigt fel (V33 version under-fold → FIXAT, version överst) + 6 flakiga/scratch (DragOut/V27/V48 passerar på omkörning, Takeover=Files-dialog, DispatchTest=scratch som startar Claude-appen). KVAR: bara **Kims iPhone-bock på känslan**.
   Kräver: Steg 1.0 deployad ✅
 
+## Milstolpe 1.3 — Lucidchart-interaktion + redigeringsytan som fundament (Kims order 2026-06-26, plan godkänd)
+Kim testade 1.2, gav 5 interaktionsfel + pekade ut redigeringsytan som appens VIKTIGASTE del (skriv direkt på canvas, två ytor, EN konsekvent meny). Designtävling (3 Plan-agenter, konvergerade). TVÅ faser; per rad = rubrik+fet+justering (Kims val). Detaljplan: ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md.
+- ✅ Paket A — emoji-väljare (visuellt rutnät + neutral ikon).
+- ✅ fix2 — kollaps-badge i eget lager ÖVER former (z-order, Kims "döljs").
+- ✅ fix3 — mål-ankare (toSide): välj inkommande sida på mål-formen; full regel-15-kedja grön.
+- ✅ fix4 — orthogonal routing: lämnar/anländer vinkelrätt mot valda sidor.
+- ⏳ Fas 1 (v1.3) — ren redigeringsyta (INGEN ny bärare): S1.1 aldrig-fast (redigering bunden till markering) · S1.2 anteckning=EN väg (NoteCard; radera NoteMiniSheet) · S1.3 EN formateringsmeny (FormattingBar i två lägen) · S1.4 audit+rensa (bluff-fet bort, död kod bort). Klart: alla grindar gröna + EN meny + tap-utanför avslutar redigering, deploy v1.3, Kims iPhone-bock.
+- ☐ Fas 2 (v1.4) — individuell text per rad (rubrik+fet+justering): LineStyle-modell + `line-styles`-bärare (full regel-15) + StyledLabel-renderare + caret-radväljare. Klart: per-rad round-trippar (ren mermaid + state-JSON) + bijektion grön, deploy v1.4, Kims bock.
+  Kräver: Milstolpe 1.2 deployad ✅
+
 ## Efter MB (pausat, Kims order) + Efter M3
 - MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
 - M4: appen lagrar node contracts per figur + exporterar .skill.md (om auditen håller) · Styrningsregler (nivå A–D, R0–R4) · Skill 3 mfp-spec + Skill 4 dashboard · Upphandlings-paketet
@@ -130,6 +140,7 @@ Kim såg att topprads-ikoner klipps av kanterna → bredare städning. Mål: top
 - 2026-06-21 · 💡#12 Markdown-läsare i appen (read-only): öppna en .md (t.ex. FUNKTIONSKarta) och läsa den formaterad — rubriker + tabeller · kräver markdown-render-lib (SwiftUI-inbyggd renderar ej tabeller) = eget litet bygge + nytt beroende + scope-fråga (PRODUKT.md: appen är ritverktyg, ej dok-läsare) · väntar
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-26 · Milstolpe 1.3 satt (Kims order): 5 interaktionsfel + redigeringsytan utpekad som appens viktigaste yta, ska bli Apple-grad. Designtävling (3 Plan-agenter → konvergens på samma fundament). TVÅ Kim-val: leverans i två steg (v1.3 städa+ena, v1.4 per-rad), per rad = rubrik+fet+justering. Emoji + 4 edge-fixar (fix2/3/4) redan committade; Fas 1 = aldrig-fast + EN anteckningsväg + EN formateringsmeny + rensa bluff-fet/död kod (ingen ny bärare → regel 15 trivialt grön); Fas 2 = individuell text per rad (EN ny bärare `line-styles`, full regel-15-kedja). Varför: Kim pekade ut "skriv direkt på canvas, två ytor, EN konsekvent meny" som det mest kritiska för användbarhet — fynd i koden: stuck-risk (isEditing avslutas bara av fokus, ej markering), anteckning har 3 divergerande vägar, menyn motsäger sig själv, bluff-fet-knapp + död kod.
 - 2026-06-24 · Milstolpe 1.2 satt (Kims order efter startskärm-koll): topprad-ikoner klipps av kanterna → bredare UI/UX-städning. Kartläggning (3 Explore) + design (2 Plan-agenter) → 5 steg. Två låsta Kim-val: (1) Formpaket smälter in i Former med flikar Grundformer/Paket/Mallar; (2) marker-knapp bort → dubbelklick på tom yta + hint + Klar-knapp. Zoom→info, meny får namngivna sektioner, Notis-chip→"Alla anteckningar" i menyn. Varför: Kim vill ha en topprad+meny "som Apple byggt den" — allt synligt, tydligt grupperat, ett ställe per sak. Format/export orört (inga nya former → regel 15 ej triggad).
 - 2026-06-24 · Milstolpe 1.1 satt (Kims Goal): total sim-driven genomgång av alla menyer/val + fritt förbättra + dual-platform via DELAD hjärna + macOS menyrads-popup (Kim valde "bäst kvalitet"; uttryckligt: inga parallella appar, mest delas, vill kunna trycka upp/visualisera/spara på samma plats som iPhone). Detaljplan i planläge före bygge.
 - 2026-06-24 · EN enda version (Kims order "aldrig två"): AppVersion.version driver BÅDE app-etikett OCH bundle (MARKETING_VERSION = CURRENT_PROJECT_VERSION = samma nummer); bygg-räknaren vN slopad; arch-check version-sync + VERSIONSHANTERING omskrivna; tagg `v1.0`, ZIP `Visuali2e-1.0.zip`. Varför: Kim vill aldrig se två versionsnummer.
