@@ -68,7 +68,7 @@ enum AppCapabilities {
         .init(name: "Anteckning",          carrier: "%% note + state-JSON",                survivesPureMermaid: true),
         .init(name: "Kollaps (gren)",      carrier: "%% e<i> collapsed + state-JSON",      survivesPureMermaid: true),
         .init(name: "Pil-waypoints/böj",   carrier: "%% e<i> waypoint + state-JSON",       survivesPureMermaid: true),
-        .init(name: "Pil-färg/sida/etikett-pos", carrier: "%% e<i> color/fromSide/labelPlacement", survivesPureMermaid: true),
+        .init(name: "Pil-färg/sidor/etikett-pos", carrier: "%% e<i> color/fromSide/toSide/labelPlacement", survivesPureMermaid: true),
         .init(name: "Pil-linjeform (rak/böjd/vinklad)", carrier: "%% e<i> lineShape + linkStyle interpolate + state-JSON", survivesPureMermaid: true),
         .init(name: "Visio hoppa-in (underflöde)", carrier: "subCanvas i state-JSON (inget %%-spår i ren mermaid)", survivesPureMermaid: false),
         .init(name: "Bakåtpil",            carrier: "skrivs som omvänd framåtpil (to-->from)", survivesPureMermaid: true),
@@ -137,6 +137,7 @@ enum AppCapabilities {
         "locked", "z", "pack", "line-end", "prompt", "note", "container-pos",
         // canvas-nivå + kant
         "canvas-size", "legend", "waypoint", "labelPlacement", "fromSide", "collapsed",
+        "toSide",      // 1.3: inkommande sida på mål-formen
         "lineShape",   // v1.0: form på linjen (rak/böjd/vinklad)
     ]
 

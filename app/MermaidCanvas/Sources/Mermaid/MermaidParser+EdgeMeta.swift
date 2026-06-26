@@ -14,6 +14,7 @@ extension MermaidParser {
         var placements: [Int: EdgeLabelPlacement] = [:]
         var colors: [Int: String] = [:]
         var fromSides: [Int: EdgeSide] = [:]
+        var toSides: [Int: EdgeSide] = [:]           // 1.3: inkommande sida
         var waypoints: [Int: [EdgeWaypoint]] = [:]   // F2: överlever ren mermaid
         var lineShapes: [Int: EdgeLineShape] = [:]   // v1.0: form på linjen
         var collapsedIndices: Set<Int> = []
@@ -36,6 +37,8 @@ extension MermaidParser {
                 meta.colors[idx] = value
             case "fromSide":
                 if let s = EdgeSide(rawValue: value) { meta.fromSides[idx] = s }
+            case "toSide":
+                if let s = EdgeSide(rawValue: value) { meta.toSides[idx] = s }
             case "lineShape":
                 if let ls = EdgeLineShape(rawValue: value) { meta.lineShapes[idx] = ls }
             case "collapsed":

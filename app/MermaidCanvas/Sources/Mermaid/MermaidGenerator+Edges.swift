@@ -45,6 +45,10 @@ extension MermaidGenerator {
         if let side = edge.fromSide {
             lines.append("\(indent)%% e\(i) fromSide: \(side.rawValue)")
         }
+        // 1.3: vald inkommande sida på mål-formen
+        if let side = edge.toSide {
+            lines.append("\(indent)%% e\(i) toSide: \(side.rawValue)")
+        }
         // v63: kollaps per GREN
         if collapsed {
             lines.append("\(indent)%% e\(i) collapsed: true")

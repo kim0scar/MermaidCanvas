@@ -79,11 +79,13 @@ enum EdgeDrawing {
         if let wp = edge.waypoints.first {
             start = edge.fromSide.map { EdgeGeometry.sidePoint(for: fromShape, side: $0) }
                 ?? EdgeGeometry.edgePoint(for: fromShape, towards: wp.point)
-            end   = EdgeGeometry.edgePoint(for: toShape,   towards: wp.point)
+            end   = edge.toSide.map { EdgeGeometry.sidePoint(for: toShape, side: $0) }
+                ?? EdgeGeometry.edgePoint(for: toShape, towards: wp.point)
         } else {
             start = edge.fromSide.map { EdgeGeometry.sidePoint(for: fromShape, side: $0) }
                 ?? EdgeGeometry.edgePoint(for: fromShape, towards: toShape.position)
-            end   = EdgeGeometry.edgePoint(for: toShape,   towards: fromShape.position)
+            end   = edge.toSide.map { EdgeGeometry.sidePoint(for: toShape, side: $0) }
+                ?? EdgeGeometry.edgePoint(for: toShape, towards: fromShape.position)
         }
 
         // Bezier-kontrollpunkter baserade på ytornas normalvektorer (Lucidchart-stil).

@@ -71,6 +71,8 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
     var colorHex: String?
     /// v64: utgångssida på from-formen. nil = automatisk.
     var fromSide: EdgeSide?
+    /// 1.3: inkommande sida på to-formen. nil = automatisk (närmaste).
+    var toSide: EdgeSide?
     /// v1.0: form på linjen (rak/böjd/vinklad). Default = .curved (oförändrat utseende).
     var lineShape: EdgeLineShape
 
@@ -84,6 +86,7 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
          labelPlacement: EdgeLabelPlacement = .below,
          colorHex: String? = nil,
          fromSide: EdgeSide? = nil,
+         toSide: EdgeSide? = nil,
          lineShape: EdgeLineShape = .curved) {
         self.id = id
         self.from = from
@@ -95,6 +98,7 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
         self.labelPlacement = labelPlacement
         self.colorHex = colorHex
         self.fromSide = fromSide
+        self.toSide = toSide
         self.lineShape = lineShape
     }
 
@@ -103,6 +107,7 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
         case labelPlacement  // v62
         case colorHex        // v63
         case fromSide        // v64
+        case toSide          // 1.3
         case lineShape       // v1.0
     }
 
@@ -126,6 +131,7 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
                                                     forKey: .labelPlacement) ?? .below
         self.colorHex = try c.decodeIfPresent(String.self, forKey: .colorHex)  // v63
         self.fromSide = try c.decodeIfPresent(EdgeSide.self, forKey: .fromSide)  // v64
+        self.toSide = try c.decodeIfPresent(EdgeSide.self, forKey: .toSide)      // 1.3
         // v1.0: bakåtkompatibel default — gamla filer saknar fältet → .curved (oförändrat)
         self.lineShape = try c.decodeIfPresent(EdgeLineShape.self, forKey: .lineShape) ?? .curved
     }
@@ -142,6 +148,7 @@ struct EdgeConnection: Identifiable, Codable, Equatable {
         try c.encode(labelPlacement, forKey: .labelPlacement)
         try c.encodeIfPresent(colorHex, forKey: .colorHex)
         try c.encodeIfPresent(fromSide, forKey: .fromSide)
+        try c.encodeIfPresent(toSide, forKey: .toSide)
         try c.encode(lineShape, forKey: .lineShape)
     }
 }

@@ -70,6 +70,7 @@ final class AppCapabilitiesCoverageTests: XCTestCase {
         edge.labelPlacement = .above
         edge.colorHex = "#998877"
         edge.fromSide = .right
+        edge.toSide = .left            // 1.3: så "toSide"-nyckeln emitteras (bijektion)
         edge.lineShape = .orthogonal   // v1.0: så "lineShape"-nyckeln emitteras (bijektion)
 
         let shapes = [rich, numbered, link, table, line, phone, container, child]

@@ -166,11 +166,13 @@ enum EdgeGeometry {
         if let wp = edge.waypoints.first {
             start = edge.fromSide.map { sidePoint(for: fromShape, side: $0) }
                 ?? edgePoint(for: fromShape, towards: wp.point)
-            end   = edgePoint(for: toShape,   towards: wp.point)
+            end   = edge.toSide.map { sidePoint(for: toShape, side: $0) }
+                ?? edgePoint(for: toShape, towards: wp.point)
         } else {
             start = edge.fromSide.map { sidePoint(for: fromShape, side: $0) }
                 ?? edgePoint(for: fromShape, towards: toShape.position)
-            end   = edgePoint(for: toShape,   towards: fromShape.position)
+            end   = edge.toSide.map { sidePoint(for: toShape, side: $0) }
+                ?? edgePoint(for: toShape, towards: fromShape.position)
         }
         let n1 = outwardNormal(for: fromShape, at: start)
         let n2 = outwardNormal(for: toShape,   at: end)

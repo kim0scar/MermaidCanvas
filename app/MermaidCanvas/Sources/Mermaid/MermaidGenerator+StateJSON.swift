@@ -122,6 +122,10 @@ extension MermaidGenerator {
             if let side = edge.fromSide {
                 e["fromSide"] = side.rawValue
             }
+            // 1.3: vald inkommande sida på mål-formen
+            if let side = edge.toSide {
+                e["toSide"] = side.rawValue
+            }
             // v63: kollaps per gren — flagga PÅ kanten (ersätter "collapsed"-nod-arrayen)
             if collapsedEdgeIds.contains(edge.id) {
                 e["collapsed"] = true

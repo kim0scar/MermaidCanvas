@@ -17,6 +17,7 @@ struct EdgeMidpointHandle: View {
     var onEdgeSetLineShape: (UUID, EdgeLineShape) -> Void = { _, _ in }
     var onEdgeSetColor: (UUID, String?) -> Void
     var onEdgeSetFromSide: (UUID, EdgeSide?) -> Void
+    var onEdgeSetToSide: (UUID, EdgeSide?) -> Void = { _, _ in }
     /// Tar undo-snapshot före en böj/räta-ut (waypoint skrivs via @Binding → saknar annars snapshot).
     var onEdgeSnapshot: (UUID) -> Void = { _ in }
     var onRequestRename: (UUID) -> Void
@@ -153,6 +154,26 @@ struct EdgeMidpointHandle: View {
                 }
             } label: {
                 Label("Går ut från", systemImage: "arrow.up.right.square")
+            }
+            // 1.3: välj vilken sida pilen går IN i på mål-formen
+            Menu {
+                Button { onEdgeSetToSide(edge.id, nil) } label: {
+                    Label("Automatisk (närmaste sida)", systemImage: "sparkles")
+                }
+                Button { onEdgeSetToSide(edge.id, .top) } label: {
+                    Label("Uppåt", systemImage: "arrow.up")
+                }
+                Button { onEdgeSetToSide(edge.id, .right) } label: {
+                    Label("Höger", systemImage: "arrow.right")
+                }
+                Button { onEdgeSetToSide(edge.id, .bottom) } label: {
+                    Label("Neråt", systemImage: "arrow.down")
+                }
+                Button { onEdgeSetToSide(edge.id, .left) } label: {
+                    Label("Vänster", systemImage: "arrow.left")
+                }
+            } label: {
+                Label("Går in i", systemImage: "arrow.down.right.square")
             }
             Divider()
             if hasWaypoint {

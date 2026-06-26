@@ -73,6 +73,7 @@ Containrar emitteras som `subgraph`-block och re-emitterar samma nycklar, men po
 | labelPlacement | `%% e<i> labelPlacement:` (om ≠below) | `labelPlacement` | ja |
 | colorHex | `%% e<i> color:` | `color` | ja |
 | fromSide | `%% e<i> fromSide:` | `fromSide` | ja |
+| toSide | `%% e<i> toSide:` | `toSide` | ja |
 | collapsed | `%% e<i> collapsed: true` | `collapsed` | ja |
 
 \* **Bakåtkant** (`direction: .backward`) skrivs som framåtpil med omvända noder (`to --> from`), eftersom `<--` kraschar riktig mermaid (steg H-fyndet). Visuellt identiskt; den exakta riktnings-*flaggan* bevaras bara av state-JSON. Ren mermaid återskapar den som framåtpil med omvänd ordning — samma bild.

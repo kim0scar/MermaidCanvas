@@ -123,6 +123,7 @@ struct CanvasView: View {
                       onEdgeSetLineShape: { id, ls in model.setEdgeLineShape(id: id, ls) },
                       onEdgeSetColor: { id, hex in model.setEdgeColor(id: id, hex: hex) },
                       onEdgeSetFromSide: { id, side in model.setEdgeFromSide(id: id, side: side) },
+                      onEdgeSetToSide: { id, side in model.setEdgeToSide(id: id, side: side) },
                       onEdgeSnapshot: { _ in model.snapshotForUndo() },
                       onEdgeRename: { id, label, placement in
                           model.setEdgeLabel(id: id, label: label, placement: placement) },

@@ -279,10 +279,9 @@ enum MermaidParser {
                                             waypoints: waypoints,
                                             labelPlacement: labelPlacement,
                                             colorHex: edge["color"] as? String,
-                                            fromSide: (edge["fromSide"] as? String)
-                                                .flatMap(EdgeSide.init),
-                                            lineShape: (edge["lineShape"] as? String)
-                                                .flatMap(EdgeLineShape.init) ?? .curved)
+                                            fromSide: (edge["fromSide"] as? String).flatMap(EdgeSide.init),
+                                            toSide: (edge["toSide"] as? String).flatMap(EdgeSide.init),
+                                            lineShape: (edge["lineShape"] as? String).flatMap(EdgeLineShape.init) ?? .curved)
             // v63: kollaps per gren — flagga på kant-dicten
             if (edge["collapsed"] as? Bool) == true {
                 collapsedEdgeSet.insert(connection.id)
@@ -472,6 +471,7 @@ enum MermaidParser {
         let edgePlacements = edgeMeta.placements
         let edgeColors = edgeMeta.colors
         let edgeFromSides = edgeMeta.fromSides
+        let edgeToSides = edgeMeta.toSides
         let edgeWaypoints = edgeMeta.waypoints
         let edgeLineShapes = edgeMeta.lineShapes
         let collapsedEdgeIndices = edgeMeta.collapsedIndices
@@ -595,7 +595,7 @@ enum MermaidParser {
                                             waypoints: edgeWaypoints[i] ?? [],   // F2
                                             labelPlacement: edgePlacements[i] ?? .below,
                                             colorHex: edgeColors[i],
-                                            fromSide: edgeFromSides[i],
+                                            fromSide: edgeFromSides[i], toSide: edgeToSides[i],
                                             lineShape: edgeLineShapes[i] ?? .curved)
             // v63: kollaps per gren (index = rå-kantens ordning, samma som i:t ovan)
             if collapsedEdgeIndices.contains(i) {

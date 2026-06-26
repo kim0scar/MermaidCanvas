@@ -79,6 +79,14 @@ extension CanvasModel {
         edges[idx].fromSide = side
     }
 
+    /// 1.3: vilken sida pilen går IN i på to-formen (nil = automatisk).
+    func setEdgeToSide(id: UUID, side: EdgeSide?) {
+        guard let idx = edges.firstIndex(where: { $0.id == id }) else { return }
+        guard edges[idx].toSide != side else { return }
+        snapshotForUndo()
+        edges[idx].toSide = side
+    }
+
     /// v1.0: form på linjen (rak/böjd/vinklad). "Rak" rensar även waypoints så pilen
     /// blir bokstavligt rak (knappen gör alltid något synligt).
     func setEdgeLineShape(id: UUID, _ shape: EdgeLineShape) {

@@ -110,6 +110,7 @@ final class RoundTripFidelityTests: XCTestCase {
                                            direction: dir, style: style)
                     e.colorHex = "#abcdef"
                     e.fromSide = .bottom
+                    e.toSide = .top              // 1.3: mål-ankare round-trippar
                     e.labelPlacement = .above
                     e.waypoints = [EdgeWaypoint(x: 400, y: 260)]
                     e.lineShape = ls
