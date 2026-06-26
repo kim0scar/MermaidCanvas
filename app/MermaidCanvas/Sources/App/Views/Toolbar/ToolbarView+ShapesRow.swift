@@ -94,13 +94,8 @@ extension ToolbarView {
                 }
                 chipLabel("Linje")
             }
-            // naken emoji — placeras fritt, byts genom att skriva valfri emoji.
-            VStack(spacing: 2) {
-                shapeChip(.emoji, "face.smiling", accId: "chip.emoji") {
-                    model.addShape(.emoji, at: canvasCenter, label: "😀")
-                }
-                chipLabel("Emoji")
-            }
+            // 1.3: emoji-väljare (rutnät) — neutral ikon, popover med kurerade emojis.
+            EmojiPickerChip { emoji in model.addShape(.emoji, at: canvasCenter, label: emoji) }
         }
     }
 }

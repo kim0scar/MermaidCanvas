@@ -83,6 +83,7 @@
 		35ED206BD58D77573D420943 /* AppCapabilitiesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 285C3631A5A6E7A6A52F2568 /* AppCapabilitiesTests.swift */; };
 		36044040C55FCA0697F0BC79 /* PreviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35F5529A9079DF8958E486C /* PreviewSheet.swift */; };
 		36BB257AB30D033F58E5E096 /* CanvasModel+Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35CB0F4383A187355DF8E0C /* CanvasModel+Edges.swift */; };
+		3778A9AE79E0C629469B5449 /* EmojiPickerChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21EEC74FE33A3250FE50B48 /* EmojiPickerChip.swift */; };
 		37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EC13BC52408F5BEC68F4C2 /* FlowRenderer.swift */; };
 		380BFF671334B8E2465DAB91 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCEAC8164A105EF50AFB43C /* ActivityView.swift */; };
 		39C4BE0D9F1D7F0A3221BA24 /* MermaidCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */; };
@@ -255,6 +256,7 @@
 		C1474A2912CBA4392B32B375 /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
 		C39F21F7AA98F23421D45EDF /* ContentView+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E24759279021A6349EE8F6 /* ContentView+Files.swift */; };
 		C3B496C63DBE11E88733B214 /* CanvasModel+Collapse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB3515CEC6B12426998B32B /* CanvasModel+Collapse.swift */; };
+		C3CD67209C7ECC8F4983C956 /* EmojiPickerChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21EEC74FE33A3250FE50B48 /* EmojiPickerChip.swift */; };
 		C46C713CCEB48E9A18DE0E7D /* SelectionHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */; };
 		C5E33BBA497920382EF30209 /* V66LineEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2219B4F4B33CE187BDEA8EBE /* V66LineEndTests.swift */; };
 		C6E0E0C391F11A389A54BDA4 /* CanvasModelMutationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456E439027A67BD73143EFFC /* CanvasModelMutationTests.swift */; };
@@ -507,6 +509,7 @@
 		ADAFD7500719BA94561524F9 /* NoteBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteBadge.swift; sourceTree = "<group>"; };
 		AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+History.swift"; sourceTree = "<group>"; };
 		B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+Chips.swift"; sourceTree = "<group>"; };
+		B21EEC74FE33A3250FE50B48 /* EmojiPickerChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerChip.swift; sourceTree = "<group>"; };
 		B279CA0F1B8B398DC276B45F /* MacRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRenderTests.swift; sourceTree = "<group>"; };
 		B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+ColorsRow.swift"; sourceTree = "<group>"; };
 		B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformModifiers.swift; sourceTree = "<group>"; };
@@ -778,6 +781,7 @@
 		642D033E58A7E3C3500385A5 /* Toolbar */ = {
 			isa = PBXGroup;
 			children = (
+				B21EEC74FE33A3250FE50B48 /* EmojiPickerChip.swift */,
 				B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */,
 				B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */,
 				AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */,
@@ -1254,6 +1258,7 @@
 				C74B48B6614E9F6B48BFDCF6 /* EdgeRouting.swift in Sources */,
 				1F35F72D972A368706F90686 /* EdgesView.swift in Sources */,
 				8D56C3B60A8CFBD191CD982B /* EditShapeSheet.swift in Sources */,
+				C3CD67209C7ECC8F4983C956 /* EmojiPickerChip.swift in Sources */,
 				02E574D831A6115DCD3C9834 /* EmptyCanvasHint.swift in Sources */,
 				8C6AB5D248128D1DDAD9CF07 /* ExportCanvasView.swift in Sources */,
 				22490A7634414FDDCD00C4C9 /* FileChangeObserver.swift in Sources */,
@@ -1385,6 +1390,7 @@
 				B98CB3E584346224B1671C65 /* EdgeRouting.swift in Sources */,
 				DF03D5699EDF81876A63DD9C /* EdgesView.swift in Sources */,
 				8426638A65B4BA49FF8F7992 /* EditShapeSheet.swift in Sources */,
+				3778A9AE79E0C629469B5449 /* EmojiPickerChip.swift in Sources */,
 				FCAC9FAF1E4E5B985ABC8738 /* EmptyCanvasHint.swift in Sources */,
 				40F304AF420C50802B09F02B /* ExportCanvasView.swift in Sources */,
 				9552F0FFF809B97E39DFE7B2 /* FileChangeObserver.swift in Sources */,
