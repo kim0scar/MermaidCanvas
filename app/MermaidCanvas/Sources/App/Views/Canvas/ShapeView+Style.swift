@@ -123,6 +123,10 @@ extension ShapeView {
                                 alignment: shape.textAlignment,
                                 hasBullets: shape.hasBullets,
                                 hasNumbered: shape.hasNumberedList,
+                                // 1.4 A3: medan man skriver visas bara live-renderade kontroller
+                                // (storlek+justering). Listor/indrag syns ej i råtextfältet →
+                                // de finns när formen är MARKERAD (renderar formattedLabel direkt).
+                                showListsAndIndent: false,
                                 onStyle: { st in onBeginTextEdit?(shape.id); shape.textStyle = st },
                                 onToggleBullets: { onBeginTextEdit?(shape.id)
                                     let on = !shape.hasBullets; shape.hasBullets = on

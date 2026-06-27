@@ -5,11 +5,15 @@ import SwiftUI
 /// är markerad, (2) ovanför tangentbordet när text redigeras direkt i formen (Apple
 /// Notes-mönstret). Ren presentation — värden in, åtgärder ut via closures; varje host
 /// sköter sin egen undo-snapshot.
+/// 1.4: kompakt — listor och justering fälls till EN ikon var (popup). `showListsAndIndent`
+/// döljer listor+indrag i keyboard-läget (de syns inte live i det råa textfältet — bara
+/// storlek + justering renderas live; listor/indrag visas när formen är MARKERAD).
 struct FormattingBar: View {
     let style: TextStyle
     let alignment: TextAlignMode
     let hasBullets: Bool
     let hasNumbered: Bool
+    var showListsAndIndent: Bool = true
     var onStyle: (TextStyle) -> Void
     var onToggleBullets: () -> Void
     var onToggleNumbered: () -> Void
@@ -18,6 +22,8 @@ struct FormattingBar: View {
     var onIndent: (Int) -> Void
 
     @State private var showSizePicker = false
+    @State private var showAlignPicker = false
+    @State private var showListsPicker = false
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -46,48 +52,78 @@ struct FormattingBar: View {
 
                 Divider().frame(height: 28).padding(.horizontal, 2)
 
-                button(icon: "list.bullet", label: "Punkter",
-                       active: hasBullets && !hasNumbered, action: onToggleBullets)
-                button(icon: "list.number", label: "Numrerad",
-                       active: hasNumbered, action: onToggleNumbered)
+                // Justering — EN ikon (visar aktuell), popup L/C/R. Renderas live i fältet.
+                Button { showAlignPicker = true } label: { chipLabel(alignIcon(alignment), active: false) }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("toolbar.align")
+                    .accessibilityLabel("Justering")
+                    .confirmationDialog("Justering", isPresented: $showAlignPicker, titleVisibility: .visible) {
+                        Button("Vänster") { onAlign(.leading) }
+                        Button("Centrera") { onAlign(.center) }
+                        Button("Höger") { onAlign(.trailing) }
+                        Button("Avbryt", role: .cancel) {}
+                    }
 
-                Divider().frame(height: 28).padding(.horizontal, 2)
+                if showListsAndIndent {
+                    Divider().frame(height: 28).padding(.horizontal, 2)
 
-                button(icon: "text.alignleft", label: "Vänster",
-                       active: alignment == .leading) { onAlign(.leading) }
-                button(icon: "text.aligncenter", label: "Centrera",
-                       active: alignment == .center) { onAlign(.center) }
-                button(icon: "text.alignright", label: "Höger",
-                       active: alignment == .trailing) { onAlign(.trailing) }
+                    // Lista — EN ikon, popup. (Döljs medan man skriver — syns ej live i råtext.)
+                    Button { showListsPicker = true } label: {
+                        chipLabel(hasNumbered ? "list.number" : "list.bullet", active: hasBullets || hasNumbered)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("toolbar.list")
+                    .accessibilityLabel("Lista")
+                    .confirmationDialog("Lista", isPresented: $showListsPicker, titleVisibility: .visible) {
+                        Button("Punkter") { if !hasBullets { onToggleBullets() } }
+                        Button("Numrerad") { if !hasNumbered { onToggleNumbered() } }
+                        Button("Ingen") {
+                            if hasBullets { onToggleBullets() }
+                            if hasNumbered { onToggleNumbered() }
+                        }
+                        Button("Avbryt", role: .cancel) {}
+                    }
 
-                Divider().frame(height: 28).padding(.horizontal, 2)
+                    Divider().frame(height: 28).padding(.horizontal, 2)
 
-                button(icon: "decrease.indent", label: "Indrag–", active: false) { onIndent(-1) }
-                button(icon: "increase.indent", label: "Indrag+", active: false) { onIndent(1) }
+                    button(icon: "decrease.indent", label: "Indrag–", active: false) { onIndent(-1) }
+                    button(icon: "increase.indent", label: "Indrag+", active: false) { onIndent(1) }
+                }
             }
             .padding(.horizontal, 2)
         }
     }
 
     @ViewBuilder
+    private func chipLabel(_ icon: String, active: Bool) -> some View {
+        Image(systemName: icon)
+            .font(.system(size: 16, weight: .medium))
+            .foregroundStyle(active ? Color.white : Color.primary)
+            .frame(width: 38, height: 36)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(active ? Color.accentColor : Color.appChipBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+            )
+    }
+
+    @ViewBuilder
     private func button(icon: String, label: String, active: Bool,
                         action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(active ? Color.white : Color.primary)
-                .frame(width: 38, height: 36)
-                .background(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(active ? Color.accentColor : Color.appChipBackground)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-                )
+        Button(action: action) { chipLabel(icon, active: active) }
+            .buttonStyle(.plain)
+            .accessibilityLabel(label)
+    }
+
+    private func alignIcon(_ a: TextAlignMode) -> String {
+        switch a {
+        case .leading:  return "text.alignleft"
+        case .center:   return "text.aligncenter"
+        case .trailing: return "text.alignright"
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(label)
     }
 
     private func stylePreview(_ st: TextStyle) -> String {
