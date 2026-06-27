@@ -3,9 +3,9 @@
   "new_file_limit": 300,
   "file_line_limits": {
     "app/MermaidCanvas/Sources/App/Views/CanvasView.swift": 222,
-    "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 199,
+    "app/MermaidCanvas/Sources/App/Views/ToolbarView.swift": 185,
     "app/MermaidCanvas/Sources/App/Models/CanvasModel.swift": 56,
-    "app/MermaidCanvas/Sources/App/ContentView.swift": 205,
+    "app/MermaidCanvas/Sources/App/ContentView.swift": 204,
     "app/MermaidCanvas/Sources/Mermaid/MermaidParser.swift": 625,
     "app/MermaidCanvas/Sources/Mermaid/MermaidGenerator.swift": 501,
     "app/MermaidCanvas/Sources/ClaudeCode/ShapeCategory.swift": 380,

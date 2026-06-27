@@ -2,7 +2,19 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: 1.3 — "Redigeringsytan som fundament (Lucidchart-känsla)"
+## Aktuell version: 1.4 — "Buggar + anteckning-pratbubbla + polish"
+
+*Tema:* Kims v1.3-test-fynd åtgärdade. **Buggar:** mörkt läge funkar (mörk ram + alltid vit
+rityta — adaptiv chip-färg + fast ljus canvas-bakgrund); cirkel-text wrappar inuti kurvan;
+punktlista/indrag syns (visas när formen är markerad — keyboard-baren döljer det som ej kan
+renderas live). **Anteckning → elegant gul pratbubbla** med svans mot formen + vik-ikon (inget
+kryss), redigeras direkt; visa/dölj alla anteckningar på markering. **Polish:** kompakt
+formaterings-meny (listor/justering = en ikon + popup), dra-in-grabber på sekundärraden,
+markeringsknapp tillbaka, mindre luft, 8 numrerade färgpaket, kollaps-minus flyttad ut från
+gröna +. Ingen ny bärare. 205 unit · conformance 3/3 · render 3/3. Rik text (markera ord →
+egen färg/storlek, nya storlekar, fet/kursiv/understruk) = v1.5.
+
+## v1.3 — "Redigeringsytan som fundament (Lucidchart-känsla)"
 
 *Tema:* Appens viktigaste yta gjord Apple-grad. **Aldrig fast:** text-redigering bunden till
 markeringen — tryck utanför / på annan form avslutar alltid (`onChange(of: isSelected)`).

@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test-feedback, plan godkänd 2026-06-27). v1.3 Fas 1 ✅ accepterad (Kim: "fantastiskt arbete" + uppföljnings-fynd → 1.4). Bygger: mörkt läge, cirkel-wrap, punktlista-syns, pratbubbla, kompakt meny+grabber, markeringsknapp, 8 numrerade färger, minus-position. Rik text (markera ord/nya storlekar/fet-kursiv) = Milstolpe 1.5. n8n + M4 PAUSADE.
+NU: ⏳ Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test). ALLA delar byggda + sim-verifierade (A·B·C·D), version 1.4. Deploy v1.4 → iPhone pågår. KVAR: Kims iPhone-bock. Rik text (markera ord/nya storlekar/fet-kursiv) = Milstolpe 1.5. n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -123,14 +123,14 @@ Kim testade 1.2, gav 5 interaktionsfel + pekade ut redigeringsytan som appens VI
 
 ## Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test, plan godkänd 2026-06-27)
 Kim testade v1.3, älskar fundamentet, gav fynd: 3 buggar + anteckning-omdesign + meny-polish. INGEN ny bärare (allt View/UI → regel 15 trivialt grön). Detaljplan: ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md.
-- ⏳ A1 mörkt läge: adaptiv `Color.appChipBackground`; chips/swatches syns i dark; canvas force-light kvar. Klart: dark-skärmdump, menyer syns.
-- ☐ A2 cirkel-radbrytning: `case .circle` i textHorizontalInset (proportionell). Klart: lång text wrappar inuti cirkeln.
-- ☐ A3 punktlista/indrag syns: FormattingBar `showListsAndIndent`-flagga (keyboard-host döljer dem, selected-bar visar). Klart: markera form → punkter syns direkt.
-- ☐ B1 anteckning→pratbubbla: gul bubbla + svans + vik-ikon (ingen X), bara note-redigering direkt; NoteBadge→bubble-glyf. Klart: ser ut som elegant kommentar, viks in/ut.
-- ☐ B2 visa/dölj alla anteckningar på markering (en/många → openCards). Klart: markera + "Visa/Dölj anteckningar".
-- ☐ C1 kompakt FormattingBar (lists→1 ikon, justering→1 ikon, popup). C2 dra-in-grabber. C3 markeringsknapp tillbaka. C4 mindre luft.
-- ☐ D1 8 numrerade färgpaket (ids stabila). D2 minus-badge ut från gröna + (radial 6→36).
-- ☐ Deploy v1.4 → iPhone + Kims känsla-bock.
+- ✅ A1 mörkt läge: adaptiv `Color.appChipBackground` + fast ljus rityte-bakgrund. Sim-verifierat (mörk ram + vit rityta, menyer syns).
+- ✅ A2 cirkel-radbrytning: `case .circle` proportionell inset.
+- ✅ A3 punktlista/indrag syns: `showListsAndIndent`-flagga. Sim-verifierat (markera form → "• Beslut" syns).
+- ✅ B1 anteckning→gul pratbubbla + svans + vik-ikon (ingen X), direkt redigering; NoteBadge→bubble-glyf. Sim-verifierat.
+- ✅ B2 visa/dölj alla anteckningar på markering (multi-select-rad → openCards).
+- ✅ C1 kompakt FormattingBar (sim-verifierad) · ✅ C2 grabber (sim-verifierad) · ✅ C3 markeringsknapp · ✅ C4 mindre luft.
+- ✅ D1 8 numrerade färgpaket (sim-verifierat) · ✅ D2 minus ut från gröna + (sim-verifierat).
+- ⏳ Deploy v1.4 → iPhone + Kims känsla-bock.
   Kräver: Milstolpe 1.3 deployad ✅
 
 ## Milstolpe 1.5 — rik text (markera ord → egen färg/storlek, EGEN milstolpe)
