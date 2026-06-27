@@ -52,6 +52,9 @@ extension ShapeView {
         switch shape.type {
         case .triangle: return 18   // bara nedre mitten är bred nog
         case .diamond:  return 22   // romben smalnar mot vänster/höger spets
+        // 1.4 (Kims fynd): cirkeln smalnar runt hela kanten → texten spillde över kurvan.
+        // Proportionell marginal ger ~70 % textbredd (inskriven box) oavsett storlek.
+        case .circle:   return max(10, ShapeGeometry.width(for: shape) * 0.15)
         default:        return 8
         }
     }

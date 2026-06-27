@@ -57,7 +57,7 @@ extension ToolbarView {
             applySwatch(nil)
         } label: {
             ZStack {
-                Circle().fill(Color.white)
+                Circle().fill(Color.appChipBackground)
                     .overlay(Circle().strokeBorder(Color.secondary, lineWidth: 1.5))
                 Image(systemName: "slash.circle")
                     .font(.caption)
@@ -87,7 +87,7 @@ extension ToolbarView {
                     Circle().fill(color)
                         .overlay(Circle().strokeBorder(Color.primary.opacity(0.25), lineWidth: 1))
                 } else {
-                    Circle().fill(Color.white)
+                    Circle().fill(Color.appChipBackground)
                         .overlay(Circle().strokeBorder(color, lineWidth: 4))
                 }
                 if isCurrent {

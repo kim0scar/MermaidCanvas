@@ -105,7 +105,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.backgroundColor = .systemGray5
+        scrollView.backgroundColor = UIColor(white: 0.9, alpha: 1.0)  // 1.4: fast ljus (Kims "alltid vit rityta"; .systemGray5 var adaptiv → svart i mörkt)
         scrollView.decelerationRate = .normal
         // För XCUITest: så testerna kan hitta canvas-elementet via otherElements["canvas"]
         // ELLER scrollViews["canvas"]. UIScrollView är av default ett accessibility-element.

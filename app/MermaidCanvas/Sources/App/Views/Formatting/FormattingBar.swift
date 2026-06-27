@@ -79,7 +79,7 @@ struct FormattingBar: View {
                 .frame(width: 38, height: 36)
                 .background(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(active ? Color.accentColor : Color.appBackground)
+                        .fill(active ? Color.accentColor : Color.appChipBackground)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)

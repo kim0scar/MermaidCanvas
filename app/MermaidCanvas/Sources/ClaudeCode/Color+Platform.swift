@@ -27,6 +27,19 @@ extension Color {
         Color(white: 0.95)
         #endif
     }
+    /// 1.4: chip-/knapp-yta som ALLTID kontrasterar mot verktygsfältets bakgrund i BÅDE
+    /// ljust och mörkt läge. Inaktiva formaterings-/färgchips fyllde förr med appBackground
+    /// och smälte in i ett lika mörkt verktygsfält i dark mode (osynliga). systemGray5 =
+    /// ett garanterat kliv från både primär- och sekundärradens bakgrund.
+    static var appChipBackground: Color {
+        #if canImport(UIKit)
+        Color(.systemGray5)
+        #elseif canImport(AppKit)
+        Color(nsColor: .controlBackgroundColor)
+        #else
+        Color(white: 0.9)
+        #endif
+    }
     static var appSeparator: Color {
         #if canImport(UIKit)
         Color(.separator)
