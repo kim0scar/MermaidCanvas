@@ -54,6 +54,9 @@ Mermaid är **transporten** (portabel, AI-läsbar kropp). Appen är **renderaren
 | hasBullets | `%% <id> bullets` | `hasBullets` | ja |
 | hasNumberedList | `%% <id> numbered` | `hasNumberedList` | ja |
 | indentLevel | `%% <id> indent:` (om >0) | `indentLevel` | ja (exakt, ingen kapning) |
+| bold | — (inget %%-spår) | `bold` | **nej** (state-JSON-only; mermaid saknar nod-text-fetstil) |
+| italic | — (inget %%-spår) | `italic` | **nej** (state-JSON-only) |
+| underline | — (inget %%-spår) | `underline` | **nej** (state-JSON-only) |
 | childOfContainerId | `subgraph`+`end`-medlemskap | `childOfContainerId` | ja (positionellt) |
 | id (UUID) | — (mermaid-id är nyckeln) | — | ny UUID vid import (kanter följer med) |
 

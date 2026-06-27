@@ -27,7 +27,11 @@ extension ToolbarView {
             onAlign: { a in guard let idx = beginShapeEdit() else { return }
                 model.shapes[idx].textAlignment = a },
             onIndent: { d in guard let idx = beginShapeEdit() else { return }
-                model.shapes[idx].indentLevel = min(3, max(0, model.shapes[idx].indentLevel + d)) }
+                model.shapes[idx].indentLevel = min(3, max(0, model.shapes[idx].indentLevel + d)) },
+            bold: s?.bold ?? false, italic: s?.italic ?? false, underline: s?.underline ?? false,
+            onToggleBold: { guard let idx = beginShapeEdit() else { return }; model.shapes[idx].bold.toggle() },
+            onToggleItalic: { guard let idx = beginShapeEdit() else { return }; model.shapes[idx].italic.toggle() },
+            onToggleUnderline: { guard let idx = beginShapeEdit() else { return }; model.shapes[idx].underline.toggle() }
         )
     }
 

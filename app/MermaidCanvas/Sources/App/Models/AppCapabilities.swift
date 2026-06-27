@@ -64,6 +64,7 @@ enum AppCapabilities {
         .init(name: "🔒 Lås",              carrier: "%% locked + state-JSON",              survivesPureMermaid: true),
         .init(name: "📚 Lager (z)",        carrier: "%% z: N + state-JSON",                survivesPureMermaid: true),
         .init(name: "Textjustering/listor/indrag", carrier: "%% align/bullets/numbered/indent", survivesPureMermaid: true),
+        .init(name: "Fet/kursiv/understruken", carrier: "BARA state-JSON (bold/italic/underline)", survivesPureMermaid: false),
         .init(name: "Prompt (skill-former)", carrier: "%% prompt + state-JSON",            survivesPureMermaid: true),
         .init(name: "Anteckning",          carrier: "%% note + state-JSON",                survivesPureMermaid: true),
         .init(name: "Kollaps (gren)",      carrier: "%% e<i> collapsed + state-JSON",      survivesPureMermaid: true),

@@ -91,6 +91,20 @@ extension ShapeView {
         .presentationCompactAdaptation(.popover)
     }
 
+    /// 1.5: fet-toggle gör texten en notch tyngre än rubriknivåns egen vikt (fet på
+    /// brödtext → fet; fet på en redan fet rubrik → ännu tyngre). Syns alltid.
+    var effectiveWeight: Font.Weight {
+        guard shape.bold else { return shape.textStyle.fontWeight }
+        switch shape.textStyle.fontWeight {
+        case .regular, .medium, .semibold: return .bold
+        default:                           return .heavy
+        }
+    }
+    var labelFont: Font {
+        .system(size: shape.textStyle.fontSize * shape.sizeMultiplier,
+                weight: effectiveWeight, design: .rounded)
+    }
+
     /// 1.3 (S1.1): form-text-innehållet — emoji-glyf, inline-redigering, platshållare
     /// eller formaterat label. Utbrutet ur ShapeView.body för R5-plats (ShapeView var 299/300)
     /// och så redigerings-grenen kan växa i Fas 2 (per-rad-stil) utan att spränga taket.
@@ -107,7 +121,9 @@ extension ShapeView {
                 TextField("", text: $shape.label, axis: .vertical)
                     .focused($labelFocused)
                     .textFieldStyle(.plain)
-                    .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier, weight: shape.textStyle.fontWeight, design: .rounded))
+                    .font(labelFont)
+                    .italic(shape.italic)
+                    .underline(shape.underline)
                     .foregroundStyle(effectiveTextColor)
                     .multilineTextAlignment(textAlignment)
                     .lineLimit(1...6)
@@ -137,7 +153,11 @@ extension ShapeView {
                                 onAlign: { a in onBeginTextEdit?(shape.id); shape.textAlignment = a },
                                 onIndent: { d in onBeginTextEdit?(shape.id)
                                     shape.indentLevel = min(3, max(0, shape.indentLevel + d)) },
-                                onDone: { labelFocused = false }
+                                onDone: { labelFocused = false },
+                                bold: shape.bold, italic: shape.italic, underline: shape.underline,
+                                onToggleBold: { onBeginTextEdit?(shape.id); shape.bold.toggle() },
+                                onToggleItalic: { onBeginTextEdit?(shape.id); shape.italic.toggle() },
+                                onToggleUnderline: { onBeginTextEdit?(shape.id); shape.underline.toggle() }
                             )
                         }
                     }
@@ -155,7 +175,9 @@ extension ShapeView {
                 }
             } else {
                 Text(formattedLabel)
-                    .font(.system(size: shape.textStyle.fontSize * shape.sizeMultiplier, weight: shape.textStyle.fontWeight, design: .rounded))
+                    .font(labelFont)
+                    .italic(shape.italic)
+                    .underline(shape.underline)
                     .foregroundStyle(effectiveTextColor)
                     .multilineTextAlignment(textAlignment)
                     .lineLimit(6)

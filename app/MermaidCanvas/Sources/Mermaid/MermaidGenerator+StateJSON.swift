@@ -73,6 +73,10 @@ extension MermaidGenerator {
             if shape.indentLevel > 0 {
                 n["indentLevel"] = shape.indentLevel
             }
+            // 1.5: fet/kursiv/understruken (state-JSON-only)
+            if shape.bold { n["bold"] = true }
+            if shape.italic { n["italic"] = true }
+            if shape.underline { n["underline"] = true }
             // V79-svep: lås + lager
             if shape.locked {
                 n["locked"] = true

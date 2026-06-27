@@ -187,8 +187,7 @@ enum MermaidParser {
                 lineEnd = CGPoint(x: numberValue(lx), y: numberValue(ly))
             }
             // v37: textjustering + punktlista
-            let textAlignRaw = (node["textAlignment"] as? String) ?? TextAlignMode.center.rawValue
-            let textAlignment = TextAlignMode(rawValue: textAlignRaw) ?? .center
+            let textAlignment = TextAlignMode(rawValue: (node["textAlignment"] as? String) ?? "") ?? .center
             let hasBullets = (node["hasBullets"] as? Bool) ?? false
             // v46: numrerad lista, indrag, tabell-celler
             let hasNumberedList = (node["hasNumberedList"] as? Bool) ?? false
@@ -223,6 +222,7 @@ enum MermaidParser {
                 hasBullets: hasBullets,
                 hasNumberedList: hasNumberedList,
                 indentLevel: max(0, indentLevel),
+                bold: (node["bold"] as? Bool) ?? false, italic: (node["italic"] as? Bool) ?? false, underline: (node["underline"] as? Bool) ?? false,
                 locked: locked,
                 zLayer: zLayer,
                 subCanvas: subCanvas

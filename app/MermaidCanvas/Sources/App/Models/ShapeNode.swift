@@ -102,6 +102,10 @@ struct ShapeNode: Identifiable, Codable, Equatable {
     var hasNumberedList: Bool
     /// v39: indragsnivå (0 = ingen, 1 = ett steg, 2 = två steg). Default = 0.
     var indentLevel: Int
+    /// 1.5: textstil-toggles (state-JSON-only — överlever ej ren mermaid). Default = false.
+    var bold: Bool
+    var italic: Bool
+    var underline: Bool
     /// v47: explicit referens till container-förälder. Ersätter position-baserad
     /// detektering i `CanvasModel.shapesInside(container:)`. nil = inte i någon container.
     /// Sätts automatiskt vid drag-slut och vid drag-ut. Position-baserad detektering
@@ -140,6 +144,9 @@ struct ShapeNode: Identifiable, Codable, Equatable {
          hasBullets: Bool = false,
          hasNumberedList: Bool = false,
          indentLevel: Int = 0,
+         bold: Bool = false,
+         italic: Bool = false,
+         underline: Bool = false,
          childOfContainerId: UUID? = nil,
          locked: Bool = false,
          zLayer: Int = 0,
@@ -170,6 +177,9 @@ struct ShapeNode: Identifiable, Codable, Equatable {
         self.hasBullets = hasBullets
         self.hasNumberedList = hasNumberedList
         self.indentLevel = indentLevel
+        self.bold = bold
+        self.italic = italic
+        self.underline = underline
         self.childOfContainerId = childOfContainerId
         self.locked = locked
         self.zLayer = zLayer
@@ -196,7 +206,7 @@ extension ShapeNode {
         case colorOverride, strokeColorOverride, linkNumber, tableRows, tableCols, tableCells, textStyle
         case skillNumber  // v74
         case colorPackId, lineEnd, textAlignment, hasBullets
-        case hasNumberedList, indentLevel
+        case hasNumberedList, indentLevel, bold, italic, underline
         case childOfContainerId  // v47
         case locked, zLayer  // V79-svep
         case subCanvas  // v1.0+ Visio
@@ -238,6 +248,9 @@ extension ShapeNode {
         textAlignment   = try c.decodeIfPresent(TextAlignMode.self, forKey: .textAlignment) ?? .center
         hasBullets      = try c.decodeIfPresent(Bool.self, forKey: .hasBullets) ?? false
         hasNumberedList = try c.decodeIfPresent(Bool.self, forKey: .hasNumberedList) ?? false
+        bold      = try c.decodeIfPresent(Bool.self, forKey: .bold) ?? false
+        italic    = try c.decodeIfPresent(Bool.self, forKey: .italic) ?? false
+        underline = try c.decodeIfPresent(Bool.self, forKey: .underline) ?? false
         indentLevel     = try c.decodeIfPresent(Int.self, forKey: .indentLevel) ?? 0
         childOfContainerId = try c.decodeIfPresent(UUID.self, forKey: .childOfContainerId)
         locked          = try c.decodeIfPresent(Bool.self, forKey: .locked) ?? false

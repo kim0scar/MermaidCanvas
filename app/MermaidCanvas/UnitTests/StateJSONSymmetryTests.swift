@@ -87,6 +87,18 @@ final class StateJSONSymmetryTests: XCTestCase {
         var s = rect(); s.indentLevel = 2
         XCTAssertEqual(roundTripFirst(s)?.indentLevel, 2)
     }
+    func test_bold() {       // 1.5: fet round-trippar (state-JSON)
+        var s = rect(); s.bold = true
+        XCTAssertEqual(roundTripFirst(s)?.bold, true)
+    }
+    func test_italic() {
+        var s = rect(); s.italic = true
+        XCTAssertEqual(roundTripFirst(s)?.italic, true)
+    }
+    func test_underline() {
+        var s = rect(); s.underline = true
+        XCTAssertEqual(roundTripFirst(s)?.underline, true)
+    }
     func test_skillNumber() {
         var s = ShapeNode(type: .container, position: CGPoint(x: 400, y: 400), label: "Skill")
         s.skillNumber = 3

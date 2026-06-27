@@ -20,6 +20,13 @@ struct FormattingBar: View {
     /// delta: +1 ökar indrag, -1 minskar (host klampar 0…3).
     var onIndent: (Int) -> Void
     var onDone: (() -> Void)? = nil
+    // 1.5: fet/kursiv/understruken — toggles i storleks-galleriet.
+    var bold: Bool = false
+    var italic: Bool = false
+    var underline: Bool = false
+    var onToggleBold: () -> Void = {}
+    var onToggleItalic: () -> Void = {}
+    var onToggleUnderline: () -> Void = {}
 
     @State private var showSizePicker = false
     @State private var showAlignPicker = false
@@ -41,7 +48,10 @@ struct FormattingBar: View {
             .accessibilityIdentifier("toolbar.textSize")
             .accessibilityLabel("Textstorlek")
             .popover(isPresented: $showSizePicker) {
-                TextSizeGallery(current: style, onPick: { onStyle($0); showSizePicker = false })
+                TextSizeGallery(current: style, bold: bold, italic: italic, underline: underline,
+                                onPick: { onStyle($0); showSizePicker = false },
+                                onToggleBold: onToggleBold, onToggleItalic: onToggleItalic,
+                                onToggleUnderline: onToggleUnderline)
                     .presentationCompactAdaptation(.popover)
             }
 
