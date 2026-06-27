@@ -259,7 +259,9 @@ enum EdgeGeometry {
         let tx = dx / len, ty = dy / len
         var px = -ty, py = tx
         if py > 0 { px = -px; py = -py }
-        return CGPoint(x: anchors.start.x + tx * 6 + px * 16,
-                       y: anchors.start.y + ty * 6 + py * 16)
+        // 1.4 (Kim): radiell knuff 6→36 så minus-badgen ligger UTANFÖR gröna connection-
+        // handtaget (~20pt ut) i stället för ovanpå det. Perpendikulär 16 håller den av linjen.
+        return CGPoint(x: anchors.start.x + tx * 36 + px * 16,
+                       y: anchors.start.y + ty * 36 + py * 16)
     }
 }

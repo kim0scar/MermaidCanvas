@@ -33,8 +33,9 @@ extension ToolbarView {
                 HStack(spacing: 10) {
                     switch colorTarget {
                     case .pack:
-                        ForEach(ColorPack.all) { pack in
-                            colorChip(pack)
+                        // 1.4: 8 kuraterade + numrerade (Kim). none = slash (inget nummer).
+                        ForEach(Array(ColorPack.pickerVisible.enumerated()), id: \.element.id) { idx, pack in
+                            colorChip(pack, number: pack.id == "none" ? nil : idx)
                         }
                     case .fill, .stroke:
                         clearSwatchChip
@@ -109,7 +110,7 @@ extension ToolbarView {
     }
 
     @ViewBuilder
-    func colorChip(_ pack: ColorPack) -> some View {
+    func colorChip(_ pack: ColorPack, number: Int? = nil) -> some View {
         let isCurrent: Bool = {
             guard let id = model.selectedShapeId,
                   let s = model.shapes.first(where: { $0.id == id }) else { return false }
@@ -129,11 +130,16 @@ extension ToolbarView {
                     Image(systemName: "slash.circle")
                         .font(.caption)
                         .foregroundStyle(Color.secondary)
+                } else if let number {
+                    Text("\(number)")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(pack.textColor)
                 }
             }
             .frame(width: 36, height: 36)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(pack.displayName)\(number.map { ", \($0)" } ?? "")")
     }
 
     func applyColorPack(_ pack: ColorPack) {

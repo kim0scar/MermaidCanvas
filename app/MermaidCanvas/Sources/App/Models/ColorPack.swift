@@ -41,9 +41,14 @@ struct ColorPack: Identifiable, Hashable {
     static let uiGrå  = ColorPack(id: "ui-grå",  displayName: "UI Grå (yta)",     fill: 0xF2F2F7, stroke: 0xC7C7CC, text: 0x1C1C1E)
     static let uiMörk = ColorPack(id: "ui-mörk", displayName: "UI Mörk (navbar)", fill: 0x1C1C1E, stroke: 0x3A3A3C, text: 0xFFFFFF)
 
-    /// Alla paket i ordningen som visas i picker.
+    /// Alla paket — round-trip-uppslag (by(id:)). ALLA ids finns kvar så gamla filer
+    /// behåller sin färg även om pickern visar färre.
     static let all: [ColorPack] = [.none, .persika, .rosa, .blå, .grön, .gul, .lila,
                                    .uiBlå, .uiGrön, .uiRöd, .uiGrå, .uiMörk]
+
+    /// 1.4 (Kim: "max 8 snygga smarta val", numrerade): de 8 som visas i picker-ordning.
+    /// De fem ui-* (utom UI Blå) visas ej men laddas korrekt vid round-trip via `all`.
+    static let pickerVisible: [ColorPack] = [.none, .blå, .grön, .gul, .rosa, .lila, .persika, .uiBlå]
 
     static func by(id: String?) -> ColorPack {
         guard let id = id else { return .none }
