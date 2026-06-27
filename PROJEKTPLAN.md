@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test). ALLA delar byggda + sim-verifierade (A·B·C·D), version 1.4. Deploy v1.4 → iPhone pågår. KVAR: Kims iPhone-bock. Rik text (markera ord/nya storlekar/fet-kursiv) = Milstolpe 1.5. n8n + M4 PAUSADE.
+NU: ⏳ Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test). ✅ DEPLOYAD v1.4 på iPhone (tagg + ZIP): A·B·C·D byggda + sim-verifierade. 205 unit · conformance/render 3/3 · git synkat. KVAR: bara Kims iPhone-bock på känslan. Rik text (markera ord/nya storlekar/fet-kursiv) = Milstolpe 1.5. n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -130,7 +130,7 @@ Kim testade v1.3, älskar fundamentet, gav fynd: 3 buggar + anteckning-omdesign 
 - ✅ B2 visa/dölj alla anteckningar på markering (multi-select-rad → openCards).
 - ✅ C1 kompakt FormattingBar (sim-verifierad) · ✅ C2 grabber (sim-verifierad) · ✅ C3 markeringsknapp · ✅ C4 mindre luft.
 - ✅ D1 8 numrerade färgpaket (sim-verifierat) · ✅ D2 minus ut från gröna + (sim-verifierat).
-- ⏳ Deploy v1.4 → iPhone + Kims känsla-bock.
+- ✅ DEPLOYAD v1.4 (iPhone installerad+startad, tagg v1.4 + ZIP, 205 unit · conformance/render 3/3 · git synkat). KVAR: bara Kims iPhone-bock.
   Kräver: Milstolpe 1.3 deployad ✅
 
 ## Milstolpe 1.5 — rik text (markera ord → egen färg/storlek, EGEN milstolpe)
