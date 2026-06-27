@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.3 — redigeringsytan som fundament (Kims order 2026-06-26). Fas 1 (städa+ena) ✅ DEPLOYAD v1.3 på iPhone (tagg v1.3 + ZIP): aldrig-fast + EN anteckningsväg + EN formateringsmeny (FormattingBar i två lägen) + rensat (bluff-fet/död kod). 205 unit · conformance/render 3/3 · sim-verifierat · git synkat. KVAR: bara Kims iPhone-bock på känslan → sen Fas 2 (individuell text per rad). n8n + M4 PAUSADE.
+NU: ⏳ Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test-feedback, plan godkänd 2026-06-27). v1.3 Fas 1 ✅ accepterad (Kim: "fantastiskt arbete" + uppföljnings-fynd → 1.4). Bygger: mörkt läge, cirkel-wrap, punktlista-syns, pratbubbla, kompakt meny+grabber, markeringsknapp, 8 numrerade färger, minus-position. Rik text (markera ord/nya storlekar/fet-kursiv) = Milstolpe 1.5. n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -118,8 +118,25 @@ Kim testade 1.2, gav 5 interaktionsfel + pekade ut redigeringsytan som appens VI
 - ✅ fix3 — mål-ankare (toSide): välj inkommande sida på mål-formen; full regel-15-kedja grön.
 - ✅ fix4 — orthogonal routing: lämnar/anländer vinkelrätt mot valda sidor.
 - ⏳ Fas 1 (v1.3) — ren redigeringsyta (INGEN ny bärare): ✅ S1.1 aldrig-fast · ✅ S1.2 anteckning=EN väg · ✅ S1.3 EN formateringsmeny (FormattingBar i två lägen) · ✅ S1.4 audit+rensa. ✅ DEPLOYAD v1.3 (iPhone installerad+startad, tagg+ZIP, 205 unit · conformance/render 3/3 · arch · sim-bevis · git synkat). KVAR: bara Kims iPhone-bock på känslan.
-- ☐ Fas 2 (v1.4) — individuell text per rad (rubrik+fet+justering): LineStyle-modell + `line-styles`-bärare (full regel-15) + StyledLabel-renderare + caret-radväljare. Klart: per-rad round-trippar (ren mermaid + state-JSON) + bijektion grön, deploy v1.4, Kims bock.
+- ✅ Fas 1 ACCEPTERAD: Kim testade v1.3 ("fantastiskt arbete"), gav uppföljnings-fynd → Milstolpe 1.4. (Per-rad-idén ersatt av Kims rikare önskan: markera ORD → egen färg/storlek = Milstolpe 1.5.)
   Kräver: Milstolpe 1.2 deployad ✅
+
+## Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test, plan godkänd 2026-06-27)
+Kim testade v1.3, älskar fundamentet, gav fynd: 3 buggar + anteckning-omdesign + meny-polish. INGEN ny bärare (allt View/UI → regel 15 trivialt grön). Detaljplan: ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md.
+- ⏳ A1 mörkt läge: adaptiv `Color.appChipBackground`; chips/swatches syns i dark; canvas force-light kvar. Klart: dark-skärmdump, menyer syns.
+- ☐ A2 cirkel-radbrytning: `case .circle` i textHorizontalInset (proportionell). Klart: lång text wrappar inuti cirkeln.
+- ☐ A3 punktlista/indrag syns: FormattingBar `showListsAndIndent`-flagga (keyboard-host döljer dem, selected-bar visar). Klart: markera form → punkter syns direkt.
+- ☐ B1 anteckning→pratbubbla: gul bubbla + svans + vik-ikon (ingen X), bara note-redigering direkt; NoteBadge→bubble-glyf. Klart: ser ut som elegant kommentar, viks in/ut.
+- ☐ B2 visa/dölj alla anteckningar på markering (en/många → openCards). Klart: markera + "Visa/Dölj anteckningar".
+- ☐ C1 kompakt FormattingBar (lists→1 ikon, justering→1 ikon, popup). C2 dra-in-grabber. C3 markeringsknapp tillbaka. C4 mindre luft.
+- ☐ D1 8 numrerade färgpaket (ids stabila). D2 minus-badge ut från gröna + (radial 6→36).
+- ☐ Deploy v1.4 → iPhone + Kims känsla-bock.
+  Kräver: Milstolpe 1.3 deployad ✅
+
+## Milstolpe 1.5 — rik text (markera ord → egen färg/storlek, EGEN milstolpe)
+Run-baserad text (attribut per teckenintervall) + UITextView-representable-editor + visuell stil-galleri (storlekar i verklig storlek, ~40 max) + fet/kursiv/understruken. EN ny bärare (runs-JSON, `tableCells`-mönstret, full regel-15). Löser även punktlista-LIVE-medan-man-skriver. Designtävling vid 1.5-start.
+- ☐ Byggs efter v1.4 + Kims bock.
+  Kräver: Milstolpe 1.4 deployad
 
 ## Efter MB (pausat, Kims order) + Efter M3
 - MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
@@ -140,6 +157,7 @@ Kim testade 1.2, gav 5 interaktionsfel + pekade ut redigeringsytan som appens VI
 - 2026-06-21 · 💡#12 Markdown-läsare i appen (read-only): öppna en .md (t.ex. FUNKTIONSKarta) och läsa den formaterad — rubriker + tabeller · kräver markdown-render-lib (SwiftUI-inbyggd renderar ej tabeller) = eget litet bygge + nytt beroende + scope-fråga (PRODUKT.md: appen är ritverktyg, ej dok-läsare) · väntar
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-27 · Milstolpe 1.4 + 1.5 satta (Kims v1.3-test-feedback): Kim testade v1.3, älskade fundamentet ("fantastiskt arbete"), gav fynd → 1.4 (buggar: mörkt läge/cirkel-wrap/punktlista-syns; anteckning som elegant pratbubbla med vik-ikon + visa/dölj-alla; meny-polish: kompakt + grabber + markeringsknapp + mindre luft; 8 numrerade färger; minus-position) + 1.5 (rik text: markera ORD → egen färg/storlek, visuell stil-galleri med större rubriker, fet/kursiv/understruken — run-baserad modell + rich-editor, EN ny bärare). Tre Kim-val: mörk ram + vit rityta; visuell stil-meny; polish först (1.4) sen rik text (1.5). Designtävling (2 Explore rotorsak + 2 Plan design) → konvergens. Den gamla "per-rad"-idén ersatt av Kims rikare "markera ord"-önskan. Varför: testning på riktig iPhone avslöjade buggar + att redigeringen behöver bli ännu rikare/elegantare för att kännas Apple-grad.
 - 2026-06-26 · Milstolpe 1.3 satt (Kims order): 5 interaktionsfel + redigeringsytan utpekad som appens viktigaste yta, ska bli Apple-grad. Designtävling (3 Plan-agenter → konvergens på samma fundament). TVÅ Kim-val: leverans i två steg (v1.3 städa+ena, v1.4 per-rad), per rad = rubrik+fet+justering. Emoji + 4 edge-fixar (fix2/3/4) redan committade; Fas 1 = aldrig-fast + EN anteckningsväg + EN formateringsmeny + rensa bluff-fet/död kod (ingen ny bärare → regel 15 trivialt grön); Fas 2 = individuell text per rad (EN ny bärare `line-styles`, full regel-15-kedja). Varför: Kim pekade ut "skriv direkt på canvas, två ytor, EN konsekvent meny" som det mest kritiska för användbarhet — fynd i koden: stuck-risk (isEditing avslutas bara av fokus, ej markering), anteckning har 3 divergerande vägar, menyn motsäger sig själv, bluff-fet-knapp + död kod.
 - 2026-06-24 · Milstolpe 1.2 satt (Kims order efter startskärm-koll): topprad-ikoner klipps av kanterna → bredare UI/UX-städning. Kartläggning (3 Explore) + design (2 Plan-agenter) → 5 steg. Två låsta Kim-val: (1) Formpaket smälter in i Former med flikar Grundformer/Paket/Mallar; (2) marker-knapp bort → dubbelklick på tom yta + hint + Klar-knapp. Zoom→info, meny får namngivna sektioner, Notis-chip→"Alla anteckningar" i menyn. Varför: Kim vill ha en topprad+meny "som Apple byggt den" — allt synligt, tydligt grupperat, ett ställe per sak. Format/export orört (inga nya former → regel 15 ej triggad).
 - 2026-06-24 · Milstolpe 1.1 satt (Kims Goal): total sim-driven genomgång av alla menyer/val + fritt förbättra + dual-platform via DELAD hjärna + macOS menyrads-popup (Kim valde "bäst kvalitet"; uttryckligt: inga parallella appar, mest delas, vill kunna trycka upp/visualisera/spara på samma plats som iPhone). Detaljplan i planläge före bygge.
