@@ -29,4 +29,16 @@ extension ToolbarView {
         .accessibilityIdentifier("toolbar.redo")
         .accessibilityLabel(a11yLabel(for: "toolbar.redo"))
     }
+
+    /// 1.4: markeringsverktyget åter på raden (Kims order) — markera flera via marquee.
+    /// Dubbeltryck på tom yta aktiverar också markeringsläget (CanvasView).
+    @ViewBuilder
+    var markerButton: some View {
+        Button { Haptics.impact(); onToggleMarker() } label: {
+            ToolbarIconButton(systemImage: "rectangle.dashed", isActive: model.markerMode)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("toolbar.marker")
+        .accessibilityLabel(a11yLabel(for: "toolbar.marker"))
+    }
 }

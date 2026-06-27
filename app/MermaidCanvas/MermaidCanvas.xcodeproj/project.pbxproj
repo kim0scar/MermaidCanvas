@@ -60,6 +60,7 @@
 		2044E6C34377DE47106D01A7 /* V69Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */; };
 		20858E8347E9A55C61F821D5 /* METOD-VISUELL-DIALOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */; };
 		22490A7634414FDDCD00C4C9 /* FileChangeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF04A29A100E836C9DE2317A /* FileChangeObserver.swift */; };
+		237D24231E442EA5EA9A3BA9 /* ToolbarView+Grabber.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CC1DA394DEC7440A3D404E /* ToolbarView+Grabber.swift */; };
 		237EE0CF343055756171208D /* CanvasFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DBE1118CB6B8E7AD3B7E51 /* CanvasFileManager.swift */; };
 		23B128F65DF0AF6A6987F9B0 /* ToolbarView+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */; };
 		24B2ABAE0546D3D2D2EE0045 /* ToolbarView+TextStylesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B24EFDC5E300CE42A333DD /* ToolbarView+TextStylesRow.swift */; };
@@ -169,6 +170,7 @@
 		7D95F212EDEA8077BE51BC5A /* test_diamond_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 34199C0F78572AE99CDD5E31 /* test_diamond_shape.1.png */; };
 		7DBA255061BBA23A2B51E139 /* CanvasModel+Drill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 104ED8A34A8B67E6EDC4E802 /* CanvasModel+Drill.swift */; };
 		7DBBE034703F8AE034EFABB5 /* SubCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5626978242C3DC4E235F049E /* SubCanvas.swift */; };
+		7DD5A18E362A08181CCA6706 /* ToolbarView+Grabber.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CC1DA394DEC7440A3D404E /* ToolbarView+Grabber.swift */; };
 		7E9B6FA50E2CAAD659C354E5 /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */; };
 		7EECEE3DC37DCC6AE815E975 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */; };
 		7FA91A9360576A4A601AE39E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C35ACE4629BBC03F7002717 /* Info.plist */; };
@@ -509,6 +511,7 @@
 		B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+Chips.swift"; sourceTree = "<group>"; };
 		B21EEC74FE33A3250FE50B48 /* EmojiPickerChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerChip.swift; sourceTree = "<group>"; };
 		B279CA0F1B8B398DC276B45F /* MacRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacRenderTests.swift; sourceTree = "<group>"; };
+		B2CC1DA394DEC7440A3D404E /* ToolbarView+Grabber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+Grabber.swift"; sourceTree = "<group>"; };
 		B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+ColorsRow.swift"; sourceTree = "<group>"; };
 		B34B4BBC1910CF8AFF2508CB /* PlatformModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformModifiers.swift; sourceTree = "<group>"; };
 		B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoadmapRenderer.swift; sourceTree = "<group>"; };
@@ -780,6 +783,7 @@
 				B21EEC74FE33A3250FE50B48 /* EmojiPickerChip.swift */,
 				B0E95395053861FFB88B0F62 /* ToolbarView+Chips.swift */,
 				B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */,
+				B2CC1DA394DEC7440A3D404E /* ToolbarView+Grabber.swift */,
 				AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */,
 				42B8E3177EAFE7D93F9063ED /* ToolbarView+Menu.swift */,
 				B552BB06C1E0B1CC66FBE56A /* ToolbarView+MultiSelectRow.swift */,
@@ -1321,6 +1325,7 @@
 				5D0B34988F99D3AAECDAFEA9 /* TextStyle.swift in Sources */,
 				EEF11B03FD190E698E9EF1B4 /* ToolbarView+Chips.swift in Sources */,
 				DE7D93FAF45C8336C55A3ACA /* ToolbarView+ColorsRow.swift in Sources */,
+				237D24231E442EA5EA9A3BA9 /* ToolbarView+Grabber.swift in Sources */,
 				529A1D3CC9D8C7B597BE2B71 /* ToolbarView+History.swift in Sources */,
 				FE739DF984FAF34BF437F261 /* ToolbarView+Menu.swift in Sources */,
 				44B0F34D1E40719CA326A64E /* ToolbarView+MultiSelectRow.swift in Sources */,
@@ -1452,6 +1457,7 @@
 				EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */,
 				AC1B5F41A850016565B83F0A /* ToolbarView+Chips.swift in Sources */,
 				4C507D44A97F37F90F408C31 /* ToolbarView+ColorsRow.swift in Sources */,
+				7DD5A18E362A08181CCA6706 /* ToolbarView+Grabber.swift in Sources */,
 				23B128F65DF0AF6A6987F9B0 /* ToolbarView+History.swift in Sources */,
 				24C2CF3CA4F695EA68682F22 /* ToolbarView+Menu.swift in Sources */,
 				CDC4460AF08146EA18AF0A69 /* ToolbarView+MultiSelectRow.swift in Sources */,

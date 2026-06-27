@@ -87,7 +87,7 @@ struct ToolbarView: View {
         } else {
             VStack(spacing: 0) {
                 primaryControls(vertical: false)
-                    .padding(.horizontal, 10).padding(.vertical, 8)
+                    .padding(.horizontal, 10).padding(.top, 6).padding(.bottom, 4)   // 1.4: mindre luft (Kim)
                 if let row = activeRow {
                     secondaryRowView(row)
                         .transition(.asymmetric(
@@ -112,7 +112,7 @@ struct ToolbarView: View {
             toggleButton("square.on.circle", row: .shapes, accId: "toolbar.shapes")
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
-            // 1.2: marker-knappen borttagen → markering via dubbelklick på tom yta (CanvasView).
+            markerButton   // 1.4: markeringsverktyget åter (Kim); dubbeltryck på tom yta funkar också
             if !vertical { Spacer(minLength: 0) }
             zoomBadge
             undoButton
@@ -179,21 +179,5 @@ struct ToolbarView: View {
         return "shapeCount=\(count)"
     }
 
-    // MARK: - Sekundär rad
-
-    @ViewBuilder
-    func secondaryRowView(_ row: SecondaryToolbarRow) -> some View {
-        HStack(spacing: 8) {
-            switch row {
-            case .shapes:      shapesSecondary
-            case .colors:      colorsSecondary
-            case .textStyles:  textStylesSecondary
-            case .multiSelect: multiSelectSecondary
-            }
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.appSecondaryBackground)
-    }
+    // MARK: - Sekundär rad → ToolbarView+Grabber.swift (1.4: + dra-in-grabber, R5-utbrytning)
 }
