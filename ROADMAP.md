@@ -2,7 +2,18 @@
 
 Versioner och vad de innehåller. Senaste först.
 
-## Aktuell version: 1.4 — "Buggar + anteckning-pratbubbla + polish"
+## Aktuell version: 1.5 — "Redigerings-menyn rätt (skriv-i-form)"
+
+*Tema:* Kims v1.4-test-fynd ("massa fel" i skriv-läget) åtgärdade + meny-vision levererad.
+**En ren rad medan man skriver** (topp-raden göms automatiskt) — slut på två rader samtidigt.
+**Varje ikon poppar en undermeny uppåt** (ingen scroll). **Svajp-streck** för att stänga
+menyrader. **Visuellt storleks-galleri:** 5 nivåer (Jätterubrik 40 → Brödtext 14) ritade i
+EXAKT sin storlek så man ser hur stora de blir. **Fet / kursiv / understruken** som separata
+toggles. Ingen ny %%-bärare (B/I/U state-JSON-only, som underflöden). 209 unit · conformance
+3/3 · render 3/3 · round-trip förlustfri. Per-ord-stil (markera ord → egen färg/storlek) +
+punktlista-live-medan-man-skriver = v1.6 (kräver text-motor).
+
+## v1.4 — "Buggar + anteckning-pratbubbla + polish"
 
 *Tema:* Kims v1.3-test-fynd åtgärdade. **Buggar:** mörkt läge funkar (mörk ram + alltid vit
 rityta — adaptiv chip-färg + fast ljus canvas-bakgrund); cirkel-text wrappar inuti kurvan;

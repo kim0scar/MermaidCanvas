@@ -1,17 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5 (redigerings-menyn rätt)
+# ARKITEKTUR-MERMAID — Version 1.4 (buggar + pratbubbla + polish)
 *Datum: 2026-06-27*
-
-> **1.5 — redigerings-menyn rätt (Kims v1.4-test: "massa fel" i skriv-läget):** Inga lager-/modul-
-> ändringar. **Del A (en rad medan man skriver):** `CanvasModel.isEditingText` gatar `ToolbarView`s
-> topp-sekundärrad → bara EN rad (keyboard-baren) vid inline-redigering; `FormattingBar` utan
-> ScrollView, varje ikon poppar undermeny uppåt; svajp-grabber stänger sekundärrad. **Del B (storleks-
-> galleri):** `TextStyle` 5 nivåer (Jätterubrik 40→Brödtext 14); `TextSizeGallery`-popover ritar varje
-> i SIN storlek; generator-CSS extraherad → `MermaidGenerator+TextCSS` (UI-fri). **Del C (fet/kursiv/
-> understruken):** 3 Bool på `ShapeNode` (state-JSON-only) + toggles i galleriet + `.italic/.underline`
-> + additiv vikt. Sim-verifierat: en rad vid skrivning · galleri i verklig storlek · B/I/U syns.
-> 209 unit · conformance 3/3 · render 3/3 · round-trip förlustfri. Per-ord rik text = v1.6.
-
-> **1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test):** Inga lager-/modul-ändringar.
 
 > **1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test):** Inga lager-/modul-ändringar.
 > **Buggar:** mörkt läge — ny adaptiv `Color.appChipBackground` + fast ljus rityte-bakgrund
