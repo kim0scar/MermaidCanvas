@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.5 — redigerings-menyn rätt (Kims v1.4-test). ALLA tre delar (A en-rad/popup/grabber · B 5-storleks-galleri · C fet/kursiv/understruk) byggda + SIM-VERIFIERADE. 209 unit · conformance/render 3/3 · round-trip förlustfri. Deploy v1.5 → iPhone pågår. KVAR: Kims iPhone-bock. Per-ord rik text = Milstolpe 1.6. n8n + M4 PAUSADE.
+NU: ⏳ Milstolpe 1.5 — redigerings-menyn rätt (Kims v1.4-test). ✅ DEPLOYAD v1.5 (iPhone installerad — låst vid launch, öppnas manuellt; tagg v1.5 + ZIP): A en-rad/popup/grabber · B 5-storleks-galleri · C fet/kursiv/understruk — alla sim-verifierade. 209 unit · conformance/render 3/3 · round-trip förlustfri · git synkat. KVAR: bara Kims iPhone-bock. Per-ord rik text = Milstolpe 1.6. n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -138,7 +138,7 @@ Kim hittade "massa fel" i skriv-läget: två formaterings-rader + punktlista PÅ
 - ✅ Del A — Meny-UX: `CanvasModel.isEditingText` → EN rad medan man skriver (sim-verifierat: topp-raden borta) · `FormattingBar` ikon→popup (ingen scroll) · svajp-grabber.
 - ✅ Del B — Storleks-galleri: TextStyle 5 nivåer (40/30/24/18/14) · `TextSizeGallery` ritar varje i sin storlek (sim-verifierat: Jätterubrik→40pt) · generator-CSS extraherad.
 - ✅ Del C — Fet/Kursiv/Understruken: 3 Bool (state-JSON-only) + toggles i galleriet + rendering (sim-verifierat: kursiv+understruken syns). Full regel-15: 209 unit · round-trip förlustfri.
-- ⏳ Deploy v1.5 → iPhone + Kims bock.
+- ✅ DEPLOYAD v1.5 (iPhone installerad, tagg + ZIP, 209 unit · conformance/render 3/3 · round-trip förlustfri · git synkat). KVAR: bara Kims iPhone-bock.
   Kräver: Milstolpe 1.4 deployad ✅
 
 ## Milstolpe 1.6 — rik text (per-ord) — EGEN milstolpe, efter v1.5
