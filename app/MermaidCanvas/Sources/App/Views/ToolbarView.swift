@@ -70,7 +70,7 @@ struct ToolbarView: View {
 
     var body: some View {
         // v39: visa multi-select-operationer automatiskt när markerMode är aktivt
-        let activeRow: SecondaryToolbarRow? = model.markerMode ? .multiSelect : secondaryRow
+        let activeRow: SecondaryToolbarRow? = model.isEditingText ? nil : (model.markerMode ? .multiSelect : secondaryRow)
         if axis == .vertical {
             // v60: landskap — vänster vertikal sidebar (ligger som overlay över canvas).
             // Primärkolumn till vänster; sekundär-panel öppnas till höger om den.

@@ -24,15 +24,16 @@ extension ToolbarView {
         .background(Color.appSecondaryBackground)
     }
 
-    /// Dra-handtag: tap ELLER vertikal-drag fäller in sekundärraden. Vertikal-only-tröskel
+    /// 1.5 (Kim): "streck" man SVEPER för att snabbt stänga sekundärraden — slipper leta
+    /// upp exakt vilken huvudknapp som öppnade den. Tap funkar också. Vertikal-tröskel
     /// (minDist 8, > 12) så horisontell scroll/tryck i raden inte stjäls.
     @ViewBuilder
     var grabberHandle: some View {
         Capsule()
             .fill(Color.appTertiaryLabel)
-            .frame(width: 38, height: 5)
+            .frame(width: 40, height: 5)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 3)
+            .padding(.vertical, 4)
             .contentShape(Rectangle())
             .onTapGesture { dismissSecondary() }
             .gesture(
@@ -41,7 +42,7 @@ extension ToolbarView {
                 }
             )
             .accessibilityIdentifier("toolbar.grabber")
-            .accessibilityLabel("Fäll in menyraden")
+            .accessibilityLabel("Svep för att stänga menyraden")
     }
 
     /// Fäller in sekundärraden — samma animation + haptik som toggle-knappen. I markeringsläge

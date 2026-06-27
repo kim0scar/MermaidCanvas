@@ -112,7 +112,7 @@ extension ShapeView {
                     .multilineTextAlignment(textAlignment)
                     .lineLimit(1...6)
                     .padding(.horizontal, textHorizontalInset)
-                    .onChange(of: labelFocused) { _, focused in if !focused { isEditing = false } }
+                    .onChange(of: labelFocused) { _, focused in if !focused { isEditing = false; onEndTextEdit?() } }
                     // 1.3 S1.3: SAMMA formateringsmeny ovanför tangentbordet (Apple Notes) —
                     // formatera medan du skriver direkt i formen. Snapshot per åtgärd via onBeginTextEdit.
                     #if os(iOS)
@@ -136,7 +136,8 @@ extension ShapeView {
                                     if on { shape.hasBullets = false } },
                                 onAlign: { a in onBeginTextEdit?(shape.id); shape.textAlignment = a },
                                 onIndent: { d in onBeginTextEdit?(shape.id)
-                                    shape.indentLevel = min(3, max(0, shape.indentLevel + d)) }
+                                    shape.indentLevel = min(3, max(0, shape.indentLevel + d)) },
+                                onDone: { labelFocused = false }
                             )
                         }
                     }

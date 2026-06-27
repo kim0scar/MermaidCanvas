@@ -30,13 +30,13 @@ final class CanvasModel: ObservableObject {
     /// v27: Form-paketer = oberoende av platform, kan toggle:as i farten.
     @Published var activeShapePacks: Set<ShapePack> = [.basic]
 
-    // v23: pan/zoom-state hanteras nu som @State i CanvasView för perf
-    // (60Hz @Published triggade hela hierarkin att rerendera)
+    // v23: pan/zoom-state är @State i CanvasView för perf (60Hz @Published rerenderade allt)
 
     // v19: selection-state — bara UI
     @Published var selectedShapeId: UUID? = nil
     @Published var multiSelection: Set<UUID> = []
     @Published var markerMode: Bool = false
+    @Published var isEditingText: Bool = false   // 1.5: inline-redigering → göm topp-sekundärraden
     /// v63: kollaps är PER GREN (kant-id), inte per nod — Kims fynd: minus-badgen
     /// på en pil kollapsade alla beroendepilar från samma symbol.
     @Published var collapsedEdgeIds: Set<UUID> = []

@@ -44,6 +44,8 @@ struct ShapeView: View {
     var isSelected: Bool = false
     /// 1.3: ta EN undo-snapshot när inline-textredigering startar.
     var onBeginTextEdit: ((UUID) -> Void)? = nil
+    /// 1.5: inline-redigering slutade (fokus-loss / avmarkering) → nolla model.isEditingText.
+    var onEndTextEdit: (() -> Void)? = nil
 
     @State private var dragOffset: CGSize = .zero
     @State private var lastMultiDragTranslation: CGSize? = nil
@@ -199,7 +201,7 @@ struct ShapeView: View {
         // 1.3 S1.1: aldrig fast — avmarkering avslutar ALLTID text-redigering.
         // Invariant: ej markerad ⇒ ej redigering (bakgrunds-tap / markera-annan / fokus-loss).
         .onChange(of: isSelected) { _, sel in
-            if !sel { isEditing = false; labelFocused = false }
+            if !sel { isEditing = false; labelFocused = false; onEndTextEdit?() }
         }
     }
 

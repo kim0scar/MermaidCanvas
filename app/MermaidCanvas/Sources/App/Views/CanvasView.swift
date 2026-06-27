@@ -158,9 +158,7 @@ struct CanvasView: View {
                         onShowNote: { onShapeShowNote(shape.id) },
                         onQuickRead: { onShapeQuickRead(shape.id) },
                         onTableEdit: { _ in onTableEdit(shape.id) },
-                        onDragUpdate: { canvasPoint in
-                            updateAutoScroll(at: canvasPoint)
-                        },
+                        onDragUpdate: { updateAutoScroll(at: $0) },
                         onMoveMultiSelection: { delta in
                             model.moveSelection(by: delta)
                         },
@@ -187,7 +185,8 @@ struct CanvasView: View {
                         onSetZLayer: { id, z in onShapeSetZLayer(id, z) },
                         onEnterSubprocess: { id in onShapeEnterSubprocess(id) },
                         isSelected: model.selectedShapeId == shape.id,
-                        onBeginTextEdit: { _ in model.snapshotForUndo() }
+                        onBeginTextEdit: { _ in model.snapshotForUndo(); model.isEditingText = true },
+                        onEndTextEdit: { model.isEditingText = false }
                     )
                     // zIndex-band: container -1,3..-0,7 < pilar 0 < former 0,7..1,3 < kollaps-badge 4.
                     .zIndex((shape.type == .container ? -1.0 : 1.0) + Double(shape.zLayer) * 0.3)
