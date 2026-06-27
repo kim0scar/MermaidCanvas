@@ -57,6 +57,8 @@ struct ToolbarView: View {
     var onDeleteSelection: () -> Void
     var onAlignHorizontal: () -> Void
     var onAlignVertical: () -> Void
+    /// 1.4: öppna anteckningsbubblor — multi-select-raden visar/döljer markeringens notiser.
+    @Binding var openCards: [UUID]
     /// v60: layout-axel — .horizontal (porträtt: topp-bar) eller .vertical (landskap: vänster sidebar).
     var axis: Axis = .horizontal
 

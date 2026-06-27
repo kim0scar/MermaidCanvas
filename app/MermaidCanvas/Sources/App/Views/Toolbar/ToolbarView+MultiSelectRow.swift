@@ -7,6 +7,11 @@ extension ToolbarView {
     @ViewBuilder
     var multiSelectSecondary: some View {
         let count = model.multiSelection.count
+        // 1.4: markeringens anteckningar (Kim: "en eller många → visa/dölj alla").
+        let notedIds = model.multiSelection.filter { id in
+            model.shapes.first(where: { $0.id == id })?.note.isEmpty == false
+        }
+        let anyShown = notedIds.contains { openCards.contains($0) }
         HStack(spacing: 10) {
             // Räknare — hur många former är markerade
             Text("\(count) markerade")
@@ -37,6 +42,17 @@ extension ToolbarView {
             multiSelectButton("align.vertical.center", label: "Centrera V",
                                accId: "multiselect.alignV",
                                disabled: count < 2) { onAlignVertical() }
+
+            Divider().frame(height: 28)
+
+            // 1.4: visa/dölj alla anteckningar i markeringen (på canvasen som bubblor).
+            multiSelectButton(anyShown ? "bubble.left.fill" : "bubble.left",
+                               label: anyShown ? "Dölj anteck." : "Visa anteck.",
+                               accId: "multiselect.notes",
+                               disabled: notedIds.isEmpty) {
+                if anyShown { openCards.removeAll { notedIds.contains($0) } }
+                else { for id in notedIds where !openCards.contains(id) { openCards.append(id) } }
+            }
 
             Divider().frame(height: 28)
 

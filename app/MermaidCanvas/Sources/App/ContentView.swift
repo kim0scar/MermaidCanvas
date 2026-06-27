@@ -92,9 +92,7 @@ struct ContentView: View {
             onToggleMarker: { model.toggleMarkerMode() },
             onAddTable: { model.addTable(at: canvasCenter) },
             onAddJumpLink: { model.addJumpLinkPair(near: canvasCenter) },
-            onNewCanvas: {
-                if model.shapes.isEmpty { showNewCanvasSheet = true } else { showNewCanvasPrompt = true }
-            },
+            onNewCanvas: { if model.shapes.isEmpty { showNewCanvasSheet = true } else { showNewCanvasPrompt = true } },
             onResetZoom: { resetZoomTrigger &+= 1 },
             onShowNotePopup: { showNotePopup = true },
             onImportMermaid: { showMermaidImport = true },
@@ -104,6 +102,7 @@ struct ContentView: View {
             onDeleteSelection: { model.deleteSelection() },
             onAlignHorizontal: { model.alignSelectionHorizontally() },
             onAlignVertical: { model.alignSelectionVertically() },
+            openCards: $openCards,
             axis: vertical ? .vertical : .horizontal
         )
     }
