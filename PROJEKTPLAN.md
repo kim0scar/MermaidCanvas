@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.5 — redigerings-menyn rätt (Kims v1.4-test). ✅ DEPLOYAD v1.5 (iPhone installerad — låst vid launch, öppnas manuellt; tagg v1.5 + ZIP): A en-rad/popup/grabber · B 5-storleks-galleri · C fet/kursiv/understruk — alla sim-verifierade. 209 unit · conformance/render 3/3 · round-trip förlustfri · git synkat. KVAR: bara Kims iPhone-bock. Per-ord rik text = Milstolpe 1.6. n8n + M4 PAUSADE.
+NU: ⏳ Milstolpe 1.5 — redigerings-menyn rätt. ✅ DEPLOYAD v1.5 (iPhone, tagg + ZIP): A en-rad/popup/grabber · B 5-storleks-galleri · C fet/kursiv/understruk (alla sim-verifierade; 209 unit · conformance/render 3/3 · round-trip förlustfri · git synkat). ⚠️ KIM FLAGGADE "INTE HELT BRA" (2026-06-27) — väntar hans detaljerade fynd på v1.5 innan nästa steg. (Han ville starta om datorn — sim-render var wedgad, omstart fixar CoreSimulator.) Per-ord rik text = Milstolpe 1.6. n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
