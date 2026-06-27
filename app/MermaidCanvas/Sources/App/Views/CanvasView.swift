@@ -203,7 +203,7 @@ struct CanvasView: View {
                 .zIndex(4)
 
             // v67: läs-LAPPAR i canvas-space — panorerar/zoomar med tavlan (Kims fynd 2).
-            NoteCardsLayer(model: model, openCards: $openCards, onEdit: { id in onShapeEdit(id) })
+            NoteCardsLayer(model: model, openCards: $openCards)
                 .frame(width: model.contentSize.width, height: model.contentSize.height, alignment: .topLeading)
                 .zIndex(5)
 

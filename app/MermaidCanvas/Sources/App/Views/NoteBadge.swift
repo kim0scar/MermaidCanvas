@@ -18,9 +18,9 @@ struct NoteBadge: View {
                     .overlay(Circle().stroke(Color.white, lineWidth: 1.5))
                     .shadow(color: .black.opacity(0.2), radius: 2, y: 1)
                     .frame(width: visual, height: visual)
-                Image(systemName: "text.alignleft")
-                    .font(.system(size: visual * 0.5, weight: .bold))
-                    .foregroundStyle(Color.black.opacity(0.75))
+                Image(systemName: "bubble.left.fill")
+                    .font(.system(size: visual * 0.52, weight: .bold))
+                    .foregroundStyle(Color.black.opacity(0.7))
             }
         }
         .buttonStyle(.plain)

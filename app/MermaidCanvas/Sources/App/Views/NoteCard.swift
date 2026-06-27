@@ -1,22 +1,18 @@
 import SwiftUI
 
-/// v66/v67: Kvarliggande läs-LAPPAR PÅ canvasen (ersätter QuickReadSheet-modalen,
-/// Kims fynd: "popup som ligger kvar så man kan läsa alla"). Flera samtidigt.
-/// v67: ritas i CANVAS-space (inuti den zoombara tavlan) → lappen panorerar och
-/// zoomar med formen och försvinner ur vy när Kim panorerar bort, i stället för att
-/// sitta fast på skärmen och täcka saker (Kims fynd 2).
+/// v66/v67: Kvarliggande anteckningar PÅ canvasen (ersätter QuickReadSheet-modalen).
+/// 1.4 (Kim): omgjorda till eleganta PRATBUBBLOR — gul ton + svans mot formen, redigeras
+/// direkt i bubblan, vik-ikon (inget kryss). Ligger kvar tills man viker in dem.
 struct NoteCardsLayer: View {
     @ObservedObject var model: CanvasModel
     @Binding var openCards: [UUID]
-    var onEdit: (UUID) -> Void
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             ForEach(openCards, id: \.self) { id in
                 if let shape = model.shapes.first(where: { $0.id == id }) {
                     NoteCard(model: model, shapeId: id,
-                             onClose: { openCards.removeAll { $0 == id } },
-                             onEdit: { onEdit(id) })
+                             onFold: { openCards.removeAll { $0 == id } })
                         .position(cardPosition(for: shape))
                 }
             }
@@ -24,9 +20,9 @@ struct NoteCardsLayer: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
-    /// Canvas-koordinat: lappen läggs intill formen (höger sida). Ingen skärm-klamp —
-    /// den hör till tavlan, inte skärmen.
-    static let cardWidth: CGFloat = 260
+    /// Canvas-koordinat: bubblan läggs intill formen (höger sida), svansen pekar vänster
+    /// mot formen. Ingen skärm-klamp — den hör till tavlan, inte skärmen.
+    static let cardWidth: CGFloat = 244
     private func cardPosition(for shape: ShapeNode) -> CGPoint {
         let halfShapeW = ShapeGeometry.width(for: shape) / 2
         let x = shape.position.x + halfShapeW + Self.cardWidth / 2 + 16
@@ -34,101 +30,78 @@ struct NoteCardsLayer: View {
     }
 }
 
-/// En lapp: formens namn + Prompt (blir skill) + Anteckning (bara för dig).
-/// V79-svep: namn + anteckning är REDIGERBARA direkt här på canvasen (Kims "skriv
-/// direkt på canvas"). Prompt visas read-only; pennan öppnar full redigering.
+/// En anteckningsbubbla: gul ton + svans mot formen. Anteckningen redigeras direkt här
+/// (Kims "skriv direkt på canvas"). Vik-ikonen fäller in bubblan (formens bubbel-badge
+/// står kvar). Prompt visas read-only om formen bär en.
 struct NoteCard: View {
     @ObservedObject var model: CanvasModel
     let shapeId: UUID
-    var onClose: () -> Void
-    var onEdit: () -> Void
+    var onFold: () -> Void
 
-    @State private var label = ""
     @State private var note = ""
     @State private var loaded = false
     @State private var snapped = false
 
     private var shape: ShapeNode? { model.shapes.first { $0.id == shapeId } }
+    private let tailWidth: CGFloat = 12
+
+    // Gul antecknings-palett (bubblan ligger på den ljus-låsta canvasen).
+    private let bubbleFill = Color(hex: 0xFFF6D6)
+    private let bubbleStroke = Color(hex: 0xE6C766)
+    private let ink = Color(hex: 0x8A6D00)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
-                // V79-svep: namnet skrivs direkt i lappen ("ny ikon T → skriv namn").
-                TextField("Namn", text: $label)
-                    .font(.subheadline.weight(.semibold))
-                    .textFieldStyle(.plain)
-                    .submitLabel(.done)
-                    .onChange(of: label) { _, v in commit(label: v) }
-                    .accessibilityIdentifier("notecard.name")
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 5) {
+                Image(systemName: "bubble.left.fill")
+                    .font(.system(size: 11))
+                Text("Anteckning")
+                    .font(.caption2.weight(.semibold))
                 Spacer(minLength: 4)
-                Button(action: onEdit) {
-                    Image(systemName: "slider.horizontal.3")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
+                Button(action: onFold) {
+                    Image(systemName: "arrow.down.right.and.arrow.up.left")
+                        .font(.system(size: 12, weight: .semibold))
                 }
                 .buttonStyle(.plain)
-                .accessibilityIdentifier("notecard.edit")
-                .accessibilityLabel("Redigera (reglage)")
-                Button(action: onClose) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 17))
-                        .foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("notecard.close")
+                .accessibilityIdentifier("notecard.fold")
+                .accessibilityLabel("Fäll in anteckningen")
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 9)
-            .background(Color.appSecondaryBackground)
+            .foregroundStyle(ink)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
-                    if let p = shape?.prompt, !p.isEmpty {
-                        section(icon: "brain", color: Color(hex: 0x4338ca),
-                                heading: "Prompt (blir skill)", text: p)
-                    }
-                    // V79-svep: anteckningen REDIGERAS direkt på canvasen.
-                    VStack(alignment: .leading, spacing: 5) {
-                        Label("Anteckning (bara för dig)", systemImage: "text.alignleft")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color(hex: 0xB28A00))
-                        TextEditor(text: $note)
-                            .font(.footnote)
-                            .frame(minHeight: 56, maxHeight: 130)
-                            .scrollContentBackground(.hidden)
-                            .background(Color.appSecondaryBackground,
-                                        in: RoundedRectangle(cornerRadius: 8))
-                            .onChange(of: note) { _, v in commit(note: v) }
-                            .accessibilityIdentifier("notecard.note")
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(12)
+            if let p = shape?.prompt, !p.isEmpty {
+                section(icon: "brain", color: Color(hex: 0x4338ca),
+                        heading: "Prompt (blir skill)", text: p)
             }
-            .frame(maxHeight: 230)
+
+            TextEditor(text: $note)
+                .font(.footnote)
+                .foregroundStyle(Color(hex: 0x3A2E00))
+                .frame(minHeight: 52, maxHeight: 150)
+                .scrollContentBackground(.hidden)
+                .background(Color.white.opacity(0.55), in: RoundedRectangle(cornerRadius: 8))
+                .onChange(of: note) { _, v in commit(note: v) }
+                .accessibilityIdentifier("notecard.note")
         }
-        .frame(width: 260)
-        .background(Color.appBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12)
-            .stroke(Color.appSeparator, lineWidth: 0.8))
-        .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
+        .padding(.vertical, 10)
+        .padding(.trailing, 12)
+        .padding(.leading, 12 + tailWidth)   // plats för svansen till vänster
+        .frame(width: NoteCardsLayer.cardWidth)
+        .background(SpeechBubble(tailWidth: tailWidth).fill(bubbleFill))
+        .overlay(SpeechBubble(tailWidth: tailWidth).stroke(bubbleStroke, lineWidth: 1))
+        .shadow(color: .black.opacity(0.15), radius: 8, y: 3)
         .accessibilityIdentifier("notecard")
         .onAppear {
             guard !loaded else { return }
-            label = shape?.label ?? ""
             note = shape?.note ?? ""
             loaded = true
         }
     }
 
     /// Skriver live till modellen; tar EN undo-snapshot per redigeringssession.
-    /// No-op om värdet inte ändrats (skyddar mot ladd-triggad onChange).
-    private func commit(label: String? = nil, note: String? = nil) {
-        if let label, label == shape?.label { return }
-        if let note, note == shape?.note { return }
+    private func commit(note: String) {
+        if note == shape?.note { return }
         if !snapped { model.snapshotForUndo(); snapped = true }
-        model.setShapeText(id: shapeId, label: label, note: note)
+        model.setShapeText(id: shapeId, note: note)
     }
 
     @ViewBuilder
@@ -143,5 +116,27 @@ struct NoteCard: View {
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+}
+
+/// Pratbubbla: rundad kropp + en svans (triangel) på vänster sida som pekar mot formen.
+/// Kroppen är indragen `tailWidth` från vänsterkanten; svansen fyller den vänstra biten.
+struct SpeechBubble: Shape {
+    var cornerRadius: CGFloat = 14
+    var tailWidth: CGFloat = 12
+    var tailHeight: CGFloat = 18
+
+    func path(in rect: CGRect) -> Path {
+        let body = CGRect(x: rect.minX + tailWidth, y: rect.minY,
+                          width: rect.width - tailWidth, height: rect.height)
+        var p = Path(roundedRect: body, cornerRadius: cornerRadius)
+        let cy = rect.midY
+        var tail = Path()
+        tail.move(to: CGPoint(x: body.minX + 1, y: cy - tailHeight / 2))
+        tail.addLine(to: CGPoint(x: rect.minX, y: cy))
+        tail.addLine(to: CGPoint(x: body.minX + 1, y: cy + tailHeight / 2))
+        tail.closeSubpath()
+        p.addPath(tail)
+        return p
     }
 }
