@@ -1,5 +1,5 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ Milstolpe 1.4 — buggar + anteckning-pratbubbla + polish (Kims v1.3-test). ✅ DEPLOYAD v1.4 på iPhone (tagg + ZIP): A·B·C·D byggda + sim-verifierade. 205 unit · conformance/render 3/3 · git synkat. KVAR: bara Kims iPhone-bock på känslan. Rik text (markera ord/nya storlekar/fet-kursiv) = Milstolpe 1.5. n8n + M4 PAUSADE.
+NU: ⏳ Milstolpe 1.5 — redigerings-menyn rätt (Kims v1.4-test: "massa fel" i skriv-läget — två rader + osynlig punktlista). Plan godkänd 2026-06-27. Bygger Del A (en rad + ikon→popup + svajp-grabber) → Del B (storleks-galleri 5 nivåer) → Del C (fet/kursiv/understruk). v1.4 ✅ deployad. n8n + M4 PAUSADE.
 [grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
 SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
 MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
@@ -133,10 +133,18 @@ Kim testade v1.3, älskar fundamentet, gav fynd: 3 buggar + anteckning-omdesign 
 - ✅ DEPLOYAD v1.4 (iPhone installerad+startad, tagg v1.4 + ZIP, 205 unit · conformance/render 3/3 · git synkat). KVAR: bara Kims iPhone-bock.
   Kräver: Milstolpe 1.3 deployad ✅
 
-## Milstolpe 1.5 — rik text (markera ord → egen färg/storlek, EGEN milstolpe)
-Run-baserad text (attribut per teckenintervall) + UITextView-representable-editor + visuell stil-galleri (storlekar i verklig storlek, ~40 max) + fet/kursiv/understruken. EN ny bärare (runs-JSON, `tableCells`-mönstret, full regel-15). Löser även punktlista-LIVE-medan-man-skriver. Designtävling vid 1.5-start.
-- ☐ Byggs efter v1.4 + Kims bock.
-  Kräver: Milstolpe 1.4 deployad
+## Milstolpe 1.5 — redigerings-menyn rätt (Kims v1.4-test, plan godkänd 2026-06-27)
+Kim hittade "massa fel" i skriv-läget: två formaterings-rader + punktlista PÅ men osynlig. Designtävling (1 Explore + 2 Plan-agenter). Detaljplan: ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md. Kärnprincip: skriv-baren visar bara live-renderbart (storlek+justering); lista/indrag bor i markerad-form-raden.
+- ☐ Del A — Meny-UX (ingen bärare): `CanvasModel.isEditingText` → en rad medan man skriver · `FormattingBar` ikon→popup (ingen scroll) · svajp-upp-grabber stänger sekundärrad. Klart: en rad i sim + popup uppåt + svajp stänger.
+- ☐ Del B — Storleks-galleri (ingen bärare): TextStyle 5 nivåer (40/30/24/18/14) · `TextSizeGallery`-popover ritar varje i sin storlek · prep extrahera generator-CSS. Klart: galleriet visar 5 nivåer i verklig storlek.
+- ☐ Del C — Fet/Kursiv/Understruken: 3 Bool på ShapeNode (state-JSON-only) + toggles + rendering. Full regel-15 (symmetri+round-trip+bijektion). Klart: syns i formen + round-trippar.
+- ☐ Deploy v1.5 → iPhone + Kims bock.
+  Kräver: Milstolpe 1.4 deployad ✅
+
+## Milstolpe 1.6 — rik text (per-ord) — EGEN milstolpe, efter v1.5
+Riktig text-motor i formen (UITextView/NSTextView-representable): markera ORD → egen färg/storlek + punktlista LIVE medan man skriver. Run-baserad modell + ny bärare (runs-JSON, full regel-15). Designtävling vid 1.6-start.
+- ☐ Byggs efter v1.5 + Kims bock.
+  Kräver: Milstolpe 1.5 deployad
 
 ## Efter MB (pausat, Kims order) + Efter M3
 - MC — n8n klar: kontrakt-synk (4 saknade noder) + n8n-paket→spec_type:flow + konformitetstest.
@@ -157,6 +165,7 @@ Run-baserad text (attribut per teckenintervall) + UITextView-representable-edito
 - 2026-06-21 · 💡#12 Markdown-läsare i appen (read-only): öppna en .md (t.ex. FUNKTIONSKarta) och läsa den formaterad — rubriker + tabeller · kräver markdown-render-lib (SwiftUI-inbyggd renderar ej tabeller) = eget litet bygge + nytt beroende + scope-fråga (PRODUKT.md: appen är ritverktyg, ej dok-läsare) · väntar
 
 ## Revideringar — datum · vad · varför (en mening var · skrivs FÖRE arbetet)
+- 2026-06-27 · Milstolpe 1.5 OMDEFINIERAD (Kims v1.4-test): testade skriv-i-form på iPhone → "massa fel" (två formaterings-rader samtidigt + punktlista PÅ men osynlig). Han älskar raden-ovanför-tangentbordet men vill: ikon→popup uppåt (ingen scroll), svajp-upp-streck för att stänga undermenyer, storleks-system om (5 nivåer i verklig storlek + separera fet/kursiv/understruk). Designtävling (1 Explore-rotorsak + 2 Plan-design) → konvergens. 1.5 = meny-omdesign (Del A meny-UX, B storleks-galleri, C fet/kursiv/understruk); per-ord rik text (markera ord + punktlista-live) flyttad till NY Milstolpe 1.6 (kräver text-motor/representable). Kärnprincip: skriv-baren visar bara live-renderbart, lista/indrag i markerad-form-raden → noll "PÅ men osynlig". Varför: Kim valde den lätta vägen (ej tung text-motor nu) men med genomtänkt meny-UX.
 - 2026-06-27 · Milstolpe 1.4 + 1.5 satta (Kims v1.3-test-feedback): Kim testade v1.3, älskade fundamentet ("fantastiskt arbete"), gav fynd → 1.4 (buggar: mörkt läge/cirkel-wrap/punktlista-syns; anteckning som elegant pratbubbla med vik-ikon + visa/dölj-alla; meny-polish: kompakt + grabber + markeringsknapp + mindre luft; 8 numrerade färger; minus-position) + 1.5 (rik text: markera ORD → egen färg/storlek, visuell stil-galleri med större rubriker, fet/kursiv/understruken — run-baserad modell + rich-editor, EN ny bärare). Tre Kim-val: mörk ram + vit rityta; visuell stil-meny; polish först (1.4) sen rik text (1.5). Designtävling (2 Explore rotorsak + 2 Plan design) → konvergens. Den gamla "per-rad"-idén ersatt av Kims rikare "markera ord"-önskan. Varför: testning på riktig iPhone avslöjade buggar + att redigeringen behöver bli ännu rikare/elegantare för att kännas Apple-grad.
 - 2026-06-26 · Milstolpe 1.3 satt (Kims order): 5 interaktionsfel + redigeringsytan utpekad som appens viktigaste yta, ska bli Apple-grad. Designtävling (3 Plan-agenter → konvergens på samma fundament). TVÅ Kim-val: leverans i två steg (v1.3 städa+ena, v1.4 per-rad), per rad = rubrik+fet+justering. Emoji + 4 edge-fixar (fix2/3/4) redan committade; Fas 1 = aldrig-fast + EN anteckningsväg + EN formateringsmeny + rensa bluff-fet/död kod (ingen ny bärare → regel 15 trivialt grön); Fas 2 = individuell text per rad (EN ny bärare `line-styles`, full regel-15-kedja). Varför: Kim pekade ut "skriv direkt på canvas, två ytor, EN konsekvent meny" som det mest kritiska för användbarhet — fynd i koden: stuck-risk (isEditing avslutas bara av fokus, ej markering), anteckning har 3 divergerande vägar, menyn motsäger sig själv, bluff-fet-knapp + död kod.
 - 2026-06-24 · Milstolpe 1.2 satt (Kims order efter startskärm-koll): topprad-ikoner klipps av kanterna → bredare UI/UX-städning. Kartläggning (3 Explore) + design (2 Plan-agenter) → 5 steg. Två låsta Kim-val: (1) Formpaket smälter in i Former med flikar Grundformer/Paket/Mallar; (2) marker-knapp bort → dubbelklick på tom yta + hint + Klar-knapp. Zoom→info, meny får namngivna sektioner, Notis-chip→"Alla anteckningar" i menyn. Varför: Kim vill ha en topprad+meny "som Apple byggt den" — allt synligt, tydligt grupperat, ett ställe per sak. Format/export orört (inga nya former → regel 15 ej triggad).
