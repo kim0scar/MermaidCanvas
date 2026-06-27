@@ -67,6 +67,10 @@ final class StateJSONSymmetryTests: XCTestCase {
         var s = rect(); s.textStyle = .r1
         XCTAssertEqual(roundTripFirst(s)?.textStyle, .r1)
     }
+    func test_textStyle_jatte() {   // 1.5: nya största nivån round-trippar
+        var s = rect(); s.textStyle = .jatte
+        XCTAssertEqual(roundTripFirst(s)?.textStyle, .jatte)
+    }
     func test_textAlignment() {
         var s = rect(); s.textAlignment = .trailing
         XCTAssertEqual(roundTripFirst(s)?.textAlignment, .trailing)

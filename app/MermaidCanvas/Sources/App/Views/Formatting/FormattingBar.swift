@@ -40,9 +40,9 @@ struct FormattingBar: View {
             }
             .accessibilityIdentifier("toolbar.textSize")
             .accessibilityLabel("Textstorlek")
-            .confirmationDialog("Textstorlek", isPresented: $showSizePicker, titleVisibility: .visible) {
-                ForEach(TextStyle.allCases) { st in Button(st.displayName) { onStyle(st) } }
-                Button("Avbryt", role: .cancel) {}
+            .popover(isPresented: $showSizePicker) {
+                TextSizeGallery(current: style, onPick: { onStyle($0); showSizePicker = false })
+                    .presentationCompactAdaptation(.popover)
             }
 
             Divider().frame(height: 28).padding(.horizontal, 2)
@@ -127,10 +127,11 @@ struct FormattingBar: View {
 
     private func stylePreview(_ st: TextStyle) -> String {
         switch st {
-        case .r1:   return "R1"
-        case .r2:   return "R2"
-        case .r3:   return "R3"
-        case .body: return "Aa"
+        case .jatte: return "XL"
+        case .r1:    return "R1"
+        case .r2:    return "R2"
+        case .r3:    return "R3"
+        case .body:  return "Aa"
         }
     }
 }

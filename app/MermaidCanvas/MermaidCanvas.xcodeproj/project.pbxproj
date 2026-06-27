@@ -29,6 +29,7 @@
 		0BB413F21CF17BE9CA427887 /* CanvasView+Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12CB64D782A2EB21CFEB3C9 /* CanvasView+Selection.swift */; };
 		0D269D054C7B87EB4F90776D /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
 		0D32FF970AEB160EE83B01B4 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
+		0DDBB12EE6A48AE9796B7E5B /* TextSizeGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29403E4A59F24B3CE21DA8C1 /* TextSizeGallery.swift */; };
 		0E2DD39826CC4DC274B0EB69 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231E1F427B96B53352261D55 /* Color+Hex.swift */; };
 		0F165CD39C55F08866A2E55F /* CanvasModel+Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D149A2089DDEF1F2F2D2CB3 /* CanvasModel+Platform.swift */; };
 		0FBC3561BC0DFEDCEFB8D07A /* MermaidMetaComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */; };
@@ -174,6 +175,7 @@
 		7E9B6FA50E2CAAD659C354E5 /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */; };
 		7EECEE3DC37DCC6AE815E975 /* iPhoneFrameOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFDF13A8781A9AEB71B87BEB /* iPhoneFrameOverlay.swift */; };
 		7FA91A9360576A4A601AE39E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C35ACE4629BBC03F7002717 /* Info.plist */; };
+		7FB8F40902C4C2B753098F8D /* MermaidGenerator+TextCSS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71475F0934F425FE089FF740 /* MermaidGenerator+TextCSS.swift */; };
 		7FD0F9DF56B93981E42127DD /* CanvasModel+Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65057645CBC97A8C00E2448 /* CanvasModel+Selection.swift */; };
 		8010B3A2AD586855A4F82562 /* MermaidParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */; };
 		8239C5EFC5133E538D8EB8FA /* MermaidParser+EdgeMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1182F83F7A919C040242F048 /* MermaidParser+EdgeMeta.swift */; };
@@ -291,8 +293,10 @@
 		D78FDD336CE79EF5EAEB5704 /* ContentView+Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03993D0F724864F2603EC96D /* ContentView+Canvas.swift */; };
 		D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D301AFD2BD69C0466CD57E /* MarkerOverlay.swift */; };
 		D7C11E4CD260ADFA3F66482A /* LineEndpointHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53740DEBAABA9011B2F2F531 /* LineEndpointHandle.swift */; };
+		D8B9744DD3BE79E758ED8727 /* TextSizeGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29403E4A59F24B3CE21DA8C1 /* TextSizeGallery.swift */; };
 		D904D2E4A5196AB3544416BB /* MermaidCanvasApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E19899B1095A9DA449E20F /* MermaidCanvasApp.swift */; };
 		D9EE3E8F18A948548739EADE /* ShapeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */; };
+		DBB35C53E70AF120BD7B0569 /* MermaidGenerator+TextCSS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71475F0934F425FE089FF740 /* MermaidGenerator+TextCSS.swift */; };
 		DC1C20A4916038F1C5BD8B72 /* V70Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3053879FB1F4B29B9558361 /* V70Tests.swift */; };
 		DDEDEF4495EFF35BC377F3C7 /* CanvasModel+Collapse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB3515CEC6B12426998B32B /* CanvasModel+Collapse.swift */; };
 		DE7D93FAF45C8336C55A3ACA /* ToolbarView+ColorsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */; };
@@ -398,6 +402,7 @@
 		26ACA77336DB3E2436AB111E /* V62RoundTripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V62RoundTripTests.swift; sourceTree = "<group>"; };
 		285C3631A5A6E7A6A52F2568 /* AppCapabilitiesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCapabilitiesTests.swift; sourceTree = "<group>"; };
 		290C826C5E3BCE9774F09866 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		29403E4A59F24B3CE21DA8C1 /* TextSizeGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSizeGallery.swift; sourceTree = "<group>"; };
 		29AB8B6E78A26319BBDAFFE3 /* V63RoundTripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V63RoundTripTests.swift; sourceTree = "<group>"; };
 		2A42EB21C4C1D82A6F3BB0DC /* V74SkillNrTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V74SkillNrTests.swift; sourceTree = "<group>"; };
 		2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableEditorSheet.swift; sourceTree = "<group>"; };
@@ -463,6 +468,7 @@
 		6C857637FAB48F6C5E7460F8 /* EdgeRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeRouting.swift; sourceTree = "<group>"; };
 		7052AEAD21FE4BBA576C49FE /* MultiSelectResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSelectResizeHandle.swift; sourceTree = "<group>"; };
 		712C959EB74DC2F2B619CDBF /* V29CoverageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V29CoverageTests.swift; sourceTree = "<group>"; };
+		71475F0934F425FE089FF740 /* MermaidGenerator+TextCSS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MermaidGenerator+TextCSS.swift"; sourceTree = "<group>"; };
 		71E6FAA7A14093A0397C1316 /* UIRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIRenderer.swift; sourceTree = "<group>"; };
 		72FF022E5293D765B68F37FC /* test_edge_collapse_minus_badge.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_edge_collapse_minus_badge.1.png; sourceTree = "<group>"; };
 		74DFBC8BB6B3D993600C53AE /* SelectionHandles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionHandles.swift; sourceTree = "<group>"; };
@@ -840,6 +846,7 @@
 				773E26EEF5D1BFF7AAF208EC /* MermaidGenerator.swift */,
 				4480AB221C75F8409AA609B1 /* MermaidGenerator+Edges.swift */,
 				2D431CBF4A38C853BEF9297A /* MermaidGenerator+StateJSON.swift */,
+				71475F0934F425FE089FF740 /* MermaidGenerator+TextCSS.swift */,
 				DC8AA6F043C5D86351B21702 /* MermaidMetaComments.swift */,
 				4A177F6C2EEBA78E4CCE48E0 /* MermaidParser.swift */,
 				1182F83F7A919C040242F048 /* MermaidParser+EdgeMeta.swift */,
@@ -957,6 +964,7 @@
 			isa = PBXGroup;
 			children = (
 				AF24A694B3EB471B911A46C7 /* FormattingBar.swift */,
+				29403E4A59F24B3CE21DA8C1 /* TextSizeGallery.swift */,
 			);
 			path = Formatting;
 			sourceTree = "<group>";
@@ -1285,6 +1293,7 @@
 				34BB02909FAFA47143C7C3A2 /* MermaidCodeSheet.swift in Sources */,
 				E2BED2B36CC6C8AF1E82C590 /* MermaidGenerator+Edges.swift in Sources */,
 				93FC2F7C01A67B4054E0A95F /* MermaidGenerator+StateJSON.swift in Sources */,
+				7FB8F40902C4C2B753098F8D /* MermaidGenerator+TextCSS.swift in Sources */,
 				AF1355BF0028F0A4FEED4C99 /* MermaidGenerator.swift in Sources */,
 				457A24CC4D25A3D63C47963C /* MermaidImportSheet.swift in Sources */,
 				0FBC3561BC0DFEDCEFB8D07A /* MermaidMetaComments.swift in Sources */,
@@ -1322,6 +1331,7 @@
 				06303C3A04DD6114445AB74B /* StateDump.swift in Sources */,
 				7DBBE034703F8AE034EFABB5 /* SubCanvas.swift in Sources */,
 				72B81FC0C3DD0B348A902EC4 /* TableEditorSheet.swift in Sources */,
+				0DDBB12EE6A48AE9796B7E5B /* TextSizeGallery.swift in Sources */,
 				5D0B34988F99D3AAECDAFEA9 /* TextStyle.swift in Sources */,
 				EEF11B03FD190E698E9EF1B4 /* ToolbarView+Chips.swift in Sources */,
 				DE7D93FAF45C8336C55A3ACA /* ToolbarView+ColorsRow.swift in Sources */,
@@ -1417,6 +1427,7 @@
 				084589B8F55FD510FBAC84AD /* MermaidCodeSheet.swift in Sources */,
 				5501431AA6C08AAF089F25F4 /* MermaidGenerator+Edges.swift in Sources */,
 				6FBD251F80549B80AD67C081 /* MermaidGenerator+StateJSON.swift in Sources */,
+				DBB35C53E70AF120BD7B0569 /* MermaidGenerator+TextCSS.swift in Sources */,
 				D4DCD695BC41D0BC10ED943E /* MermaidGenerator.swift in Sources */,
 				04F6EA93B52298C165CEB0DE /* MermaidImportSheet.swift in Sources */,
 				59180BADCEB07539F7339DCA /* MermaidMetaComments.swift in Sources */,
@@ -1454,6 +1465,7 @@
 				2A5456AFF3DBC456A32F64AD /* StateDump.swift in Sources */,
 				64F47783B40406531C770D11 /* SubCanvas.swift in Sources */,
 				99D3AD3E87507BF6A37E2D1A /* TableEditorSheet.swift in Sources */,
+				D8B9744DD3BE79E758ED8727 /* TextSizeGallery.swift in Sources */,
 				EE07F3D63E563AB7F9DACECA /* TextStyle.swift in Sources */,
 				AC1B5F41A850016565B83F0A /* ToolbarView+Chips.swift in Sources */,
 				4C507D44A97F37F90F408C31 /* ToolbarView+ColorsRow.swift in Sources */,
