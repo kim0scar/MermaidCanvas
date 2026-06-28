@@ -35,15 +35,19 @@ struct FormattingBar: View {
 
     var body: some View {
         HStack(spacing: 6) {
+            // 1.5-fix (Kim): i skriv-läget (onDone satt) centreras kontrollerna så raden inte
+            // känns tom (2 små knappar längst till vänster + stort tomrum + Klar långt bort).
+            if onDone != nil { Spacer(minLength: 8) }
             // Storlek/rubrik — popup (Del B byter till visuellt galleri).
             Button { showSizePicker = true } label: {
-                HStack(spacing: 3) {
-                    Image(systemName: "textformat.size").font(.system(size: 15, weight: .medium))
-                    Text(stylePreview(style)).font(.system(size: 13, weight: .semibold, design: .rounded))
-                }
-                .padding(.horizontal, 10).padding(.vertical, 7)
-                .background(Color.accentColor.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                // 1.5-fix (Kim): EN storlek-glyf (visar aktuell nivå). Ikonen "textformat.size"
+                // såg ut som "Aa" intill textens "Aa" → dubbelt. Behåll nivå-texten.
+                Text(stylePreview(style))
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .frame(minWidth: 24)
+                    .padding(.horizontal, 10).padding(.vertical, 7)
+                    .background(Color.accentColor.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .accessibilityIdentifier("toolbar.textSize")
             .accessibilityLabel("Textstorlek")

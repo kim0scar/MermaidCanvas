@@ -142,8 +142,8 @@ Kim hittade "massa fel" i skriv-läget: två formaterings-rader + punktlista PÅ
   Kräver: Milstolpe 1.4 deployad ✅
 ÅTERÖPPNAD — Kim flaggade "inte helt bra"; jag tittade själv (se-appen 2026-06-28) → fix-lista (lätt→stor, WIP=1):
 - ✅ Fix 1 autocorrect AV i form-text — SIM-VERIFIERAD: skrev "PillX" → står kvar (ej "Pilla"). OBS: `.autocorrectionDisabled()` DIREKT på inline-TextField:en kraschade SwiftUI (env-diffing + keyboard-toolbar, iOS 26.4, EXC_BAD_ACCESS) → satt HÖGT på ShapeView-ZStack istället (ärvs ner). Även EditShapeSheet-fältet. 209 unit · arch · conformance gröna.
-- ⏳ Fix 2 röj skräpet: dubbla "Aa" på storleks-knappen bort · göm markerings-handtag i skrivläge · balansera skriv-raden. Klart när: sim visar EN storlek-glyf + inga handtag i skrivläge.
-- ☐ Fix 3 skrivflödet — se din text: lyft formen ovan tangentbordet · galleriet täcker ej ordet · behåll tangentbordet vid stil-val. Klart när: sim visar formens text fri ovan baren + galleri vid sidan + tangentbord kvar.
+- ✅ Fix 2 röj skräpet — SIM-VERIFIERAD: EN "Aa"-glyf (ikon-dubblett borta, FormattingBar) · markerings-handtag (rotera/+/resize/connection) gömda i skrivläge (`CanvasView+Selection` gate på `!isEditingText`) · skriv-radens kontroller centrerade (leading Spacer i skriv-läget). Ingen krasch.
+- ⏳ Fix 3 skrivflödet — se din text: lyft formen ovan tangentbordet · galleriet täcker ej ordet · behåll tangentbordet vid stil-val. Klart när: sim visar formens text fri ovan baren + galleri vid sidan + tangentbord kvar.
 - ☐ Fix 4 samma meny samma ställe: konsekvent plats/innehåll skriv- vs markerat läge + tjockare grabber. Klart när: sim visar samma rad-logik båda lägen.
 - ☐ Fix 5 anteckningar elegant: klampa bubblan på skärm · tydlig väg in · en väg in/ut · "ta bort". Klart när: sim visar hel bubbla på skärm + ta-bort finns.
 - ☐ DEPLOY v1.5.1 efter Kims iPhone-bock på fix 1–5.

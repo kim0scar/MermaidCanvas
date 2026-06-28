@@ -50,7 +50,8 @@ extension CanvasView {
             .position(s.position)
             .allowsHitTesting(false)
             // V79-svep: låst form visar markering men INGA resize/rotate-handtag.
-            if !s.locked {
+            // 1.5-fix (Kim): göm handtagen medan man SKRIVER (rensa runt skriv-raden).
+            if !s.locked && !model.isEditingText {
                 SelectionHandles(
                     shape: $model.shapes[idx],
                     canvasScale: zoomScale
@@ -61,6 +62,8 @@ extension CanvasView {
             }
             // V79-svep: FYRA connection-handtag (ett per sida). Drag från en sida skapar
             // en pil som GÅR UT från just den sidan (ej automatiskt närmaste).
+            // 1.5-fix (Kim): göm dem medan man SKRIVER.
+            if !model.isEditingText {
             ConnectionHandles(
                 shape: s,
                 canvasScale: zoomScale,
@@ -81,6 +84,7 @@ extension CanvasView {
                 }
             )
             .zIndex(3)
+            }
         }
 
         // v44: MarkerOverlay alltid synlig i markerMode — löser låsning vid
