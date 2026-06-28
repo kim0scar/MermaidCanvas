@@ -57,10 +57,14 @@ Mermaid är **transporten** (portabel, AI-läsbar kropp). Appen är **renderaren
 | bold | — (inget %%-spår) | `bold` | **nej** (state-JSON-only; mermaid saknar nod-text-fetstil) |
 | italic | — (inget %%-spår) | `italic` | **nej** (state-JSON-only) |
 | underline | — (inget %%-spår) | `underline` | **nej** (state-JSON-only) |
-| childOfContainerId | `subgraph`+`end`-medlemskap | `childOfContainerId` | ja (positionellt) |
+| childOfContainerId | `subgraph`+`end`-medlemskap (container) | `childOfContainerId` | **ja för container** (subgraph, positionellt); **nej för phoneFrame-barn** (phoneFrame är en form, inte ett subgraph → bara state-JSON) |
 | id (UUID) | — (mermaid-id är nyckeln) | — | ny UUID vid import (kanter följer med) |
 
 Containrar emitteras som `subgraph`-block och re-emitterar samma nycklar, men position som `%% <cid> container-pos: x,y`.
+
+### subCanvas (underflöden / Visio-drill) — PARKERAT 2026-06-28
+
+Fältet `ShapeNode.subCanvas` (ett helt nästlat underflöde: egna shapes + edges) finns i datamodellen och round-trippar **byte-exakt via state-JSON**, men har **inget `%%`-spår och överlever INTE ren mermaid** (en vän i mermaid.live ser föräldraformen, inte innehållet). Det bryter därför mot kärnprincipen "allt syns i mermaid" och är **avstängt bakom flagga** (`FeatureFlags.underflodenEnabled = false`, Kims governance-reset). Datan bevaras (befintliga filer bryts inte), men funktionen nås inte i UI. Återupptas bara om underflödet byggs om som **native mermaid-subgraph** (då blir raden ovan giltig: "ja"). Se `ROADMAP.md` → Kommande funktioner. Listas här för att uppfylla regel 15(c) (varje app-only-bärare ska stå i denna fil).
 
 ## Kant-fält (EdgeConnection)
 

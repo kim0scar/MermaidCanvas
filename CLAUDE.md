@@ -14,7 +14,7 @@ Detta är minimum för att fortsätta arbeta:
 4. **`app/MermaidCanvas/Sources/App/AppVersion.swift`** — nuvarande version-nummer (single source of truth)
 5. **`arkiv/HANDOVER-vN.md`** (senaste, t.ex. v73) — beslutslogg: vägval + varför + nuläge
 6. **`ARKITEKTUR-MERMAID.md`** — exakt vad nuvarande version har för funktioner + filöversikt
-7. **`ROADMAP.md`** — version-historik
+7. **`ROADMAP.md`** — version-historik (bakåt) + **kommande funktioner & idéer** (framåt, post-bas) — men inget byggs ur roadmappen utan att först bli ett PROJEKTPLAN-steg (metod + plan styr)
 8. **Memory:** `~/.claude/projects/-Users-kim-2e-Mermaid-Code/memory/MEMORY.md` (laddas automatiskt)
 9. **Git-loggen:** `git log --oneline -10` för senaste 10 commits
 
@@ -40,7 +40,7 @@ Den här tabellen är **alltid aktuell**. Uppdatera den så fort en ny sparplats
 | **Build-artefakter** | `app/MermaidCanvas/DerivedData/` — *.gitignored*, regenereras vid build | endast lokalt |
 | **Aktuell arkitektur** | `ARKITEKTUR-MERMAID.md` (senaste version) | git |
 | **Swift-modul-tabell** | `ARKITEKTUR-SWIFT.md` (filtabell + modul-roller) | git |
-| **Version-historik** | `ROADMAP.md` (vad varje version innehöll; framåtblick = PROJEKTPLAN.md) | git |
+| **Version-historik + kommande funktioner** | `ROADMAP.md` (bakåt: vad varje version innehöll · framåt: kommande funktioner & idéer post-bas — men byggs bara efter att de blivit ett PROJEKTPLAN-steg) | git |
 | **Tidigare arkitektur-versioner** | `arkiv/ARKITEKTUR-MERMAID-vN.md` (en per deploy) | git |
 | **Appen på iPhone** | bundle-ID `com.kimlundqvist.mermaidcanvas`, Team `SFXR8MV6MP`, device F271CF8E-4260-5501-9E86-1C765EA1A38E | enbart på iPhone tills nästa deploy från Mac |
 | **Appen på Mac (menyrad)** | `/Applications/Visuali2e.app` — bundle `com.kimlundqvist.mermaidcanvas.mac`, Team `SFXR8MV6MP`. Menyrads-app (LSUIElement), DELAR all kod med iPhone-appen (target `MermaidCanvasMac`). Bygg: `xcodebuild -scheme MermaidCanvasMac -configuration Release -destination 'platform=macOS'`. Arkitektur: `ARKITEKTUR-DUAL-PLATFORM.md` | lokalt på Macen (Release i /Applications) |
@@ -83,7 +83,7 @@ Användarens canvas-filer ligger i:
 
    **Noll-avvikelse-garantin (icke förhandlingsbar — kärnan i hela appen):** det Kim ser på canvasen ska bli EXAKT det andra får ur hans mermaid, och Kim ska kunna *rita → kopiera mermaid → radera → klistra in → få exakt samma, noll avvikelse*. Gäller Kim OCH andra. Tre krav:
    - **(a) Allt valideras mot RIKTIG mermaid INNAN det byggs vidare.** Bygg aldrig mermaid-genererande kod som inte är validerad: `node scripts/mermaid-conformance.mjs` (officiella `mermaid.parse`) måste vara grön. Ändrar du hur former/kanter skrivs — regenerera fixtures (`./scripts/extract-mermaid-fixtures.sh`) och se att grinden är grön.
-   - **(b) App-bara funktioner måste ändå exporteras och SYNAS i mermaid.** En funktion som bara lever i app-state (kollaps, länk-ikoner, waypoints, framtida lager/z) får aldrig försvinna tyst — den bärs av `%%`-metadata så den round-trippar och en läsare ser den. Bygg aldrig en ren app-funktion utan att först lösa hur den överlever export.
+   - **(b) App-bara funktioner måste ändå exporteras, röra sig med filen OCH kunna förstås av en läsare/AI — aldrig tyst.** Ribban i två delar: (1) **round-trippa** (överleva export) och (2) **avslöjas ärligt** i det inbäddade AI-ramverket (`AppCapabilities.frameworkText`) + facit-menyn. Bärare i prioritetsordning: **native mermaid** > **`%%`-metadata** (så en läsare i ren mermaid faktiskt ser fältet) > **state-JSON-only** — det sista BARA när mermaid genuint inte kan representera saken (t.ex. nod-text-fetstil), och då MÅSTE det flaggas "bara i state-blocket". **En hel STRUKTUR (ett nästlat underflöde, en grupp) får ALDRIG vara state-JSON-only** — den bärs som native `subgraph` så den syns i ren mermaid (lärdomen från underflöden, PARKERADE 2026-06-28 just för att de bröt detta). Detta är samma ribba som regel 15(a) ("bärare = `%%`-nyckel/native/state-JSON — aldrig enbart app-state"): state-JSON-i-filen är en giltig bärare, men en osynlig hel-struktur är det inte. Bygg aldrig en ren app-funktion utan att först lösa hur den överlever export OCH avslöjas.
    - **(c) Round-trip är maskinellt tvingad, inte en åsikt.** `RoundTripFidelityTests` (state-JSON = bokstavligt noll avvikelse; ren mermaid = identitet/semantik överlever) + round-trip-grind i pre-commit blockerar avvikelse. Mjuka aldrig upp ett round-trip-test.
 
    **Två-lager-modellen (säg det rakt ut):** appen är *inte* ren Mermaid. Mermaid är TRANSPORTEN (portabel, AI-läsbar kropp); appen är RENDERAREN med ett eget tilläggslager (`%%`-metadata + state-JSON = "MermaidCanvas Extended"). Egna former (phoneFrame, tabell, oktagon…) renderas i ren mermaid som närmaste native-form — Mermaids gräns, inte en bugg; identiteten bärs av `%% shape-type`. (Detalj: MERMAID-FAKTA.md sektion K + L. **Komplett fält-spec — varje app-only-fält + dess bärare: `EXTENDED-FORMAT.md`.**)
@@ -135,7 +135,7 @@ Användarens canvas-filer ligger i:
 | `BLUEPRINT.md` | **Komplett fil-index** + modul-ansvar + skalbarhetsprinciper + v39 feature-kluster |
 | `ARKITEKTUR-REGLER.md` | **Maskinellt tvingade** arkitekturregler (lager, filstorlek, version) — `scripts/arch-check.py` blockerar brott (regel 14) |
 | `ARKITEKTUR-SWIFT.md` | Swift-modul-tabell (äldre, BLUEPRINT.md är nu primär) |
-| `ROADMAP.md` | Version-historik (framåtblick ligger i PROJEKTPLAN.md) |
+| `ROADMAP.md` | Version-historik (bakåt) + kommande funktioner & idéer (framåt, post-bas); byggs bara via PROJEKTPLAN-steg |
 | `Start för ios appar Kim.md` | iPhone-deploy: signing, build, devicectl |
 | `arkiv/ARKITEKTUR-MERMAID-vN.md` | Historik över hur appen sett ut tidigare |
 

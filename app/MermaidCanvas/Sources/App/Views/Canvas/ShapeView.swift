@@ -77,8 +77,9 @@ struct ShapeView: View {
         .frame(width: ShapeGeometry.width(for: shape),
                height: ShapeGeometry.height(for: shape))
         // v1.0+ Visio: dubbel inre ram = "den här formen har ett underflöde" (Visio-konvention).
+        // PARKERAT 2026-06-28 (Kims governance-reset) — markören gömd bakom flagga.
         .overlay {
-            if shape.subCanvas != nil && !exportMode {
+            if shape.subCanvas != nil && !exportMode && FeatureFlags.underflodenEnabled {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .stroke(Color.accentColor.opacity(0.55), lineWidth: 1.5)
                     .padding(5)

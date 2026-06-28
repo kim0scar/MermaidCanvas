@@ -278,6 +278,7 @@
 		CE03A754E3EB8FC6D6BE0DB0 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FED8B369306CD9E4CF0A850 /* Haptics.swift */; };
 		CFDE6577C6EADBB706F9ADE7 /* ShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0426117CB94D90B95AD1BEF7 /* ShapeView.swift */; };
 		D05D53CCB773A8CDA53268A8 /* PlatformRulesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */; };
+		D1E6438B4DD093915FAF7AE7 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F575E5DF0F54605B54A55476 /* FeatureFlags.swift */; };
 		D1EEE44B79F8C270978DDB38 /* CanvasModel+Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35CB0F4383A187355DF8E0C /* CanvasModel+Edges.swift */; };
 		D2838AC593B1CDD08A3974F8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8991BFDE5D87E4860241B535 /* main.swift */; };
 		D289533B98FCCF66069A957F /* ColorPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */; };
@@ -302,6 +303,7 @@
 		DE7D93FAF45C8336C55A3ACA /* ToolbarView+ColorsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3442A7819B6DA0E25ECFC06 /* ToolbarView+ColorsRow.swift */; };
 		DF03D5699EDF81876A63DD9C /* EdgesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912DF1776D2535239953A20F /* EdgesView.swift */; };
 		DFBEFF3FA2E77FBDA26D6295 /* CanvasModel+Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D149A2089DDEF1F2F2D2CB3 /* CanvasModel+Platform.swift */; };
+		DFF6CB3094F2E1C4697A1162 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F575E5DF0F54605B54A55476 /* FeatureFlags.swift */; };
 		E178F46DAD052D49A4D5F5DE /* UIScreenRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */; };
 		E1C23B0DD30A0D05C656C957 /* ZoomableCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */; };
 		E27E117321CF7510879E7DC7 /* test_processarrow_shape.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 5241E0B28FCA54237EFD6C8D /* test_processarrow_shape.1.png */; };
@@ -569,6 +571,7 @@
 		F412CFF6EF86D30458B755F5 /* test_pill_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_pill_chip.1.png; sourceTree = "<group>"; };
 		F4245994DEEDBEF106923E1E /* StateDump.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateDump.swift; sourceTree = "<group>"; };
 		F4EC13BC52408F5BEC68F4C2 /* FlowRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowRenderer.swift; sourceTree = "<group>"; };
+		F575E5DF0F54605B54A55476 /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
 		F826C6DA929F2F164CCC9183 /* UIScreenRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIScreenRenderer.swift; sourceTree = "<group>"; };
 		FAA597C88CA5ABD913AC7597 /* OrientationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationTests.swift; sourceTree = "<group>"; };
 		FC95C52F0BD6AE0247DD2F4F /* ShapePack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapePack.swift; sourceTree = "<group>"; };
@@ -620,6 +623,7 @@
 				7CF062E95A85446BD3B9B18C /* CanvasModel+Undo.swift */,
 				3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */,
 				652829BD1563106E2A8CB9C7 /* EdgeConnection.swift */,
+				F575E5DF0F54605B54A55476 /* FeatureFlags.swift */,
 				E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */,
 				31F2B2BF0337E15990C656DC /* ShapeGeometry.swift */,
 				2D0E6420DE137F57D019A7EB /* ShapeNode.swift */,
@@ -1276,6 +1280,7 @@
 				C3CD67209C7ECC8F4983C956 /* EmojiPickerChip.swift in Sources */,
 				02E574D831A6115DCD3C9834 /* EmptyCanvasHint.swift in Sources */,
 				8C6AB5D248128D1DDAD9CF07 /* ExportCanvasView.swift in Sources */,
+				DFF6CB3094F2E1C4697A1162 /* FeatureFlags.swift in Sources */,
 				22490A7634414FDDCD00C4C9 /* FileChangeObserver.swift in Sources */,
 				8EFCF469054C383E562A46FF /* FloatingChipPreview.swift in Sources */,
 				BEB49C82E41634305DDF1855 /* FlowRenderer.swift in Sources */,
@@ -1410,6 +1415,7 @@
 				3778A9AE79E0C629469B5449 /* EmojiPickerChip.swift in Sources */,
 				FCAC9FAF1E4E5B985ABC8738 /* EmptyCanvasHint.swift in Sources */,
 				40F304AF420C50802B09F02B /* ExportCanvasView.swift in Sources */,
+				D1E6438B4DD093915FAF7AE7 /* FeatureFlags.swift in Sources */,
 				9552F0FFF809B97E39DFE7B2 /* FileChangeObserver.swift in Sources */,
 				E59147BD729B4A37CFCD70F5 /* FloatingChipPreview.swift in Sources */,
 				37CDB2400AB50F876140666B /* FlowRenderer.swift in Sources */,

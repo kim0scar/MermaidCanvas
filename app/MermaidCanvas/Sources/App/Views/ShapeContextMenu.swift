@@ -43,9 +43,13 @@ struct ShapeContextMenu: View {
                      systemImage: locked ? "lock.open" : "lock.fill",
                      action: onToggleLock)
             // v1.0+ Visio "hoppa in": en nivå djupare (eget underflöde i formen).
-            menuItem(label: hasSubCanvas ? "Hoppa in →" : "Skapa underflöde",
-                     systemImage: hasSubCanvas ? "arrow.down.right.circle.fill" : "rectangle.on.rectangle.angled",
-                     action: onEnterSubprocess)
+            // PARKERAT 2026-06-28 (Kims governance-reset) — gömd bakom flagga; bröt
+            // kärnprincipen "allt syns i ren mermaid". Återupptas bara via native subgraph.
+            if FeatureFlags.underflodenEnabled {
+                menuItem(label: hasSubCanvas ? "Hoppa in →" : "Skapa underflöde",
+                         systemImage: hasSubCanvas ? "arrow.down.right.circle.fill" : "rectangle.on.rectangle.angled",
+                         action: onEnterSubprocess)
+            }
             if let copySkill = onCopySkill {
                 menuItem(label: "Kopiera som skill",
                          systemImage: "square.and.arrow.up.on.square",

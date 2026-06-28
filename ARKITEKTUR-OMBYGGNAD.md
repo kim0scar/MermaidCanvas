@@ -13,7 +13,7 @@ Granska appens arkitektur + kod. Bygg om den STEGVIS (behåll fungerande kärna,
 ## Tre spår
 - **Spår C — "se-appen" ✅ KLART.** Claude ser/styr appen i simulatorn. Skill `~/.claude/skills/se-appen/SKILL.md` + motor `scripts/see-app.sh`. Tre kanaler: skärmbild (pixlar), a11y-träd (tappbara element), state-dump (`-uitest-dump-state` → `uitest-state.json`, exakt data). Trigger: Kim säger "titta på appen".
 - **Spår B — maskinellt tvingad arkitektur ✅ KLART.** `ARKITEKTUR-REGLER.md` (R1–R5 + version) + `scripts/arch-check.py` + `scripts/arch-baseline.json` (ratchet) + `scripts/hooks/pre-commit` (`git config core.hooksPath scripts/hooks`). CLAUDE.md regel 14. R1 Mermaid rör ej UI · R2 Model ritar ej · R4 inga fatalError/try!/as! i Model+Mermaid · R5 filer ≤300 / jättefiler bara krympa · version AppVersion↔project.yml↔Info.plist. `--appstore` = lanseringschecklista (kvar: PrivacyInfo.xcprivacy).
-- **Spår A — skyddsnät + bryt monoliterna ⏳ PÅGÅR.** Se nedan.
+- **Spår A — skyddsnät + bryt monoliterna ✅ KLART (2026-06-17).** Alla fyra monoliter < 300 rader (CanvasView 1781→297, ToolbarView 1069→237, ContentView 691→225, CanvasModel 857→56), 171+ tester gröna, arch-check grön. Återstår bara valfri round-trip-hårdning (se nedan). Hela MA-uppdraget i praktiken avslutat.
 
 ## Skyddsnätet (Spår A, KLART — måste ALLTID vara grönt före refaktor)
 36 tester i `app/MermaidCanvas/UnitTests/`:

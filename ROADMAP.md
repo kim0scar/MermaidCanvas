@@ -1,6 +1,19 @@
 # MermaidCanvas — Roadmap
 
-Versioner och vad de innehåller. Senaste först.
+Två delar: (1) **Kommande funktioner & idéer** (framåt — post-bas) och (2) **versionshistorik** (bakåt, senaste först). Inget byggs ur roadmappen utan att först bli ett steg i `PROJEKTPLAN.md` (metod + plan styr; regel 13). Snabb-fångade idéer mitt i en milstolpe bor i PROJEKTPLAN-idébanken; när de mognar eller parkeras flyttas de hit.
+
+---
+
+## 🔜 Kommande funktioner & idéer (framåt)
+
+- **Underflöden / "hoppa in" på en form** — PARKERAT 2026-06-28 (Kims governance-reset). Det gamla bygget (gömd `subCanvas` i state-JSON, osynligt i ren mermaid) är avstängt bakom flagga (`FeatureFlags.underflodenEnabled = false`); koden + round-trip ligger kvar men nås inte. **Återupptas BARA via ombyggnad på native mermaid-subgraphs** så det nästlade innehållet följer med i mermaid-koden (vän + AI ser det) och "hoppa in" blir en vy, inte gömd data. Värde: deep-nesting-navigering på liten skärm (2e: en form = en hel process + brödsmula). Plan vid återupptag: egen milstolpe, designtävling, EN ny bärare = native subgraph. Bas-krav INNAN: expandera/kollapsa + länk + containers sitter.
+- **Per-ord rik text** (markera ORD → egen färg/storlek + punktlista live) — kräver text-motor (UITextView/NSTextView-representable) + run-baserad modell + ny bärare. Var Milstolpe 1.6; tas efter v1.5-fixarna.
+- **Multi-fil-import** — flera filer → en container med flikar/länkar för navigering. I scope (PRODUKT.md), byggs som framtida steg.
+- *(Övriga idéer fångas i PROJEKTPLAN-idébanken och flyttas hit när de mognar/parkeras.)*
+
+---
+
+## 📦 Versionshistorik (bakåt — senaste först)
 
 ## Aktuell version: 1.5 — "Redigerings-menyn rätt (skriv-i-form)"
 
