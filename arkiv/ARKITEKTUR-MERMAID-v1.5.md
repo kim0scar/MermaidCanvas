@@ -1,13 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5.1 (governance-reset + skriv-läge-fixar)
-*Datum: 2026-06-28*
-
-> **1.5.1 — inga lager-/modul-ändringar.** Governance-reset (Kims order): underflöden/Visio-drill
-> PARKERAT bakom `FeatureFlags.underflodenEnabled=false` (entry + dubbel-ram gömda; modell + round-trip
-> orörda) → ROADMAP.md; PRODUKT.md scope-realign; regel 3b skärpt. Skriv-läge-fixar (Kims se-appen-fynd):
-> Fix 1 autocorrect AV i form-text (`.autocorrectionDisabled()` HÖGT på ShapeView-ZStack — direkt på
-> TextField:en kraschade SwiftUI env-diffing på iOS 26.4); Fix 2 röj skräpet (en Aa-glyf i `FormattingBar`,
-> markerings-handtag gömda i skrivläge via `!isEditingText` i `CanvasView+Selection`, balanserad rad).
-> 209 unit · arch · conformance/render 3/3. Nedan = 1.5-arkitekturen (oförändrad struktur).
+# ARKITEKTUR-MERMAID — Version 1.5 (redigerings-menyn rätt)
+*Datum: 2026-06-27*
 
 > **1.5 — redigerings-menyn rätt (Kims v1.4-test: "massa fel" i skriv-läget):** Inga lager-/modul-
 > ändringar. **Del A (en rad medan man skriver):** `CanvasModel.isEditingText` gatar `ToolbarView`s

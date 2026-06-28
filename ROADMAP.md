@@ -15,7 +15,17 @@ Två delar: (1) **Kommande funktioner & idéer** (framåt — post-bas) och (2) 
 
 ## 📦 Versionshistorik (bakåt — senaste först)
 
-## Aktuell version: 1.5 — "Redigerings-menyn rätt (skriv-i-form)"
+## Aktuell version: 1.5.1 — "Governance-reset + skriv-läge-fixar"
+
+*Tema:* Kim kände att appen "spårat ur" → granskning + **governance-reset**: underflöden/Visio-drill
+PARKERAT (bröt "allt syns i mermaid"; flagga av, kod kvar → ROADMAP); PRODUKT.md scope-realign
+(rik text · lås/lager · Mac-app · multi-fil IN); regel 3b skärpt (native > %% > state-JSON; hel
+struktur aldrig state-only); dok-motsägelser tätade. Sedan Kims se-appen-fynd: **Fix 1** autocorrect
+AV i form-text ("PillX" blev "Pilla"); **Fix 2** röj skräpet (en Aa-glyf, handtag gömda i skrivläge,
+balanserad rad). Fix 3-5 (skrivflöde/meny/anteckningar) kvar — kräver iPhone-tangentbordet.
+209 unit · arch · conformance/render 3/3 · round-trip förlustfri.
+
+## 1.5 — "Redigerings-menyn rätt (skriv-i-form)"
 
 *Tema:* Kims v1.4-test-fynd ("massa fel" i skriv-läget) åtgärdade + meny-vision levererad.
 **En ren rad medan man skriver** (topp-raden göms automatiskt) — slut på två rader samtidigt.
