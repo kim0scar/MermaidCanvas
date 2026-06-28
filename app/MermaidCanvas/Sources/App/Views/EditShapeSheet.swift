@@ -55,6 +55,7 @@ struct EditShapeSheet: View {
                     TextField("Namn på formen (syns i form + Mermaid)", text: $draft.label, axis: .vertical)
                         .lineLimit(1...4)
                         .focused($labelFocused)
+                        .autocorrectionDisabled()   // 1.5-fix: diagram-etiketter ändras ej bakom ryggen
                         .accessibilityIdentifier("edit.label")
                 }
                 // 1.3 S1.3: stil/justering/punktlista borttagna här — formateras i den delade

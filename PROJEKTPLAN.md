@@ -138,8 +138,15 @@ Kim hittade "massa fel" i skriv-läget: två formaterings-rader + punktlista PÅ
 - ✅ Del A — Meny-UX: `CanvasModel.isEditingText` → EN rad medan man skriver (sim-verifierat: topp-raden borta) · `FormattingBar` ikon→popup (ingen scroll) · svajp-grabber.
 - ✅ Del B — Storleks-galleri: TextStyle 5 nivåer (40/30/24/18/14) · `TextSizeGallery` ritar varje i sin storlek (sim-verifierat: Jätterubrik→40pt) · generator-CSS extraherad.
 - ✅ Del C — Fet/Kursiv/Understruken: 3 Bool (state-JSON-only) + toggles i galleriet + rendering (sim-verifierat: kursiv+understruken syns). Full regel-15: 209 unit · round-trip förlustfri.
-- ✅ DEPLOYAD v1.5 (iPhone installerad, tagg + ZIP, 209 unit · conformance/render 3/3 · round-trip förlustfri · git synkat). KVAR: bara Kims iPhone-bock.
+- ✅ DEPLOYAD v1.5 (iPhone installerad, tagg + ZIP, 209 unit · conformance/render 3/3 · round-trip förlustfri · git synkat).
   Kräver: Milstolpe 1.4 deployad ✅
+ÅTERÖPPNAD — Kim flaggade "inte helt bra"; jag tittade själv (se-appen 2026-06-28) → fix-lista (lätt→stor, WIP=1):
+- ✅ Fix 1 autocorrect AV i form-text — SIM-VERIFIERAD: skrev "PillX" → står kvar (ej "Pilla"). OBS: `.autocorrectionDisabled()` DIREKT på inline-TextField:en kraschade SwiftUI (env-diffing + keyboard-toolbar, iOS 26.4, EXC_BAD_ACCESS) → satt HÖGT på ShapeView-ZStack istället (ärvs ner). Även EditShapeSheet-fältet. 209 unit · arch · conformance gröna.
+- ⏳ Fix 2 röj skräpet: dubbla "Aa" på storleks-knappen bort · göm markerings-handtag i skrivläge · balansera skriv-raden. Klart när: sim visar EN storlek-glyf + inga handtag i skrivläge.
+- ☐ Fix 3 skrivflödet — se din text: lyft formen ovan tangentbordet · galleriet täcker ej ordet · behåll tangentbordet vid stil-val. Klart när: sim visar formens text fri ovan baren + galleri vid sidan + tangentbord kvar.
+- ☐ Fix 4 samma meny samma ställe: konsekvent plats/innehåll skriv- vs markerat läge + tjockare grabber. Klart när: sim visar samma rad-logik båda lägen.
+- ☐ Fix 5 anteckningar elegant: klampa bubblan på skärm · tydlig väg in · en väg in/ut · "ta bort". Klart när: sim visar hel bubbla på skärm + ta-bort finns.
+- ☐ DEPLOY v1.5.1 efter Kims iPhone-bock på fix 1–5.
 
 ## Milstolpe 1.6 — rik text (per-ord) — EGEN milstolpe, efter v1.5
 Riktig text-motor i formen (UITextView/NSTextView-representable): markera ORD → egen färg/storlek + punktlista LIVE medan man skriver. Run-baserad modell + ny bärare (runs-JSON, full regel-15). Designtävling vid 1.6-start.

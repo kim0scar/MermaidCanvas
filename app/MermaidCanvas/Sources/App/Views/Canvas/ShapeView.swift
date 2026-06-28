@@ -76,7 +76,10 @@ struct ShapeView: View {
         }
         .frame(width: ShapeGeometry.width(for: shape),
                height: ShapeGeometry.height(for: shape))
-        // v1.0+ Visio: dubbel inre ram = "den här formen har ett underflöde" (Visio-konvention).
+        // 1.5-fix (Kim): autocorrect AV på form-text — satt HÖGT i trädet (inte på TextField:en
+        // intill keyboard-toolbaren, som kraschar SwiftUI env-diffingen på iOS 26.4). Env-värdet
+        // ärvs ner till inline-redigeringens TextField. Diagram-etiketter ändras ej bakom ryggen.
+        .autocorrectionDisabled()
         // PARKERAT 2026-06-28 (Kims governance-reset) — markören gömd bakom flagga.
         .overlay {
             if shape.subCanvas != nil && !exportMode && FeatureFlags.underflodenEnabled {
