@@ -3,6 +3,7 @@
 # Installeras med:  git config core.hooksPath scripts/hooks
 # Nödutgång (loggas inte): git commit --no-verify
 ROOT="$(git rev-parse --show-toplevel)"
+CHANGED="$(git diff --cached --name-only)"
 
 python3 "$ROOT/scripts/arch-check.py"
 status=$?
@@ -24,33 +25,53 @@ if command -v node >/dev/null 2>&1 && [ -d "$ROOT/node_modules/mermaid" ]; then
     echo "   Nödläge: git commit --no-verify"
     exit 1
   fi
+elif echo "$CHANGED" | grep -qE "Sources/Mermaid/|Sources/App/Models/AppCapabilities"; then
+  # Hål 3: tyst skip är förbjudet när mermaid-genererande kod ändras.
+  echo ""
+  echo "🔴 Mermaid-grinden KAN inte köras (node_modules/mermaid saknas) men du ändrar"
+  echo "   mermaid-genererande kod → den får inte hoppas över."
+  echo "   Kör: npm install   (committat package.json pinnar mermaid + jsdom)"
+  echo "   Nödläge: git commit --no-verify"
+  exit 1
 else
-  echo "⚠️  Mermaid-grinden hoppades över (kör 'npm install' i projektroten för att aktivera den)."
+  echo "⚠️  Mermaid-grinden hoppades över (inga mermaid-filer ändrade; 'npm install' aktiverar den)."
 fi
 
-# STEG F: round-trip-grind — round-trip MÅSTE vara förlustfri (Kims noll-avvikelse-garanti).
-# Tung (bygger + sim) → körs BARA när mermaid-/modell-lagret ändras (där round-trip kan brytas).
-CHANGED="$(git diff --cached --name-only)"
-if echo "$CHANGED" | grep -qE "Sources/Mermaid/|Sources/App/Models/(ShapeNode|EdgeConnection)"; then
+# Hål 4: vän-paketets bygg-kommandon måste stämma med project.yml (annars obyggbar vän-ZIP).
+if echo "$CHANGED" | grep -qE "project\.yml|INSTALL-FÖR-VÄNNEN\.md|friend-setup\.sh"; then
+  if ! sh "$ROOT/scripts/check-friend-package.sh"; then
+    echo ""
+    echo "🔴 Vän-paket-grinden stoppade commiten. Nödläge: git commit --no-verify"
+    exit 1
+  fi
+fi
+
+# STEG F: round-trip-grind + funktions-katalog-grind (Hål 2) — round-trip MÅSTE vara
+# förlustfri (Kims noll-avvikelse-garanti) OCH facit↔generator i bijektion (regel 15:
+# AppCapabilitiesCoverageTests — fönster 2+3, AI-ramverk + facit-meny). Tunga (bygger +
+# sim) → körs BARA när mermaid-/modell-/facit-lagret ändras.
+if echo "$CHANGED" | grep -qE "Sources/Mermaid/|Sources/App/Models/(ShapeNode|EdgeConnection|AppCapabilities)"; then
   UDID="$(xcrun simctl list devices booted | grep -m1 'iPhone' | grep -oE '[0-9A-Fa-f-]{36}' || true)"
   [ -z "$UDID" ] && UDID="$(xcrun simctl list devices available | grep -m1 'iPhone' | grep -oE '[0-9A-Fa-f-]{36}' || true)"
   if [ -n "$UDID" ]; then
-    echo "▶︎ Mermaid-/modell-lagret ändrat → kör round-trip-grinden (kan ta en stund)…"
+    echo "▶︎ Mermaid-/modell-/facit-lagret ändrat → kör round-trip + facit-grind (kan ta en stund)…"
     xcodebuild test \
       -project "$ROOT/app/MermaidCanvas/MermaidCanvas.xcodeproj" -scheme MermaidCanvas \
       -destination "platform=iOS Simulator,id=$UDID" \
       -only-testing:MermaidCanvasUnitTests/RoundTripFidelityTests \
       -only-testing:MermaidCanvasUnitTests/StateJSONSymmetryTests \
+      -only-testing:MermaidCanvasUnitTests/AppCapabilitiesCoverageTests \
       > /tmp/precommit_roundtrip.log 2>&1
     if [ "$?" -ne 0 ]; then
       echo ""
-      echo "🔴 Round-trip-grinden stoppade commiten: en form/kant round-trippar INTE förlustfritt."
+      echo "🔴 Round-trip/facit-grinden stoppade commiten: en form/kant round-trippar INTE"
+      echo "   förlustfritt, ELLER facit↔generator är inte i bijektion (odokumenterad/fantom-nyckel)."
       echo "   Logg: /tmp/precommit_roundtrip.log   Nödläge: git commit --no-verify"
       exit 1
     fi
-    echo "✓ Round-trip förlustfri."
+    echo "✓ Round-trip förlustfri + facit i bijektion."
   else
-    echo "⚠️  Round-trip-grinden hoppades över (ingen iPhone-sim hittad)."
+    echo "⚠️  Round-trip/facit-grinden hoppades över (ingen iPhone-sim hittad)."
   fi
 fi
 exit 0

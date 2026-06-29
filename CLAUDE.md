@@ -75,6 +75,36 @@ En iPhone-app (native SwiftUI) som är en **visuell flödesschema-editor**:
 Användarens canvas-filer ligger i:
 `~/Library/Mobile Documents/com~apple~CloudDocs/00000. Claude Code/1. Mermaid/`
 
+## Hur reglerna tvingas (läs FÖRST)
+
+CLAUDE.md är Kims utvecklar-kompetens — han är inte utvecklare, så det här regelverket ÄR kvalitetskontrollen. En regel som bara lever i minnet glöms: Mac-appen halkade tyst till 1.0 medan iPhone var 1.5.1 — ingen grind föll. Därför:
+
+**Princip: en regel utan grind är en önskan, inte en regel.** Varje "måste/aldrig"-regel namnger det som *vägrar* bryta den. Tre nivåer, starkast först:
+
+- 🟢 **Kompilerings-tvingad** — koden bygger inte om regeln bryts. Ex: ny form utan facit-rad kompilerar inte (`AppCapabilities.shape(_:)`-switchen).
+- 🟡 **Grind-tvingad** — pre-commit och/eller deploy faller högljutt. Ex: arch-check, round-trip, mermaid-parse/-render, facit-bijektion, Mac-deploy, vän-paket.
+- 🔴 **Minnes-/checklist-tvingad** — sista utväg, en människa måste komma ihåg. Tillåts BARA när varken 🟢 eller 🟡 går, och ska då vara minimal. Ex: Kims iPhone-öga (känsla kan inte mätas).
+
+**Meta-regel: CLAUDE.md får bara kalla en regel "tvingad" om en riktig grind faktiskt tvingar den.** Hittar du en 🔴 som BORDE vara 🟡/🟢 — bygg grinden, ändra inte bara texten.
+
+### Regel → grind (vad som vägrar bryta vad)
+
+| Regel | Tvingas av | Nivå |
+|---|---|---|
+| Lager / filstorlek / käll-version-synk (R1–R5) | `scripts/arch-check.py` (pre-commit) | 🟡 |
+| Ny form måste ha facit-rad | `AppCapabilities.shape(_:)` uttömmande switch | 🟢 |
+| Round-trip förlustfri (noll-avvikelse, regel 3c) | `RoundTripFidelityTests` + `StateJSONSymmetryTests` (pre-commit + deploy) | 🟡 |
+| Facit↔generator bijektion + AI-ramverk inbäddat (fönster 2+3, regel 15) | `AppCapabilitiesCoverageTests` (pre-commit + deploy) | 🟡 |
+| Genererad mermaid PARSAR i riktig mermaid (regel 3a) | `scripts/mermaid-conformance.mjs` (pre-commit — HÅRD om mermaid-/facit-kod ändras) | 🟡 |
+| Genererad mermaid RENDERAR i riktig mermaid | `scripts/mermaid-render-check.mjs` (deploy) | 🟡 |
+| Mac-appen = samma version som iPhone (dual-platform) | `scripts/deploy-mac.sh` (deploy, självverifierande) + `arch-check.py` drift-varning | 🟡 |
+| Vän-ZIP byggbar (scheme/Team/bundle stämmer) | `scripts/check-friend-package.sh` (pre-commit + deploy + Björn-skill) | 🟡 |
+| Känsla / UX på riktig iPhone | Kims öga — kan ej maskin-tvingas | 🔴 |
+
+Pre-commit-hooken (`scripts/hooks/pre-commit`) aktiveras med `git config core.hooksPath scripts/hooks`. Deploy-grindarna står i `VERSIONSHANTERING.md`. Sim-beroende grindar (round-trip, facit) körs i pre-commit NÄR en sim finns och är ALLTID blockerande vid deploy.
+
+---
+
 ## Regler för Claude Code (icke förhandlingsbara)
 
 1. **Var-allt-finns-sparat-tabellen ovan är sanningskällan.** När en ny sparplats tillkommer (ny mapp, nytt moln, nytt verktyg) — uppdatera tabellen i samma commit. Det är denna fil som svarar på "är allt sparat?".
@@ -91,10 +121,10 @@ Användarens canvas-filer ligger i:
    **Bygg som Apple:** appen byggs lika robust och enhetlig som om Apple själva byggt den — inga lösa trådar, inga tysta degraderingar.
 
    **Metodiskt genom alla former:** form-vokabulären gås igenom form-för-form (inte stickprov); varje form bevisas round-trippa innan nästa.
-4. **Versionshantering**: följ alltid `VERSIONSHANTERING.md`. Hoppa inte över steg.
+4. **Versionshantering — BÅDA plattformarna**: följ alltid `VERSIONSHANTERING.md`. Hoppa inte över steg. **En deploy = både iPhone OCH Mac-appen.** De delar kod men byggs separat; missas Mac halkar den tyst efter (lärdomen 2026-06-28: Mac var 1.0 medan iPhone var 1.5.1). 🟡 Mac byggs+installeras+verifieras av `scripts/deploy-mac.sh` (faller om `/Applications/Visuali2e.app`-versionen ≠ AppVersion); `arch-check.py` varnar vid drift mellan deploys.
 5. **Modulär kod**: små filer, en sak per fil. Hellre fler filer än en stor. Inga monolitfiler — även om det blir mer kod totalt.
-   **Single source of truth för versionsnummer**: `app/MermaidCanvas/Sources/AppVersion.swift`. Bumpa endast där. Aldrig hårdkoda versionsnummer någon annanstans.
-   **Versionen ska synas i appen** (status-baren). Vid varje deploy: uppdatera `AppVersion.current` *innan* build.
+   **Single source of truth för versionsnummer**: `app/MermaidCanvas/Sources/App/AppVersion.swift` (`AppVersion.version`). Bumpa endast där. Aldrig hårdkoda versionsnummer någon annanstans. 🟡 `arch-check.py` tvingar synk AppVersion ↔ project.yml ↔ Info.plist.
+   **Versionen ska synas i appen** (status-baren). Vid varje deploy: uppdatera `AppVersion.version` *innan* build.
 6. **Arkitektur som sanning**: efter varje deploy ska `ARKITEKTUR-MERMAID.md` uppdateras så att diagrammet alltid speglar nuvarande kod.
 7. **iOS-deploy**: följ `Start för ios appar Kim.md` för Team ID, signing och devicectl-flödet. Allt står där.
 8. **Språk**: svenska i kod-kommentarer (få sådana) och commit-meddelanden. Korta meningar.

@@ -16,6 +16,7 @@ med `xcodebuild test` — inte här (de kräver simulator och vore för långsam
 pre-commit). Se ARKITEKTUR-REGLER.md.
 """
 import json
+import plistlib
 import re
 import sys
 from pathlib import Path
@@ -152,6 +153,32 @@ def check_version_sync():
                         f"(bör vara $(MARKETING_VERSION) så det finns EN källa).")
 
 
+# ---- (Mac-deploy-drift) skyddsnät, icke-blockerande ----------------------------
+
+def check_mac_deploy_drift():
+    """Hål 1-skyddsnät: om Mac-appen är installerad i /Applications men dess version
+    inte matchar AppVersion → VARNA. Icke-blockerande: en dev-maskin kan legitimt vara
+    odeployad, och man committar innan man deployar. Den HÅRDA grinden är
+    scripts/deploy-mac.sh (vid deploy). Det här gör bara drift synlig vid nästa commit
+    så Mac-appen aldrig mer tyst halkar efter iPhone (lärdomen: var 1.0 vs iPhone 1.5.1)."""
+    m = re.search(r'\bversion\s*:\s*String\s*=\s*"([^"]+)"',
+                  (SRC / "App" / "AppVersion.swift").read_text())
+    if not m:
+        return
+    v = m.group(1)
+    installed_plist = Path("/Applications/Visuali2e.app/Contents/Info.plist")
+    if not installed_plist.exists():
+        return
+    try:
+        installed = plistlib.loads(installed_plist.read_bytes()).get("CFBundleShortVersionString")
+    except Exception:
+        return
+    if installed and installed != v:
+        warnings.append(
+            f"Mac-deploy-drift: /Applications/Visuali2e.app är {installed}, men AppVersion "
+            f"är {v}. Kör scripts/deploy-mac.sh så Mac-appen inte halkar efter iPhone.")
+
+
 # ---- App Store-checklista ------------------------------------------------------
 
 def run_appstore():
@@ -244,6 +271,7 @@ def main():
     check_layering(baseline)
     check_crash_points()
     check_version_sync()
+    check_mac_deploy_drift()
     write_report()
 
     for w in warnings:

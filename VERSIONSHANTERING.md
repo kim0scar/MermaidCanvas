@@ -4,7 +4,7 @@ Exakt checklista som Claude Code följer **vid varje deploy** till iPhone. En de
 
 ## Vad är en version?
 
-En version skapas varje gång appen byggs och installeras på iPhone. **Inte** vid varje liten kod-iteration under pågående arbete.
+En version skapas varje gång appen byggs och installeras **på iPhone OCH på Mac** (de delar kod men byggs separat — båda måste till SAMMA version, annars halkar Mac-appen tyst efter). **Inte** vid varje liten kod-iteration under pågående arbete.
 
 **EN enda version — aldrig två** (Kims order 2026-06-24). Versionsnummer: `1.0`, `1.1`, `1.2`, … Samma nummer används BÅDE i appen (det Kim ser), i bundle-versionen (MARKETING_VERSION + CURRENT_PROJECT_VERSION — lika), i git-taggen (`v1.0`) och i ZIP-namnet. Inget separat bygg-räknar-nummer.
 
@@ -36,11 +36,14 @@ cd "/Users/kim/2e Mermaid Code"
 python3 scripts/arch-check.py                 # arkitektur (lager/filstorlek/version)
 node scripts/mermaid-conformance.mjs          # appens mermaid PARSAR i riktig mermaid + lint mot kända render-glapp
 node scripts/mermaid-render-check.mjs         # RENDER-grind (💡#8) — headless Chrome renderar fixturerna; parse räcker inte (`<--` parsar men kraschar render). BLOCKERANDE.
-# Round-trip-grinden (STEG F) — BLOCKERANDE: noll avvikelse. Får aldrig hoppa över vid deploy.
+bash scripts/check-friend-package.sh          # Hål 4 — vän-ZIP byggbar (scheme/Team/bundle stämmer med project.yml). BLOCKERANDE.
+# Round-trip + facit-grind (STEG F) — BLOCKERANDE: noll avvikelse OCH facit↔generator i bijektion
+# (regel 15, fönster 2+3). Får aldrig hoppa över vid deploy.
 xcodebuild test -project app/MermaidCanvas/MermaidCanvas.xcodeproj -scheme MermaidCanvas \
   -destination 'platform=iOS Simulator,id=<iPhone-sim-UDID>' \
   -only-testing:MermaidCanvasUnitTests/RoundTripFidelityTests \
-  -only-testing:MermaidCanvasUnitTests/StateJSONSymmetryTests
+  -only-testing:MermaidCanvasUnitTests/StateJSONSymmetryTests \
+  -only-testing:MermaidCanvasUnitTests/AppCapabilitiesCoverageTests
 ```
 
 - Ändrat hur former/kanter skrivs i `MermaidGenerator`? Regenerera först: `./scripts/extract-mermaid-fixtures.sh` (kör korpus-testet + validerar).
@@ -53,6 +56,17 @@ xcodebuild test -project app/MermaidCanvas/MermaidCanvas.xcodeproj -scheme Merma
 
 Följ `Start för ios appar Kim.md` (Steg 1A → Steg 2 → Steg 3 för native Swift, eller motsvarande för Godot).
 Verifiera att appen faktiskt **startar** på iPhone innan du går vidare.
+
+### 2b. Bygg om Mac-appen (SAMMA version — får aldrig hoppas över)
+
+Mac-appen delar all kod med iPhone-appen men byggs separat → den måste byggas om vid varje deploy, annars halkar `/Applications/Visuali2e.app` tyst efter (lärdomen 2026-06-28: var 1.0 medan iPhone var 1.5.1).
+
+```bash
+cd "/Users/kim/2e Mermaid Code"
+scripts/deploy-mac.sh
+```
+
+Skriptet är SJÄLVVERIFIERANDE och BLOCKERANDE: det bygger Release, installerar i `/Applications/Visuali2e.app`, och faller (exit 1) om den installerade versionen ≠ `AppVersion.version`, om appen inte startar, eller om den kraschar vid start. Grön utskrift = Mac-appen är på samma version som iPhone.
 
 ### 3. Arkivera föregående arkitektur
 

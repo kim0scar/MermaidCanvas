@@ -46,8 +46,9 @@ Flippad `documentView` (`isFlipped = true`) så top-left-origin matchar iOS.
 
 ## Bygg & deploy (macOS)
 - Target `MermaidCanvasMac`, scheme `MermaidCanvasMac`, bundle `com.kimlundqvist.mermaidcanvas.mac`.
-- `xcodebuild build -scheme MermaidCanvasMac -configuration Release -destination 'platform=macOS' -derivedDataPath ./DerivedData-mac`
-- Installeras i `/Applications/Visuali2e.app` (Release, signerad SFXR8MV6MP). `LSUIElement: true` → menyrads-app (ingen Dock-ikon).
+- **Använd `scripts/deploy-mac.sh`** — bygger Release, installerar i `/Applications/Visuali2e.app`, och VERIFIERAR (version == AppVersion + appen lever + inga kraschloggar). Kör inte de råa kommandona för hand; scriptet är den självverifierande grinden (regel 4, 🟡).
+- Under huven: `xcodebuild -scheme MermaidCanvasMac -configuration Release -destination 'platform=macOS' build`. `LSUIElement: true` → menyrads-app (ingen Dock-ikon).
+- **Får aldrig hoppas över vid deploy** (`VERSIONSHANTERING.md` steg 2b) — annars halkar Mac-appen tyst efter iPhone (lärdomen 2026-06-28: var 1.0 vs iPhone 1.5.1).
 
 ## Hårt lärda läxor (rör inte detta utan att förstå)
 - **macOS Info.plist MÅSTE ligga UTANFÖR `Sources/`** (`app/MermaidCanvas/Info-macOS.plist`). Låg den i `Sources/App` (delad sökväg) förorenade den iOS-targetens plist → iOS-test kunde inte launcha (`$(PRODUCT_BUNDLE_IDENTIFIER)` oresolvd).
