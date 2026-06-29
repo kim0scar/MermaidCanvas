@@ -81,4 +81,20 @@ if [ -n "$CRASHES" ]; then
 fi
 echo "✓ inga kraschloggar"
 
+# 8b. VERIFIERA: appen HÄNGER inte (skenande CPU). En oändlig SwiftUI-loop KRASCHAR INTE
+# → den slank förbi alla checkar ovan (1.5.1 frös på 94% CPU i 23h, ikonen gick ej att
+# klicka). Mät CPU två gånger efter att startup lagt sig; pegad = hängd.
+MAC_PID="$(pgrep -f 'Visuali2e.app/Contents/MacOS' | head -1 || true)"
+sleep 3   # låt startup-CPU:n lägga sig
+CPU1="$(ps -o %cpu= -p "$MAC_PID" 2>/dev/null | tr -d ' ' || echo 0)"
+sleep 2
+CPU2="$(ps -o %cpu= -p "$MAC_PID" 2>/dev/null | tr -d ' ' || echo 0)"
+CPU1_INT="$(printf '%s' "${CPU1:-0}" | cut -d',' -f1 | cut -d'.' -f1)"
+CPU2_INT="$(printf '%s' "${CPU2:-0}" | cut -d',' -f1 | cut -d'.' -f1)"
+if [ "${CPU1_INT:-0}" -gt 50 ] && [ "${CPU2_INT:-0}" -gt 50 ]; then
+  echo "🔴 deploy-mac: appen HÄNGER — CPU ${CPU1}% / ${CPU2}% (skenande loop, som 1.5.1-frysningen). Deployar INTE." >&2
+  exit 1
+fi
+echo "✓ CPU lugn (${CPU1}% / ${CPU2}%) — ingen hängning"
+
 echo "✅ deploy-mac: Visuali2e.app $VERSION installerad i /Applications, körs, ren."

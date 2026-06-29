@@ -62,7 +62,10 @@ struct ZoomableCanvas<Content: View>: NSViewRepresentable {
         if let p = centerOnPoint {
             DispatchQueue.main.async { c.center(on: p); centerOnPoint = nil }
         }
-        c.syncViewport()
+        // 1.5.2: synka ALDRIG från ritnings-passet synkront (som iOS-tvillingen).
+        // Synkron skrivning till @Published här + saknad likhetskoll i syncViewport
+        // gav en oändlig SwiftUI-loop → Mac-appen frös på 94% CPU (1.5.1).
+        DispatchQueue.main.async { c.syncViewport() }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -80,16 +83,28 @@ struct ZoomableCanvas<Content: View>: NSViewRepresentable {
             guard let sv = scrollView else { return }
             let mag = sv.magnification
             let origin = sv.contentView.bounds.origin
-            parent.viewportState.zoomScale = mag
-            parent.viewportState.contentOffset = CGSize(width: origin.x * mag, height: origin.y * mag)
+            // 1.5.2: likhetskoll på VARJE @Published/@Binding (som iOS-tvillingen,
+            // ZoomableCanvas.syncViewportState). @Published saknar inbyggd likhetskoll
+            // → skriv bara när värdet faktiskt ändrats, annars evig omritnings-loop.
+            if abs(parent.viewportState.zoomScale - mag) > 0.0001 {
+                parent.viewportState.zoomScale = mag
+            }
+            let newOffset = CGSize(width: origin.x * mag, height: origin.y * mag)
+            if parent.viewportState.contentOffset != newOffset {
+                parent.viewportState.contentOffset = newOffset
+            }
             if let win = sv.window, let winContent = win.contentView {
                 let inWin = sv.convert(sv.bounds, to: nil)
                 let topLeftY = winContent.bounds.height - inWin.maxY   // flippa till top-left
-                parent.viewportState.globalFrame = CGRect(x: inWin.minX, y: topLeftY,
-                                                          width: inWin.width, height: inWin.height)
+                let newFrame = CGRect(x: inWin.minX, y: topLeftY,
+                                      width: inWin.width, height: inWin.height)
+                if parent.viewportState.globalFrame != newFrame {
+                    parent.viewportState.globalFrame = newFrame
+                }
             }
-            parent.zoomScale = mag
-            parent.zoomPercent = Int((mag * 100).rounded())
+            if abs(parent.zoomScale - mag) > 0.0001 { parent.zoomScale = mag }
+            let newPercent = Int((mag * 100).rounded())
+            if parent.zoomPercent != newPercent { parent.zoomPercent = newPercent }
         }
 
         func fitToScreen() {
