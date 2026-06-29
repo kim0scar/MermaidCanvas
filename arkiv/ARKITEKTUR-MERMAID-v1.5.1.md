@@ -1,12 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5.2 (Mac-frysning fixad)
-*Datum: 2026-06-29*
-
-> **1.5.2 — inga lager-/modul-ändringar (hotfix).** Mac-appen frös (huvudtråden i evig SwiftUI-
-> omritnings-loop, 94% CPU → ikonen gick ej att klicka). Rot: `ZoomableCanvasMac.syncViewport()`
-> avvek från iOS-tvillingen — skrev `@Published` utan likhetskoll OCH synkront från `updateNSView`
-> varje ritning. Fix: spegla iOS-guards (skriv bara vid ändring) + async-defer. `deploy-mac.sh`
-> härdad att fånga skenande CPU (en hängd app slank förbi förut). Bevisat: CPU 0%, popup öppnas,
-> canvas renderar; 47 unit gröna. Nedan = 1.5-arkitekturen (oförändrad struktur).
+# ARKITEKTUR-MERMAID — Version 1.5.1 (governance-reset + skriv-läge-fixar)
+*Datum: 2026-06-28*
 
 > **1.5.1 — inga lager-/modul-ändringar.** Governance-reset (Kims order): underflöden/Visio-drill
 > PARKERAT bakom `FeatureFlags.underflodenEnabled=false` (entry + dubbel-ram gömda; modell + round-trip
