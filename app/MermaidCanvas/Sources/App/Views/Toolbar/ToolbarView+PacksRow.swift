@@ -8,11 +8,16 @@ extension ToolbarView {
     @ViewBuilder
     var packsSecondary: some View {
         VStack(alignment: .leading, spacing: 10) {
+            // 1.5.4 (Bug 2): horisontell scroll så paket-togglarna aldrig klipps på smal skärm.
+            ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(ShapePack.userToggleable, id: \.self) { pack in
                     packToggle(pack)
                 }
             }
+            .padding(.vertical, 4)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             // Steg 8: Skillflöde-paketet visar byggsten-chipsen direkt under togglarna.
             if model.activeShapePacks.contains(.skillFlow) {
                 skillFlowChips
@@ -26,6 +31,8 @@ extension ToolbarView {
 
     /// v73: chips för UI-paketet. Steg 9: iPhone-mallarna bor här (ersätter Mallar-menyn).
     var uiPackChips: some View {
+        // 1.5.4 (Bug 2): horisontell scroll.
+        ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 6) {
             flowChip(.rectangle, .ui, "UI", accId: "chip.uipack.ui")
             flowChip(.rectangle, .zone, "Zon", accId: "chip.uipack.zone")
@@ -33,6 +40,9 @@ extension ToolbarView {
             deviceChip("iPhone 15 Pro", "15 Pro", accId: "chip.uipack.iphone15")
             deviceChip("iPhone 16 Pro", "16 Pro", accId: "chip.uipack.iphone16")
         }
+        .padding(.vertical, 4)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     /// Steg 9: device-chip — lägger en phoneFrame med modellnamnet som etikett

@@ -1,16 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5.4 (Kims 1.5.3-iPhone-fynd: 4 fixar)
+# ARKITEKTUR-MERMAID — Version 1.5.3 (redigerings-menyn rik + konsekvent + "se din text")
 *Datum: 2026-06-30*
-
-> **1.5.4 — inga lager-/modul-ändringar.** Fyra fynd från Kims iPhone-test fixade: (Bug 1)
-> markeringsläget nås bara via knappen — dubbeltryck-på-tom-yta-toggle borttagen (`CanvasView`),
-> så dubbeltryck på en form alltid skriver; (Bug 2) alla sekundär-toolbar-rader wrappade i
-> horisontell `ScrollView` + `.frame(maxWidth:.infinity)` så inget klipps på smal skärm
-> (`skillFlowChips` utbruten till `ToolbarView+SkillFlowChips.swift`, R5); (Bug 4) kollaps-minus
-> flyttad till pilens mittpunkt (`EdgeGeometry.minusBadgePosition` → `anchors.mid`) så den ej
-> krockar med gröna connection-handtagen; (Bug 5) hela appen tvingad ljus (iOS
-> `overrideUserInterfaceStyle=.light`, Mac `preferredColorScheme(.light)`) — matchar "alltid vit
-> rityta". Bug 3 (live punktlista) pausad till nästa steg (byggs mot Kims iPhone). 209 unit · arch ·
-> conformance/render 3/3 gröna. Nedan = 1.5-arkitekturen (oförändrad struktur).
 
 > **1.5.3 — inga lager-/modul-ändringar.** Fix 3+4 (Kims sim-bekräftade fynd): live-text-baren
 > hade bara storlek+justering. Nu: `FormattingBar` får färg-paket-popup (`showColor`) + lista

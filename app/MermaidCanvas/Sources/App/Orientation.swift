@@ -48,6 +48,10 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
                options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
+        // 1.5.4 (Bug 5): tvinga hela appen ljus (inkl. sheets/popovers) — appen är "alltid vit
+        // rityta" by design, och mörkt läge dolde delar av UI:t (Kims fynd). Canvasen var redan
+        // tvingad ljus (CanvasView .environment colorScheme .light); detta gör chrome:t konsekvent.
+        window.overrideUserInterfaceStyle = .light
         window.rootViewController = OrientationLockedHostingController(rootView: ContentView())
         self.window = window
         window.makeKeyAndVisible()

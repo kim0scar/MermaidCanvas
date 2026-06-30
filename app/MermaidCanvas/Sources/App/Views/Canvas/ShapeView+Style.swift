@@ -105,6 +105,7 @@ extension ShapeView {
                 weight: effectiveWeight, design: .rounded)
     }
 
+
     /// 1.3 (S1.1): form-text-innehållet — emoji-glyf, inline-redigering, platshållare
     /// eller formaterat label. Utbrutet ur ShapeView.body för R5-plats (ShapeView var 299/300)
     /// och så redigerings-grenen kan växa i Fas 2 (per-rad-stil) utan att spränga taket.
@@ -131,6 +132,7 @@ extension ShapeView {
                     .onChange(of: labelFocused) { _, focused in if !focused { isEditing = false; onEndTextEdit?() } }
                     // 1.3 S1.3: SAMMA formateringsmeny ovanför tangentbordet (Apple Notes) —
                     // formatera medan du skriver direkt i formen. Snapshot per åtgärd via onBeginTextEdit.
+                    // (1.5.4: live-punktlista — BulletTextEditor — pausad, byggs klart mot Kims iPhone.)
                     #if os(iOS)
                     .toolbar {
                         ToolbarItemGroup(placement: .keyboard) {
@@ -139,9 +141,6 @@ extension ShapeView {
                                 alignment: shape.textAlignment,
                                 hasBullets: shape.hasBullets,
                                 hasNumbered: shape.hasNumberedList,
-                                // 1.5.3 (Kims fynd): lista/indrag + färg finns ÄVEN i live-läget
-                                // (samma meny samma ställe). Bullets renderas vid Klar — råfältet
-                                // visar råtext — men kontrollen finns, konsekvent med markerat läge.
                                 showListsAndIndent: true,
                                 onStyle: { st in onBeginTextEdit?(shape.id); shape.textStyle = st },
                                 onToggleBullets: { onBeginTextEdit?(shape.id)

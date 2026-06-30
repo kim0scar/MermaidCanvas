@@ -36,6 +36,8 @@ extension ToolbarView {
 
     /// Grundformer — 8 rena geo-chips.
     var basicShapesRow: some View {
+        // 1.5.4 (Bug 2): horisontell scroll så grundformerna aldrig klipps på smal skärm.
+        ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 6) {
             geoChip(.circle, accId: "chip.circle", frame: 40) { model.addShape(.circle, at: canvasCenter) }
             geoChip(.pill, accId: "chip.pill", frame: 40) { model.addShape(.pill, at: canvasCenter) }
@@ -46,10 +48,15 @@ extension ToolbarView {
             geoChip(.octagon, accId: "chip.octagon", frame: 40) { model.addShape(.octagon, at: canvasCenter) }
             geoChip(.triangle, accId: "chip.triangle", frame: 40) { model.addShape(.triangle, at: canvasCenter) }
         }
+        .padding(.vertical, 4)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     /// Mallar — 3 snabb-mallar (flyttade hit från Lägen-menyn i steg 5).
     var templatesRow: some View {
+        // 1.5.4 (Bug 2): horisontell scroll.
+        ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 10) {
             ForEach(CanvasModel.TemplateKind.allCases, id: \.self) { kind in
                 Button { onInsertTemplate(kind) } label: {
@@ -63,10 +70,15 @@ extension ToolbarView {
                 .accessibilityLabel("Mall: \(kind.title)")
             }
         }
+        .padding(.vertical, 4)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     /// Verktyg — alltid synliga: Container, Tabell, Länk, Linje, Emoji. (Notis → menyn, steg 5.)
     var shapeToolsRow: some View {
+        // 1.5.4 (Bug 2): horisontell scroll så verktygen aldrig klipps på smal skärm.
+        ScrollView(.horizontal, showsIndicators: false) {
         HStack(alignment: .top, spacing: 8) {
             VStack(spacing: 2) {
                 geoChip(.container, accId: "chip.container", frame: 40) { model.addShape(.container, at: canvasCenter) }
@@ -97,5 +109,8 @@ extension ToolbarView {
             // 1.3: emoji-väljare (rutnät) — neutral ikon, popover med kurerade emojis.
             EmojiPickerChip { emoji in model.addShape(.emoji, at: canvasCenter, label: emoji) }
         }
+        .padding(.vertical, 4)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

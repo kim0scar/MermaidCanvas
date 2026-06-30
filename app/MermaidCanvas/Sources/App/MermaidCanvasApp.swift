@@ -13,6 +13,8 @@ struct MermaidCanvasMacApp: App {
             ContentView()
                 // 1.1 Fas 6: användbar popup-storlek (annars blir canvasen en liten ruta).
                 .frame(minWidth: 920, idealWidth: 1100, minHeight: 640, idealHeight: 760)
+                // 1.5.4 (Bug 5): tvinga ljust läge (matchar iOS + "alltid vit rityta"-designen).
+                .preferredColorScheme(.light)
         }
         .menuBarExtraStyle(.window)
     }

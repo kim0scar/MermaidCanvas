@@ -151,6 +151,7 @@
 		695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
 		6A5E9787481C28FE9DF5460A /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
 		6A90ADCCF6C9726C9EA3E725 /* ShapeContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */; };
+		6BC759C6108081354B48608C /* ToolbarView+SkillFlowChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0582B911C69F0CD8B2DB9FE6 /* ToolbarView+SkillFlowChips.swift */; };
 		6C008675961ACF1741C26F8C /* DotGridBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */; };
 		6C96F0EB7DF96BB6FE6CA222 /* RoundTripFidelityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A03E7FFE84FD2B29AB7642D /* RoundTripFidelityTests.swift */; };
 		6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B25CF04C2CA057CD0366B64 /* LegendPanel.swift */; };
@@ -165,6 +166,7 @@
 		734EE93DFCD0EAFA769881D7 /* GodotPreviewRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C0DD5D2C1997930394380A /* GodotPreviewRenderer.swift */; };
 		736346C7B406F300393FDCCF /* PlatformRulesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */; };
 		7467706C41CF4EAC940B5B06 /* V67Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C515D01227ECFFACAFCE12 /* V67Tests.swift */; };
+		794011F4CB4564361BB01DC5 /* ToolbarView+SkillFlowChips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0582B911C69F0CD8B2DB9FE6 /* ToolbarView+SkillFlowChips.swift */; };
 		79C0A2DB97B4908F3871A450 /* DrillBreadcrumbBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB8DCE62B98DDD6EEF8D7EF /* DrillBreadcrumbBar.swift */; };
 		7A303C2CADDA512C9CEFB17F /* EdgeLabelSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0A0E15AFE7F04DC3EFE060 /* EdgeLabelSheet.swift */; };
 		7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F52FD609E4FB0BD43F6F24 /* iPhoneFrameMath.swift */; };
@@ -378,6 +380,7 @@
 		024C106FB50C0683CF678899 /* PlatformRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformRules.swift; sourceTree = "<group>"; };
 		03993D0F724864F2603EC96D /* ContentView+Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView+Canvas.swift"; sourceTree = "<group>"; };
 		0426117CB94D90B95AD1BEF7 /* ShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeView.swift; sourceTree = "<group>"; };
+		0582B911C69F0CD8B2DB9FE6 /* ToolbarView+SkillFlowChips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+SkillFlowChips.swift"; sourceTree = "<group>"; };
 		05DF6BC9457837FA79F79B7A /* NoteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCard.swift; sourceTree = "<group>"; };
 		0B2B5D75E6C39BD72EC980C0 /* MermaidCanvasUnitTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MermaidCanvasUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D8276A5671DB21A8FBD20CA /* DotGridBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotGridBackground.swift; sourceTree = "<group>"; };
@@ -803,6 +806,7 @@
 				B552BB06C1E0B1CC66FBE56A /* ToolbarView+MultiSelectRow.swift */,
 				E54CEB71D7B855EEB661A83C /* ToolbarView+PacksRow.swift */,
 				9ADB7B5EC438DFE7C4326EA2 /* ToolbarView+ShapesRow.swift */,
+				0582B911C69F0CD8B2DB9FE6 /* ToolbarView+SkillFlowChips.swift */,
 				67B24EFDC5E300CE42A333DD /* ToolbarView+TextStylesRow.swift */,
 			);
 			path = Toolbar;
@@ -1350,6 +1354,7 @@
 				44B0F34D1E40719CA326A64E /* ToolbarView+MultiSelectRow.swift in Sources */,
 				A481D0193F971B8C7659B37C /* ToolbarView+PacksRow.swift in Sources */,
 				723C173F730F3FAC8FFD75B4 /* ToolbarView+ShapesRow.swift in Sources */,
+				6BC759C6108081354B48608C /* ToolbarView+SkillFlowChips.swift in Sources */,
 				24B2ABAE0546D3D2D2EE0045 /* ToolbarView+TextStylesRow.swift in Sources */,
 				F8D2756A5820F567FB30D8AB /* ToolbarView.swift in Sources */,
 				1E68196C416C03C102DED14F /* UIRenderer.swift in Sources */,
@@ -1486,6 +1491,7 @@
 				CDC4460AF08146EA18AF0A69 /* ToolbarView+MultiSelectRow.swift in Sources */,
 				96CF6AB9416EDCCDAD9F602F /* ToolbarView+PacksRow.swift in Sources */,
 				E6DD5398A9C9EFEFDF4DAB33 /* ToolbarView+ShapesRow.swift in Sources */,
+				794011F4CB4564361BB01DC5 /* ToolbarView+SkillFlowChips.swift in Sources */,
 				D40C1578A5307BD4D8F48483 /* ToolbarView+TextStylesRow.swift in Sources */,
 				2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */,
 				F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */,
@@ -1794,7 +1800,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.3;
+				CURRENT_PROJECT_VERSION = 1.5.4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1809,7 +1815,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.3;
+				MARKETING_VERSION = 1.5.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1873,7 +1879,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.3;
+				CURRENT_PROJECT_VERSION = 1.5.4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1894,7 +1900,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.3;
+				MARKETING_VERSION = 1.5.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

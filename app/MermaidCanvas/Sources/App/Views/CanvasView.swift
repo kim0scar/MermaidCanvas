@@ -61,10 +61,9 @@ struct CanvasView: View {
                        height: model.contentSize.height,
                        alignment: .topLeading)
                 .background(
-                    // v46: tap-deselect på bakgrunden (ej parent). 1.2: dubbeltryck = markeringsläge.
+                    // v46: tap-deselect. 1.5.4 (Bug 1): dubbeltryck-toggle av markeringsläge borttaget — nås bara via knappen.
                     Color.white
                         .contentShape(Rectangle())
-                        .onTapGesture(count: 2) { model.toggleMarkerMode() }   // FÖRE count:1 (annars sväljs enkeltryck)
                         .onTapGesture {
                             model.deselect()
                             if model.isEdgeMode { model.cancelEdgeMode() }

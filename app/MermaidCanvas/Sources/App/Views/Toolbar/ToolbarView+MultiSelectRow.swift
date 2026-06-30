@@ -12,6 +12,8 @@ extension ToolbarView {
             model.shapes.first(where: { $0.id == id })?.note.isEmpty == false
         }
         let anyShown = notedIds.contains { openCards.contains($0) }
+        // 1.5.4 (Bug 2): horisontell scroll så raden aldrig klipps på smal skärm (samma mönster som färg-raden).
+        ScrollView(.horizontal, showsIndicators: false) {
         HStack(spacing: 10) {
             // Räknare — hur många former är markerade
             Text("\(count) markerade")
@@ -56,11 +58,17 @@ extension ToolbarView {
 
             Divider().frame(height: 28)
 
-            // 1.2: synlig väg UT ur markeringsläget (gesten för IN är dold dubbeltryck).
+            // 1.5.4: synlig väg UT ur markeringsläget (vägen IN är streckad-fyrkant-knappen i toppen).
             multiSelectButton("checkmark.circle.fill", label: "Klar",
                                accId: "multiselect.done",
                                disabled: false) { onToggleMarker() }
         }
+        .padding(.horizontal, 2)
+        .padding(.vertical, 4)
+        }
+        // 1.5.4 (Bug 2): tvinga ScrollViewen att fylla bredden (annars krymper en ensam
+        // horisontell ScrollView till innehålls-bredd → spiller utan att scrolla).
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder

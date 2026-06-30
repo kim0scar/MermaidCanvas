@@ -247,21 +247,18 @@ enum EdgeGeometry {
         return (start, CGPoint(x: start.x + stubLen * cos(angle), y: start.y + stubLen * sin(angle)))
     }
 
-    /// 1.3: minus-badgens position (flyttad hit ur EdgesView). Vid pilens utgångspunkt,
-    /// liten knuff radiellt + vinkelrätt så den ligger på kanten utan att täcka linjen.
+    /// 1.5.4 (Bug 4 — Kim "på pilen"): minus-badgen sitter på pilens MITTPUNKT (samma `mid`
+    /// som midpoint-handtaget, rätt även på böjda/ortogonala pilar) — långt från de fyra gröna
+    /// kant-mitt-handtagen, så ingen krock. Liten perpendikulär knuff så linjen syns bredvid.
+    /// (Tidigare: vid utgångspunkten + 36pt radiell puff — räckte inte, låg kvar på höger +-handtag.)
     static func minusBadgePosition(edge: EdgeConnection, fromShape: ShapeNode, toShape: ShapeNode,
                                    shapes: [ShapeNode], hiddenShapeIds: Set<UUID>) -> CGPoint {
         let anchors = edgeAnchors(edge: edge, fromShape: fromShape, toShape: toShape,
                                   shapes: shapes, hiddenShapeIds: hiddenShapeIds)
-        let dx = anchors.start.x - fromShape.position.x
-        let dy = anchors.start.y - fromShape.position.y
-        let len = max(hypot(dx, dy), 0.001)
-        let tx = dx / len, ty = dy / len
-        var px = -ty, py = tx
-        if py > 0 { px = -px; py = -py }
-        // 1.4 (Kim): radiell knuff 6→36 så minus-badgen ligger UTANFÖR gröna connection-
-        // handtaget (~20pt ut) i stället för ovanpå det. Perpendikulär 16 håller den av linjen.
-        return CGPoint(x: anchors.start.x + tx * 36 + px * 16,
-                       y: anchors.start.y + ty * 36 + py * 16)
+        let nudge: CGFloat = 14
+        let px = CGFloat(-sin(anchors.midAngle))
+        let py = CGFloat(cos(anchors.midAngle))
+        return CGPoint(x: anchors.mid.x + px * nudge,
+                       y: anchors.mid.y + py * nudge)
     }
 }
