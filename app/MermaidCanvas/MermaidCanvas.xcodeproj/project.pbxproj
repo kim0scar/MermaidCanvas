@@ -147,6 +147,7 @@
 		66E7C0CA771E5C607A4F1B41 /* V49VisualVerificationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA196EBDEAE56D7AF0CD737 /* V49VisualVerificationTest.swift */; };
 		67C5E692431A416DA4802220 /* test_pill_chip_vs_canvas_side_by_side.1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FCD095D020EF17998E82F01 /* test_pill_chip_vs_canvas_side_by_side.1.png */; };
 		684C1AD7A649B0237F3C2A02 /* SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6F52E499ADD995928FF171 /* SnapshotTests.swift */; };
+		693DE4877BB80FB014F1D35B /* LiveTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0312090FD6053C0D48FCB7 /* LiveTextEditor.swift */; };
 		693F34A9A720A37E0AD03648 /* MacRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B279CA0F1B8B398DC276B45F /* MacRenderTests.swift */; };
 		695946C0E2E224B06B35A288 /* claude-canvas-protocol.md in Resources */ = {isa = PBXBuildFile; fileRef = 8C2CE96281E5A0A71CE2DC49 /* claude-canvas-protocol.md */; };
 		6A5E9787481C28FE9DF5460A /* SpecType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660E4DB431B5BBCAF625147 /* SpecType.swift */; };
@@ -261,6 +262,7 @@
 		BFE7D374EBE6027C54C79F4E /* ColorPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE4294A22E46D9AD1D9A9AD /* ColorPack.swift */; };
 		C03477577A27664A89EA3375 /* ContentView+Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43835205713CD9D57FDB1841 /* ContentView+Platform.swift */; };
 		C1474A2912CBA4392B32B375 /* ShapeCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EF598794C77B5356BD45AF8 /* ShapeCategory.swift */; };
+		C1CA57A57616C1BA2682F9DE /* LiveTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0312090FD6053C0D48FCB7 /* LiveTextEditor.swift */; };
 		C39F21F7AA98F23421D45EDF /* ContentView+Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E24759279021A6349EE8F6 /* ContentView+Files.swift */; };
 		C3B496C63DBE11E88733B214 /* CanvasModel+Collapse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB3515CEC6B12426998B32B /* CanvasModel+Collapse.swift */; };
 		C3CD67209C7ECC8F4983C956 /* EmojiPickerChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B21EEC74FE33A3250FE50B48 /* EmojiPickerChip.swift */; };
@@ -412,6 +414,7 @@
 		29403E4A59F24B3CE21DA8C1 /* TextSizeGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextSizeGallery.swift; sourceTree = "<group>"; };
 		29AB8B6E78A26319BBDAFFE3 /* V63RoundTripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V63RoundTripTests.swift; sourceTree = "<group>"; };
 		2A42EB21C4C1D82A6F3BB0DC /* V74SkillNrTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V74SkillNrTests.swift; sourceTree = "<group>"; };
+		2C0312090FD6053C0D48FCB7 /* LiveTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTextEditor.swift; sourceTree = "<group>"; };
 		2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableEditorSheet.swift; sourceTree = "<group>"; };
 		2D0E6420DE137F57D019A7EB /* ShapeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeNode.swift; sourceTree = "<group>"; };
 		2D23C41C85CA5F28CD4F03FC /* ZoomableCanvasMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableCanvasMac.swift; sourceTree = "<group>"; };
@@ -649,6 +652,7 @@
 				541B7F4DA18B2686CD32CFDF /* EdgeMidpointHandle.swift */,
 				912DF1776D2535239953A20F /* EdgesView.swift */,
 				5A3AC153C5FCABEA84AA14E5 /* FreeLineView.swift */,
+				2C0312090FD6053C0D48FCB7 /* LiveTextEditor.swift */,
 				EDC72CDEE80749879F705AEE /* ShapeBackgrounds.swift */,
 				F11DA647154BC0DCD5CD973A /* ShapeRenderer.swift */,
 				0426117CB94D90B95AD1BEF7 /* ShapeView.swift */,
@@ -1299,6 +1303,7 @@
 				009E29B9B120DB1DE30BF2E9 /* Haptics.swift in Sources */,
 				142401919EE7B2FD67528BD7 /* LegendPanel.swift in Sources */,
 				D7C11E4CD260ADFA3F66482A /* LineEndpointHandle.swift in Sources */,
+				693DE4877BB80FB014F1D35B /* LiveTextEditor.swift in Sources */,
 				A06B7DD6AA7A3954EC6EE1D9 /* LägenMenu.swift in Sources */,
 				26430E6275F557CEA79D1FC9 /* MarkerOverlay.swift in Sources */,
 				02589D0CBFD677916726D0CC /* MermaidAutoLayout.swift in Sources */,
@@ -1436,6 +1441,7 @@
 				CE03A754E3EB8FC6D6BE0DB0 /* Haptics.swift in Sources */,
 				6E92850EB536A107F852D9FC /* LegendPanel.swift in Sources */,
 				F74E2839E386F7AEC63A00F6 /* LineEndpointHandle.swift in Sources */,
+				C1CA57A57616C1BA2682F9DE /* LiveTextEditor.swift in Sources */,
 				B223CBB26989ABA415399D5D /* LägenMenu.swift in Sources */,
 				D7A64473737D4E2EEDF93C94 /* MarkerOverlay.swift in Sources */,
 				87D91925AB13DCBEE7F5A9EA /* MermaidAutoLayout.swift in Sources */,
@@ -1800,7 +1806,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.5;
+				CURRENT_PROJECT_VERSION = 1.5.6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1815,7 +1821,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.5;
+				MARKETING_VERSION = 1.5.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1879,7 +1885,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.5;
+				CURRENT_PROJECT_VERSION = 1.5.6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1900,7 +1906,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.5;
+				MARKETING_VERSION = 1.5.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

@@ -105,6 +105,69 @@ extension ShapeView {
                 weight: effectiveWeight, design: .rounded)
     }
 
+    #if os(iOS)
+    /// Bug 3: samma typsnitt som `labelFont`, men som UIFont åt LiveTextEditor (UITextView).
+    var labelUIFont: UIFont {
+        let size = shape.textStyle.fontSize * shape.sizeMultiplier
+        var f = UIFont.systemFont(ofSize: size, weight: uiWeight(effectiveWeight))
+        if let d = f.fontDescriptor.withDesign(.rounded) { f = UIFont(descriptor: d, size: size) }
+        if shape.italic,
+           let d = f.fontDescriptor.withSymbolicTraits(f.fontDescriptor.symbolicTraits.union(.traitItalic)) {
+            f = UIFont(descriptor: d, size: size)
+        }
+        return f
+    }
+
+    private func uiWeight(_ w: Font.Weight) -> UIFont.Weight {
+        switch w {
+        case .ultraLight: return .ultraLight
+        case .thin:       return .thin
+        case .light:      return .light
+        case .medium:     return .medium
+        case .semibold:   return .semibold
+        case .bold:       return .bold
+        case .heavy:      return .heavy
+        case .black:      return .black
+        default:          return .regular
+        }
+    }
+
+    var nsTextAlignment: NSTextAlignment {
+        switch shape.textAlignment {
+        case .leading:  return .left
+        case .center:   return .center
+        case .trailing: return .right
+        }
+    }
+
+    /// Bug 3: FormattingBar i LiveTextEditor:s inputAccessoryView — SAMMA meny som tidigare
+    /// (storlek·justering·lista·indrag·B/I/U·Klar), samma callbacks. Färg bor i topp-paletten (1.5.5).
+    @ViewBuilder var editingFormattingBar: some View {
+        FormattingBar(
+            style: shape.textStyle,
+            alignment: shape.textAlignment,
+            hasBullets: shape.hasBullets,
+            hasNumbered: shape.hasNumberedList,
+            showListsAndIndent: true,
+            onStyle: { st in onBeginTextEdit?(shape.id); shape.textStyle = st },
+            onToggleBullets: { onBeginTextEdit?(shape.id)
+                let on = !shape.hasBullets; shape.hasBullets = on
+                if on { shape.hasNumberedList = false } },
+            onToggleNumbered: { onBeginTextEdit?(shape.id)
+                let on = !shape.hasNumberedList; shape.hasNumberedList = on
+                if on { shape.hasBullets = false } },
+            onAlign: { a in onBeginTextEdit?(shape.id); shape.textAlignment = a },
+            onIndent: { d in onBeginTextEdit?(shape.id)
+                shape.indentLevel = min(3, max(0, shape.indentLevel + d)) },
+            onDone: { isEditing = false },
+            bold: shape.bold, italic: shape.italic, underline: shape.underline,
+            onToggleBold: { onBeginTextEdit?(shape.id); shape.bold.toggle() },
+            onToggleItalic: { onBeginTextEdit?(shape.id); shape.italic.toggle() },
+            onToggleUnderline: { onBeginTextEdit?(shape.id); shape.underline.toggle() }
+        )
+    }
+    #endif
+
 
     /// 1.3 (S1.1): form-text-innehållet — emoji-glyf, inline-redigering, platshållare
     /// eller formaterat label. Utbrutet ur ShapeView.body för R5-plats (ShapeView var 299/300)
@@ -118,7 +181,26 @@ extension ShapeView {
                 .lineLimit(1)
         } else if shape.showLabel && shape.type != .container && shape.type != .phoneFrame {
             if isEditing && !exportMode {
-                // 1.3: skriv direkt I formen (Lucidchart). Live-binding; undo-snapshot vid start.
+                // 1.3 → Bug 3 (Kim): skriv direkt I formen. På iOS en UITextView som RITAR
+                // punkt/nummer/indrag LIVE i marginalen (LiveTextEditor) medan texten hålls ren.
+                // FormattingBar bor i inputAccessoryView (keyboard-toolbar visas ej för UITextView).
+                #if os(iOS)
+                LiveTextEditor(
+                    text: $shape.label,
+                    isEditing: $isEditing,
+                    font: labelUIFont,
+                    textColor: UIColor(effectiveTextColor),
+                    alignment: nsTextAlignment,
+                    underline: shape.underline,
+                    listKind: shape.hasNumberedList ? .numbered : (shape.hasBullets ? .bullet : .none),
+                    indentLevel: shape.indentLevel,
+                    onEndEdit: { onEndTextEdit?() },
+                    accessory: { AnyView(editingFormattingBar) }
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, max(0, textHorizontalInset - 4))
+                #else
+                // macOS: SwiftUI-fält (live-bullets är iOS-först, Kims ordning — flaggat).
                 TextField("", text: $shape.label, axis: .vertical)
                     .focused($labelFocused)
                     .textFieldStyle(.plain)
@@ -130,37 +212,7 @@ extension ShapeView {
                     .lineLimit(1...6)
                     .padding(.horizontal, textHorizontalInset)
                     .onChange(of: labelFocused) { _, focused in if !focused { isEditing = false; onEndTextEdit?() } }
-                    // 1.3 S1.3: SAMMA formateringsmeny ovanför tangentbordet (Apple Notes) —
-                    // formatera medan du skriver direkt i formen. Snapshot per åtgärd via onBeginTextEdit.
-                    // (1.5.4: live-punktlista — BulletTextEditor — pausad, byggs klart mot Kims iPhone.)
-                    #if os(iOS)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            FormattingBar(
-                                style: shape.textStyle,
-                                alignment: shape.textAlignment,
-                                hasBullets: shape.hasBullets,
-                                hasNumbered: shape.hasNumberedList,
-                                showListsAndIndent: true,
-                                onStyle: { st in onBeginTextEdit?(shape.id); shape.textStyle = st },
-                                onToggleBullets: { onBeginTextEdit?(shape.id)
-                                    let on = !shape.hasBullets; shape.hasBullets = on
-                                    if on { shape.hasNumberedList = false } },
-                                onToggleNumbered: { onBeginTextEdit?(shape.id)
-                                    let on = !shape.hasNumberedList; shape.hasNumberedList = on
-                                    if on { shape.hasBullets = false } },
-                                onAlign: { a in onBeginTextEdit?(shape.id); shape.textAlignment = a },
-                                onIndent: { d in onBeginTextEdit?(shape.id)
-                                    shape.indentLevel = min(3, max(0, shape.indentLevel + d)) },
-                                onDone: { labelFocused = false },
-                                bold: shape.bold, italic: shape.italic, underline: shape.underline,
-                                onToggleBold: { onBeginTextEdit?(shape.id); shape.bold.toggle() },
-                                onToggleItalic: { onBeginTextEdit?(shape.id); shape.italic.toggle() },
-                                onToggleUnderline: { onBeginTextEdit?(shape.id); shape.underline.toggle() }
-                            )
-                        }
-                    }
-                    #endif
+                #endif
             } else if shape.label.isEmpty {
                 // 1.3 (Kim): tom form — svag "dubbeltryck för text"-ledtråd BARA när markerad.
                 if isSelected && !exportMode {

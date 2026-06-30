@@ -1,15 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5.6 (live punktlista i formen)
+# ARKITEKTUR-MERMAID — Version 1.5.5 (riktigt mörkt läge + meny-konsekvens)
 *Datum: 2026-06-30*
-
-> **1.5.6 — en ny VY-fil, inga lager-/bärar-ändringar.** Kims order "bygg live redigering av text i
-> en form så allt syns direkt". Ny `Views/Canvas/LiveTextEditor.swift` (iOS): en `UITextView`
-> (`ListMarkerTextView`) som RITAR punkt/nummer/indrag i vänster-marginalen medan textbufferten hålls
-> REN (`shape.label` får aldrig "• ") → markören beter sig naturligt + ingen "•" round-trippar.
-> FormattingBar bor nu i text-vyns `inputAccessoryView` (SwiftUIs keyboard-toolbar visas inte för en
-> UITextView-first-responder); autocorrect tvingas av direkt på text-vyn. `ShapeView+Style` väljer
-> `LiveTextEditor` på iOS, behåller SwiftUI-`TextField` på macOS (live-bullets iOS-först, flaggat).
-> INGEN ny bärare — lista/indrag round-trippar redan via `%% id bullets` + state-JSON → regel 15
-> trivialt grön. 209 unit · arch · conformance/render 3/3 gröna; sim visar punkt live per rad.
 
 > **1.5.5 — inga lager-/modul-ändringar.** Kims 1.5.4-fynd: (#1) RIKTIGT mörkt läge — 1.5.4:s
 > tvinga-ljus borttagen (`Orientation`/`MermaidCanvasApp`/`CanvasView`), canvas-bakgrunden adaptiv
