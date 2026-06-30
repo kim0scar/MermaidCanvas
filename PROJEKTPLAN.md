@@ -164,7 +164,7 @@ Kim hittade "massa fel" i skriv-läget: två formaterings-rader + punktlista PÅ
 - ✅ #2 stäng-grepp LÄNGST UT: chevron-upp trailing på formaterings-rullgardinen (speglar "Klar"). BEVISAT: "Stäng menyraden" på x=360.
 - ✅ #3 markering nollställs: tap på tom yta i markeringsläge → nollställ; tap igen → lämna (MarkerOverlay). BEVISAT (3→0→läge av).
 - ✅ #4 färg konsekvent: färg borttagen ur snabb-fältet/Aa-raden; bara via topp-palett-knappen. BEVISAT: Aa-raden = storlek/justering/lista/indrag, ingen färg.
-- ⏳ DEPLOY 1.5.5 båda plattformar + tagg v1.5.5 + ZIP. Klart när: iPhone+Mac 1.5.5, Kims öga på alla. Kräver: 1.5.4 ✅
+- ✅ DEPLOY 1.5.5: Mac ✅ (CPU lugn) + iPhone ✅ (ren bygge, codesign hel, install OK) = båda 1.5.5. Tagg v1.5.5 + ZIP + git synkat. KVAR: Kims iPhone-öga (mörkt läge + de tre andra).
 
 ## Milstolpe 1.6 — rik text (per-ord) — EGEN milstolpe, efter v1.5
 Riktig text-motor i formen (UITextView/NSTextView-representable): markera ORD → egen färg/storlek + punktlista LIVE medan man skriver. Run-baserad modell + ny bärare (runs-JSON, full regel-15). Designtävling vid 1.6-start.
