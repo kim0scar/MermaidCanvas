@@ -128,6 +128,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
 
         // Spara referenser
         context.coordinator.scrollView = scrollView
+        context.coordinator.keyboardLift.scrollView = scrollView
         context.coordinator.contentSize = contentSize
         context.coordinator.lastResetTrigger = resetTrigger
 
@@ -168,6 +169,8 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         private var hasDoneInitialFit = false
         /// v39: auto-scroll timer (kör vid shape-drag nära kant)
         var autoScrollTimer: Timer?
+        /// 1.5.3: lyfter redigerad form ovanför tangentbordet (eget NSObject — @objc-skäl)
+        let keyboardLift = KeyboardLiftObserver()
         private var autoScrollCancellable: AnyCancellable?
 
         init(

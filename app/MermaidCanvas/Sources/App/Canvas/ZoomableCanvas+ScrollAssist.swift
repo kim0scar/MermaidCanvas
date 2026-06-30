@@ -35,8 +35,21 @@ extension ZoomableCanvas.Coordinator {
 
     // MARK: - Tangentbords-undvikning (1.5.3)
 
-    /// Registreras i init. (iOS 9+ avregistrerar selector-observers automatiskt vid dealloc.)
+    /// Registreras i init. Själva lyftet bor i KeyboardLiftObserver nedan — ett
+    /// fristående NSObject, eftersom @objc-selektorer inte får ligga i en extension
+    /// av Coordinator (den är nästlad i den generiska ZoomableCanvas<Content>).
     func setupKeyboardObservers() {
+        keyboardLift.start()
+    }
+}
+
+/// Fristående NSObject (ej nästlat i generisk typ → @objc-selektorer tillåtna).
+/// Lyfter den redigerade formen (first responder) upp ovanför tangentbordet.
+final class KeyboardLiftObserver: NSObject {
+    weak var scrollView: UIScrollView?
+
+    /// (iOS 9+ avregistrerar selector-observers automatiskt vid dealloc.)
+    func start() {
         NotificationCenter.default.addObserver(
             self, selector: #selector(keyboardWillShow(_:)),
             name: UIResponder.keyboardWillShowNotification, object: nil)
