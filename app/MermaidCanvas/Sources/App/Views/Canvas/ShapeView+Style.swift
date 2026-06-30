@@ -139,10 +139,10 @@ extension ShapeView {
                                 alignment: shape.textAlignment,
                                 hasBullets: shape.hasBullets,
                                 hasNumbered: shape.hasNumberedList,
-                                // 1.4 A3: medan man skriver visas bara live-renderade kontroller
-                                // (storlek+justering). Listor/indrag syns ej i råtextfältet →
-                                // de finns när formen är MARKERAD (renderar formattedLabel direkt).
-                                showListsAndIndent: false,
+                                // 1.5.3 (Kims fynd): lista/indrag + färg finns ÄVEN i live-läget
+                                // (samma meny samma ställe). Bullets renderas vid Klar — råfältet
+                                // visar råtext — men kontrollen finns, konsekvent med markerat läge.
+                                showListsAndIndent: true,
                                 onStyle: { st in onBeginTextEdit?(shape.id); shape.textStyle = st },
                                 onToggleBullets: { onBeginTextEdit?(shape.id)
                                     let on = !shape.hasBullets; shape.hasBullets = on
@@ -157,7 +157,10 @@ extension ShapeView {
                                 bold: shape.bold, italic: shape.italic, underline: shape.underline,
                                 onToggleBold: { onBeginTextEdit?(shape.id); shape.bold.toggle() },
                                 onToggleItalic: { onBeginTextEdit?(shape.id); shape.italic.toggle() },
-                                onToggleUnderline: { onBeginTextEdit?(shape.id); shape.underline.toggle() }
+                                onToggleUnderline: { onBeginTextEdit?(shape.id); shape.underline.toggle() },
+                                showColor: true,
+                                colorPackId: shape.colorPackId,
+                                onPickColorPack: { onBeginTextEdit?(shape.id); shape.colorPackId = $0 }
                             )
                         }
                     }
