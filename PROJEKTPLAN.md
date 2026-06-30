@@ -156,7 +156,7 @@ Kim hittade "massa fel" i skriv-läget: två formaterings-rader + punktlista PÅ
 - ⏳ Bug 3 punktlista LIVE: PAUSAD till nästa steg (Kims val 2026-06-30) — visade sig vara en live rich-text-editor (UITextView+inputAccessoryView; grunden funkar: auto-fokus + FormattingBar) men markör-RITNINGEN är ett känslo-moment som sim-automationen inte kan driva/döma → byggs klart mot Kims riktiga iPhone. BulletTextEditor utrensad ur 1.5.4-bygget (inget halvfärdigt skeppas).
 - ✅ Bug 4 kollaps PÅ pilen: minusBadgePosition → pilens mittpunkt (EdgeGeometry, `anchors.mid` + 14pt perpendikulär). BEVISAT i sim (scenario 13): minus på linjen, separerad från gröna +.
 - ✅ Bug 5 mörkt läge: hela appen tvingad LJUS (iOS: `window.overrideUserInterfaceStyle=.light`; Mac: `.preferredColorScheme(.light)`) — matchar "alltid vit rityta". BEVISAT: mörkt system → ljus app. (Avvikelse från planens "adaptiva färger" — se revideringsrad.)
-- ⏳ DEPLOY 1.5.4 (Bug 1+2+4+5) båda plattformar + tagg v1.5.4 + ZIP. Klart när: iPhone+Mac 1.5.4, Kims öga på de fyra. Kräver: 1.5.3 ✅
+- ✅ DEPLOY 1.5.4 (Bug 1+2+4+5): Mac ✅ (deploy-mac.sh, CPU lugn) + iPhone ✅ (ren bygge, codesign hel, install OK) = båda 1.5.4. Tagg v1.5.4 + ZIP + git synkat. 209 unit · arch · conformance/render 3/3 gröna. KVAR: Kims iPhone-öga på de fyra.
 - ☐ Bug 3 live-punktlista (nästa steg): återuppta BulletTextEditor, finslipa markör-ritning + markör-position mot Kims iPhone. Klart när: Kim ser punkt live medan han skriver + round-trip grön.
 
 ## Milstolpe 1.6 — rik text (per-ord) — EGEN milstolpe, efter v1.5
