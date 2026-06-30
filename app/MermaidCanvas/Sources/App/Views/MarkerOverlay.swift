@@ -19,6 +19,15 @@ struct MarkerOverlay: View {
                 .contentShape(Rectangle())
                 .frame(width: canvasContentSize.width, height: canvasContentSize.height)
                 .gesture(dragGesture)
+                // 1.5.5 (Kims fynd): tap på tom yta i markeringsläge — nollställ markeringen;
+                // är den redan tom → lämna läget. (Ersätter den borttagna dubbeltryck-vägen ut.)
+                .onTapGesture {
+                    if model.multiSelection.isEmpty {
+                        model.toggleMarkerMode()
+                    } else {
+                        model.multiSelection = []
+                    }
+                }
                 .accessibilityIdentifier("marker.overlay")
 
             // Rita markerings-rektangel om vi drar
