@@ -62,7 +62,8 @@ struct CanvasView: View {
                        alignment: .topLeading)
                 .background(
                     // v46: tap-deselect. 1.5.4 (Bug 1): dubbeltryck-toggle av markeringsläge borttaget — nås bara via knappen.
-                    Color.white
+                    // 1.5.5: adaptiv canvas-bakgrund (mörk i mörkt läge).
+                    Color.canvasBackground
                         .contentShape(Rectangle())
                         .onTapGesture {
                             model.deselect()
@@ -75,9 +76,8 @@ struct CanvasView: View {
                         .allowsHitTesting(false)
                 )
                 .coordinateSpace(name: "canvas")
-                // v51.0: FAST vitt ritbräde → tvinga light scheme på canvas-subträdet så
-                // .primary (kanter/pilar/text) syns mörkt i dark mode. Toolbar utanför = adaptiv.
-                .environment(\.colorScheme, .light)
+                // 1.5.5 (Kim): canvas-subträdet följer systemet (1.5.4:s tvinga-ljus borttagen).
+                // .primary (kanter/pilar/text) blir mörk i ljust läge, ljus i mörkt → syns på båda.
         }
         .ignoresSafeArea()
         .accessibilityIdentifier("canvas")
@@ -89,9 +89,9 @@ struct CanvasView: View {
 
     private var canvasContent: some View {
         ZStack(alignment: .topLeading) {
-            // v34: vit pappersyta. v66: lågt zIndex — containrar (-1) över papper/rutnät,
+            // v34: pappersyta (1.5.5 adaptiv). v66: lågt zIndex — containrar (-1) över papper/rutnät,
             // men under pilarna (0) och noderna (1).
-            Color.white
+            Color.canvasBackground
                 .frame(width: model.contentSize.width,
                        height: model.contentSize.height)
                 .allowsHitTesting(false)

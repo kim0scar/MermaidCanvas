@@ -156,10 +156,7 @@ extension ShapeView {
                                 bold: shape.bold, italic: shape.italic, underline: shape.underline,
                                 onToggleBold: { onBeginTextEdit?(shape.id); shape.bold.toggle() },
                                 onToggleItalic: { onBeginTextEdit?(shape.id); shape.italic.toggle() },
-                                onToggleUnderline: { onBeginTextEdit?(shape.id); shape.underline.toggle() },
-                                showColor: true,
-                                colorPackId: shape.colorPackId,
-                                onPickColorPack: { onBeginTextEdit?(shape.id); shape.colorPackId = $0 }
+                                onToggleUnderline: { onBeginTextEdit?(shape.id); shape.underline.toggle() }
                             )
                         }
                     }

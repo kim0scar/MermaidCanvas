@@ -1,16 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5.5 (riktigt mörkt läge + meny-konsekvens)
+# ARKITEKTUR-MERMAID — Version 1.5.4 (Kims 1.5.3-iPhone-fynd: 4 fixar)
 *Datum: 2026-06-30*
-
-> **1.5.5 — inga lager-/modul-ändringar.** Kims 1.5.4-fynd: (#1) RIKTIGT mörkt läge — 1.5.4:s
-> tvinga-ljus borttagen (`Orientation`/`MermaidCanvasApp`/`CanvasView`), canvas-bakgrunden adaptiv
-> (ny `Color.canvasBackground`, ljus 0.9 → mörk 0.16), default-pil adaptiv (`Color.edgeDefault`);
-> `.primary`-element (kanter/text) blir nu ljusa i mörkt läge → syns. Export-bilder hålls ljusa.
-> (#2) tydligt stäng-grepp (chevron) LÄNGST UT på formaterings-rullgardinen (`ToolbarView+Grabber`).
-> (#3) tap på tom yta i markeringsläge nollställer → lämnar (`MarkerOverlay`). (#4) färg borttagen ur
-> `FormattingBar` (snabb-fältet) → färg finns BARA via topp-palett-knappen = en konsekvent färg-meny.
-> 209 unit · arch · conformance/render 3/3 gröna. Nedan = 1.5-arkitekturen (oförändrad struktur).
-
-> **1.5.4 — inga lager-/modul-ändringar.** Fyra fynd från Kims iPhone-test fixade (se arkiv-snapshot).
 
 > **1.5.4 — inga lager-/modul-ändringar.** Fyra fynd från Kims iPhone-test fixade: (Bug 1)
 > markeringsläget nås bara via knappen — dubbeltryck-på-tom-yta-toggle borttagen (`CanvasView`),

@@ -24,25 +24,28 @@ extension ToolbarView {
         .background(Color.appSecondaryBackground)
     }
 
-    /// 1.5 (Kim): "streck" man SVEPER för att snabbt stänga sekundärraden — slipper leta
-    /// upp exakt vilken huvudknapp som öppnade den. Tap funkar också. Vertikal-tröskel
-    /// (minDist 8, > 12) så horisontell scroll/tryck i raden inte stjäls.
+    /// 1.5.5 (Kim): tydligt stäng-grepp LÄNGST UT (trailing) på rullgardinen — speglar "Klar"
+    /// som sitter längst ut i snabb-fältet. Det gamla lilla centrerade strecket var svårt att se/nå.
+    /// Tap eller svep-upp ("rulla upp gardinen") stänger raden. Vertikal-tröskel så horisontell
+    /// scroll/tryck i raden inte stjäls.
     @ViewBuilder
     var grabberHandle: some View {
-        Capsule()
-            .fill(Color.appTertiaryLabel)
-            .frame(width: 40, height: 5)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
-            .contentShape(Rectangle())
-            .onTapGesture { dismissSecondary() }
-            .gesture(
-                DragGesture(minimumDistance: 8).onEnded { v in
-                    if abs(v.translation.height) > 12 { dismissSecondary() }
-                }
-            )
-            .accessibilityIdentifier("toolbar.grabber")
-            .accessibilityLabel("Svep för att stänga menyraden")
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            Image(systemName: "chevron.compact.up")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(Color.secondary)
+                .frame(width: 64, height: 26)
+                .contentShape(Rectangle())
+                .onTapGesture { dismissSecondary() }
+                .gesture(
+                    DragGesture(minimumDistance: 8).onEnded { v in
+                        if abs(v.translation.height) > 12 { dismissSecondary() }
+                    }
+                )
+                .accessibilityIdentifier("toolbar.grabber")
+                .accessibilityLabel("Stäng menyraden")
+        }
     }
 
     /// Fäller in sekundärraden — samma animation + haptik som toggle-knappen. I markeringsläge

@@ -31,10 +31,7 @@ extension ToolbarView {
             bold: s?.bold ?? false, italic: s?.italic ?? false, underline: s?.underline ?? false,
             onToggleBold: { guard let idx = beginShapeEdit() else { return }; model.shapes[idx].bold.toggle() },
             onToggleItalic: { guard let idx = beginShapeEdit() else { return }; model.shapes[idx].italic.toggle() },
-            onToggleUnderline: { guard let idx = beginShapeEdit() else { return }; model.shapes[idx].underline.toggle() },
-            showColor: true,
-            colorPackId: s?.colorPackId,
-            onPickColorPack: { id in guard let idx = beginShapeEdit() else { return }; model.shapes[idx].colorPackId = id }
+            onToggleUnderline: { guard let idx = beginShapeEdit() else { return }; model.shapes[idx].underline.toggle() }
         )
     }
 

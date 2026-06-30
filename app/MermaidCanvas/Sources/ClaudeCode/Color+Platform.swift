@@ -103,4 +103,34 @@ extension Color {
         .white
         #endif
     }
+    /// 1.5.5 (Kim): canvas-bakgrunden är ADAPTIV — ljus pappersyta i ljust läge (oförändrat),
+    /// mörk yta i mörkt läge (så mörkt läge ser man saker, Kims fynd). Tidigare fast `white 0.9`.
+    static var canvasBackground: Color {
+        #if canImport(UIKit)
+        Color(uiColor: UIColor { $0.userInterfaceStyle == .dark
+            ? UIColor(white: 0.16, alpha: 1) : UIColor(white: 0.9, alpha: 1) })
+        #elseif canImport(AppKit)
+        Color(nsColor: NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+                ? NSColor(white: 0.16, alpha: 1) : NSColor(white: 0.9, alpha: 1) })
+        #else
+        Color(white: 0.9)
+        #endif
+    }
+    /// 1.5.5: default-pilfärg adaptiv — mjuk mörkgrå (0x3a3f47) i ljust läge (oförändrat),
+    /// ljusgrå i mörkt läge så pilen syns på den mörka canvasen.
+    static var edgeDefault: Color {
+        #if canImport(UIKit)
+        Color(uiColor: UIColor { $0.userInterfaceStyle == .dark
+            ? UIColor(white: 0.78, alpha: 1)
+            : UIColor(red: 0x3a/255.0, green: 0x3f/255.0, blue: 0x47/255.0, alpha: 1) })
+        #elseif canImport(AppKit)
+        Color(nsColor: NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+                ? NSColor(white: 0.78, alpha: 1)
+                : NSColor(red: 0x3a/255.0, green: 0x3f/255.0, blue: 0x47/255.0, alpha: 1) })
+        #else
+        Color(white: 0.23)
+        #endif
+    }
 }

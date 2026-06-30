@@ -27,17 +27,14 @@ struct FormattingBar: View {
     var onToggleBold: () -> Void = {}
     var onToggleItalic: () -> Void = {}
     var onToggleUnderline: () -> Void = {}
-    // 1.5.3 (Kims fynd): färg I baren → nås ÄVEN i live-läget (topp-Färg-knappen är
-    // verkningslös medan man skriver). Samma meny samma ställe i båda lägen.
-    var showColor: Bool = false
-    var colorPackId: String? = nil
-    var onPickColorPack: (String?) -> Void = { _ in }
+    // 1.5.5 (Kims fynd): FÄRG borttagen ur baren — den fanns på två ställen med olika UI
+    // (rik Paket/Fyllning/Ram via palett-knappen vs enkel grid här) = rörigt. Färg lever nu
+    // BARA i topp-palett-knappen. Baren = rent text. (Reverserar 1.5.3 Fix 4:s färg-del.)
 
     @State private var showSizePicker = false
     @State private var showAlignPicker = false
     @State private var showListsPicker = false
     @State private var showIndentPicker = false
-    @State private var showColorPicker = false
 
     var body: some View {
         HStack(spacing: 6) {
@@ -111,19 +108,6 @@ struct FormattingBar: View {
                     }
             }
 
-            if showColor {
-                Divider().frame(height: 28).padding(.horizontal, 2)
-
-                // Färg — EN ikon (visar aktuellt paket), popup med de numrerade paketen.
-                Button { showColorPicker = true } label: { colorChipLabel }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("toolbar.color")
-                    .accessibilityLabel("Färg")
-                    .popover(isPresented: $showColorPicker) {
-                        colorPackPicker.presentationCompactAdaptation(.popover)
-                    }
-            }
-
             if let onDone {
                 Spacer(minLength: 8)
                 Button("Klar", action: onDone)
@@ -132,54 +116,6 @@ struct FormattingBar: View {
             }
         }
         .padding(.horizontal, 2)
-    }
-
-    /// 1.5.3: färg-knappens utseende — fylld cirkel i aktuellt paket (palett-ikon om inget).
-    @ViewBuilder
-    private var colorChipLabel: some View {
-        let pack = ColorPack.by(id: colorPackId)
-        ZStack {
-            Circle().fill(colorPackId == nil ? Color.appChipBackground : pack.fillColor)
-                .overlay(Circle().strokeBorder(colorPackId == nil ? Color.primary.opacity(0.25) : pack.strokeColor, lineWidth: 2))
-            if colorPackId == nil {
-                Image(systemName: "paintpalette")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color.primary)
-            }
-        }
-        .frame(width: 36, height: 36)
-    }
-
-    /// 1.5.3: paket-väljaren (popup) — samma numrerade paket som färg-raden i markerat läge.
-    @ViewBuilder
-    private var colorPackPicker: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 46), spacing: 12)], spacing: 12) {
-            ForEach(Array(ColorPack.pickerVisible.enumerated()), id: \.element.id) { idx, pack in
-                Button {
-                    onPickColorPack(pack.id == "none" ? nil : pack.id)
-                    showColorPicker = false
-                } label: {
-                    ZStack {
-                        Circle().fill(pack.fillColor)
-                            .overlay(Circle().strokeBorder(pack.strokeColor, lineWidth: 1.5))
-                        if (pack.id == "none" && colorPackId == nil) || pack.id == colorPackId {
-                            Circle().strokeBorder(Color.accentColor, lineWidth: 2.5)
-                        }
-                        if pack.id == "none" {
-                            Image(systemName: "slash.circle").font(.caption).foregroundStyle(Color.secondary)
-                        } else {
-                            Text("\(idx)").font(.system(size: 13, weight: .bold, design: .rounded))
-                                .foregroundStyle(pack.textColor)
-                        }
-                    }
-                    .frame(width: 42, height: 42)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("\(pack.displayName)\(pack.id == "none" ? "" : ", \(idx)")")
-            }
-        }
-        .padding(16)
-        .frame(width: 250)
     }
 
     @ViewBuilder

@@ -170,7 +170,7 @@ enum EdgeDrawing {
             : start
 
         let edgeColor: Color = edge.colorHex.flatMap { Color(hexString: $0) }
-            ?? Color(hex: 0x3a3f47)
+            ?? Color.edgeDefault   // 1.5.5: adaptiv (mörkgrå i ljust, ljusgrå i mörkt) så pilen syns på mörk canvas
 
         var path = Path()
         path.move(to: lineStart)
