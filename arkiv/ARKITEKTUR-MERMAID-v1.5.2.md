@@ -1,13 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5.3 (redigerings-menyn rik + konsekvent + "se din text")
-*Datum: 2026-06-30*
-
-> **1.5.3 — inga lager-/modul-ändringar.** Fix 3+4 (Kims sim-bekräftade fynd): live-text-baren
-> hade bara storlek+justering. Nu: `FormattingBar` får färg-paket-popup (`showColor`) + lista
-> påslagen i live → samma rika meny i BÅDA lägen (storlek·justering·lista·indrag·färg·Klar, ingen
-> scroll). OCH tangentbords-undvikning: den redigerade formen lyfts ovanför tangentbordet
-> (`ZoomableCanvas.Coordinator` keyboardWillShow → contentInset + scrollRectToVisible; utbruten till
-> `ZoomableCanvas+ScrollAssist.swift`, R5 358→339). `colorPackId` round-trippar redan (ingen ny
-> bärare). 47 unit · arch · conformance/render 3/3 gröna. Nedan = 1.5-arkitekturen (oförändrad struktur).
+# ARKITEKTUR-MERMAID — Version 1.5.2 (Mac-frysning fixad)
+*Datum: 2026-06-29*
 
 > **1.5.2 — inga lager-/modul-ändringar (hotfix).** Mac-appen frös (huvudtråden i evig SwiftUI-
 > omritnings-loop, 94% CPU → ikonen gick ej att klicka). Rot: `ZoomableCanvasMac.syncViewport()`

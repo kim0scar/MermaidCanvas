@@ -61,6 +61,7 @@
 		2044E6C34377DE47106D01A7 /* V69Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3B0708CD1F9CF38C65AF1B /* V69Tests.swift */; };
 		20858E8347E9A55C61F821D5 /* METOD-VISUELL-DIALOG.md in Resources */ = {isa = PBXBuildFile; fileRef = 162B95FA55DB4DCDFA210778 /* METOD-VISUELL-DIALOG.md */; };
 		22490A7634414FDDCD00C4C9 /* FileChangeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF04A29A100E836C9DE2317A /* FileChangeObserver.swift */; };
+		22629429F62027EDB8A478D2 /* ZoomableCanvas+ScrollAssist.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0118E0F831B8A044B317E50 /* ZoomableCanvas+ScrollAssist.swift */; };
 		237D24231E442EA5EA9A3BA9 /* ToolbarView+Grabber.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CC1DA394DEC7440A3D404E /* ToolbarView+Grabber.swift */; };
 		237EE0CF343055756171208D /* CanvasFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DBE1118CB6B8E7AD3B7E51 /* CanvasFileManager.swift */; };
 		23B128F65DF0AF6A6987F9B0 /* ToolbarView+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF71868A7FDA6A69380CFC8 /* ToolbarView+History.swift */; };
@@ -326,6 +327,7 @@
 		EF91383A986C10BDED8B0354 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCEAC8164A105EF50AFB43C /* ActivityView.swift */; };
 		EF9D701D52814DBBB28AAA87 /* SkillFileComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF227819CFEFE7C421204419 /* SkillFileComposer.swift */; };
 		F0BBD9CEA398C0C4817053DF /* UIRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71E6FAA7A14093A0397C1316 /* UIRenderer.swift */; };
+		F111BC4A47EBB08033865C8A /* ZoomableCanvas+ScrollAssist.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0118E0F831B8A044B317E50 /* ZoomableCanvas+ScrollAssist.swift */; };
 		F1519E401F5E78369B9460C6 /* RoadmapRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46BA0AC17E51F46D4411804 /* RoadmapRenderer.swift */; };
 		F1768FADFA994A9D12D1B2E0 /* CanvasImageExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C7E3DC4CA7364213643DD3 /* CanvasImageExporter.swift */; };
 		F4427928448FD5373334CDFF /* EdgeCollapseBadgesLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31383F5C0DD2A94372B23B74 /* EdgeCollapseBadgesLayer.swift */; };
@@ -503,6 +505,7 @@
 		9ADB7B5EC438DFE7C4326EA2 /* ToolbarView+ShapesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+ShapesRow.swift"; sourceTree = "<group>"; };
 		9C35ACE4629BBC03F7002717 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9FED8B369306CD9E4CF0A850 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		A0118E0F831B8A044B317E50 /* ZoomableCanvas+ScrollAssist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ZoomableCanvas+ScrollAssist.swift"; sourceTree = "<group>"; };
 		A0807039C26319F36B77EEE0 /* SelectionOutline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOutline.swift; sourceTree = "<group>"; };
 		A170C71CB28B19F3E6BE8BCA /* V33AutoLoopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V33AutoLoopTests.swift; sourceTree = "<group>"; };
 		A29372DCECBC709B68A13662 /* test_diamond_chip.1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_diamond_chip.1.png; sourceTree = "<group>"; };
@@ -657,6 +660,7 @@
 				E00A564942F1596BCF995981 /* CanvasViewportState.swift */,
 				25EF82F1BF18F5CFD8CF0343 /* FloatingChipPreview.swift */,
 				CD6968E399818BEA6D65ECAC /* ZoomableCanvas.swift */,
+				A0118E0F831B8A044B317E50 /* ZoomableCanvas+ScrollAssist.swift */,
 				2D23C41C85CA5F28CD4F03FC /* ZoomableCanvasMac.swift */,
 			);
 			path = Canvas;
@@ -1352,6 +1356,7 @@
 				E818D8D6660F9E2E309AD59D /* UIScreenRenderer.swift in Sources */,
 				12552386BC3E8F9BF2FC7A9D /* UITestScenarios+FormReview.swift in Sources */,
 				1FB9177235E29E947656989A /* UITestScenarios.swift in Sources */,
+				F111BC4A47EBB08033865C8A /* ZoomableCanvas+ScrollAssist.swift in Sources */,
 				60CF79340150CFB89E7A3381 /* ZoomableCanvas.swift in Sources */,
 				10F2241F6D2D0A627B91FADE /* ZoomableCanvasMac.swift in Sources */,
 				652B19FA8BBBA44C5915C867 /* iPhoneFrameMath.swift in Sources */,
@@ -1487,6 +1492,7 @@
 				E178F46DAD052D49A4D5F5DE /* UIScreenRenderer.swift in Sources */,
 				95DC4D2C80428626FEC5C2D4 /* UITestScenarios+FormReview.swift in Sources */,
 				F53B7FFA3D8FF13EF388CADB /* UITestScenarios.swift in Sources */,
+				22629429F62027EDB8A478D2 /* ZoomableCanvas+ScrollAssist.swift in Sources */,
 				E1C23B0DD30A0D05C656C957 /* ZoomableCanvas.swift in Sources */,
 				B12D6180335DE51C6F084377 /* ZoomableCanvasMac.swift in Sources */,
 				7A3B931309CACA1A3384E304 /* iPhoneFrameMath.swift in Sources */,
@@ -1788,7 +1794,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.2;
+				CURRENT_PROJECT_VERSION = 1.5.3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1803,7 +1809,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.5.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1867,7 +1873,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.2;
+				CURRENT_PROJECT_VERSION = 1.5.3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1888,7 +1894,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.2;
+				MARKETING_VERSION = 1.5.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
