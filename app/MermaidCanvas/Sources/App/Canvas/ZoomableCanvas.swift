@@ -167,7 +167,7 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
         var lastResetTrigger: Int = 0
         private var hasDoneInitialFit = false
         /// v39: auto-scroll timer (kör vid shape-drag nära kant)
-        private var autoScrollTimer: Timer?
+        var autoScrollTimer: Timer?
         private var autoScrollCancellable: AnyCancellable?
 
         init(
@@ -192,30 +192,11 @@ struct ZoomableCanvas<Content: View>: UIViewRepresentable {
                 .sink { [weak self] velocity in
                     self?.handleAutoScrollVelocity(velocity)
                 }
+
+            setupKeyboardObservers()   // 1.5.3: lyft redigerad form ovanför tangentbordet
         }
 
-        private func handleAutoScrollVelocity(_ velocity: CGSize) {
-            if velocity == .zero {
-                autoScrollTimer?.invalidate()
-                autoScrollTimer = nil
-            } else if autoScrollTimer == nil {
-                autoScrollTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-                    guard let self, let sv = self.scrollView else { return }
-                    let vel = self.viewportState.autoScrollVelocity
-                    guard vel != .zero else { return }
-                    let dt: CGFloat = 1.0 / 60.0
-                    let dx = vel.width * dt
-                    let dy = vel.height * dt
-                    let maxX = max(0, sv.contentSize.width - sv.bounds.width)
-                    let maxY = max(0, sv.contentSize.height - sv.bounds.height)
-                    let newOffset = CGPoint(
-                        x: min(max(0, sv.contentOffset.x + dx), maxX),
-                        y: min(max(0, sv.contentOffset.y + dy), maxY)
-                    )
-                    sv.setContentOffset(newOffset, animated: false)
-                }
-            }
-        }
+        // handleAutoScrollVelocity(_:) + tangentbords-undvikning → ZoomableCanvas+ScrollAssist.swift (R5)
 
         /// Synkron spegling av scrollViewens state → CanvasViewportState.
         /// Körs i delegate-callbacks som alltid är på huvudtråden, så vi
