@@ -169,7 +169,8 @@ Kim hittade "massa fel" i skriv-läget: två formaterings-rader + punktlista PÅ
 
 1.5.7 — Mac blir ett riktigt fönster (Kims Mac-test 2026-07-01 · plan godkänd · WIP=1):
 - Revidering 2026-07-01: Mac-entrén byter `MenuBarExtra` → `@main Window` + `LSUIElement` borttagen. Varför: Kim kunde inte flytta/storleksändra/helskärma menyrads-popupen, canvasen var grå, verktygsraden gles i brett fönster. Ren Mac-SKAL-ändring (allt `#if os(macOS)`/Mac-filer + plist) → iOS bit-för-bit orört, ingen bärare/facit/round-trip rörd (regel 15 trivialt grön).
-- ⏳ #1 riktigt fönster (flyttbart/storleksbart/helskärm + Dock-ikon) · #2 vit canvas (`ZoomableCanvasMac` ritar ljus 0.9/mörk 0.16 som iPhone) · #3 verktygsraden vänsterjusterad (ny `ToolbarView+MacLayout.swift`, ToolbarView net-noll mot R5). Klart när: Kim på sin Mac ser fönstret flytta/storleksändra/helskärm + vit canvas + Dock-ikon + ren verktygsrad (🔴 — Mac-känsla kan ej maskin-dömas). 209 unit · arch · conformance/render måste vara gröna innan deploy.
+- ✅ #1 riktigt fönster (flyttbart/storleksbart/helskärm + Dock-ikon) · #2 vit canvas (`ZoomableCanvasMac` ritar ljus 0.9/mörk 0.16 som iPhone) · #3 verktygsraden vänsterjusterad (ny `ToolbarView+MacLayout.swift`, ToolbarView net-noll mot R5). BEVISAT: Mac-screenshot visar titelrad+trafikljus (flyttbar/helskärm), vit canvas, vänstersamlad rad. 209 unit gröna (iOS bit-för-bit orört) + arch + conformance/render 3/3.
+- ✅ DEPLOY 1.5.7: Mac ✅ (deploy-mac.sh, version 1.5.7, CPU lugn) + iPhone ✅ (clean Release, codesign giltig, install OK + startade) = båda 1.5.7. Tagg v1.5.7 + ZIP + git synkat. KVAR: Kims öga på Mac-fönstrets känsla + meny-look (🔴 — kan ej maskin-dömas).
 
 ## Milstolpe 1.6 — rik text (per-ord) — EGEN milstolpe, efter v1.5
 Riktig text-motor i formen (UITextView/NSTextView-representable): markera ORD → egen färg/storlek + punktlista LIVE medan man skriver. Run-baserad modell + ny bärare (runs-JSON, full regel-15). Designtävling vid 1.6-start.
