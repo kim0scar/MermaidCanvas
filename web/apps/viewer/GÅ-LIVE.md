@@ -4,8 +4,10 @@ Visaren är en statisk webbapp. Den behöver **ingen server** — bara en gratis
 Kim gör engångs-kontot; Claude bygger och kör kommandot.
 
 ## ✅ LIVE (2026-07-01)
-- **Publik URL:** https://visuali2e-viewer.pages.dev
+- **Publik URL:** https://visuali2e.com (+ https://www.visuali2e.com) — egen domän via Cloudflare Registrar, kopplad 2026-07-02.
+- **Ursprungs-URL (funkar också):** https://visuali2e-viewer.pages.dev
 - **Host:** Cloudflare Pages, projekt `visuali2e-viewer`, konto `kim.lundqvist@gmail.com` (OAuth via `wrangler login`).
+- **DNS:** zon `visuali2e.com` i samma Cloudflare-konto; CNAME `@` + `www` → `visuali2e-viewer.pages.dev` (Proxied). En deploy till Pages-projektet uppdaterar alltså domänen automatiskt — inget mer DNS-pyssel.
 - **Uppdatera live (efter kod-ändring):**
   ```
   cd web && npm run build:viewer
