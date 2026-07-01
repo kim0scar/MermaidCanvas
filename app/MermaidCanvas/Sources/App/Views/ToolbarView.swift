@@ -89,7 +89,7 @@ struct ToolbarView: View {
         } else {
             VStack(spacing: 0) {
                 primaryControls(vertical: false)
-                    .padding(.horizontal, 10).padding(.top, 6).padding(.bottom, 4)   // 1.4: mindre luft (Kim)
+                    .padding(.horizontal, 10).padding(.top, 6).padding(.bottom, 4).macToolbarLeading()   // 1.4 luft + 1.5.7 Mac-vänster
                 if let row = activeRow {
                     secondaryRowView(row)
                         .transition(.asymmetric(
@@ -115,7 +115,7 @@ struct ToolbarView: View {
             toggleButton("paintpalette", row: .colors, disabled: model.selectedShapeId == nil, accId: "toolbar.colors")
             toggleButton("textformat.size", row: .textStyles, disabled: model.selectedShapeId == nil, accId: "toolbar.textStyles")
             markerButton   // 1.4: markeringsverktyget åter (Kim); dubbeltryck på tom yta funkar också
-            if !vertical { Spacer(minLength: 0) }
+            primaryGroupSpacer(vertical: vertical)   // 1.5.7: iOS greedy / Mac fast lucka (ToolbarView+MacLayout)
             zoomBadge
             undoButton
             redoButton   // V79-svep: ångra åt båda håll

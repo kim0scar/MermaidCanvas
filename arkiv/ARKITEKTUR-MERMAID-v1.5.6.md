@@ -1,15 +1,5 @@
-# ARKITEKTUR-MERMAID — Version 1.5.7 (Mac blir ett riktigt fönster)
-*Datum: 2026-07-01*
-
-> **1.5.7 — bara Mac-SKAL, inga lager-/bärar-ändringar.** Kims order efter Mac-test: fönstret gick
-> inte flytta/storleksändra/helskärm, canvasen var grå, menyerna glesa. Root: Mac-appen var en
-> `MenuBarExtra` (menyrads-popup — kan per design inte flyttas). `MermaidCanvasApp.swift` byter till
-> `@main Window` → riktigt flyttbart/storleksbart/helskärms-fönster + Dock-ikon + standard-menyrad
-> (`LSUIElement` borttagen ur `Info-macOS.plist` + `project.yml`). `ZoomableCanvasMac` ritar nu
-> canvas-bakgrunden explicit (ljus 0.9 / mörk 0.16 — samma som iPhone) i st.f. systemgrå. Verktygsraden
-> vänsterjusteras i det breda fönstret (ny `ToolbarView+MacLayout.swift`, utbruten så ToolbarView.swift
-> håller R5-taket). ALLT gated `#if os(macOS)` / Mac-filer → iOS bit-för-bit oförändrat. Ingen bärare/
-> facit/round-trip rörd → regel 15 trivialt grön. 209 unit · arch · conformance/render 3/3 gröna.
+# ARKITEKTUR-MERMAID — Version 1.5.6 (live punktlista i formen)
+*Datum: 2026-06-30*
 
 > **1.5.6 — en ny VY-fil, inga lager-/bärar-ändringar.** Kims order "bygg live redigering av text i
 > en form så allt syns direkt". Ny `Views/Canvas/LiveTextEditor.swift` (iOS): en `UITextView`

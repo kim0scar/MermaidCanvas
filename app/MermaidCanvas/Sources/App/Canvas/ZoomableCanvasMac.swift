@@ -29,7 +29,14 @@ struct ZoomableCanvas<Content: View>: NSViewRepresentable {
         scrollView.maxMagnification = 4.0
         scrollView.hasVerticalScroller = true
         scrollView.hasHorizontalScroller = true
-        scrollView.drawsBackground = false
+        // 1.5.7 (Kim: "ingen vit canvas"): rita canvas-bakgrunden själva. Utan detta visades
+        // systemets grå fönster-material. Samma nyanser som iPhone-tvillingen (ljus 0.9 / mörk 0.16,
+        // se ZoomableCanvas.swift + Color+Platform.canvasBackground) → tvillingarna ser lika ut.
+        scrollView.drawsBackground = true
+        scrollView.backgroundColor = NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+                ? NSColor(white: 0.16, alpha: 1) : NSColor(white: 0.9, alpha: 1)
+        }
 
         let doc = FlippedDocumentView(frame: CGRect(origin: .zero, size: contentSize))
         let hosting = NSHostingView(rootView: AnyView(content()))

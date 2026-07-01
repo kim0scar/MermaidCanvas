@@ -12,7 +12,7 @@
                     ┌───────────┴───────────┐
               iOS-skal                  macOS-skal
         main.swift (UIApplicationMain   MermaidCanvasApp.swift
-        + SceneDelegate, orient.lås)    (@main MenuBarExtra { ContentView() })
+        + SceneDelegate, orient.lås)    (@main Window { ContentView() })
         ZoomableCanvas (UIScrollView)   ZoomableCanvasMac (NSScrollView)
 ```
 
@@ -24,7 +24,7 @@
 |---|---|---|
 | `Sources/Mermaid/` · `App/Models/` · `App/Persistence/` | 100% delat | Foundation/CoreGraphics-rent (hjärnan) |
 | `App/Views/` (canvas, toolbar, sheets, handtag) | ~95% delat | via shims + `#if`-vakter |
-| App-entré | per plattform | iOS: `main.swift` (UIApplicationMain, orient.lås). macOS: `MermaidCanvasApp.swift` (`@main` MenuBarExtra). |
+| App-entré | per plattform | iOS: `main.swift` (UIApplicationMain, orient.lås). macOS: `MermaidCanvasApp.swift` (`@main` `Window` — riktigt flyttbart/storleksbart/helskärms-fönster sedan 1.5.7; var `MenuBarExtra` t.o.m. 1.5.6). |
 | Zoom/pan-canvas | per plattform, GEMENSAM SÖM | iOS `ZoomableCanvas` (UIScrollView) · macOS `ZoomableCanvasMac` (NSScrollView, flippad doc). Båda populerar SAMMA `CanvasViewportState` → resten av appen oförändrad. |
 
 ## Plattforms-shims (gör delade vyer cross-platform)
@@ -47,7 +47,7 @@ Flippad `documentView` (`isFlipped = true`) så top-left-origin matchar iOS.
 ## Bygg & deploy (macOS)
 - Target `MermaidCanvasMac`, scheme `MermaidCanvasMac`, bundle `com.kimlundqvist.mermaidcanvas.mac`.
 - **Använd `scripts/deploy-mac.sh`** — bygger Release, installerar i `/Applications/Visuali2e.app`, och VERIFIERAR (version == AppVersion + appen lever + inga kraschloggar). Kör inte de råa kommandona för hand; scriptet är den självverifierande grinden (regel 4, 🟡).
-- Under huven: `xcodebuild -scheme MermaidCanvasMac -configuration Release -destination 'platform=macOS' build`. `LSUIElement: true` → menyrads-app (ingen Dock-ikon).
+- Under huven: `xcodebuild -scheme MermaidCanvasMac -configuration Release -destination 'platform=macOS' build`. **1.5.7:** `LSUIElement` borttagen → riktig fönster-app MED Dock-ikon + standard-menyrad (var menyrads-popup utan Dock-ikon t.o.m. 1.5.6). Canvas-bakgrunden ritas nu explicit (ljus/mörk) i `ZoomableCanvasMac` — var systemgrå förut.
 - **Får aldrig hoppas över vid deploy** (`VERSIONSHANTERING.md` steg 2b) — annars halkar Mac-appen tyst efter iPhone (lärdomen 2026-06-28: var 1.0 vs iPhone 1.5.1).
 
 ## Hårt lärda läxor (rör inte detta utan att förstå)

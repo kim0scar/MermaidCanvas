@@ -4,18 +4,20 @@ import SwiftUI
 // tvinga igenom orienteringslåset. iOS har därför ingen `@main` här (den bor i main.swift).
 
 #if os(macOS)
-// 1.1 dual-platform: macOS-entré = menyrads-popup (MenuBarExtra) som hostar SAMMA ContentView.
-// Klick på menyrads-ikonen fäller ut canvasen. Delar hela hjärnan med iPhone-appen.
+// 1.5.7 (Kims order): macOS-entré = ett RIKTIGT fönster (Window), inte en menyrads-popup.
+// En MenuBarExtra kan per design inte flyttas/storleksändras/gå i helskärm — Window kan allt tre
+// och ger Dock-ikon + standard-menyrad (Arkiv/Redigera/Fönster). `Window` (ej `WindowGroup`) =
+// EN canvas-vy, inga duplicerade fönster, öppnas igen vid Dock-klick. Delar SAMMA ContentView
+// (hela hjärnan) med iPhone-appen. LSUIElement togs bort (Info-macOS.plist + project.yml).
 @main
 struct MermaidCanvasMacApp: App {
     var body: some Scene {
-        MenuBarExtra("Visuali2e", systemImage: "scribble.variable") {
+        Window("Visuali2e", id: "main") {
             ContentView()
-                // 1.1 Fas 6: användbar popup-storlek (annars blir canvasen en liten ruta).
-                .frame(minWidth: 920, idealWidth: 1100, minHeight: 640, idealHeight: 760)
-                // 1.5.5 (Kim): följer systemets läge (1.5.4:s tvinga-ljus borttagen) — adaptivt mörkt läge.
+                // Golv-storlek (min) + rimlig första-start-storlek (ideal). Fönstret är fritt
+                // storleksbart över detta; systemets läge (ljust/mörkt) följs (1.5.5).
+                .frame(minWidth: 720, idealWidth: 1100, minHeight: 480, idealHeight: 760)
         }
-        .menuBarExtraStyle(.window)
     }
 }
 #endif

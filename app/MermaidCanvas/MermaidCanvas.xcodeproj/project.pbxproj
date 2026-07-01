@@ -77,6 +77,7 @@
 		2BD29E95D2CC9E31480CE55E /* ToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D164BF747C4ACF00F0921D /* ToolbarView.swift */; };
 		2EC158F859E33D0E76037C0D /* CanvasView+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B64BAAB0F38B1E5A71B6D2 /* CanvasView+Helpers.swift */; };
 		2F596CE0C3F0E7DF851D38C8 /* ComponentGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DFB75F9A8C3B90AE72B3C7 /* ComponentGallery.swift */; };
+		2F8B99557C8D20B641029A74 /* ToolbarView+MacLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5CD027F0784BD7F60DF9DA /* ToolbarView+MacLayout.swift */; };
 		2FB60923F478B3E69A314A91 /* V34PanSymmetryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844F94A0F70D925ADA72B619 /* V34PanSymmetryTests.swift */; };
 		31D4EC6627E7EC70A9128DE9 /* CanvasShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC011658EA5250E6227B5D1 /* CanvasShapes.swift */; };
 		32846DC5BC1F515EA0840591 /* ComponentGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3DFB75F9A8C3B90AE72B3C7 /* ComponentGallery.swift */; };
@@ -281,6 +282,7 @@
 		CC474433B2F521CCA11F087E /* CanvasModel+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E53BA874CBF374FCDD769CDC /* CanvasModel+Shapes.swift */; };
 		CDC4460AF08146EA18AF0A69 /* ToolbarView+MultiSelectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B552BB06C1E0B1CC66FBE56A /* ToolbarView+MultiSelectRow.swift */; };
 		CE03A754E3EB8FC6D6BE0DB0 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FED8B369306CD9E4CF0A850 /* Haptics.swift */; };
+		CEEC7E3CCCFD5B41CED580AB /* ToolbarView+MacLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5CD027F0784BD7F60DF9DA /* ToolbarView+MacLayout.swift */; };
 		CFDE6577C6EADBB706F9ADE7 /* ShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0426117CB94D90B95AD1BEF7 /* ShapeView.swift */; };
 		D05D53CCB773A8CDA53268A8 /* PlatformRulesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01D8B44379527554A687A47 /* PlatformRulesSheet.swift */; };
 		D1E6438B4DD093915FAF7AE7 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = F575E5DF0F54605B54A55476 /* FeatureFlags.swift */; };
@@ -588,6 +590,7 @@
 		FCCEAC8164A105EF50AFB43C /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		FEE60C6AE7EC4A29F7FDC59B /* NotePopupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotePopupSheet.swift; sourceTree = "<group>"; };
 		FF04A29A100E836C9DE2317A /* FileChangeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileChangeObserver.swift; sourceTree = "<group>"; };
+		FF5CD027F0784BD7F60DF9DA /* ToolbarView+MacLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ToolbarView+MacLayout.swift"; sourceTree = "<group>"; };
 		FFDBDEAB608035D157C8B5C4 /* StateJSONSymmetryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateJSONSymmetryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -716,6 +719,7 @@
 				C4AC08D083BA17A4DAD75DA6 /* ShapeContextMenu.swift */,
 				2CBF6842E64C15176403ED9A /* TableEditorSheet.swift */,
 				23D164BF747C4ACF00F0921D /* ToolbarView.swift */,
+				FF5CD027F0784BD7F60DF9DA /* ToolbarView+MacLayout.swift */,
 				17D4240D2A5DE59F231DCA4E /* Canvas */,
 				3F2CBADEE919A0EC993D21F6 /* Debug */,
 				36176F4BE7D040AB08B57FD1 /* Export */,
@@ -1355,6 +1359,7 @@
 				DE7D93FAF45C8336C55A3ACA /* ToolbarView+ColorsRow.swift in Sources */,
 				237D24231E442EA5EA9A3BA9 /* ToolbarView+Grabber.swift in Sources */,
 				529A1D3CC9D8C7B597BE2B71 /* ToolbarView+History.swift in Sources */,
+				CEEC7E3CCCFD5B41CED580AB /* ToolbarView+MacLayout.swift in Sources */,
 				FE739DF984FAF34BF437F261 /* ToolbarView+Menu.swift in Sources */,
 				44B0F34D1E40719CA326A64E /* ToolbarView+MultiSelectRow.swift in Sources */,
 				A481D0193F971B8C7659B37C /* ToolbarView+PacksRow.swift in Sources */,
@@ -1493,6 +1498,7 @@
 				4C507D44A97F37F90F408C31 /* ToolbarView+ColorsRow.swift in Sources */,
 				7DD5A18E362A08181CCA6706 /* ToolbarView+Grabber.swift in Sources */,
 				23B128F65DF0AF6A6987F9B0 /* ToolbarView+History.swift in Sources */,
+				2F8B99557C8D20B641029A74 /* ToolbarView+MacLayout.swift in Sources */,
 				24C2CF3CA4F695EA68682F22 /* ToolbarView+Menu.swift in Sources */,
 				CDC4460AF08146EA18AF0A69 /* ToolbarView+MultiSelectRow.swift in Sources */,
 				96CF6AB9416EDCCDAD9F602F /* ToolbarView+PacksRow.swift in Sources */,
@@ -1806,7 +1812,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.6;
+				CURRENT_PROJECT_VERSION = 1.5.7;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1821,7 +1827,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.6;
+				MARKETING_VERSION = 1.5.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1885,7 +1891,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.5.6;
+				CURRENT_PROJECT_VERSION = 1.5.7;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SFXR8MV6MP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1906,7 +1912,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.5.6;
+				MARKETING_VERSION = 1.5.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
