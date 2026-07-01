@@ -23,6 +23,10 @@ build/
 .build/
 Packages/
 Package.resolved
+# web-first monorepo: 'Packages/' (Swift/SPM) matchar 'web/packages' på skiftlägesokänsligt macOS-FS.
+# Undanta webbens källkods-paket (Swift-projektet har inget web/packages → påverkas ej).
+!web/packages/
+!web/packages/**
 
 # Klassiskt skräp
 *.swp

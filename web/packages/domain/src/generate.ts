@@ -1,0 +1,82 @@
+// Tier 2 (ren mermaid-kropp) — FAS 0-DELMÄNGD: renderbar mermaid för grundformer + kanter.
+// Full byte-paritet med Swift MermaidGenerator.swift + escaping + alla former + classDef-färger +
+// legender + linkStyle kommer i nästa steg (då aktiveras Swift↔TS golden-diff-grinden).
+// Den BLOCKERANDE grinden denna fas är state-JSON-round-trip (Tier 1), inte denna fil.
+
+import type { CanvasDoc, EdgeConnection, ShapeNode, ShapeType } from './model.js';
+
+const HEADER = '%%{init: {"flowchart": {"curve": "basis"}}}%%\nflowchart TD';
+
+/** Native mermaid-form-omslag per typ (matchar all-shapes.mmd). Ej-native → rektangel + shape-type-bärare. */
+function wrapNode(mid: string, type: ShapeType, label: string, cat: string): string {
+  const q = `"${escapeLabel(label)}"`;
+  switch (type) {
+    case 'circle': return `${mid}((${q})):::${cat}`;
+    case 'diamond': return `${mid}{${q}}:::${cat}`;
+    case 'pill': return `${mid}([${q}]):::${cat}`;
+    case 'cylinder': return `${mid}[(${q})]:::${cat}`;
+    // rektangel + alla ej-native former renderas som närmaste native (rektangel), identitet i %% shape-type
+    default: return `${mid}[${q}]:::${cat}`;
+  }
+}
+
+/** Former som INTE har en egen native mermaid-form → bär sin identitet i %% shape-type. */
+const NON_NATIVE: ReadonlySet<ShapeType> = new Set([
+  'table', 'link', 'line', 'arrow', 'square', 'processArrow',
+  'container', 'octagon', 'phoneFrame', 'triangle', 'emoji',
+]);
+
+/** Minimal label-escaping (mermaid entiteter). Full paritet portas med golden-diff. */
+function escapeLabel(s: string): string {
+  return s.replace(/"/g, '#quot;');
+}
+
+function edgeArrow(e: EdgeConnection): string {
+  const base = e.style === 'dashed' ? '-.-' : '--';
+  const head = e.direction === 'none' ? '-'
+    : e.direction === 'bidirectional' ? '>' // förenklat i fas 0
+    : '>';
+  const left = e.direction === 'backward' || e.direction === 'bidirectional' ? '<' : '';
+  const arrow = e.style === 'dashed' ? `${left}${base}>` : `${left}${base}>`;
+  const noHead = e.direction === 'none';
+  const wire = noHead ? (e.style === 'dashed' ? '-.-' : '---') : arrow;
+  return e.label ? `${wire}|"${escapeLabel(e.label)}"|` : wire;
+}
+
+/**
+ * Generera Tier 2-mermaidkroppen (renderbar delmängd). `idFor` mappar ShapeNode → mermaid-nod-id
+ * (`<kategori>_N<index>`), samma stil som Swift-generatorn.
+ */
+export function generateMermaidBody(doc: CanvasDoc): string {
+  const idFor = new Map<string, string>();
+  doc.shapes.forEach((s, i) => idFor.set(s.id, `${s.category}_N${i}`));
+
+  const lines: string[] = [HEADER];
+
+  for (const s of doc.shapes) {
+    const mid = idFor.get(s.id)!;
+    lines.push(`    ${wrapNode(mid, s.type, s.label, s.category)}`);
+    if (NON_NATIVE.has(s.type)) lines.push(`    %% ${mid} shape-type: ${s.type}`);
+    lines.push(`    %% ${mid} pos: ${round(s.position.x)},${round(s.position.y)}`);
+    lines.push(`    %% ${mid} name: ${s.label}`);
+  }
+
+  for (const e of doc.edges) {
+    const from = idFor.get(e.from);
+    const to = idFor.get(e.to);
+    if (!from || !to) continue;
+    lines.push(`    ${from} ${edgeArrow(e)} ${to}`);
+  }
+
+  const usedCats = new Set(doc.shapes.map((s) => s.category));
+  for (const cat of usedCats) {
+    // FAS 0 platshållar-classDef (parsebar). Exakta per-kategori-färger portas med golden-diff.
+    lines.push(`    classDef ${cat} fill:#ffffff,stroke:#1e293b,color:#111827;`);
+  }
+
+  return lines.join('\n') + '\n';
+}
+
+function round(n: number): number {
+  return Math.round(n);
+}
