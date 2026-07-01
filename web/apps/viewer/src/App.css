@@ -33,6 +33,27 @@ header p { margin: 2px 0 0; font-size: 13px; opacity: 0.6; }
   font-size: 12px; padding: 4px 10px; border-radius: 999px;
   background: #e0edff; color: #1e40af;
 }
+.badge.warn { background: #fef3c7; color: #92400e; }
+
+.btn.primary { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
+
+.tabs { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.tab {
+  font-size: 15px; padding: 10px 14px; border: none; cursor: pointer;
+  background: var(--card); color: var(--fg);
+}
+.tab.active { background: #1d4ed8; color: #ffffff; }
+
+.warnings {
+  margin: 0 16px 8px; padding: 10px 14px; border-radius: 12px;
+  background: #fef3c7; color: #92400e; font-size: 14px;
+}
+
+/* tldraw behöver en container med uttrycklig storlek */
+.canvas-wrap {
+  flex: 1; position: relative; min-height: 320px;
+  border-top: 1px solid var(--line);
+}
 
 .stage {
   flex: 1; overflow: auto; padding: 16px;

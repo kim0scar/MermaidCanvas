@@ -26,21 +26,28 @@ const NON_NATIVE: ReadonlySet<ShapeType> = new Set([
   'container', 'octagon', 'phoneFrame', 'triangle', 'emoji',
 ]);
 
-/** Minimal label-escaping (mermaid entiteter). Full paritet portas med golden-diff. */
+/** Minimal label-escaping (mermaid entiteter + radbrytning). Full paritet portas med golden-diff. */
 function escapeLabel(s: string): string {
-  return s.replace(/"/g, '#quot;');
+  return s.replace(/"/g, '#quot;').replace(/\r?\n/g, '<br/>');
 }
 
-function edgeArrow(e: EdgeConnection): string {
-  const base = e.style === 'dashed' ? '-.-' : '--';
-  const head = e.direction === 'none' ? '-'
-    : e.direction === 'bidirectional' ? '>' // förenklat i fas 0
-    : '>';
-  const left = e.direction === 'backward' || e.direction === 'bidirectional' ? '<' : '';
-  const arrow = e.style === 'dashed' ? `${left}${base}>` : `${left}${base}>`;
-  const noHead = e.direction === 'none';
-  const wire = noHead ? (e.style === 'dashed' ? '-.-' : '---') : arrow;
-  return e.label ? `${wire}|"${escapeLabel(e.label)}"|` : wire;
+/**
+ * Kant-tråd + ev. sidbyte. Lärdomen från native (💡#8): `<--` PARSAR men kraschar riktig
+ * mermaid-RENDER → bakåtkant skrivs som OMVÄND framåtpil (swap), aldrig `<--`.
+ */
+function edgeWire(e: EdgeConnection): { wire: string; swap: boolean } {
+  const dashed = e.style === 'dashed';
+  switch (e.direction) {
+    case 'forward': return { wire: dashed ? '-.->' : '-->', swap: false };
+    case 'backward': return { wire: dashed ? '-.->' : '-->', swap: true };
+    case 'bidirectional': return { wire: dashed ? '<-.->' : '<-->', swap: false };
+    case 'none': return { wire: dashed ? '-.-' : '---', swap: false };
+  }
+}
+
+function edgeArrow(e: EdgeConnection): { text: string; swap: boolean } {
+  const { wire, swap } = edgeWire(e);
+  return { text: e.label ? `${wire}|"${escapeLabel(e.label)}"|` : wire, swap };
 }
 
 /**
@@ -58,14 +65,15 @@ export function generateMermaidBody(doc: CanvasDoc): string {
     lines.push(`    ${wrapNode(mid, s.type, s.label, s.category)}`);
     if (NON_NATIVE.has(s.type)) lines.push(`    %% ${mid} shape-type: ${s.type}`);
     lines.push(`    %% ${mid} pos: ${round(s.position.x)},${round(s.position.y)}`);
-    lines.push(`    %% ${mid} name: ${s.label}`);
+    lines.push(`    %% ${mid} name: ${s.label.replace(/\r?\n/g, ' ')}`);
   }
 
   for (const e of doc.edges) {
     const from = idFor.get(e.from);
     const to = idFor.get(e.to);
     if (!from || !to) continue;
-    lines.push(`    ${from} ${edgeArrow(e)} ${to}`);
+    const { text, swap } = edgeArrow(e);
+    lines.push(swap ? `    ${to} ${text} ${from}` : `    ${from} ${text} ${to}`);
   }
 
   const usedCats = new Set(doc.shapes.map((s) => s.category));

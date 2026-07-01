@@ -17,6 +17,7 @@
     "build:viewer": "npm run build -w @v2e/viewer"
   },
   "devDependencies": {
+    "jsdom": "^29.1.1",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   }

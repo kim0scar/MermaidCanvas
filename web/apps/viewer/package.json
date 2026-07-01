@@ -12,6 +12,7 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@v2e/canvas": "*",
     "@v2e/domain": "*",
     "mermaid": "11.15.0",
     "react": "^19.0.0",

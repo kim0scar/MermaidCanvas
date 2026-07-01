@@ -42,3 +42,62 @@ export function parseCanvasFile(text: string): ParsedCanvasFile {
   if (end === -1) return { mermaid, hasStateBlock: true };
   return { mermaid, hasStateBlock: true, stateJson: text.slice(afterOpen, end).trim() };
 }
+
+// ---- Skrivsidan (Fas 2) — kirurgisk fil-uppdatering + ny fil ----
+
+function stateBlock(stateJson: string): string {
+  return `${STATE_OPEN}\n${stateJson}\n${STATE_CLOSE}`;
+}
+
+/**
+ * Kirurgiskt byte av fence-kropp + state-block i en BEFINTLIG fil.
+ * Allt annat (frontmatter, brödtext, inbäddat AI-ramverk, okända sektioner) bevaras byte-exakt —
+ * det är noll-avvikelse-vägen: vi redigerar bara det canvasen äger.
+ */
+export function replaceCanvasPayload(originalText: string, mermaidBody: string, stateJson: string): string {
+  const newFence = '```mermaid\n' + mermaidBody.trimEnd() + '\n```';
+  let text = MERMAID_FENCE.test(originalText)
+    ? originalText.replace(MERMAID_FENCE, () => newFence)
+    : originalText.trimEnd() + '\n\n' + newFence + '\n';
+
+  const start = text.indexOf(STATE_OPEN);
+  if (start !== -1) {
+    const end = text.indexOf(STATE_CLOSE, start + STATE_OPEN.length);
+    if (end !== -1) {
+      return text.slice(0, start) + stateBlock(stateJson) + text.slice(end + STATE_CLOSE.length);
+    }
+  }
+  // Inget state-block fanns → lägg det direkt efter fencen (samma plats som appen skriver det).
+  const fenceEnd = text.indexOf(newFence) + newFence.length;
+  return text.slice(0, fenceEnd) + '\n\n' + stateBlock(stateJson) + text.slice(fenceEnd);
+}
+
+/**
+ * Komponera en NY canvas-fil — samma layout som Swift CanvasDocument (frontmatter + rubrik +
+ * "Genererad …" + fence + state-block). `isoTimestamp` skickas in (ren funktion, deterministisk).
+ * OBS: det inbäddade AI-ramverket (AppCapabilities.embeddedFrameworkBlock) portas i W3
+ * (capabilities.ts) — tills dess får NYA webb-filer inget ramverks-block (befintliga filers
+ * block bevaras alltid av replaceCanvasPayload).
+ */
+export function composeNewCanvasFile(opts: {
+  title: string;
+  mermaidBody: string;
+  stateJson: string;
+  isoTimestamp: string;
+}): string {
+  const title = (opts.title.trim() || 'Canvas — MermaidCanvas').replace(/\n/g, ' ');
+  const today = opts.isoTimestamp.slice(0, 10);
+  return (
+    `---\n` +
+    `title: ${title}\n` +
+    `spec_type: general\n` +
+    `platform: blank\n` +
+    `shape_packs: basic\n` +
+    `last_updated: ${today}\n` +
+    `---\n\n` +
+    `# ${title}\n\n` +
+    `Genererad ${opts.isoTimestamp}.\n\n` +
+    '```mermaid\n' + opts.mermaidBody.trimEnd() + '\n```\n\n' +
+    stateBlock(opts.stateJson) + '\n'
+  );
+}
