@@ -4,12 +4,17 @@
   "type": "module",
   "description": "Web-first Visuali2e (Fas 0: portad domän-IP + grindar). Se ../l-s-in-dig-p-jolly-harp-planen.",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc -b --pretty",
-    "build": "tsc -b"
+    "typecheck:viewer": "tsc --noEmit -p apps/viewer/tsconfig.json",
+    "check:domain": "node scripts/check-domain-purity.mjs",
+    "dev": "npm run dev -w @v2e/viewer",
+    "build": "tsc -b",
+    "build:viewer": "npm run build -w @v2e/viewer"
   },
   "devDependencies": {
     "typescript": "^5.7.2",

@@ -3,3 +3,6 @@ dist/
 *.tsbuildinfo
 .vitest/
 coverage/
+test-results/
+playwright-report/
+.wrangler/

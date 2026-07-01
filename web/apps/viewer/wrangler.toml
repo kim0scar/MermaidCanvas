@@ -1,0 +1,5 @@
+# Cloudflare Pages-config för visaren (Fas 1). Deploy: `npx wrangler pages deploy dist`
+# (efter `npm run build:viewer` från web/). Kräver ett gratis Cloudflare-konto — se GÅ-LIVE.md.
+name = "visuali2e-viewer"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-07-01"
