@@ -3,6 +3,16 @@
 Visaren är en statisk webbapp. Den behöver **ingen server** — bara en gratis statisk host.
 Kim gör engångs-kontot; Claude bygger och kör kommandot.
 
+## ✅ LIVE (2026-07-01)
+- **Publik URL:** https://visuali2e-viewer.pages.dev
+- **Host:** Cloudflare Pages, projekt `visuali2e-viewer`, konto `kim.lundqvist@gmail.com` (OAuth via `wrangler login`).
+- **Uppdatera live (efter kod-ändring):**
+  ```
+  cd web && npm run build:viewer
+  cd apps/viewer && npx wrangler pages deploy dist --project-name visuali2e-viewer --branch main
+  ```
+  (Är du utloggad: `npx wrangler login` först — Kim klickar "Allow".)
+
 ## Se den lokalt (nu, utan konto)
 ```
 cd web
