@@ -8,7 +8,7 @@ import {
 import { SYSTEM_PROMPT } from '../functions/api/_system-prompt';
 import type { Env } from '../functions/api/_lib/types';
 
-const env: Env = { ANTHROPIC_API_KEY: 'test-nyckel', ACCESS_CODES: 'kod-a, kod-b' };
+const env: Env = { OPENROUTER_API_KEY: 'test-nyckel', ACCESS_CODES: 'kod-a, kod-b' };
 
 function req(body: unknown): Request {
   return new Request('http://local/api/chat', { method: 'POST', body: JSON.stringify(body) });
@@ -46,23 +46,26 @@ describe('handleChat — åtkomstkod', () => {
 });
 
 describe('handleChat — upstream-body', () => {
-  it('bygger korrekt Anthropic-anrop', async () => {
+  it('bygger korrekt OpenRouter-anrop', async () => {
     const fetchSpy = vi.fn().mockResolvedValue(okUpstream());
     await handleChat(req(baseBody), env, fetchSpy);
 
     const [url, init] = fetchSpy.mock.calls[0]!;
-    expect(url).toBe('https://api.anthropic.com/v1/messages');
+    expect(url).toBe('https://openrouter.ai/api/v1/chat/completions');
     expect(init.headers).toEqual({
-      'x-api-key': 'test-nyckel',
-      'anthropic-version': '2023-06-01',
+      authorization: 'Bearer test-nyckel',
       'content-type': 'application/json',
+      'http-referer': 'https://visuali2e.com',
+      'x-title': 'Visuali2e',
     });
     const sent = JSON.parse(init.body as string);
     expect(sent.model).toBe(DEFAULT_MODEL);
     expect(sent.max_tokens).toBe(4096);
     expect(sent.stream).toBe(true);
-    expect(sent.system).toBe(SYSTEM_PROMPT);
-    expect(sent.messages).toEqual([{ role: 'user', content: 'Rita ett flöde' }]);
+    expect(sent.messages).toEqual([
+      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'user', content: 'Rita ett flöde' },
+    ]);
   });
 
   it('AI_MODEL i env vinner över default', async () => {
@@ -77,9 +80,11 @@ describe('handleChat — upstream-body', () => {
     const canvas = 'x'.repeat(MAX_CANVAS_CHARS + 5000);
     await handleChat(req({ ...baseBody, canvasMermaid: canvas }), env, fetchSpy);
     const sent = JSON.parse(fetchSpy.mock.calls[0]![1].body as string);
-    expect(sent.system).toContain('Nuvarande canvas (mermaid):');
-    expect(sent.system).toContain('x'.repeat(MAX_CANVAS_CHARS));
-    expect(sent.system.length).toBeLessThan(SYSTEM_PROMPT.length + MAX_CANVAS_CHARS + 200);
+    const system = sent.messages[0].content as string;
+    expect(sent.messages[0].role).toBe('system');
+    expect(system).toContain('Nuvarande canvas (mermaid):');
+    expect(system).toContain('x'.repeat(MAX_CANVAS_CHARS));
+    expect(system.length).toBeLessThan(SYSTEM_PROMPT.length + MAX_CANVAS_CHARS + 200);
   });
 
   it('sanering: extra fält och okända nycklar följer inte med', async () => {
@@ -95,7 +100,7 @@ describe('handleChat — upstream-body', () => {
       fetchSpy,
     );
     const sent = JSON.parse(fetchSpy.mock.calls[0]![1].body as string);
-    expect(sent.messages).toEqual([{ role: 'user', content: 'Hej' }]);
+    expect(sent.messages.slice(1)).toEqual([{ role: 'user', content: 'Hej' }]);
   });
 });
 
@@ -133,7 +138,7 @@ describe('handleChat — skydd', () => {
 
 describe('handleChat — svar', () => {
   it('streamar upstream-kroppen vidare som text/event-stream', async () => {
-    const sse = 'event: content_block_delta\ndata: {"type":"content_block_delta","delta":{"type":"text_delta","text":"Hej"}}\n\n';
+    const sse = 'data: {"choices":[{"delta":{"content":"Hej"}}]}\n\ndata: [DONE]\n\n';
     const fetchSpy = vi.fn().mockResolvedValue(okUpstream(sse));
     const res = await handleChat(req(baseBody), env, fetchSpy);
     expect(res.status).toBe(200);

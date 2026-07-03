@@ -6,12 +6,12 @@
 
 ```bash
 cd web/apps/viewer
-npx wrangler pages secret put ANTHROPIC_API_KEY --project-name visuali2e-viewer
+npx wrangler pages secret put OPENROUTER_API_KEY --project-name visuali2e-viewer
 npx wrangler pages secret put ACCESS_CODES --project-name visuali2e-viewer
 ```
 
 - `ACCESS_CODES` = kommaseparerad lista, t.ex. `kim-hemlig1,bjorn-hemlig2`.
-- Valfritt: `AI_MODEL` (annars används `claude-opus-4-8`).
+- Valfritt: `AI_MODEL` = OpenRouter-slug (annars `anthropic/claude-sonnet-5`; billigare: `anthropic/claude-haiku-4.5`, `google/gemini-2.5-flash`). Nyckeln skapas på openrouter.ai → Keys.
 
 ## Rotera åtkomstkoder
 

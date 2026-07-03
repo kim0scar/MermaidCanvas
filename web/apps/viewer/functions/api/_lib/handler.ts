@@ -7,9 +7,9 @@ import type { Env, FetchLike } from './types';
 export const MAX_MESSAGES = 40;
 export const MAX_TOTAL_CHARS = 100_000;
 export const MAX_CANVAS_CHARS = 30_000;
-export const DEFAULT_MODEL = 'claude-opus-4-8';
+export const DEFAULT_MODEL = 'anthropic/claude-sonnet-5';
 
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const JSON_HEADERS = { 'content-type': 'application/json' };
 
 interface ChatMessage {
@@ -67,19 +67,19 @@ export async function handleChat(request: Request, env: Env, fetchImpl: FetchLik
   const totalChars = messages.reduce((sum, m) => sum + m.content.length, 0);
   if (totalChars > MAX_TOTAL_CHARS) return jsonError(400, `för lång konversation (max ${MAX_TOTAL_CHARS} tecken)`);
 
-  const upstream = await fetchImpl(ANTHROPIC_URL, {
+  const upstream = await fetchImpl(OPENROUTER_URL, {
     method: 'POST',
     headers: {
-      'x-api-key': env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
+      authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
       'content-type': 'application/json',
+      'http-referer': 'https://visuali2e.com',
+      'x-title': 'Visuali2e',
     },
     body: JSON.stringify({
       model: env.AI_MODEL || DEFAULT_MODEL,
       max_tokens: 4096,
       stream: true,
-      system: buildSystem(body.canvasMermaid),
-      messages,
+      messages: [{ role: 'system', content: buildSystem(body.canvasMermaid) }, ...messages],
     }),
   });
 

@@ -1,11 +1,11 @@
 // Minimala lokala typer för Cloudflare Pages Functions — inga npm-beroenden.
 
 export interface Env {
-  /** Hemlighet: Anthropic API-nyckel. Loggas ALDRIG. */
-  ANTHROPIC_API_KEY: string;
+  /** Hemlighet: OpenRouter API-nyckel (Kims konto). Loggas ALDRIG. */
+  OPENROUTER_API_KEY: string;
   /** Hemlighet: kommaseparerade åtkomstkoder (gate:ar kostnaden). */
   ACCESS_CODES: string;
-  /** Valfri modell-override. */
+  /** Valfri modell-override (OpenRouter-slug, t.ex. anthropic/claude-haiku-4.5). */
   AI_MODEL?: string;
 }
 

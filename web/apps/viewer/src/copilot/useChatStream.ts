@@ -1,4 +1,4 @@
-// Hook: POST /api/chat + läs Anthropics SSE-ström inkrementellt in i sista AI-meddelandet.
+// Hook: POST /api/chat + läs OpenRouters SSE-ström (OpenAI-format) inkrementellt in i sista AI-meddelandet.
 
 import { useCallback, useRef, useState } from 'react';
 
@@ -15,18 +15,17 @@ interface SendArgs {
   canvasMermaid?: string;
 }
 
-/** Plocka text-deltan + fel ur en Anthropic SSE-databit. */
+/** Plocka text-deltan + fel ur en OpenRouter/OpenAI SSE-databit. */
 function parseSSEData(data: string): { text?: string; error?: string } {
+  if (data === '[DONE]') return {};
   try {
     const ev = JSON.parse(data) as {
-      type?: string;
-      delta?: { type?: string; text?: string };
+      choices?: Array<{ delta?: { content?: string | null } }>;
       error?: { message?: string };
     };
-    if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta') {
-      return { text: ev.delta.text ?? '' };
-    }
-    if (ev.type === 'error') return { error: ev.error?.message ?? 'okänt AI-fel' };
+    if (ev.error) return { error: ev.error.message ?? 'okänt AI-fel' };
+    const delta = ev.choices?.[0]?.delta?.content;
+    if (typeof delta === 'string' && delta.length > 0) return { text: delta };
   } catch {
     // ofullständig/okänd rad → ignorera
   }
