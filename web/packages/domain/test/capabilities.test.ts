@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import {
   ALL_CARRIER_KEYS,
   FEATURES,
+  FLAG_CARRIER_KEYS,
   NOT_YET_EMITTED_BY_WEB,
   SHAPE_CAPABILITIES,
   SHAPE_TYPES,
@@ -16,12 +17,21 @@ import {
 const srcText = (file: string) =>
   readFileSync(fileURLToPath(new URL(`../src/${file}`, import.meta.url)), 'utf8');
 
-/** Grep:a %%-nycklar ur generator-källkoden: token följd av `:` i en %%-emitterande rad. */
+/**
+ * Grep:a %%-nycklar ur generator-källkoden. Nyckel-grammatiken har tre former (samma som Swift):
+ *  1) `%% <id> nyckel: värde` — nyckeln står före kolonet
+ *  2) `%% <id> flagga` — flagg-nycklar utan kolon (FLAG_CARRIER_KEYS)
+ *  3) `%% legend <kategori>: text` — nyckeln `legend` står på id-platsen
+ */
 function emittedCarrierKeys(source: string): Set<string> {
   const keys = new Set<string>();
   for (const snippet of source.match(/%%[^\n`]*/g) ?? []) {
     if (snippet.startsWith('%%{')) continue; // init-direktivet är inte en carrier-nyckel
     for (const m of snippet.matchAll(/([A-Za-z][A-Za-z-]*):/g)) keys.add(m[1]!);
+    for (const flag of FLAG_CARRIER_KEYS) {
+      if (new RegExp(`\\s${flag}\\s*$`).test(snippet)) keys.add(flag);
+    }
+    if (/^%%\s+legend\s/.test(snippet)) keys.add('legend');
   }
   return keys;
 }
@@ -47,6 +57,7 @@ describe('SHAPE_CAPABILITIES', () => {
 describe('bijektion generator ↔ ALL_CARRIER_KEYS (regel 15)', () => {
   const emitted = new Set([
     ...emittedCarrierKeys(srcText('generate.ts')),
+    ...emittedCarrierKeys(srcText('generate-meta.ts')),
     ...emittedCarrierKeys(srcText('native-state.ts')),
   ]);
 

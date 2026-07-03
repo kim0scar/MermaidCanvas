@@ -1,9 +1,18 @@
-// Tier 2 (ren mermaid-kropp) — FAS 0-DELMÄNGD: renderbar mermaid för grundformer + kanter.
-// Full byte-paritet med Swift MermaidGenerator.swift + escaping + alla former + classDef-färger +
-// legender + linkStyle kommer i nästa steg (då aktiveras Swift↔TS golden-diff-grinden).
-// Den BLOCKERANDE grinden denna fas är state-JSON-round-trip (Tier 1), inte denna fil.
+// Tier 2 (ren mermaid-kropp). %%-METADATAN har full Swift-paritet — alla carrier-nycklar
+// emitteras med Swifts villkor/format/ordning (se generate-meta.ts + guld-oraklet
+// test/generate-golden.test.ts mot riktig Swift-genererad fixture). NOD-KROPPARNA och
+// classDef-färgerna är fortfarande Fas 0-delmängd (byte-paritet portas med golden-diff-grinden).
+// Webben genererar utan iPhone-ram (= Swifts specType general/flow-väg).
 
-import type { CanvasDoc, EdgeConnection, ShapeNode, ShapeType } from './model.js';
+import type { CanvasDoc, EdgeConnection, ShapeType } from './model.js';
+import { SHAPE_CATEGORIES } from './model.js';
+import {
+  containerMetaLines,
+  edgeMetaLines,
+  legendLines,
+  nodeMetaLines,
+  swiftRound,
+} from './generate-meta.js';
 
 const HEADER = '%%{init: {"flowchart": {"curve": "basis"}}}%%\nflowchart TD';
 
@@ -19,12 +28,6 @@ function wrapNode(mid: string, type: ShapeType, label: string, cat: string): str
     default: return `${mid}[${q}]:::${cat}`;
   }
 }
-
-/** Former som INTE har en egen native mermaid-form → bär sin identitet i %% shape-type. */
-const NON_NATIVE: ReadonlySet<ShapeType> = new Set([
-  'table', 'link', 'line', 'arrow', 'square', 'processArrow',
-  'container', 'octagon', 'phoneFrame', 'triangle', 'emoji',
-]);
 
 /** Minimal label-escaping (mermaid entiteter + radbrytning). Full paritet portas med golden-diff. */
 function escapeLabel(s: string): string {
@@ -50,41 +53,84 @@ function edgeArrow(e: EdgeConnection): { text: string; swap: boolean } {
   return { text: e.label ? `${wire}|"${escapeLabel(e.label)}"|` : wire, swap };
 }
 
+/** App-nivå-indata som inte bor i CanvasDoc (Swift generate()-parametrarna utöver shapes/edges). */
+export interface GenerateMermaidOptions {
+  /** Canvas-måtten (G1). Emitteras bara när båda är > 0, som Swift. */
+  canvasSize?: { width: number; height: number };
+  /** Kant-id (sessionens) vars gren är kollapsad. */
+  collapsedEdgeIds?: ReadonlySet<string>;
+  /** Manuell legend-text per kategori (LegendPanel) — vinner över autofyllens standardtext. */
+  legend?: Readonly<Record<string, string>>;
+}
+
 /**
- * Generera Tier 2-mermaidkroppen (renderbar delmängd). `idFor` mappar ShapeNode → mermaid-nod-id
+ * Generera Tier 2-mermaidkroppen. `idFor` mappar ShapeNode → mermaid-nod-id
  * (`<kategori>_N<index>`), samma stil som Swift-generatorn.
  */
-export function generateMermaidBody(doc: CanvasDoc): string {
+export function generateMermaidBody(doc: CanvasDoc, opts: GenerateMermaidOptions = {}): string {
+  // Tom canvas → bara header, inget diagnostiskt meddelande (som Swift v32).
+  if (doc.shapes.length === 0) return HEADER + '\n';
+
   const idFor = new Map<string, string>();
   doc.shapes.forEach((s, i) => idFor.set(s.id, `${s.category}_N${i}`));
 
   const lines: string[] = [HEADER];
+  const cs = opts.canvasSize;
+  if (cs && cs.width > 0 && cs.height > 0) {
+    lines.push(`    %% canvas-size: ${swiftRound(cs.width)},${swiftRound(cs.height)}`);
+  }
+  const indent = '    ';
 
+  // Noder — alla utom containrar (containrar emitteras nedan som subgraph, som Swift).
   for (const s of doc.shapes) {
+    if (s.type === 'container') continue;
     const mid = idFor.get(s.id)!;
-    lines.push(`    ${wrapNode(mid, s.type, s.label, s.category)}`);
-    if (NON_NATIVE.has(s.type)) lines.push(`    %% ${mid} shape-type: ${s.type}`);
-    lines.push(`    %% ${mid} pos: ${round(s.position.x)},${round(s.position.y)}`);
-    lines.push(`    %% ${mid} name: ${s.label.replace(/\r?\n/g, ' ')}`);
+    // Tom/dold etikett skrivs som blank (som Swift) — `[""]` parsar inte i riktig mermaid;
+    // riktiga etiketten bärs av %% name-raden.
+    const label = s.showLabel ? (s.label === '' ? ' ' : s.label) : ' ';
+    lines.push(`${indent}${wrapNode(mid, s.type, label, s.category)}`);
+    lines.push(...nodeMetaLines(s, mid, indent));
   }
 
-  for (const e of doc.edges) {
+  // Containrar → subgraph-block. Barnen är den EXPLICITA childOfContainerId-kopplingen
+  // (Swift v73: positions-gissning gav mermaid/JSON-inkonsistens). Noderna är redan
+  // definierade ovan — subgraphen refererar dem.
+  for (const c of doc.shapes) {
+    if (c.type !== 'container') continue;
+    const cid = idFor.get(c.id)!;
+    lines.push(`${indent}subgraph ${cid} ["${escapeLabel(c.label === '' ? 'Grupp' : c.label)}"]`);
+    for (const child of doc.shapes) {
+      if (child.id === c.id || child.type === 'container' || child.childOfContainerId !== c.id) continue;
+      lines.push(`${indent}    ${idFor.get(child.id)!}`);
+    }
+    lines.push(`${indent}end`);
+    lines.push(...containerMetaLines(c, cid, indent));
+  }
+
+  // Kanter: `i` = app-index (round-trip via e<i>), `me` = mermaids kant-räknare (linkStyle).
+  let me = 0;
+  doc.edges.forEach((e, i) => {
     const from = idFor.get(e.from);
     const to = idFor.get(e.to);
-    if (!from || !to) continue;
+    if (!from || !to) return;
     const { text, swap } = edgeArrow(e);
-    lines.push(swap ? `    ${to} ${text} ${from}` : `    ${from} ${text} ${to}`);
-  }
+    lines.push(swap ? `${indent}${to} ${text} ${from}` : `${indent}${from} ${text} ${to}`);
+    lines.push(...edgeMetaLines(e, i, me, opts.collapsedEdgeIds?.has(e.id) ?? false, indent));
+    me += 1;
+  });
 
+  // Legend (v71-autofyll) — översätter varje använd kategori för en läsare/AI.
+  lines.push('');
+  lines.push(...legendLines(doc.shapes, opts.legend ?? {}));
+
+  // classDef per använd kategori, i ShapeCategory-ordning (som Swift).
+  lines.push('');
   const usedCats = new Set(doc.shapes.map((s) => s.category));
-  for (const cat of usedCats) {
+  for (const cat of SHAPE_CATEGORIES) {
+    if (!usedCats.has(cat)) continue;
     // FAS 0 platshållar-classDef (parsebar). Exakta per-kategori-färger portas med golden-diff.
     lines.push(`    classDef ${cat} fill:#ffffff,stroke:#1e293b,color:#111827;`);
   }
 
   return lines.join('\n') + '\n';
-}
-
-function round(n: number): number {
-  return Math.round(n);
 }

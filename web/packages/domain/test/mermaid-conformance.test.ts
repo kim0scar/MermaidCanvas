@@ -61,8 +61,43 @@ describe('webb-genererad mermaid parsar i riktig mermaid', () => {
       edges: [],
     };
     const body = generateMermaidBody(doc);
-    // radbrytningen får inte spräcka %%-raden — namnet ska stå på EN rad
-    expect(body).toContain('%% ui_N0 name: Rad 1 Rad 2 "citat"');
+    // radbrytningen får inte spräcka %%-raden — namnet ska stå på EN rad,
+    // med Swifts oneLine-format (⏎ i stället för radbrytning, omvänds av parsern)
+    expect(body).toContain('%% ui_N0 name: Rad 1 ⏎ Rad 2 "citat"');
+    await expectParses(body);
+  });
+
+  it('alla %%-metadata-nycklar + subgraph + linkStyle förblir parsebara', async () => {
+    const container = makeShape({
+      id: 'c', type: 'container', position: { x: 500, y: 500 }, label: 'Skill 1',
+      category: 'skill', skillNumber: 1, prompt: 'Gör X', note: 'container-obs',
+      widthMultiplier: 2, heightMultiplier: 1.5,
+    });
+    const child = makeShape({
+      id: 'k', type: 'table', position: { x: 520, y: 540 }, label: 'Tabell', category: 'ui',
+      childOfContainerId: 'c', tableRows: 2, tableCols: 2, tableCells: [['a', 'b'], ['c/d', 'e']],
+      locked: true, zLayer: 3, colorPackId: 'blå', textStyle: 'r1', textAlignment: 'leading',
+      hasBullets: true, hasNumberedList: true, indentLevel: 2, rotation: 45, sizeMultiplier: 1.4,
+      colorOverride: '#ffcc00', strokeColorOverride: '#333333', note: 'nod-obs', prompt: 'p',
+      showLabel: false,
+    });
+    const loose = makeShape({ id: 'l', type: 'arrow', position: { x: 100, y: 100 }, lineEnd: { x: 50, y: 60 } });
+    const jump = makeShape({ id: 'j', type: 'link', position: { x: 200, y: 200 }, linkNumber: 7 });
+    const edge = makeEdge({
+      id: 'e', from: 'k', to: 'j', label: 'går', waypoints: [{ x: 10, y: 20 }],
+      labelPlacement: 'above', colorHex: '#ff0000', fromSide: 'right', toSide: 'left',
+      lineShape: 'orthogonal',
+    });
+    const body = generateMermaidBody({ shapes: [container, child, loose, jump], edges: [edge] }, {
+      canvasSize: { width: 2000, height: 1000 },
+      collapsedEdgeIds: new Set(['e']),
+      legend: { ui: 'Egna UI-element' },
+    });
+    expect(body).toContain('%% canvas-size: 2000,1000');
+    expect(body).toContain('subgraph skill_N0 ["Skill 1"]');
+    expect(body).toContain('%% ui_N1 table-cells: [["a","b"],["c\\/d","e"]]'); // `/` escapas som Swift
+    expect(body).toContain('linkStyle 0 interpolate stepAfter');
+    expect(body).toContain('%% legend ui: Egna UI-element');
     await expectParses(body);
   });
 

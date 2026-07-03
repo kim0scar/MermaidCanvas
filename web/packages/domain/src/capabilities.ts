@@ -92,13 +92,21 @@ export const ALL_CARRIER_KEYS: ReadonlySet<string> = new Set([
 ]);
 
 /**
- * ÄRLIGT GAP: nycklar i filformatet som TS-generatorn (Fas 0-delmängd) ännu INTE
- * emitterar — Swift-appen gör det. Krymper i takt med att generate.ts portas fullt.
- * Testet kräver: emitterade ∪ denna lista == ALL_CARRIER_KEYS, disjunkt.
+ * ÄRLIGT GAP: nycklar i filformatet som TS-generatorn ännu INTE emitterar.
+ * TOM sedan %%-metadata-porten (generate-meta.ts) — webben emitterar alla nycklar
+ * med Swifts villkor/format. Testet kräver: emitterade ∪ denna lista == ALL_CARRIER_KEYS,
+ * disjunkt — listan kan aldrig ljuga.
  */
-export const NOT_YET_EMITTED_BY_WEB: ReadonlySet<string> = new Set(
-  [...ALL_CARRIER_KEYS].filter((k) => !['shape-type', 'pos', 'name'].includes(k)),
-);
+export const NOT_YET_EMITTED_BY_WEB: ReadonlySet<string> = new Set();
+
+/**
+ * FLAGG-nycklar: skrivs UTAN kolon/värde (`%% <id> locked`) — samma grammatik som Swift
+ * MermaidMetaComments, som special-casar exakt dessa fyra. Bijektions-testet behöver
+ * listan för att känna igen flagg-emission i generator-källkoden.
+ */
+export const FLAG_CARRIER_KEYS: ReadonlySet<string> = new Set([
+  'hidden-label', 'bullets', 'numbered', 'locked',
+]);
 
 /**
  * AI-RAMVERKET — copy-paste till en AI så den vet exakt vad den får rita i mermaid

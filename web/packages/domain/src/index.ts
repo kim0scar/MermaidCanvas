@@ -6,4 +6,5 @@ export * from './capabilities.js';
 export * from './state-json.js';
 export * from './native-state.js';
 export * from './generate.js';
+export * from './parse-mermaid.js';
 export * from './md-file.js';
