@@ -93,7 +93,7 @@ describe('round-trip via records — Kims riktiga fil', () => {
 });
 
 describe('nya former ritade i tldraw', () => {
-  it('geo utan meta blir ny domän-nod med mintat id + rätt typ', () => {
+  it('v2e-record utan domän i meta blir ny domän-nod med mintat id + rätt typ', () => {
     const rec = shapeToRecord(makeShape({ id: 'tmp', type: 'circle', position: { x: 200, y: 100 }, label: 'Ny' }), 0);
     const bare = { ...rec, meta: {} };
     let minted = 0;
@@ -118,5 +118,39 @@ describe('nya former ritade i tldraw', () => {
     const node = recordToShape(rec, () => 'x');
     expect(node.sizeMultiplier).toBe(2);
     expect(node.widthMultiplier).toBeUndefined();
+  });
+});
+
+describe('stil-fält i editorn (jämför-före-skriv)', () => {
+  it('ändrad stil-prop skriver BARA det fältet — resten byte-identiskt', () => {
+    const { shapes, arrows } = docToRecords(realDoc);
+    const rec = shapes[7]!;
+    rec.props = { ...rec.props, bold: true, textStyle: 'r2', colorPackId: 'blå' };
+    const domainToTl = new Map(shapes.map((s) => [(s.meta.domain as { id: string }).id, s.id as string] as const));
+    const readings: ArrowReading[] = arrows.map((a) => {
+      const e = a.meta.domain as { from: string; to: string };
+      return { arrow: a, startRecordId: domainToTl.get(e.from), endRecordId: domainToTl.get(e.to) };
+    });
+    const result = recordsToDoc(shapes, readings);
+    const orig = realDoc.shapes[7]!;
+    const changed = result.doc.shapes[7]!;
+    expect(changed.bold).toBe(true);
+    expect(changed.textStyle).toBe('r2');
+    expect(changed.colorPackId).toBe('blå');
+    // toEqual ignorerar undefined-nycklar → orörda fält bevisas byte-identiska
+    expect({ ...changed, bold: orig.bold, textStyle: orig.textStyle, colorPackId: orig.colorPackId }).toEqual(orig);
+    result.doc.shapes.forEach((s, i) => {
+      if (i !== 7) expect(s).toEqual(realDoc.shapes[i]);
+    });
+  });
+
+  it('egen färg satt och sedan borttagen (\'\') tar bort fältet ur noden', () => {
+    const orig = makeShape({ id: 'a', type: 'rectangle', position: { x: 0, y: 0 }, colorOverride: '#ff0000' });
+    const rec = shapeToRecord(orig, 0);
+    expect(rec.props.color).toBe('#ff0000');
+    rec.props = { ...rec.props, color: '' };
+    const node = recordToShape(rec, () => 'x');
+    expect(node.colorOverride).toBeUndefined();
+    expect({ ...node, colorOverride: orig.colorOverride }).toEqual(orig);
   });
 });

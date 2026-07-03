@@ -4,6 +4,9 @@
 // Varje record bär sin domän-nod i `meta.domain` (= senast sparade läget). Vid läsning
 // jämförs tldraw-värdena mot det FÖRVÄNTADE (beräknat ur meta.domain) — bara det som
 // faktiskt ändrats skrivs tillbaka i modellen. Orörda fält förblir byte-exakta.
+//
+// Sedan v2e-shape: domän-noder är CUSTOM-formen 'v2e-shape' (native-trogen rendering);
+// stil-fälten bor i props (validerade), resten av noden i meta.domain som förut.
 import {
   makeEdge,
   makeShape,
@@ -22,8 +25,9 @@ import {
 } from '@tldraw/tlschema';
 import { BASE_SIZES, effectiveSize } from './sizes.js';
 import { plainToRich, richToPlain } from './richtext.js';
+import { V2E_SHAPE_TYPE, type V2eShapeProps } from './native/shape-props.js';
 
-/** Närmaste tldraw-geo per form-typ (rendering-approximation; identiteten bor i meta.domain). */
+/** Närmaste tldraw-geo per form-typ (kvar för bakåtkomp/glyfer; renderingen är nu v2e-shape). */
 export const GEO_FOR_TYPE = {
   circle: 'ellipse',
   rectangle: 'rectangle',
@@ -43,7 +47,7 @@ export const GEO_FOR_TYPE = {
   emoji: 'rectangle',
 } as const satisfies Record<ShapeType, TLGeoShapeGeoStyle>;
 
-/** Form-typ för NYA former ritade i tldraw (bara MVP-verktygen exponeras i UI:t). */
+/** Form-typ för geo-verktygens former (bakåtkomp — nya former skapas via addDomainShape). */
 export function typeForGeo(geo: string): ShapeType {
   if (geo === 'ellipse') return 'circle';
   if (geo === 'diamond') return 'diamond';
@@ -54,21 +58,13 @@ const DEG_TO_RAD = Math.PI / 180;
 
 type Meta = { domain?: unknown; order?: number };
 
-export interface GeoRecord {
+export interface V2eRecord {
   id: TLShapeId;
-  type: 'geo';
+  type: typeof V2E_SHAPE_TYPE;
   x: number;
   y: number;
   rotation: number;
-  props: {
-    geo: TLGeoShapeGeoStyle;
-    w: number;
-    h: number;
-    richText: TLRichText;
-    fill: 'none' | 'semi';
-    color: string;
-    dash: 'solid' | 'dashed';
-  };
+  props: V2eShapeProps;
   meta: Meta;
 }
 
@@ -114,23 +110,40 @@ export function tlArrowId(domainEdgeId: string): TLShapeId {
   return createShapeId(`e-${domainEdgeId}`);
 }
 
-export function shapeToRecord(node: ShapeNode, order: number): GeoRecord {
+export function shapeToRecord(node: ShapeNode, order: number): V2eRecord {
   const { w, h } = effectiveSize(node);
-  const isFrame = node.type === 'container' || node.type === 'phoneFrame';
   return {
     id: tlShapeId(node.id),
-    type: 'geo',
+    type: V2E_SHAPE_TYPE,
     x: node.position.x - w / 2,
     y: node.position.y - h / 2,
     rotation: node.rotation * DEG_TO_RAD,
     props: {
-      geo: GEO_FOR_TYPE[node.type],
       w,
       h,
-      richText: plainToRich(node.showLabel ? node.label : ''),
-      fill: isFrame ? 'none' : 'semi',
-      color: 'blue',
-      dash: 'solid',
+      shapeType: node.type,
+      category: node.category,
+      // Etiketten reser ALLTID i richText (även dold) — synligheten styrs av showLabel.
+      richText: plainToRich(node.label),
+      showLabel: node.showLabel,
+      sizeMultiplier: node.sizeMultiplier,
+      textStyle: node.textStyle,
+      bold: node.bold,
+      italic: node.italic,
+      underline: node.underline,
+      textAlignment: node.textAlignment,
+      hasBullets: node.hasBullets,
+      hasNumberedList: node.hasNumberedList,
+      indentLevel: node.indentLevel,
+      colorPackId: node.colorPackId ?? '',
+      color: node.colorOverride ?? '',
+      strokeColor: node.strokeColorOverride ?? '',
+      tableRows: node.tableRows ?? 0,
+      tableCols: node.tableCols ?? 0,
+      tableCells: node.tableCells ? cleanJson(node.tableCells) : [],
+      linkNumber: node.linkNumber ?? 0,
+      skillNumber: node.skillNumber ?? 0,
+      isSubskill: node.childOfContainerId !== undefined,
     },
     meta: { domain: cleanJson(node), order },
   };
@@ -203,7 +216,7 @@ function bindingFor(arrowId: TLShapeId, targetId: TLShapeId, terminal: 'start' |
 
 /** Hela dokumentet → records (former + pilar + bindningar). */
 export function docToRecords(doc: CanvasDoc): {
-  shapes: GeoRecord[];
+  shapes: V2eRecord[];
   arrows: ArrowRecord[];
   bindings: BindingRecord[];
 } {
@@ -224,26 +237,37 @@ export function docToRecords(doc: CanvasDoc): {
 const EPS = 1e-6;
 const near = (a: number, b: number) => Math.abs(a - b) < EPS;
 
-export function recordToShape(rec: GeoRecord, mintId: () => string): ShapeNode {
+/** Sätt eller ta bort ett valfritt domän-fält utifrån props-sentinel ('' / 0 / []). */
+function setOrDelete<K extends keyof ShapeNode>(base: ShapeNode, key: K, value: ShapeNode[K] | undefined): void {
+  if (value === undefined) delete base[key];
+  else base[key] = value;
+}
+
+export function recordToShape(rec: V2eRecord, mintId: () => string): ShapeNode {
   const prior = rec.meta?.domain as ShapeNode | undefined;
   const base: ShapeNode = prior
     ? cleanJson(prior)
     : makeShape({
         id: mintId(),
-        type: typeForGeo(rec.props.geo),
+        type: rec.props.shapeType,
         position: { x: 0, y: 0 },
-        category: 'ui',
+        category: rec.props.category,
       });
+  // Typ/kategori först — storleks-härledningen nedan läser BASE_SIZES[base.type].
   const expected = shapeToRecord(base, 0);
+  const p = rec.props;
+  const xp = expected.props;
+  if (p.shapeType !== xp.shapeType) base.type = p.shapeType;
+  if (p.category !== xp.category) base.category = p.category;
 
   if (!near(rec.x, expected.x) || !near(rec.y, expected.y) ||
-      !near(rec.props.w, expected.props.w) || !near(rec.props.h, expected.props.h)) {
-    base.position = { x: rec.x + rec.props.w / 2, y: rec.y + rec.props.h / 2 };
+      !near(p.w, xp.w) || !near(p.h, xp.h)) {
+    base.position = { x: rec.x + p.w / 2, y: rec.y + p.h / 2 };
   }
-  if (!near(rec.props.w, expected.props.w) || !near(rec.props.h, expected.props.h)) {
+  if (!near(p.w, xp.w) || !near(p.h, xp.h)) {
     const bs = BASE_SIZES[base.type];
-    const wm = rec.props.w / bs.w;
-    const hm = rec.props.h / bs.h;
+    const wm = p.w / bs.w;
+    const hm = p.h / bs.h;
     if (near(wm, hm)) {
       base.sizeMultiplier = wm;
       delete base.widthMultiplier;
@@ -256,12 +280,34 @@ export function recordToShape(rec: GeoRecord, mintId: () => string): ShapeNode {
   if (!near(rec.rotation, expected.rotation)) {
     base.rotation = rec.rotation / DEG_TO_RAD;
   }
-  const actualText = richToPlain(rec.props.richText);
-  const expectedText = base.showLabel ? base.label : '';
-  if (actualText !== expectedText) {
+  const actualText = richToPlain(p.richText);
+  if (actualText !== base.label) {
     base.label = actualText;
     if (!base.showLabel && actualText !== '') base.showLabel = true;
   }
+
+  // Stil-fälten (bara faktiskt ändrade props skrivs — orörd nod förblir byte-identisk).
+  if (p.showLabel !== xp.showLabel) base.showLabel = p.showLabel;
+  if (p.textStyle !== xp.textStyle) base.textStyle = p.textStyle;
+  if (p.textAlignment !== xp.textAlignment) base.textAlignment = p.textAlignment;
+  if (p.bold !== xp.bold) base.bold = p.bold;
+  if (p.italic !== xp.italic) base.italic = p.italic;
+  if (p.underline !== xp.underline) base.underline = p.underline;
+  if (p.hasBullets !== xp.hasBullets) base.hasBullets = p.hasBullets;
+  if (p.hasNumberedList !== xp.hasNumberedList) base.hasNumberedList = p.hasNumberedList;
+  if (p.indentLevel !== xp.indentLevel) base.indentLevel = p.indentLevel;
+  if (p.colorPackId !== xp.colorPackId) setOrDelete(base, 'colorPackId', p.colorPackId || undefined);
+  if (p.color !== xp.color) setOrDelete(base, 'colorOverride', p.color || undefined);
+  if (p.strokeColor !== xp.strokeColor) setOrDelete(base, 'strokeColorOverride', p.strokeColor || undefined);
+  if (p.tableRows !== xp.tableRows) setOrDelete(base, 'tableRows', p.tableRows || undefined);
+  if (p.tableCols !== xp.tableCols) setOrDelete(base, 'tableCols', p.tableCols || undefined);
+  if (JSON.stringify(p.tableCells) !== JSON.stringify(xp.tableCells)) {
+    setOrDelete(base, 'tableCells', p.tableCells.length > 0 ? cleanJson(p.tableCells) : undefined);
+  }
+  if (p.linkNumber !== xp.linkNumber) setOrDelete(base, 'linkNumber', p.linkNumber || undefined);
+  if (p.skillNumber !== xp.skillNumber) setOrDelete(base, 'skillNumber', p.skillNumber || undefined);
+  // OBS: props.sizeMultiplier är en render-hint (fontskala) — w/h är sanningen, läses ej tillbaka.
+  // OBS: props.isSubskill är härledd ur childOfContainerId — läses ej tillbaka.
   return base;
 }
 
@@ -309,7 +355,7 @@ export interface ReadResult {
 
 /** Records (från editorn) → domändokument. Ordning: meta.order, nya sist i lästordning. */
 export function recordsToDoc(
-  geoRecords: GeoRecord[],
+  v2eRecords: V2eRecord[],
   arrowReadings: ArrowReading[],
   mintId: () => string = () => crypto.randomUUID().toUpperCase(),
 ): ReadResult {
@@ -324,7 +370,7 @@ export function recordsToDoc(
       .map((x) => x.r);
 
   const nodeByRecordId = new Map<string, ShapeNode>();
-  const shapes = byOrder(geoRecords, (g) => g.meta).map((rec) => {
+  const shapes = byOrder(v2eRecords, (g) => g.meta).map((rec) => {
     const node = recordToShape(rec, mintId);
     nodeByRecordId.set(rec.id, node);
     return node;

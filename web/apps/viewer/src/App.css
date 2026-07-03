@@ -15,14 +15,6 @@ body {
 
 .app { display: flex; flex-direction: column; height: 100%; }
 
-header { padding: calc(env(safe-area-inset-top) + 14px) 16px 4px; }
-header h1 { margin: 0; font-size: 20px; }
-header p { margin: 2px 0 0; font-size: 13px; opacity: 0.6; }
-
-.bar {
-  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-  padding: 8px 16px 12px;
-}
 .btn {
   font-size: 16px; padding: 10px 16px; border-radius: 12px;
   border: 1px solid var(--line); background: var(--card); color: var(--fg);
@@ -37,23 +29,12 @@ header p { margin: 2px 0 0; font-size: 13px; opacity: 0.6; }
 
 .btn.primary { background: #1d4ed8; border-color: #1d4ed8; color: #ffffff; }
 
-.tabs { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.tab {
-  font-size: 15px; padding: 10px 14px; border: none; cursor: pointer;
-  background: var(--card); color: var(--fg);
-}
-.tab.active { background: #1d4ed8; color: #ffffff; }
-
-.warnings {
-  margin: 0 16px 8px; padding: 10px 14px; border-radius: 12px;
-  background: #fef3c7; color: #92400e; font-size: 14px;
+.statusline {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  padding: 6px 12px;
 }
 
-/* tldraw behöver en container med uttrycklig storlek */
-.canvas-wrap {
-  flex: 1; position: relative; min-height: 320px;
-  border-top: 1px solid var(--line);
-}
+.hint .brand { font-size: 22px; font-weight: 700; opacity: 0.9; margin: 0 0 4px; }
 
 .stage {
   flex: 1; overflow: auto; padding: 16px;

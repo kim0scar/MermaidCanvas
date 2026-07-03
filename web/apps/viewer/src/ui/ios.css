@@ -163,3 +163,30 @@
 .canvas-stage { flex: 1; position: relative; min-height: 320px; display: flex; }
 .canvas-stage .canvas-wrap { flex: 1; position: relative; }
 
+/* Smala skärmar: kompaktare primärrad så allt får plats (iPhone 393px) */
+@media (max-width: 520px) {
+  .ios-topbar { gap: 2px; padding-left: 8px; padding-right: 8px; }
+  .ios-iconbtn { width: 40px; height: 40px; }
+  .ios-zoombadge { display: none; }
+  .ios-savebtn { padding: 0 10px; font-size: 14px; }
+}
+
+/* Aktiv chip (t.ex. pil-verktyget) */
+.ios-chip.active { background: var(--ios-accent); color: #fff; }
+.ios-chip.active .lbl { opacity: 1; }
+
+/* Flytande markerings-rad (speglar natives markerad-form-rad) */
+.sel-bar {
+  position: absolute; z-index: 210; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 14px);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--ios-bar-bg); border: 1px solid var(--ios-line); border-radius: 999px;
+  padding: 6px 8px 6px 16px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  font-size: 13px; color: var(--ios-chip-fg);
+}
+.sel-bar button {
+  border: none; border-radius: 999px; padding: 8px 14px; cursor: pointer;
+  background: var(--ios-danger); color: #fff; font-size: 14px; font-weight: 600;
+}
+

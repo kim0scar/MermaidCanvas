@@ -2,6 +2,7 @@ import { type DragEvent, Suspense, lazy, useCallback, useEffect, useRef, useStat
 import {
   extractMermaid,
   parseCanvasFile,
+  parseMermaidBody,
   parseNativeState,
   rebindNativeState,
   isLegacyState,
@@ -12,12 +13,30 @@ import {
   newFileExtras,
   type NativeState,
 } from '@v2e/domain';
-import { loadDocIntoEditor, readDocFromEditor } from '@v2e/canvas';
+import {
+  loadDocIntoEditor,
+  readDocFromEditor,
+  addDomainShape,
+  applyColorPack,
+  applyTextStyle,
+  PICKER_PACKS,
+} from '@v2e/canvas';
 import type { Editor } from 'tldraw';
+import type { CanvasDoc, ShapeType } from '@v2e/domain';
 import { renderMermaid } from './mermaid-render';
 import { encodeShareLink, decodeShareFromHash } from './share-link';
+import { TopBar, type SubRow } from './ui/TopBar';
+import { ShapesRow } from './ui/ShapesRow';
+import { ColorsRow } from './ui/ColorsRow';
+import { TextStyleRow, type TextStylePatch } from './ui/TextStyleRow';
+import { LagenMenu } from './ui/LagenMenu';
+import { CodeSheet } from './ui/CodeSheet';
+import { EMPTY_SELECTION, type SelectionState } from './canvas/selection';
+import { ChatPanel } from './copilot/ChatPanel';
+import { WEB_VERSION } from './version';
+import './ui/ios.css';
 
-// Rit-ytan (tldraw, ~2 MB) lazy-laddas — visnings-/delningsläget ska vara blixtsnabbt.
+// Rit-ytan (tldraw, ~2 MB) lazy-laddas — start/visnings-läget ska vara blixtsnabbt.
 const CanvasEditor = lazy(() =>
   import('./canvas/CanvasEditor').then((m) => ({ default: m.CanvasEditor })),
 );
@@ -33,25 +52,44 @@ function downloadText(name: string, text: string): void {
   URL.revokeObjectURL(a.href);
 }
 
+const PACK_CHIPS = PICKER_PACKS.map((p, i) => ({
+  id: i,
+  name: p.name,
+  fill: p.fill,
+  stroke: p.stroke,
+  text: p.text,
+}));
+
 export function App() {
   const [source, setSource] = useState('');
   const [svg, setSvg] = useState('');
   const [error, setError] = useState('');
-  const [isCanvasFile, setIsCanvasFile] = useState(false);
   const [legacy, setLegacy] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [mode, setMode] = useState<Mode>('visa');
   const [fileName, setFileName] = useState('canvas.md');
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [notice, setNotice] = useState('');
   const [savedFlash, setSavedFlash] = useState(false);
   const [docKey, setDocKey] = useState(0);
+  const [canDraw, setCanDraw] = useState(false);
+  const [subRow, setSubRow] = useState<SubRow>(null);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [codeText, setCodeText] = useState<string | null>(null);
+  const [sel, setSel] = useState<SelectionState>(EMPTY_SELECTION);
+  const [zoomPct, setZoomPct] = useState<number | null>(null);
+  const [toolId, setToolId] = useState('select');
   const nativeRef = useRef<NativeState | null>(null);
   const editorRef = useRef<Editor | null>(null);
-  const [canDraw, setCanDraw] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const flashNotice = (text: string) => {
+    setNotice(text);
+    window.setTimeout(() => setNotice(''), 2000);
+  };
 
   const render = useCallback(async (text: string) => {
     const parsed = parseCanvasFile(text);
-    setIsCanvasFile(parsed.hasStateBlock);
     if (!parsed.mermaid.trim()) {
       setSvg('');
       setError('');
@@ -66,6 +104,24 @@ export function App() {
       setError(r.error ?? 'Kunde inte rita diagrammet.');
     }
   }, []);
+
+  /** Nuvarande fil-text: i rit-läget genereras den ur editorn, annars källan. */
+  const currentText = useCallback((): string => {
+    const editor = editorRef.current;
+    const native = nativeRef.current;
+    if (!editor || !native || !canDraw) return source;
+    const { doc } = readDocFromEditor(editor);
+    const stateJson = generateNativeState(doc, native);
+    const body = generateMermaidBody(doc);
+    return source.trim()
+      ? replaceCanvasPayload(source, body, stateJson)
+      : composeNewCanvasFile({
+          title: fileName.replace(/\.md$/i, ''),
+          mermaidBody: body,
+          stateJson,
+          isoTimestamp: new Date().toISOString(),
+        });
+  }, [canDraw, source, fileName]);
 
   /** Öppna text som canvas om möjligt (modernt state-block) — annars bara visning. */
   const openText = useCallback(
@@ -94,7 +150,7 @@ export function App() {
     [render],
   );
 
-  // Vid start: finns en delad länk (#d=...) → ladda och rita den.
+  // Vid start: finns en delad länk (#d=...) → ladda och visa den.
   useEffect(() => {
     const shared = decodeShareFromHash(window.location.hash);
     if (shared) openText(shared, { stayInVisa: true });
@@ -113,7 +169,7 @@ export function App() {
     if (file) onFile(file);
   };
 
-  const onNewCanvas = () => {
+  const onNewCanvas = useCallback(() => {
     nativeRef.current = {
       doc: { shapes: [], edges: [] },
       extras: newFileExtras(),
@@ -126,11 +182,11 @@ export function App() {
     setError('');
     setWarnings([]);
     setLegacy(false);
-    setIsCanvasFile(true);
     setCanDraw(true);
     setDocKey((k) => k + 1);
     setMode('rita');
-  };
+    setSubRow('shapes');
+  }, []);
 
   const onEditorMount = useCallback((editor: Editor) => {
     editorRef.current = editor;
@@ -157,7 +213,6 @@ export function App() {
     // nästa sparning utgår från det nyss sparade (kirurgisk redigering + rå-bevarande)
     setSource(text);
     nativeRef.current = rebindNativeState(doc, stateJson);
-    setIsCanvasFile(true);
     void render(text);
     setSavedFlash(true);
     window.setTimeout(() => setSavedFlash(false), 2000);
@@ -165,100 +220,207 @@ export function App() {
 
   const onShare = async () => {
     const base = window.location.origin + window.location.pathname;
-    const link = encodeShareLink(base, extractMermaid(source));
+    const link = encodeShareLink(base, extractMermaid(currentText()));
     try {
       await navigator.clipboard.writeText(link);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+      flashNotice('✓ Länk kopierad');
     } catch {
       // Urklipp kan nekas (t.ex. utan HTTPS) → lägg länken i adressraden istället.
       window.location.hash = new URL(link).hash;
     }
   };
 
+  /** AI-förslag: parsas till domän-doc och ritas på canvasen — samma grindar som import. */
+  const onApplyMermaid = useCallback(
+    (mermaid: string): { ok: boolean; error?: string } => {
+      try {
+        const { doc } = parseMermaidBody(mermaid);
+        nativeRef.current = {
+          doc,
+          extras: nativeRef.current?.extras ?? newFileExtras(),
+          rawNodes: new Map(),
+          rawEdges: new Map(),
+        };
+        setCanDraw(true);
+        setLegacy(false);
+        setDocKey((k) => k + 1);
+        setMode('rita');
+        return { ok: true };
+      } catch (e) {
+        return { ok: false, error: `Förslaget gick inte att tolka: ${(e as Error).message}` };
+      }
+    },
+    [],
+  );
+
+  const rita = canDraw && mode === 'rita';
+  const editor = editorRef.current;
+
+  const onToggleRow = (row: Exclude<SubRow, null>) => {
+    if (!canDraw) {
+      onNewCanvas();
+      setSubRow(row);
+      return;
+    }
+    if (mode !== 'rita') setMode('rita');
+    setSubRow((r) => (r === row ? null : row));
+  };
+
+  const onToggleArrow = () => {
+    const ed = editorRef.current;
+    if (!ed) return;
+    ed.setCurrentTool(toolId === 'arrow' ? 'select' : 'arrow');
+  };
+
+  const onToggleView = () => {
+    if (mode === 'rita') {
+      void render(currentText());
+      setMode('visa');
+    } else {
+      setMode('rita');
+    }
+  };
+
   return (
     <div className="app" onDrop={onDrop} onDragOver={(e) => e.preventDefault()}>
-      <header>
-        <h1>Visuali2e</h1>
-        <p>Rita, öppna eller klistra in en canvas.</p>
-      </header>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".md,.mmd,.txt,text/markdown,text/plain"
+        hidden
+        onChange={(e) => {
+          const f = e.target.files?.item(0);
+          if (f) onFile(f);
+          e.target.value = '';
+        }}
+      />
 
-      <div className="bar">
-        <label className="btn">
-          📂 Öppna fil
-          <input
-            type="file"
-            accept=".md,.mmd,.txt,text/markdown,text/plain"
-            hidden
-            onChange={(e) => {
-              const f = e.target.files?.item(0);
-              if (f) onFile(f);
+      <TopBar
+        subRow={rita ? subRow : null}
+        onToggleRow={onToggleRow}
+        aiOpen={aiOpen}
+        onToggleAi={() => setAiOpen((v) => !v)}
+        onUndo={rita && editor ? () => editor.undo() : null}
+        onRedo={rita && editor ? () => editor.redo() : null}
+        onDelete={null}
+        zoomPercent={rita ? zoomPct : null}
+        onSave={canDraw ? onSave : null}
+        saveLabel={savedFlash ? '✓ Sparad' : '💾 Spara'}
+        menu={
+          <LagenMenu
+            a={{
+              onNew: onNewCanvas,
+              onOpen: () => fileInputRef.current?.click(),
+              onSave: canDraw ? onSave : null,
+              onShowCode: source.trim() || canDraw ? () => setCodeText(currentText()) : null,
+              onCopyCode:
+                source.trim() || canDraw
+                  ? () => {
+                      void navigator.clipboard
+                        .writeText(currentText())
+                        .then(() => flashNotice('✓ Kod kopierad'));
+                    }
+                  : null,
+              onShare: source.trim() || canDraw ? () => void onShare() : null,
+              onToggleView: canDraw ? onToggleView : null,
+              viewLabel: mode === 'rita' ? 'Visa diagrammet (mermaid)' : 'Tillbaka till rit-läget',
+              onResetZoom: rita && editor ? () => editor.zoomToFit() : null,
+              version: WEB_VERSION,
             }}
+            onClose={() => setMenuOpen(false)}
           />
-        </label>
-        <button className="btn" onClick={onNewCanvas}>✨ Ny canvas</button>
-        {canDraw && (
-          <div className="tabs" role="tablist">
-            <button
-              className={mode === 'rita' ? 'tab active' : 'tab'}
-              onClick={() => setMode('rita')}
-            >
-              🎨 Rita
-            </button>
-            <button
-              className={mode === 'visa' ? 'tab active' : 'tab'}
-              onClick={() => setMode('visa')}
-            >
-              👁 Visa
-            </button>
-          </div>
-        )}
-        {canDraw && mode === 'rita' && (
-          <button className="btn primary" onClick={onSave}>
-            {savedFlash ? '✓ Sparad' : '💾 Spara .md'}
-          </button>
-        )}
-        <button className="btn" onClick={() => void onShare()} disabled={!source.trim()}>
-          {copied ? '✓ Länk kopierad' : '🔗 Dela'}
-        </button>
-        {isCanvasFile && !legacy && <span className="badge">MermaidCanvas-fil</span>}
-        {legacy && (
-          <span className="badge warn">
-            Äldre app-fil — visas som bild (spara om den i appen för att rita här)
-          </span>
-        )}
-      </div>
+        }
+        menuOpen={menuOpen}
+        onToggleMenu={() => setMenuOpen((v) => !v)}
+      />
 
-      {warnings.length > 0 && (
-        <div className="warnings">
+      {rita && subRow === 'shapes' && (
+        <ShapesRow
+          onAdd={(t: ShapeType) => editorRef.current && addDomainShape(editorRef.current, t)}
+          arrowActive={toolId === 'arrow'}
+          onToggleArrow={onToggleArrow}
+        />
+      )}
+      {rita && subRow === 'colors' && (
+        <ColorsRow packs={PACK_CHIPS} onPick={(i) => editorRef.current && applyColorPack(editorRef.current, i)} />
+      )}
+      {rita && subRow === 'text' && (
+        <TextStyleRow
+          state={sel}
+          onApply={(p: TextStylePatch) => editorRef.current && applyTextStyle(editorRef.current, p)}
+        />
+      )}
+
+      {(warnings.length > 0 || notice || legacy) && (
+        <div className="statusline">
+          {notice && <span className="badge">{notice}</span>}
+          {legacy && (
+            <span className="badge warn">
+              Äldre app-fil — visas som bild (spara om den i appen för att rita här)
+            </span>
+          )}
           {warnings.map((w, i) => (
-            <div key={i}>⚠️ {w}</div>
+            <span key={i} className="badge warn">
+              ⚠️ {w}
+            </span>
           ))}
         </div>
       )}
 
-      {canDraw && mode === 'rita' ? (
-        <Suspense fallback={<div className="hint" style={{ padding: 24 }}>Laddar rit-ytan…</div>}>
-          <CanvasEditor key={docKey} onMount={onEditorMount} />
-        </Suspense>
-      ) : (
-        <main className="stage">
-          {svg ? (
-            <div className="diagram" dangerouslySetInnerHTML={{ __html: svg }} />
-          ) : error ? null : (
-            <div className="hint">
-              Tryck <b>✨ Ny canvas</b> och rita direkt — eller släpp en <b>.md</b>-fil här,
-              tryck <b>Öppna fil</b>, eller klistra in mermaid nedan.
-            </div>
-          )}
-          {error && (
-            <div className="error">
-              <b>Kunde inte rita diagrammet</b>
-              <pre>{error}</pre>
-            </div>
-          )}
-        </main>
-      )}
+      <div className="canvas-stage">
+        {rita ? (
+          <Suspense fallback={<div className="hint" style={{ padding: 24 }}>Laddar rit-ytan…</div>}>
+            <CanvasEditor
+              key={docKey}
+              onMount={onEditorMount}
+              onSelection={setSel}
+              onZoom={setZoomPct}
+              onTool={setToolId}
+            />
+          </Suspense>
+        ) : (
+          <main className="stage">
+            {svg ? (
+              <div className="diagram" dangerouslySetInnerHTML={{ __html: svg }} />
+            ) : error ? null : (
+              <div className="hint">
+                <p className="brand">Visuali2e</p>
+                <p>
+                  Tryck <b>✨ Ny canvas</b> och rita direkt — eller öppna en <b>.md</b>-fil.
+                </p>
+                <p>
+                  <button className="btn primary" onClick={onNewCanvas}>✨ Ny canvas</button>{' '}
+                  <button className="btn" onClick={() => fileInputRef.current?.click()}>📂 Öppna fil</button>
+                </p>
+              </div>
+            )}
+            {error && (
+              <div className="error">
+                <b>Kunde inte rita diagrammet</b>
+                <pre>{error}</pre>
+              </div>
+            )}
+          </main>
+        )}
+
+        {rita && sel.count > 0 && editor && (
+          <div className="sel-bar">
+            <span>{sel.count} markerad{sel.count > 1 ? 'e' : ''}</span>
+            <button onClick={() => editor.deleteShapes(editor.getSelectedShapeIds())}>
+              🗑 Radera
+            </button>
+          </div>
+        )}
+
+        {aiOpen && (
+          <div className="ai-dock">
+            <ChatPanel
+              getCanvasMermaid={() => extractMermaid(currentText())}
+              onApplyMermaid={onApplyMermaid}
+            />
+          </div>
+        )}
+      </div>
 
       {mode !== 'rita' && (
         <details className="paste">
@@ -271,6 +433,8 @@ export function App() {
           />
         </details>
       )}
+
+      {codeText !== null && <CodeSheet source={codeText} onClose={() => setCodeText(null)} />}
     </div>
   );
 }

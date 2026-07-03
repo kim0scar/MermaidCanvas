@@ -1,5 +1,14 @@
 import type { ReactNode } from 'react';
-import { IconMenu, IconPalette, IconShapes, IconSparkle, IconTextStyle } from './icons';
+import {
+  IconMenu,
+  IconPalette,
+  IconRedo,
+  IconShapes,
+  IconSparkle,
+  IconTextStyle,
+  IconTrash,
+  IconUndo,
+} from './icons';
 
 export type SubRow = 'shapes' | 'colors' | 'text' | null;
 
@@ -9,6 +18,9 @@ export function TopBar({
   onToggleRow,
   aiOpen,
   onToggleAi,
+  onUndo,
+  onRedo,
+  onDelete,
   zoomPercent,
   onSave,
   saveLabel,
@@ -20,6 +32,9 @@ export function TopBar({
   onToggleRow: (row: Exclude<SubRow, null>) => void;
   aiOpen: boolean;
   onToggleAi: () => void;
+  onUndo: (() => void) | null;
+  onRedo: (() => void) | null;
+  onDelete: (() => void) | null;
   zoomPercent: number | null;
   onSave: (() => void) | null;
   saveLabel: string;
@@ -51,7 +66,22 @@ export function TopBar({
       >
         <IconSparkle />
       </button>
+      {onDelete && (
+        <button className="ios-iconbtn" onClick={onDelete} aria-label="Radera markerade" title="Radera">
+          <IconTrash />
+        </button>
+      )}
       <span className="spacer" />
+      {onUndo && (
+        <button className="ios-iconbtn" onClick={onUndo} aria-label="Ångra" title="Ångra">
+          <IconUndo />
+        </button>
+      )}
+      {onRedo && (
+        <button className="ios-iconbtn" onClick={onRedo} aria-label="Gör om" title="Gör om">
+          <IconRedo />
+        </button>
+      )}
       {zoomPercent !== null && <span className="ios-zoombadge">{zoomPercent}%</span>}
       {onSave && (
         <button className="ios-savebtn" onClick={onSave}>

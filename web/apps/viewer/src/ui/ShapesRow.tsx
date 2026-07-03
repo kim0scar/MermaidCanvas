@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ShapeType } from '@v2e/domain';
 import { ShapeGlyph } from './ShapeGlyph';
+import { IconArrowTool } from './icons';
 
 /** Speglar native ToolbarView+ShapesRow: flikar + chips, tap lägger till formen. */
 const GRUNDFORMER: Array<[ShapeType, string]> = [
@@ -23,7 +24,15 @@ const VERKTYG: Array<[ShapeType, string]> = [
   ['emoji', 'Emoji'],
 ];
 
-export function ShapesRow({ onAdd }: { onAdd: (type: ShapeType) => void }) {
+export function ShapesRow({
+  onAdd,
+  arrowActive,
+  onToggleArrow,
+}: {
+  onAdd: (type: ShapeType) => void;
+  arrowActive: boolean;
+  onToggleArrow: () => void;
+}) {
   const [tab, setTab] = useState<'grund' | 'verktyg'>('grund');
   const chips = tab === 'grund' ? GRUNDFORMER : VERKTYG;
   return (
@@ -36,6 +45,15 @@ export function ShapesRow({ onAdd }: { onAdd: (type: ShapeType) => void }) {
           Verktyg
         </button>
       </div>
+      <button
+        className={arrowActive ? 'ios-chip active' : 'ios-chip'}
+        onClick={onToggleArrow}
+        aria-label="Rita pil"
+        title="Rita pil — dra mellan två former"
+      >
+        <IconArrowTool />
+        <span className="lbl">Pil</span>
+      </button>
       {chips.map(([type, label]) => (
         <button key={type} className="ios-chip" onClick={() => onAdd(type)} aria-label={label}>
           <ShapeGlyph type={type} />

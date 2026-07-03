@@ -70,3 +70,15 @@ export const IconChat = () => (
 export const IconClose = () => (
   <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" {...s} /><line x1="18" y1="6" x2="6" y2="18" {...s} /></svg>
 );
+export const IconArrowTool = () => (
+  <svg viewBox="0 0 24 24"><line x1="5" y1="19" x2="17" y2="7" {...s} /><path d="M10 6h8v8" {...s} /></svg>
+);
+export const IconUndo = () => (
+  <svg viewBox="0 0 24 24"><path d="M8 5 3 10l5 5" {...s} /><path d="M3 10h11a6 6 0 0 1 0 12h-4" {...s} /></svg>
+);
+export const IconRedo = () => (
+  <svg viewBox="0 0 24 24"><path d="M16 5l5 5-5 5" {...s} /><path d="M21 10H10a6 6 0 0 0 0 12h4" {...s} /></svg>
+);
+export const IconTrash = () => (
+  <svg viewBox="0 0 24 24"><path d="M4 7h16" {...s} /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" {...s} /><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" {...s} /></svg>
+);

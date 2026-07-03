@@ -7,9 +7,10 @@ import {
   recordsToDoc,
   type ArrowReading,
   type ArrowRecord,
-  type GeoRecord,
+  type V2eRecord,
   type ReadResult,
 } from './mapping.js';
+import { V2E_SHAPE_TYPE } from './native/shape-props.js';
 
 /** Rensa sidan och ladda in dokumentet. Zoomar så allt syns (Kims filer ligger ofta långt ut). */
 export function loadDocIntoEditor(editor: Editor, doc: CanvasDoc): void {
@@ -31,7 +32,7 @@ export function loadDocIntoEditor(editor: Editor, doc: CanvasDoc): void {
  */
 export function readDocFromEditor(editor: Editor): ReadResult {
   const all = editor.getCurrentPageShapes();
-  const geo = all.filter((s) => s.type === 'geo') as unknown as GeoRecord[];
+  const v2e = all.filter((s) => s.type === V2E_SHAPE_TYPE) as unknown as V2eRecord[];
   const arrows = all.filter((s) => s.type === 'arrow') as unknown as ArrowRecord[];
 
   const readings: ArrowReading[] = arrows.map((a) => {
@@ -44,7 +45,7 @@ export function readDocFromEditor(editor: Editor): ReadResult {
     return reading;
   });
 
-  const result = recordsToDoc(geo, readings);
+  const result = recordsToDoc(v2e, readings);
   normalizeMeta(editor, result);
   return result;
 }
@@ -58,7 +59,7 @@ function normalizeMeta(editor: Editor, result: ReadResult): void {
   for (const [recordId, node] of result.nodeByRecordId) {
     updates.push({
       id: recordId as TLShapeId,
-      type: 'geo',
+      type: V2E_SHAPE_TYPE,
       meta: { domain: JSON.parse(JSON.stringify(node)), order: nodeIndex.get(node.id) ?? 0 },
     });
   }
