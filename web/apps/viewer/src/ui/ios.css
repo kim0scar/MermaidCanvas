@@ -1,0 +1,165 @@
+/* iOS-parity-chromet — design-tokens speglade från native-appen (DesignTokens.swift) */
+:root {
+  --ios-accent: #0a84ff;
+  --ios-accent-deep: #0a6cd8;
+  --ios-chip-bg: #e9e9ec;      /* systemGray5 */
+  --ios-chip-fg: #111827;
+  --ios-bar-bg: rgba(255, 255, 255, 0.92);
+  --ios-canvas-bg: rgb(230, 230, 230); /* white 0.9 som native */
+  --ios-line: #e5e7eb;
+  --ios-danger: #ff3b30;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ios-chip-bg: #3a3a3c;
+    --ios-chip-fg: #f3f4f6;
+    --ios-bar-bg: rgba(28, 28, 30, 0.92);
+    --ios-canvas-bg: rgb(41, 41, 41);  /* white 0.16 som native */
+    --ios-line: #3a3a3c;
+  }
+}
+
+/* ---- Primärraden (motsvarar ToolbarView:s 44pt-knappar) ---- */
+.ios-topbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  padding-top: calc(env(safe-area-inset-top) + 6px);
+  background: var(--ios-bar-bg);
+  border-bottom: 1px solid var(--ios-line);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.ios-topbar .spacer { flex: 1; }
+
+.ios-iconbtn {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: var(--ios-chip-fg);
+  cursor: pointer; flex: none; font-size: 20px;
+  -webkit-tap-highlight-color: transparent;
+}
+.ios-iconbtn svg { width: 22px; height: 22px; }
+.ios-iconbtn.active { background: var(--ios-accent); color: #ffffff; }
+.ios-iconbtn:not(.active):active { background: var(--ios-chip-bg); }
+
+.ios-savebtn {
+  height: 38px; padding: 0 14px; border-radius: 12px; border: none;
+  background: var(--ios-accent); color: #fff; font-size: 15px; font-weight: 600;
+  cursor: pointer; flex: none;
+}
+
+.ios-zoombadge {
+  min-width: 40px; height: 28px; padding: 0 10px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ios-chip-bg); color: var(--ios-chip-fg);
+  font-size: 12px; font-variant-numeric: tabular-nums; flex: none;
+}
+
+/* ---- Sekundärrader (Former / Färger / Textstil) ---- */
+.ios-subrow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  background: var(--ios-bar-bg);
+  border-bottom: 1px solid var(--ios-line);
+  overflow-x: auto; scrollbar-width: none;
+}
+.ios-subrow::-webkit-scrollbar { display: none; }
+
+.ios-seg {
+  display: inline-flex; border-radius: 9px; background: var(--ios-chip-bg);
+  padding: 2px; flex: none;
+}
+.ios-seg button {
+  border: none; background: transparent; color: var(--ios-chip-fg);
+  font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: 7px; cursor: pointer;
+}
+.ios-seg button.active { background: var(--ios-bar-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+
+.ios-chip {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; min-width: 52px; height: 56px; padding: 4px 6px;
+  border-radius: 10px; border: none; background: transparent; color: var(--ios-chip-fg);
+  cursor: pointer; flex: none; -webkit-tap-highlight-color: transparent;
+}
+.ios-chip:active { background: var(--ios-chip-bg); }
+.ios-chip svg { width: 30px; height: 24px; }
+.ios-chip .lbl { font-size: 10px; opacity: 0.75; white-space: nowrap; }
+
+/* Färgpaket-chips */
+.ios-packchip {
+  width: 40px; height: 40px; border-radius: 999px; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; flex: none;
+  box-shadow: inset 0 0 0 2.5px var(--pack-stroke);
+  background: var(--pack-fill); color: var(--pack-text, #374151);
+}
+
+/* Textstil-raden */
+.ios-stylebtn {
+  height: 40px; min-width: 40px; padding: 0 10px; border-radius: 8px; border: none;
+  background: transparent; color: var(--ios-chip-fg); cursor: pointer; flex: none;
+  display: inline-flex; align-items: baseline; justify-content: center;
+  font-family: inherit;
+}
+.ios-stylebtn.active { background: var(--ios-accent); color: #fff; }
+.ios-stylebtn:not(.active):active { background: var(--ios-chip-bg); }
+.ios-divider { width: 1px; height: 28px; background: var(--ios-line); flex: none; }
+
+/* ---- Lägen-menyn (dropdown) ---- */
+.ios-menu-wrap { position: relative; flex: none; }
+.ios-menu {
+  position: absolute; right: 0; top: 48px; z-index: 300;
+  min-width: 240px; max-height: 70vh; overflow-y: auto;
+  background: var(--ios-bar-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--ios-line); border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+}
+.ios-menu .section {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
+  opacity: 0.5; padding: 8px 12px 2px; color: var(--ios-chip-fg);
+}
+.ios-menu .version { font-size: 12px; opacity: 0.5; padding: 6px 12px; color: var(--ios-chip-fg); }
+.ios-menu button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  border: none; background: transparent; color: var(--ios-chip-fg);
+  font-size: 15px; padding: 9px 12px; border-radius: 8px; cursor: pointer; text-align: left;
+}
+.ios-menu button:active { background: var(--ios-chip-bg); }
+.ios-menu button svg { width: 18px; height: 18px; opacity: 0.7; flex: none; }
+.ios-menu .sep { height: 1px; background: var(--ios-line); margin: 4px 8px; }
+
+.ios-menu-backdrop { position: fixed; inset: 0; z-index: 250; }
+
+/* ---- Visa kod-sheet ---- */
+.code-sheet {
+  position: fixed; inset: 0; z-index: 400; display: flex; flex-direction: column;
+  background: var(--ios-bar-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.code-sheet-bar {
+  display: flex; align-items: center; gap: 4px; padding: 8px 12px;
+  padding-top: calc(env(safe-area-inset-top) + 8px);
+  border-bottom: 1px solid var(--ios-line); color: var(--ios-chip-fg);
+}
+.code-sheet-bar .spacer { flex: 1; }
+.code-sheet pre {
+  flex: 1; overflow: auto; margin: 0; padding: 14px 16px calc(env(safe-area-inset-bottom) + 14px);
+  font-family: ui-monospace, SFMono-Regular, monospace; font-size: 12px; line-height: 1.5;
+  color: var(--ios-chip-fg); user-select: text; -webkit-user-select: text;
+}
+
+/* ---- AI-panelens docka (panelen själv stylas i copilot.css) ---- */
+.ai-dock {
+  position: absolute; z-index: 200; right: 0; bottom: 0; top: auto; left: 0;
+  height: min(46vh, 420px); display: flex;
+  border-top: 1px solid var(--ios-line);
+  background: var(--ios-bar-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+@media (min-width: 900px) {
+  .ai-dock { left: auto; top: 0; height: auto; width: 380px; border-top: none; border-left: 1px solid var(--ios-line); }
+}
+
+/* Canvas-ytan (tldraw) + relativ container för dockan */
+.canvas-stage { flex: 1; position: relative; min-height: 320px; display: flex; }
+.canvas-stage .canvas-wrap { flex: 1; position: relative; }
+
