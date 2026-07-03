@@ -1,0 +1,4 @@
+# Kopiera till .dev.vars (gitignorad) för lokal körning med `npx wrangler pages dev dist`.
+ANTHROPIC_API_KEY=
+ACCESS_CODES=
+AI_MODEL=
