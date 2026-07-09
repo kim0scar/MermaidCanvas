@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import {
   IconCode,
   IconCopy,
@@ -35,7 +36,9 @@ function Item({ icon, label, onClick }: { icon: ReactNode; label: string; onClic
 /** Speglar native Lägen-menyn: sektioner Skapa / Fil / Kod & export / Visa / Om appen. */
 export function LagenMenu({ a, onClose }: { a: MenuActions; onClose: () => void }) {
   const wrap = (fn: (() => void) | null) => (fn ? () => { onClose(); fn(); } : null);
-  return (
+  // Portal till body: menyn slipper ut ur topbarens backdrop-filter-stacking-lager
+  // (annars ritas den BAKOM Former-raden + canvasen — bug funnen i SIM-KOLL 2026-07-09).
+  return createPortal(
     <>
       <div className="ios-menu-backdrop" onClick={onClose} />
       <div className="ios-menu" role="menu">
@@ -56,6 +59,7 @@ export function LagenMenu({ a, onClose }: { a: MenuActions; onClose: () => void 
           <Item icon={<IconZoomReset />} label="Återställ zoom" onClick={wrap(a.onResetZoom)!} />
         )}
       </div>
-    </>
+    </>,
+    document.body,
   );
 }

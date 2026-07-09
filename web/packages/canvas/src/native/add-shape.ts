@@ -53,10 +53,13 @@ export function addDomainShape(
   category: ShapeCategory = 'ui',
 ): TLShapeId {
   const center = editor.getViewportPageBounds().center;
+  // Kaskad-förskjutning: nya former hamnar inte på EXAKT samma punkt (SIM-KOLL-fynd 2026-07-09).
+  const existing = editor.getCurrentPageShapes().filter((s) => s.type === V2E_SHAPE_TYPE).length;
+  const off = (existing % 8) * 28;
   const node = makeShape({
     id: mintId(),
     type,
-    position: { x: center.x, y: center.y },
+    position: { x: center.x + off, y: center.y + off },
     category,
     ...nativeDefaults(editor, type),
   });
