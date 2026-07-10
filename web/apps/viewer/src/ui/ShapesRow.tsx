@@ -21,6 +21,7 @@ const VERKTYG: Array<[ShapeType, string]> = [
   ['link', 'Länk'],
   ['cylinder', 'Cylinder'],
   ['phoneFrame', 'iPhone'],
+  ['line', 'Linje'],
   ['emoji', 'Emoji'],
 ];
 

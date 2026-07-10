@@ -74,19 +74,24 @@ export function replaceCanvasPayload(originalText: string, mermaidBody: string, 
 
 /**
  * Komponera en NY canvas-fil — samma layout som Swift CanvasDocument (frontmatter + rubrik +
- * "Genererad …" + fence + state-block). `isoTimestamp` skickas in (ren funktion, deterministisk).
- * OBS: det inbäddade AI-ramverket (AppCapabilities.embeddedFrameworkBlock) portas i W3
- * (capabilities.ts) — tills dess får NYA webb-filer inget ramverks-block (befintliga filers
- * block bevaras alltid av replaceCanvasPayload).
+ * "Genererad …" + fence + state-block + inbäddat AI-ramverk). `isoTimestamp` skickas in (ren
+ * funktion, deterministisk). `frameworkBlock` = AppCapabilities-ramverket (capabilities.frameworkText),
+ * skickas in av anroparen så md-file.ts förblir 0-dep. Ramverket läggs som SYNLIG markdown efter
+ * state-blocket (aldrig inuti HTML-kommentaren — det innehåller `-->` som skulle bryta parsningen).
+ * Befintliga filers block bevaras alltid av replaceCanvasPayload.
  */
 export function composeNewCanvasFile(opts: {
   title: string;
   mermaidBody: string;
   stateJson: string;
   isoTimestamp: string;
+  frameworkBlock?: string;
 }): string {
   const title = (opts.title.trim() || 'Canvas — MermaidCanvas').replace(/\n/g, ' ');
   const today = opts.isoTimestamp.slice(0, 10);
+  const framework = opts.frameworkBlock?.trim()
+    ? '\n\n' + opts.frameworkBlock.trimEnd() + '\n'
+    : '\n';
   return (
     `---\n` +
     `title: ${title}\n` +
@@ -98,6 +103,6 @@ export function composeNewCanvasFile(opts: {
     `# ${title}\n\n` +
     `Genererad ${opts.isoTimestamp}.\n\n` +
     '```mermaid\n' + opts.mermaidBody.trimEnd() + '\n```\n\n' +
-    stateBlock(opts.stateJson) + '\n'
+    stateBlock(opts.stateJson) + framework
   );
 }

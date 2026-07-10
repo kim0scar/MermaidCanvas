@@ -11,6 +11,7 @@ import {
   composeNewCanvasFile,
   replaceCanvasPayload,
   newFileExtras,
+  frameworkText,
   type NativeState,
 } from '@v2e/domain';
 import {
@@ -59,6 +60,16 @@ const PACK_CHIPS = PICKER_PACKS.map((p, i) => ({
   stroke: p.stroke,
   text: p.text,
 }));
+
+/** Canvas-mått ur NativeState (matchar state-blockets canvas-dict) → %% canvas-size-bäraren. */
+function canvasSizeOf(native: NativeState): { width: number; height: number } | undefined {
+  const c = (native.extras as Record<string, unknown>).canvas as
+    | { width?: unknown; height?: unknown }
+    | undefined;
+  return typeof c?.width === 'number' && typeof c?.height === 'number'
+    ? { width: c.width, height: c.height }
+    : undefined;
+}
 
 export function App() {
   const [source, setSource] = useState('');
@@ -112,7 +123,7 @@ export function App() {
     if (!editor || !native || !canDraw) return source;
     const { doc } = readDocFromEditor(editor);
     const stateJson = generateNativeState(doc, native);
-    const body = generateMermaidBody(doc);
+    const body = generateMermaidBody(doc, { canvasSize: canvasSizeOf(native) });
     return source.trim()
       ? replaceCanvasPayload(source, body, stateJson)
       : composeNewCanvasFile({
@@ -120,6 +131,7 @@ export function App() {
           mermaidBody: body,
           stateJson,
           isoTimestamp: new Date().toISOString(),
+          frameworkBlock: frameworkText(),
         });
   }, [canDraw, source, fileName]);
 
@@ -200,7 +212,7 @@ export function App() {
     const { doc, warnings: w } = readDocFromEditor(editor);
     setWarnings(w);
     const stateJson = generateNativeState(doc, native);
-    const body = generateMermaidBody(doc);
+    const body = generateMermaidBody(doc, { canvasSize: canvasSizeOf(native) });
     const text = source.trim()
       ? replaceCanvasPayload(source, body, stateJson)
       : composeNewCanvasFile({
@@ -208,6 +220,7 @@ export function App() {
           mermaidBody: body,
           stateJson,
           isoTimestamp: new Date().toISOString(),
+          frameworkBlock: frameworkText(),
         });
     downloadText(fileName, text);
     // nästa sparning utgår från det nyss sparade (kirurgisk redigering + rå-bevarande)
