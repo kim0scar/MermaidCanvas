@@ -12,6 +12,10 @@ export interface SelectionState {
   hasBullets: boolean;
   hasNumberedList: boolean;
   indentLevel: number;
+  /** Egen fyllningsfärg (hex) eller '' = ingen (använder paket/kategori). */
+  color: string;
+  /** Egen ramfärg (hex) eller '' = ingen. */
+  strokeColor: string;
 }
 
 export const EMPTY_SELECTION: SelectionState = {
@@ -24,4 +28,6 @@ export const EMPTY_SELECTION: SelectionState = {
   hasBullets: false,
   hasNumberedList: false,
   indentLevel: 0,
+  color: '',
+  strokeColor: '',
 };

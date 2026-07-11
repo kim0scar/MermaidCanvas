@@ -89,6 +89,22 @@ export function applyColorPack(editor: Editor, pack: number | string): void {
   if (updates.length > 0) editor.updateShapes(updates);
 }
 
+/**
+ * Egen fyllnings-/ramfärg på markerade former. Hex '#rrggbb' sätter, '' rensar.
+ * Vinner över färgpaket (native: egna färger prioriteras). Round-trippar via `%% color`/`%% stroke`.
+ */
+export function applyCustomColor(
+  editor: Editor,
+  patch: { color?: string; strokeColor?: string },
+): void {
+  const props: Record<string, string> = {};
+  if (patch.color !== undefined) props.color = patch.color;
+  if (patch.strokeColor !== undefined) props.strokeColor = patch.strokeColor;
+  if (Object.keys(props).length === 0) return;
+  const updates = selectedV2e(editor).map((s) => ({ id: s.id, type: V2E_SHAPE_TYPE, props }));
+  if (updates.length > 0) editor.updateShapes(updates);
+}
+
 export interface TextStylePatch {
   textStyle?: TextStyle;
   bold?: boolean;

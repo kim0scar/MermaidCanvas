@@ -38,6 +38,8 @@ function readSelection(editor: Editor): SelectionState {
     hasBullets: boolean;
     hasNumberedList: boolean;
     indentLevel: number;
+    color: string;
+    strokeColor: string;
   };
   return {
     count,
@@ -49,6 +51,8 @@ function readSelection(editor: Editor): SelectionState {
     hasBullets: p.hasBullets,
     hasNumberedList: p.hasNumberedList,
     indentLevel: p.indentLevel,
+    color: p.color,
+    strokeColor: p.strokeColor,
   };
 }
 

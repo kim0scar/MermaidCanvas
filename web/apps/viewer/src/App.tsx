@@ -19,6 +19,7 @@ import {
   readDocFromEditor,
   addDomainShape,
   applyColorPack,
+  applyCustomColor,
   applyTextStyle,
   PICKER_PACKS,
 } from '@v2e/canvas';
@@ -355,7 +356,13 @@ export function App() {
         />
       )}
       {rita && subRow === 'colors' && (
-        <ColorsRow packs={PACK_CHIPS} onPick={(i) => editorRef.current && applyColorPack(editorRef.current, i)} />
+        <ColorsRow
+          packs={PACK_CHIPS}
+          onPick={(i) => editorRef.current && applyColorPack(editorRef.current, i)}
+          fill={sel.color}
+          stroke={sel.strokeColor}
+          onCustomColor={(p) => editorRef.current && applyCustomColor(editorRef.current, p)}
+        />
       )}
       {rita && subRow === 'text' && (
         <TextStyleRow
