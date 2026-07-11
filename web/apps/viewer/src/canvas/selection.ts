@@ -9,6 +9,9 @@ export interface SelectionState {
   italic: boolean;
   underline: boolean;
   textAlignment: TextAlignMode | null;
+  hasBullets: boolean;
+  hasNumberedList: boolean;
+  indentLevel: number;
 }
 
 export const EMPTY_SELECTION: SelectionState = {
@@ -18,4 +21,7 @@ export const EMPTY_SELECTION: SelectionState = {
   italic: false,
   underline: false,
   textAlignment: null,
+  hasBullets: false,
+  hasNumberedList: false,
+  indentLevel: 0,
 };

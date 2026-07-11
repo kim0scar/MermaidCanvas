@@ -35,6 +35,9 @@ function readSelection(editor: Editor): SelectionState {
     italic: boolean;
     underline: boolean;
     textAlignment: TextAlignMode;
+    hasBullets: boolean;
+    hasNumberedList: boolean;
+    indentLevel: number;
   };
   return {
     count,
@@ -43,6 +46,9 @@ function readSelection(editor: Editor): SelectionState {
     italic: p.italic,
     underline: p.underline,
     textAlignment: p.textAlignment,
+    hasBullets: p.hasBullets,
+    hasNumberedList: p.hasNumberedList,
+    indentLevel: p.indentLevel,
   };
 }
 

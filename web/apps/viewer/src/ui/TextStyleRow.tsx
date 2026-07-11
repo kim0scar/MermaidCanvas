@@ -8,6 +8,9 @@ export interface TextStylePatch {
   italic?: boolean;
   underline?: boolean;
   textAlignment?: TextAlignMode;
+  hasBullets?: boolean;
+  hasNumberedList?: boolean;
+  indentLevel?: number;
 }
 
 export interface TextStyleState {
@@ -16,6 +19,9 @@ export interface TextStyleState {
   italic: boolean;
   underline: boolean;
   textAlignment: TextAlignMode | null;
+  hasBullets: boolean;
+  hasNumberedList: boolean;
+  indentLevel: number;
 }
 
 const SIZES: Array<{ style: TextStyle; label: string; px: number; weight: number }> = [
@@ -89,6 +95,39 @@ export function TextStyleRow({
           {a.glyph}
         </button>
       ))}
+      <div className="ios-divider" />
+      <button
+        className={state.hasBullets ? 'ios-stylebtn active' : 'ios-stylebtn'}
+        onClick={() => onApply({ hasBullets: !state.hasBullets })}
+        aria-label="Punktlista"
+        title="Punktlista"
+      >
+        •
+      </button>
+      <button
+        className={state.hasNumberedList ? 'ios-stylebtn active' : 'ios-stylebtn'}
+        onClick={() => onApply({ hasNumberedList: !state.hasNumberedList })}
+        aria-label="Numrerad lista"
+        title="Numrerad lista"
+      >
+        1.
+      </button>
+      <button
+        className="ios-stylebtn"
+        onClick={() => onApply({ indentLevel: Math.max(0, state.indentLevel - 1) })}
+        aria-label="Minska indrag"
+        title="Minska indrag"
+      >
+        «
+      </button>
+      <button
+        className="ios-stylebtn"
+        onClick={() => onApply({ indentLevel: Math.min(3, state.indentLevel + 1) })}
+        aria-label="Öka indrag"
+        title="Öka indrag"
+      >
+        »
+      </button>
     </div>
   );
 }
