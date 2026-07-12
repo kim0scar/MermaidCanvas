@@ -54,17 +54,21 @@ function roundedRect(shape: V2eShapeProps, colors: ColorSet, rx: number): ReactE
 }
 
 export const SHAPE_BODY = {
-  circle: ({ shape, colors }) => (
-    <ellipse
-      cx={shape.w / 2}
-      cy={shape.h / 2}
-      rx={shape.w / 2}
-      ry={shape.h / 2}
-      fill={colors.fill}
-      stroke={colors.stroke}
-      strokeWidth={STROKE_WIDTH}
-    />
-  ),
+  // Rund som native: SwiftUI Circle() = diameter min(w,h), centrerad i lådan (ShapeGeometry.circleRadius).
+  circle: ({ shape, colors }) => {
+    const r = Math.min(shape.w, shape.h) / 2;
+    return (
+      <ellipse
+        cx={shape.w / 2}
+        cy={shape.h / 2}
+        rx={r}
+        ry={r}
+        fill={colors.fill}
+        stroke={colors.stroke}
+        strokeWidth={STROKE_WIDTH}
+      />
+    );
+  },
   rectangle: ({ shape, colors }) => roundedRect(shape, colors, shape.h * RECTANGLE_RADIUS_RATIO),
   square: ({ shape, colors }) =>
     roundedRect(shape, colors, Math.min(shape.w, shape.h) * SQUARE_RADIUS_RATIO),
@@ -247,8 +251,10 @@ export function shapeShadow(type: ShapeType): string | undefined {
 export function shapeIndicatorPath(shape: V2eShapeProps): string {
   const { w, h, shapeType } = shape;
   switch (shapeType) {
-    case 'circle':
-      return ellipsePath(w / 2, h / 2, w / 2, h / 2);
+    case 'circle': {
+      const r = Math.min(w, h) / 2;
+      return ellipsePath(w / 2, h / 2, r, r);
+    }
     case 'diamond':
       return diamondPath(w, h);
     case 'processArrow':

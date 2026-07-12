@@ -4,7 +4,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import {
   BaseBoxShapeUtil,
-  Ellipse2d,
+  Circle2d,
   HTMLContainer,
   Polygon2d,
   Rectangle2d,
@@ -83,8 +83,11 @@ export class V2eShapeUtil extends BaseBoxShapeUtil<V2eShape> {
   override getGeometry(shape: V2eShape): Geometry2d {
     const { w, h, shapeType } = shape.props;
     switch (shapeType) {
-      case 'circle':
-        return new Ellipse2d({ width: w, height: h, isFilled: true });
+      case 'circle': {
+        // Rund som native (ShapeGeometry.circleRadius): diameter = min(w,h), centrerad.
+        const r = Math.min(w, h) / 2;
+        return new Circle2d({ x: w / 2 - r, y: h / 2 - r, radius: r, isFilled: true });
+      }
       case 'diamond':
         return new Polygon2d({
           points: [new Vec(w / 2, 0), new Vec(w, h / 2), new Vec(w / 2, h), new Vec(0, h / 2)],
