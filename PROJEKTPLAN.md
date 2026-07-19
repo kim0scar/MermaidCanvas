@@ -1,8 +1,8 @@
 # PROJEKTPLAN — projektets lag <!-- max 100 rader · formatet FRYST · ändras bara via Revideringar -->
-NU: ⏳ WEB-FIRST (Kims order 2026-07-02) — appen migreras till webben (Milstolpe W nedan). visuali2e.com LIVE med läs-visaren (W1 ✅); W2 canvas-MVP byggs. Native iPhone+Mac (v1.5.7) FRYSTA som referens tills webben når paritet — inga nya native-steg. n8n + M4 fortsatt PAUSADE.
-[grundappen MB: █████████░] V79-svep byggt · 💡 Idébanken: 12 fångade, 3 byggda
-SENAST KLART: Steg 14 ✅ (2026-06-14) — Skill Protocol Export v1: schema + referens-.skill.md + främmande-kontext-test PASS + audit
-MÅL: Mermaid-koden ÄR skillen. Kim ritar → Claude kompilerar → körningen bevisar sig själv.
+NU: ⏳ WEB-FIRST (Kims order 2026-07-02) — appen migreras till webben. visuali2e.com LIVE: W1 ✅ (läs-visare), W2 ✅ (canvas-MVP: 16 former, färg, textstil, pilar, export/import, PWA, härdad AI), W3 ⏳ (AI-integration väntar på OPENROUTER-nyckel från Kim). Native v1.5.7 fryst som referens. n8n + M4 pausade.
+[webben W2: █████████░] canvas-MVP live 2026-07-19 · cirkel rund (native-trogen) · 💡 G3 (lås+lager) + G4 (pil-inställ) parkerade (guld-plätering, inte nu)
+SENAST KLART: W2 cirkelfix 2026-07-19 — rund cirkel (diameter=min(w,h)) som native, hit-test+geometri uppdaterad
+MÅL: Webben = appen. Samma funktioner, samma känsla, samma två-lager-modell (mermaid+app-state).
 
 ## Milstolpe M1 — exportkedjan bevisad ✅ 🎉 (2026-06-10, se 🎉-listan)
 
@@ -89,6 +89,26 @@ n8n + M4 pausade. Bygg enligt arkitektur-metoden (tester + arch-grind gröna, se
 - ⏳ Steg H — Export till bild (fidelity-fundament, Kims order 2026-06-19): meny "Exportera som bild" → PNG av RITADE ytan (bbox, ej hela canvasen) via SAMMA render-väg (ShapeView/EdgesView i exportläge, ingen chrome) → sparas i appen (Filer) + delningsmeny; sen renderar Claude mermaid-kroppen (playwright) och jämför ritad bild ↔ mermaid-bild ↔ mermaid-text. Klart: appen skapar PNG av ritade ytan, se-appen visar ren bild, fidelity-jämförelse körd, grind+tester gröna, Kims iPhone-bock.
 - ✅ Steg 8 — Skill-flöde-meny: DEL 1 ✅ (commit 17d4144). DEL 2 ✅ — container-note round-trippar (Gen:164), skill-korpus i konformitetstest (test_corpus_skillFlow), fil-glyf på canvas (2d: MD=doc.text, Excel=tablecells i ShapeRenderer, scenario 37). Allt round-trippar, 187 tester + render-grind gröna.
 - ✅ Steg 9 — UI-mall: Mallar-menyn borta; iPhone 15/16 Pro som chips under UI; namn UTANPÅ ramen (skärmytan fri); bara proportionell resize (phoneFrame); device-namn round-trippar som label. **phoneFrame-som-container** ✅: `ShapeType.actsAsContainer` → former på skärmen blir barn (childOfContainerId), följer med vid flytt, round-trippar via state-JSON (test). Pure-mermaid parent-lucka = 💡#7 (visuellt bevarat). 188 tester gröna. KVAR: Kims iPhone-bock (gester) vid v82.
+
+## Milstolpe W — WEB-FIRST (Kims order 2026-07-02)
+Native v1.5.7 FRYST. Webben blir huvudappen: visuali2e.com = Kims färdiga produkt.
+
+### ✅ W1 — Läs-visaren
+visuali2e.com går live 2026-07-05: canvas-visare, SVG-renderering av mermaid, import från drag-släpp/klistring.
+Klart när: Kim öppnar sidan och kan importera/lägga in sina mermaid-filer.
+
+### ✅ W2 — Canvas-MVP (editor)
+16 former, färgpaket + egen färg, textstil (F/K/U + listor + indrag), pilar, export/import, PWA, härdad AI-systemprompt.
+Klart när: Kim ritar ett komplext flödesschema, exporterar/importerar, och allt är merriad-korrekt + två-lagers-arkitektur bevisad.
+Revision 2026-07-19: cirkel rund (native-trogen, diameter=min(w,h), hit-test Circle2d) — live deploy hash CztEySMj.
+
+### ⏳ W3 — AI-integration (live ritmening)
+AI-chatten läser vad Kim skriver → ritar mermaid på canvasen. Väntar på Kim som lägger in OPENROUTER_API_KEY.
+Klart när: Kim chatter med AI:n och får diagram ritade direkt.
+Kräver: W2 ✅
+
+### ☐ W4–W5 — Inloggning + molnspara (senare)
+W4 = OTP (engångskod på mejl), Supabase. W5 = "Mina filer" + delete/open från servern.
 
 ## Milstolpe 1.0 — skarp release (Kims order 2026-06-22)
 Städa version (dubbel→ren "1.0"), klassisk Apple-ikon, fixa färgmeny-avklippning + markeringsverktyg tillbaka + snyggare paketfärger, och BEVISA två-lager-fundamentet (AI-ramverket bäddas in i export så det alltid följer med).
@@ -232,6 +252,8 @@ Webbappen (visuali2e.com) ÄR appen framåt; native v1.5.7 fryses som referens t
 - 2026-06-17 · Förbättring under dekomposition: ShapeGeometry flyttad till Models/ (inte Views/Canvas/ som planen sa) · CanvasModel använde den redan → den hörde hemma i Model-lagret, inte View. ShapeView/EdgesView är själva >300 → delas internt (ShapeRenderer m.fl.) innan de flyttas, inte bara flyttas.
 - 2026-06-18 · På Kims order (M4 pausad): vän-distribution — skill `visuali2e-bjorn` lägger käll-ZIP i iCloud-mappen "Versioner till Björn" (per version), Kim skickar manuellt; + `scripts/friend-setup.sh` (ett-kommando-signering) + fräschad `INSTALL-FÖR-VÄNNEN.md`. Ingen app-kod (Filer-väljaren räcker för vännens iCloud). M4 återupptas på "ja".
 - 2026-06-18 · På Kims order: arkitektur-sättet destillerat till portabelt `ios-arkitektur-kit` (`~/.claude/templates/` + iCloud-ZIP) — config-driven arch-check + METOD + se-appen, för framtida iOS-appar. Utanför detta repo; MermaidCanvas egna scripts orörda (analogt med hur projektplan-metoden = 💡#1 hanterades).
+- 2026-07-19 · W2-revision: cirkel ritad RUND (diameter=min(w,h), centrerad) som native — hit-test Circle2d uppdaterad; live deploy hash CztEySMj.
+- 2026-07-02 · WEB-FIRST milstolpe tillagd: Kim beordrade "webben blir huvudappen, native fryst" · W1 (visare) ✅, W2 (canvas-MVP) ✅, W3 (AI-integration) ⏳ väntar OPENROUTER_API_KEY.
 - 2026-06-17 · MA startad på Kims order: granska + bygg om STEGVIS (behåll kärnan) · 3 spår C→B→A, maskinellt tvingade regler, Claude ser appen i sim · detaljplan i ~/.claude/plans/jag-vill-att-du-peaceful-whistle.md · M2/M3 Kims-bockar oberoende, WIP=1 gäller arbetssteg.
 - 2026-06-10 · Planen skapad · startläge för M1.
 - 2026-06-10 · 💡#1+#2 byggda direkt (mall+ZIP+intervju, ritad vy) · Kim bad explicit; rör inga M1-steg.
