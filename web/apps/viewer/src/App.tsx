@@ -201,9 +201,27 @@ export function App() {
     setSubRow('shapes');
   }, []);
 
+  // Tryck på form-chips innan rit-motorn laddat klart (lazy, långsamt på mobil)
+  // slängdes tyst — köa dem och utför vid mount i stället.
+  const pendingShapesRef = useRef<ShapeType[]>([]);
+  const onAddShape = useCallback((t: ShapeType) => {
+    const ed = editorRef.current;
+    if (ed) addDomainShape(ed, t);
+    else pendingShapesRef.current.push(t);
+  }, []);
+
   const onEditorMount = useCallback((editor: Editor) => {
     editorRef.current = editor;
+    // Test-krok: e2e-testerna läser editor-state via window (skadar inget i drift).
+    (window as unknown as Record<string, unknown>).__v2eEditor = editor;
     if (nativeRef.current) loadDocIntoEditor(editor, nativeRef.current.doc);
+    // Flush i nästa tick och bara om detta fortfarande är den aktiva editorn —
+    // StrictMode (dev) monterar två gånger och slänger den första instansen.
+    setTimeout(() => {
+      if (editorRef.current !== editor) return;
+      const pending = pendingShapesRef.current.splice(0);
+      for (const t of pending) addDomainShape(editor, t);
+    }, 0);
   }, []);
 
   const onSave = () => {
@@ -350,7 +368,7 @@ export function App() {
 
       {rita && subRow === 'shapes' && (
         <ShapesRow
-          onAdd={(t: ShapeType) => editorRef.current && addDomainShape(editorRef.current, t)}
+          onAdd={onAddShape}
           arrowActive={toolId === 'arrow'}
           onToggleArrow={onToggleArrow}
         />
