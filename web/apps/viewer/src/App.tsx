@@ -18,6 +18,7 @@ import {
   loadDocIntoEditor,
   readDocFromEditor,
   addDomainShape,
+  addDomainShapeAt,
   applyColorPack,
   applyCustomColor,
   applyTextStyle,
@@ -32,6 +33,7 @@ import { ShapesRow } from './ui/ShapesRow';
 import { ColorsRow } from './ui/ColorsRow';
 import { TextStyleRow, type TextStylePatch } from './ui/TextStyleRow';
 import { LagenMenu } from './ui/LagenMenu';
+import { ZoomControls } from './ui/ZoomControls';
 import { CodeSheet } from './ui/CodeSheet';
 import { EMPTY_SELECTION, type SelectionState } from './canvas/selection';
 import { ChatPanel } from './copilot/ChatPanel';
@@ -210,6 +212,12 @@ export function App() {
     else pendingShapesRef.current.push(t);
   }, []);
 
+  // Drag-ut från chip: släpp-punkten (skärm) → page-koordinat → form exakt där.
+  const onAddShapeAt = useCallback((t: ShapeType, client: { x: number; y: number }) => {
+    const ed = editorRef.current;
+    if (ed) addDomainShapeAt(ed, t, ed.screenToPage(client));
+  }, []);
+
   const onEditorMount = useCallback((editor: Editor) => {
     editorRef.current = editor;
     // Test-krok: e2e-testerna läser editor-state via window (skadar inget i drift).
@@ -356,7 +364,6 @@ export function App() {
               onShare: source.trim() || canDraw ? () => void onShare() : null,
               onToggleView: canDraw ? onToggleView : null,
               viewLabel: mode === 'rita' ? 'Visa diagrammet (mermaid)' : 'Tillbaka till rit-läget',
-              onResetZoom: rita && editor ? () => editor.zoomToFit() : null,
               version: WEB_VERSION,
             }}
             onClose={() => setMenuOpen(false)}
@@ -369,6 +376,7 @@ export function App() {
       {rita && subRow === 'shapes' && (
         <ShapesRow
           onAdd={onAddShape}
+          onAddAt={onAddShapeAt}
           arrowActive={toolId === 'arrow'}
           onToggleArrow={onToggleArrow}
         />
@@ -440,6 +448,8 @@ export function App() {
             )}
           </main>
         )}
+
+        {rita && editor && <ZoomControls editor={editor} />}
 
         {rita && sel.count > 0 && editor && (
           <div className="sel-bar">

@@ -44,22 +44,19 @@ function nativeDefaults(editor: Editor, type: ShapeType): Partial<ShapeNode> {
 }
 
 /**
- * Skapa en ny v2e-form i viewport-mitten med BASE_SIZES-storlek.
+ * Skapa en ny v2e-form på en EXAKT punkt (page-koordinater) — drag-ut-vägen.
  * Noden byggs som full domän-nod (meta.domain) → round-trippar direkt.
  */
-export function addDomainShape(
+export function addDomainShapeAt(
   editor: Editor,
   type: ShapeType,
+  point: { x: number; y: number },
   category: ShapeCategory = 'ui',
 ): TLShapeId {
-  const center = editor.getViewportPageBounds().center;
-  // Kaskad-förskjutning: nya former hamnar inte på EXAKT samma punkt (SIM-KOLL-fynd 2026-07-09).
-  const existing = editor.getCurrentPageShapes().filter((s) => s.type === V2E_SHAPE_TYPE).length;
-  const off = (existing % 8) * 28;
   const node = makeShape({
     id: mintId(),
     type,
-    position: { x: center.x + off, y: center.y + off },
+    position: { x: point.x, y: point.y },
     category,
     ...nativeDefaults(editor, type),
   });
@@ -71,6 +68,19 @@ export function addDomainShape(
     editor.setSelectedShapes([record.id]);
   });
   return record.id;
+}
+
+/** Skapa en ny v2e-form i viewport-mitten (tryck-vägen), med kaskad-förskjutning. */
+export function addDomainShape(
+  editor: Editor,
+  type: ShapeType,
+  category: ShapeCategory = 'ui',
+): TLShapeId {
+  const center = editor.getViewportPageBounds().center;
+  // Kaskad-förskjutning: nya former hamnar inte på EXAKT samma punkt (SIM-KOLL-fynd 2026-07-09).
+  const existing = editor.getCurrentPageShapes().filter((s) => s.type === V2E_SHAPE_TYPE).length;
+  const off = (existing % 8) * 28;
+  return addDomainShapeAt(editor, type, { x: center.x + off, y: center.y + off }, category);
 }
 
 /**

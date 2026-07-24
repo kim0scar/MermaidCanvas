@@ -22,7 +22,12 @@ export function loadDocIntoEditor(editor: Editor, doc: CanvasDoc): void {
     if (arrows.length > 0) editor.createShapes(arrows as never[]);
     if (bindings.length > 0) editor.createBindings(bindings as never[]);
   }, { history: 'ignore' });
-  editor.zoomToFit({ immediate: true });
+  if (shapes.length > 0 || arrows.length > 0) {
+    editor.zoomToFit({ immediate: true });
+  } else {
+    // Tomt dokument: landa på pappret (kamera-reset följer constraints initialZoom).
+    editor.setCamera(editor.getCamera(), { reset: true, immediate: true });
+  }
 }
 
 /**

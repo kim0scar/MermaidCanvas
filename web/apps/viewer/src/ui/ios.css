@@ -80,6 +80,9 @@
   gap: 2px; min-width: 52px; height: 56px; padding: 4px 6px;
   border-radius: 10px; border: none; background: transparent; color: var(--ios-chip-fg);
   cursor: pointer; flex: none; -webkit-tap-highlight-color: transparent;
+  /* Drag-ut på iOS Safari: pan-x låter raden scrollas i sidled, men drag UPPÅT
+     mot canvasen blir vår pointer-gest i stället för att kapas av webbläsaren */
+  touch-action: pan-x;
 }
 .ios-chip:active { background: var(--ios-chip-bg); }
 .ios-chip svg { width: 30px; height: 24px; }
@@ -202,4 +205,19 @@
   border: none; border-radius: 999px; padding: 8px 14px; cursor: pointer;
   background: var(--ios-danger); color: #fff; font-size: 14px; font-weight: 600;
 }
+
+.zoom-ctrl {
+  position: absolute; z-index: 200; right: 12px;
+  bottom: calc(env(safe-area-inset-bottom) + 14px);
+  display: flex; flex-direction: column; gap: 1px;
+  border: 1px solid var(--ios-line); border-radius: 12px; overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.zoom-ctrl button {
+  border: none; background: var(--ios-bar-bg); color: var(--ios-chip-fg);
+  width: 40px; height: 40px; font-size: 20px; line-height: 1; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.zoom-ctrl button:active { background: var(--ios-chip-bg); }
 

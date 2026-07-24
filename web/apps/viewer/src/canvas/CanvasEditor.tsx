@@ -3,11 +3,14 @@
 import { useCallback } from 'react';
 import { Tldraw, type Editor, type TLComponents } from 'tldraw';
 import { V2E_SHAPE_UTILS } from '@v2e/canvas/shape-util';
+import { CAMERA_OPTIONS } from '@v2e/canvas';
 import type { TextAlignMode, TextStyle } from '@v2e/domain';
+import { PaperBackground } from './PaperBackground';
 import { EMPTY_SELECTION, type SelectionState } from './selection';
 import 'tldraw/tldraw.css';
 
 const components: TLComponents = {
+  OnTheCanvas: PaperBackground,
   Toolbar: null,
   StylePanel: null,
   MainMenu: null,
@@ -113,7 +116,12 @@ export function CanvasEditor({
 
   return (
     <div className="canvas-wrap">
-      <Tldraw shapeUtils={V2E_SHAPE_UTILS} components={components} onMount={handleMount} />
+      <Tldraw
+        shapeUtils={V2E_SHAPE_UTILS}
+        components={components}
+        cameraOptions={CAMERA_OPTIONS}
+        onMount={handleMount}
+      />
     </div>
   );
 }

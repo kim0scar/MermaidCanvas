@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { ShapeType } from '@v2e/domain';
 import { ShapeGlyph } from './ShapeGlyph';
 import { IconArrowTool } from './icons';
+import { useChipDrag } from './useChipDrag';
+import { ChipDragGhost } from './ChipDragGhost';
 
 /** Speglar native ToolbarView+ShapesRow: flikar + chips, tap lägger till formen. */
 const GRUNDFORMER: Array<[ShapeType, string]> = [
@@ -27,15 +29,18 @@ const VERKTYG: Array<[ShapeType, string]> = [
 
 export function ShapesRow({
   onAdd,
+  onAddAt,
   arrowActive,
   onToggleArrow,
 }: {
   onAdd: (type: ShapeType) => void;
+  onAddAt: (type: ShapeType, client: { x: number; y: number }) => void;
   arrowActive: boolean;
   onToggleArrow: () => void;
 }) {
   const [tab, setTab] = useState<'grund' | 'verktyg'>('grund');
   const chips = tab === 'grund' ? GRUNDFORMER : VERKTYG;
+  const { drag, getChipProps } = useChipDrag(onAddAt);
   return (
     <div className="ios-subrow">
       <div className="ios-seg" role="tablist">
@@ -55,12 +60,25 @@ export function ShapesRow({
         <IconArrowTool />
         <span className="lbl">Pil</span>
       </button>
-      {chips.map(([type, label]) => (
-        <button key={type} className="ios-chip" onClick={() => onAdd(type)} aria-label={label}>
-          <ShapeGlyph type={type} />
-          <span className="lbl">{label}</span>
-        </button>
-      ))}
+      {chips.map(([type, label]) => {
+        const dragProps = getChipProps(type);
+        return (
+          <button
+            key={type}
+            className="ios-chip"
+            aria-label={label}
+            {...dragProps}
+            onClick={(e) => {
+              dragProps.onClick(e);
+              if (!e.defaultPrevented) onAdd(type);
+            }}
+          >
+            <ShapeGlyph type={type} />
+            <span className="lbl">{label}</span>
+          </button>
+        );
+      })}
+      <ChipDragGhost drag={drag} />
     </div>
   );
 }

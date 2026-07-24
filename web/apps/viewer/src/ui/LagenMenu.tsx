@@ -8,7 +8,6 @@ import {
   IconOpen,
   IconSave,
   IconShare,
-  IconZoomReset,
 } from './icons';
 
 export interface MenuActions {
@@ -20,7 +19,6 @@ export interface MenuActions {
   onShare: (() => void) | null;
   onToggleView: (() => void) | null;
   viewLabel: string;
-  onResetZoom: (() => void) | null;
   version: string;
 }
 
@@ -55,9 +53,6 @@ export function LagenMenu({ a, onClose }: { a: MenuActions; onClose: () => void 
         {a.onShare && <Item icon={<IconShare />} label="Dela länk" onClick={wrap(a.onShare)!} />}
         <div className="section">Visa</div>
         {a.onToggleView && <Item icon={<IconEye />} label={a.viewLabel} onClick={wrap(a.onToggleView)!} />}
-        {a.onResetZoom && (
-          <Item icon={<IconZoomReset />} label="Återställ zoom" onClick={wrap(a.onResetZoom)!} />
-        )}
       </div>
     </>,
     document.body,

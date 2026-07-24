@@ -8,4 +8,5 @@ export * from './shape-props.js';
 export * from './text.js';
 export * from './geometry.js';
 export * from './add-shape.js';
+export * from './camera.js';
 export type { V2eShape } from './V2eShapeUtil.js';
